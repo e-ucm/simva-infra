@@ -1,0 +1,188 @@
+version: '3.7'
+
+networks:
+  traefik_services:
+    external: true
+
+services:
+# https://medium.com/@containeroo/traefik-2-0-paranoid-about-mounting-var-run-docker-sock-22da9cb3e78c
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+#      LOG_LEVEL: "debug"
+      LOG_LEVEL: "${SOCKET_PROXY_LOG_LEVEL:-info}"
+# https://github.com/BretFisher/dogvscat/blob/master/stack-proxy-global.yml#L124    
+      NETWORKS: 1
+      #SERVICES: 1
+      CONTAINERS: 1
+      #SWARM: 1
+      #TASKS: 1
+    hostname: socket-proxy.internal.test
+    networks:
+      default:
+        aliases:
+          - socket-proxy.internal.test
+
+  dns-proxy-server:
+    image: eucm/dns-proxy-server:2.19.0-dh-2
+    entrypoint:
+      - sh
+      - '-c'
+      - |
+        [ ! -d "/app/conf" ] && mkdir -p /app/conf;
+        [ ! -f "/app/conf/config.json" ] && cat << EOF > /app/conf/config.json
+        {
+          "version": 2,
+          "remoteDnsServers": [
+            "8.8.8.8:53",
+            "8.8.4.4:53"
+          ],
+          "envs": [
+            {
+              "name": "",
+              "hostnames": [
+                {
+                  "id": 1562843575352085033,
+                  "hostname": ".${DOMAIN_SUFFIX:-external.test}",
+                  "ip": "127.0.0.1",
+                  "target": "traefik.internal.test",
+                  "ttl": 3600,
+                  "type": "CNAME"
+                }
+              ]
+            }
+          ],
+          "activeEnv": "",
+          "webServerPort": 5380,
+          "dnsServerPort": 53,
+          "defaultDns": false,
+          "logLevel": "INFO",
+          "logFile": "console",
+          "dpsNetwork": false,
+          "dpsNetworkAutoConnect": false,
+          "registerContainerNames": true,
+          "hostMachineHostname": "host.docker.test",
+          "domain": "docker.test"
+        }
+        EOF
+        exec /usr/bin/docker-entrypoint "$$@"
+    command:
+      - ""
+      - "/app/dns-proxy-server"
+    environment:
+#      MG_LOG_LEVEL: "DEBUG"
+      MG_LOG_LEVEL: "${DNS_PROXY_SERVER_LOG_LEVEL:-INFO}"
+      MG_DOCKER_HOST: "tcp://socket-proxy.internal.test:2375"
+      MG_DOCKER_API_VERSION: "v1.24"
+    depends_on:
+      - socket-proxy
+    hostname: dns.internal.test
+    networks:
+      default:
+        aliases:
+          - dns.internal.test
+      traefik_services:
+        ipv4_address: 172.30.0.53
+        aliases:
+          - dns.internal.test
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.dns.loadbalancer.server.port=5380"
+      - "traefik.http.routers.dns.rule=Host(`dns.${DOMAIN_SUFFIX:-external.test}`)"
+      - "traefik.http.routers.dns.entrypoints=websecure"
+      - "traefik.http.routers.dns.tls=true"
+
+  traefik:
+    image: traefik:2.2
+    entrypoint:
+      - sh
+      - '-c'
+      - |
+        mkdir -p /etc/traefik/conf/dynamic-config;
+        cat << EOF > /etc/traefik/conf/dynamic-config/file-provider.toml
+        [[tls.certificates]]
+          certFile = "/etc/traefik/ssl/fullchain.pem"
+          keyFile = "/etc/traefik/ssl/cert.key"
+          stores = ["default"]
+
+        [tls.stores]
+          [tls.stores.default]
+            [tls.stores.default.defaultCertificate]
+              certFile = "/etc/traefik/ssl/fullchain.pem"
+              keyFile  = "/etc/traefik/ssl/cert.key"
+
+        [tls.options]
+          [tls.options.default]
+            minVersion = "VersionTLS12"
+          [tls.options.myTLSOptions]
+            minVersion = "VersionTLS13"
+        
+        [http.middlewares]
+          [http.middlewares.dashboardAuth.basicAuth]
+            # admin:password
+            users = [
+              "admin:\$$apr1\$$97xk9Kkr\$$gavbmzhrI6uOVYNOfYByQ/"
+            ]
+          [http.middlewares.redirect-to-https.redirectScheme]
+            scheme = "https"
+            permanent = true
+        EOF
+        exec traefik "$$@"
+    command:
+      - ""
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls=true
+      - --global.checkNewVersion=false
+      - --global.sendAnonymousUsage=false
+      - --serversTransport.insecureSkipVerify=true
+      - --api.dashboard=true
+      - --providers.file.directory=/etc/traefik/conf/dynamic-config
+      - --providers.file.watch=true
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --providers.docker.endpoint=tcp://socket-proxy.internal.test:2375
+      - --providers.docker.network=traefik_services
+      - --providers.docker.watch=true
+      - --providers.docker.defaultRule=Host(`{{ .Name }}.${DOMAIN_SUFFIX:-external.test}`)
+      - --log.level=DEBUG
+      - --log.format=json
+    volumes:
+      - "./ssl:/etc/traefik/ssl:ro"
+    depends_on:
+      - socket-proxy
+      - dns-proxy-server
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host 
+    hostname: traefik.internal.test
+    networks:
+      default:
+        aliases:
+          - traefik.internal.test
+      traefik_services:
+        aliases:
+          - traefik.internal.test
+    labels:
+      - "dps.network=${SERVICE_NETWORK:-traefik_services}"
+      - "traefik.enable=true"
+      # Global redirect http to https
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https@file"
+      # Access API enpoint through traefik itself
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN_SUFFIX:-external.test}`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.options=myTLSOptions@file"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.middlewares=dashboardAuth@file"

@@ -1,0 +1,14 @@
+version: '3.7'
+
+networks:
+  # https://github.com/moby/libnetwork/blob/master/ipamutils/utils.go#L13-L15
+  default:
+    name: "traefik_services"
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.30.0.0/24"
+
+services:
+  noop:
+    image: eucm/noop
