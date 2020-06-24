@@ -30,7 +30,7 @@ sudo add-apt-repository \
    $(lsb_release -cs) \
    stable"
    
-DOCKER_VERSION=5:19.03.11~3-0~ubuntu-focal
+DOCKER_VERSION=5:19.03.12~3-0~ubuntu-focal
 # Update repository info and install Docker-CE
 echo "\nUpdate repository info and installing Docker-CE"
 sudo apt-get update
