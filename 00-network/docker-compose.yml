@@ -4,10 +4,13 @@ networks:
   # https://github.com/moby/libnetwork/blob/master/ipamutils/utils.go#L13-L15
   default:
     name: "traefik_services"
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "${SIMVA_NETWORK_INTERFACE:-simva0}"
     ipam:
       driver: default
       config:
-        - subnet: "172.30.0.0/24"
+        - subnet: "${SIMVA_NETWORK_CIDR:-172.30.0.0/24}"
 
 services:
   noop:
