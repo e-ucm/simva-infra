@@ -59,6 +59,12 @@ services:
       # https://www.keycloak.org/docs/latest/server_installation/#profiles
       - "-Dkeycloak.profile.feature.scripts=enabled"
       #- "-Dkeycloak.profile.feature.upload_scripts=enabled"
+      - "-Dkeycloak.migration.action=import"
+      - "-Dkeycloak.migration.provider=dir"
+      - "-Dkeycloak.migration.dir=/var/tmp/simva-realm"
+      - "-Dkeycloak.migration.strategy=IGNORE_EXISTING"
+      - "-Dkeycloak.migration.usersExportStrategy=SAME_FILE"
+      - "-Dkeycloak.migration.realmName=simva"
     environment:
       - DB_VENDOR=mariadb
       - DB_ADDR=mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
@@ -72,6 +78,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/jboss/keycloak/standalone/deployments
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm:/var/tmp/simva-realm:ro
     depends_on:
       - mariadb
     hostname: keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
