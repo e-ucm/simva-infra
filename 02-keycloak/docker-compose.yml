@@ -30,20 +30,21 @@ services:
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/mariadb-dump:/dump
       - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
       - MYSQL_HOST=mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       - MYSQL_ROOT_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD:-root}
       - BACKUP_NUM_KEEP=7
       - BACKUP_FREQUENCY=1d
+      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-120}
     entrypoint: |
-      bash -c 'bash -s <<EOF
+      bash -c '/container-tools/wait-for-it.sh -h $${MYSQL_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- bash -s <<EOF
       trap "break;exit" SIGHUP SIGINT SIGTERM
-      sleep 2m
       while /bin/true; do
         mysqldump --all-databases -h"$$MYSQL_HOST" -uroot -p"$$MYSQL_ROOT_PASSWORD" > /dump/dump_\`date +%d-%m-%Y"_"%H_%M_%S\`.sql
         (ls -t /dump/dump*.sql|head -n $$BACKUP_NUM_KEEP;ls /dump/dump*.sql)|sort|uniq -u|xargs rm -- {}
         sleep $$BACKUP_FREQUENCY
-      done 
+      done
       EOF'
     hostname: mariadb-backup.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
@@ -51,10 +52,14 @@ services:
         aliases:
           - mariadb.keycloak-backup.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
-# XXX: Use owncloud docker images as an example of using wait-for in order to wait for MariaDB availabily before launching keycloak
   keycloak:
     image: ${KEYCLOAK_IMAGE:-jboss/keycloak}:${KEYCLOAK_VERSION:-10.0.2}
+    entrypoint:
+      - '/bin/bash'
+      - '-c'
+      - '/container-tools/wait-for-it.sh -h $${DB_ADDR} -p 3306 -t $${WAIT_TIMEOUT} -- /opt/jboss/tools/docker-entrypoint.sh $$@'
     command:
+      - "--"
       - "-b 0.0.0.0"
       # https://www.keycloak.org/docs/latest/server_installation/#profiles
       - "-Dkeycloak.profile.feature.scripts=enabled"
@@ -74,13 +79,12 @@ services:
       - KEYCLOAK_USER=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
       - KEYCLOAK_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       - PROXY_ADDRESS_FORWARDING=true
+      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-120}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/jboss/keycloak/standalone/deployments
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm:/var/tmp/simva-realm:ro
-    depends_on:
-      - mariadb
     hostname: keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
