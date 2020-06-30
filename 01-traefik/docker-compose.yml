@@ -95,7 +95,7 @@ services:
       - "traefik.http.routers.dns.tls=true"
 
   traefik:
-    image: traefik:2.2
+    image: traefik:2.2.1
     entrypoint:
       - sh
       - '-c'
