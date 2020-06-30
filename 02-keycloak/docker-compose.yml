@@ -19,6 +19,12 @@ services:
 # https://github.com/docker-library/mariadb/issues/261
 # https://github.com/docker-library/mariadb/issues/262
       - MYSQL_INITDB_SKIP_TZINFO=true
+    healthcheck:
+      test: "mysqladmin ping -h localhost -u root -p${SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD:-root} --silent"
+      interval: 60s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
     hostname: mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -46,12 +52,17 @@ services:
         sleep $$BACKUP_FREQUENCY
       done
       EOF'
+    restart: unless-stopped
     hostname: mariadb-backup.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
           - mariadb.keycloak-backup.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
+# XXX: Explore options to protect /auth/admin
+# see: https://www.keycloak.org/docs/latest/server_admin/#admin-endpoints-and-console
+# XXX Improve healthcheck
+# see: https://issues.redhat.com/browse/KEYCLOAK-1578, https://github.com/thomasdarimont/keycloak-health-checks/
   keycloak:
     image: ${KEYCLOAK_IMAGE:-jboss/keycloak}:${KEYCLOAK_VERSION:-10.0.2}
     entrypoint:
@@ -85,6 +96,12 @@ services:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/jboss/keycloak/standalone/deployments
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm:/var/tmp/simva-realm:ro
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -sS http://localhost:8080 || exit 1"
+      interval: 60s
+      timeout: 20s
+      retries: 3
     hostname: keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -105,6 +122,12 @@ services:
     environment:
       - MAILDEV_SMTP_PORT=25
       - MAILDEV_WEB_PORT=80
+    restart: unless-stopped
+    healthcheck:
+      test: "wget --quiet --tries=1 --spider http://localhost:80/ || exit 1"
+      interval: 60s
+      timeout: 20s
+      retries: 3
     hostname: mail.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
