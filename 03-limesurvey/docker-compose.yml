@@ -1,83 +1,86 @@
 version: '3.7'
 
-volumes:
-  mariadb:
-    driver: local
-
 networks:
   traefik_services:
+    name: "${SERVICE_NETWORK:-traefik_services}"
     external: true
 
 services:
-   
+
   limesurvey:
     image: eucm/limesurvey:4.2.3
     environment:
-      LIMESURVEY_DB_HOST: mariadb.limesurvey.internal.test
-      LIMESURVEY_DB_USER: limesurvey
-      LIMESURVEY_DB_PASSWORD: password
-      LIMESURVEY_ADMIN_USER: admin
-      LIMESURVEY_ADMIN_PASSWORD: password2
-      LIMESURVEY_ADMIN_NAME: Lime Administrator
-      LIMESURVEY_ADMIN_EMAIL: lime-dev@limesurvey.external.test
-      LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE: "https___sso_external_test_auth_realms_simva"
+      DEBUG: "${SIMVA_LIMESURVEY_DEBUG_ENTRYPOINT:-false}"
+      LIMESURVEY_DB_HOST: mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      LIMESURVEY_DB_NAME: ${SIMVA_LIMESURVEY_MYSQL_DATABASE:-limesurvey}
+      LIMESURVEY_DB_USER: ${SIMVA_LIMESURVEY_MYSQL_USER:-limesurvey}
+      LIMESURVEY_DB_PASSWORD: ${SIMVA_LIMESURVEY_MYSQL_PASSWORD:-password}
+      LIMESURVEY_ADMIN_USER: ${SIMVA_LIMESURVEY_ADMIN_USER:-admin}
+      LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-password2}
+      LIMESURVEY_ADMIN_NAME: ${SIMVA_LIMESURVEY_ADMIN_NAME:-Simva Administrator}
+      LIMESURVEY_ADMIN_EMAIL: ${SIMVA_LIMESURVEY_ADMIN_EMAIL:-lime-dev@limesurvey.external.test}
+      LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE: "${SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE:-https___sso_external_test_auth_realms_simva}"
       LIMESURVEY_SAML_PLUGIN_UID_MAPPING: "username"
-      DEBUG: "true"
       SIMPLESAMLPHP_PATH: "/simplesamlphp"
       SIMPLESAMLPHP_SESSION_COOKIE_PATH: "/"
-      SIMPLESAMLPHP_ADMIN_PASSWORD: "admin"
+      SIMPLESAMLPHP_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD:-password}"
       SIMPLESAMLPHP_ENABLE_DEFAULT_VHOST: "true"
-      SIMPLESAMLPHP_INTERNAL_PROXY_HOSTNAME: "traefik.internal.test"
+      SIMPLESAMLPHP_INTERNAL_PROXY_HOSTNAME: "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       SIMPLESAMLPHP_ADMIN_PROTECT_INDEX_PAGE: "true"
-      MSMTP_HOST: "mail.simplesamlphp.dev.test"
-      MSMTP_FROM: "no-reply@limesurvey.external.test"
-      SIMPLESAMLPHP_LOG_LEVEL: "DEBUG"
-      SIMPLESAMLPHP_SP_CERT_SUBJ: "/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=limesurvey.internal.test"
-      SIMPLESAMLPHP_SP_IDP_METADATA_URL: "https://sso.external.test/auth/realms/simva/protocol/saml/descriptor"
+      MSMTP_HOST: "${SIMVA_LIMESURVEY_MSMTP_HOST:-mail.keycloak.internal.test}"
+      MSMTP_FROM: "${SIMVA_LIMESURVEY_MSMTP_FROM:-no-reply@limesurvey.external.test}"
+      SIMPLESAMLPHP_LOG_LEVEL: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL:-INFO}"
+      SIMPLESAMLPHP_SP_PRIVATE_KEY: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-example.key}
+      SIMPLESAMLPHP_SP_CERT: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-example.crt}
+      SIMPLESAMLPHP_SP_CERT_SUBJ: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ:-/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=limesurvey.internal.test}"
+      SIMPLESAMLPHP_SP_IDP_METADATA_URL: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_IDP_METADATA_URL:-https://sso.external.test/auth/realms/simva/protocol/saml/descriptor}"
       SIMPLESAMLPHP_SIGN_AUTHN_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_LOGOUT_REQUESTS: "true"
+      LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}"
     volumes:
-      - ./simplesamlphp-data/config:/etc/simplesamlphp
-      - ./limesurvey-data/etc:/etc/limesurvey
-      - ./limesurvey-data/plugins:/var/www/html/plugins
-      - ./limesurvey-data/upload:/var/www/html/upload
-      - ./limesurvey-data/tmp:/var/www/html/tmp
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/simplesamlphp-data/config:/etc/simplesamlphp
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/etc/simplesamlphp/certs:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/etc:/etc/limesurvey
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/plugins:/var/www/html/plugins
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/upload:/var/www/html/upload
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/tmp:/var/www/html/tmp
     depends_on:
       - mariadb
-    hostname: limesurvey.internal.test
+    hostname: limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     dns:
-      - 172.30.0.53
+      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:
-          - limesurvey.internal.test
+          - limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - limesurvey.internal.test    
+          - limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.ls.loadbalancer.server.port=80"
-      - "traefik.http.routers.ls.rule=Host(`limesurvey.${DOMAIN_SUFFIX:-external.test}`)"
+      - "traefik.http.routers.ls.rule=Host(`limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.ls.entrypoints=websecure"
-      - "traefik.http.routers.ls.tls=true"      
+      - "traefik.http.routers.ls.tls=true"
 
   mariadb:
-    image: mariadb:10.4
+    image: ${MARIADB_IMAGE:-mariadb}:${MARIADB_VERSION:-10.4.13}
     volumes:
-      - mariadb:/var/lib/mysql
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/mariadb:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=limesurvey
-      - MYSQL_USER=limesurvey
-      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=${SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD:-root}
+      - MYSQL_DATABASE=${SIMVA_LIMESURVEY_MYSQL_DATABASE:-limesurvey}
+      - MYSQL_USER=${SIMVA_LIMESURVEY_MYSQL_USER:-limesurvey}
+      - MYSQL_PASSWORD=${SIMVA_LIMESURVEY_MYSQL_PASSWORD:-password}
 # https://github.com/docker-library/mariadb/issues/261
-# https://github.com/docker-library/mariadb/issues/262      
+# https://github.com/docker-library/mariadb/issues/262
       - MYSQL_INITDB_SKIP_TZINFO=true
-    hostname: mariadb.limesurvey.internal.test
+    hostname: mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - mariadb.limesurvey.internal.test
+          - mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - mariadb.limesurvey.internal.test   
+          - mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
