@@ -30,10 +30,22 @@ That corresponds to the canned policy names that are installed when minio is lau
       * Display On consent screen: Off
     * Mappers
       * Name: user_policy
-      * Mapper Type: User Property
+      * Mapper Type: User Attribute
       * Property: policy
       * Token Claim Name: policy
       * Claim JSON Type: string
+  * policy_role_attribute
+    * Settings:
+      * Name: policy_role_attribute
+      * Description: Policy role attribute
+      * Display On consent screen: Off
+    * Mappers:
+      * Name: policy_role_attribute
+      * Mapper Type: Policy Role attribute mapper (Note: this type is custom mapper see [02-keycloack/scripts/README.md](02-keycloack/scripts/README.md))
+      * Multivalued: Off (Note: the by default the mapper may return multiple values if there is a policy attribute in multiple roles, however minio seems to expect just one value)
+      * Tocken Claim Name: policy
+      * Claim JSON Type String
+> NOTE: It is mandatory to add all available scopes due to [minio/issues/9238](https://github.com/minio/minio/issues/9238). Monitor the issue to just enable the minimum required scopes.
 3. Create a new OpenID client
   * Client ID: Use the value defined in docker-compose `MINIO_IDENTITY_OPENID_CLIENT_ID` environment variable (e.g. `https://minio.external.test`)
   * Root URL: Define the base URL for minio (e.g. `https://minio.external.test`)

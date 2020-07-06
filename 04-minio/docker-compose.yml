@@ -1,11 +1,8 @@
 version: '3.7'
 
-volumes:
-  minio_data:
-    driver: local
-
 networks:
   traefik_services:
+    name: "${SERVICE_NETWORK:-traefik_services}"
     external: true
 
 services:
@@ -14,46 +11,52 @@ services:
 # https://github.com/minio/minio/blob/master/docs/sts/keycloak.md
 # https://github.com/minio/minio/blob/master/docs/sts/wso2.md
   minio:
-    image: minio/minio:RELEASE.2020-06-03T22-13-49Z
+    image: minio/minio:RELEASE.2020-06-22T03-12-50Z
+
     command: server /data
     volumes:
-      - minio_data:/data
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio:/data
 # be advised if minio is launched as a non-root user you need to change this setting
-# Note too that this setting it is only needed if using a non-recognized CA (https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html#install-certificates-from-third-party-cas)
-      - "./CAs:/root/.minio/certs/CAs"
+# Note too that this setting it is only needed if using a non-recognized CA
+# (https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html#install-certificates-from-third-party-cas)
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
     environment:
-      MINIO_ACCESS_KEY: "minio"
-      MINIO_SECRET_KEY: "password"
-      MINIO_IDENTITY_OPENID_CLIENT_ID: "https://minio.external.test"
-      MINIO_IDENTITY_OPENID_CONFIG_URL: "https://sso.external.test/auth/realms/simva/.well-known/openid-configuration"
-    hostname: minio.internal.test
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
+      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
+      MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_OPENID_CLIENT_ID:-https://minio.external.test}"
+      MINIO_IDENTITY_OPENID_CONFIG_URL: "${SIMVA_MINIO_IDENTITY_OPENID_CONFIG_URL:-https://sso.external.test/auth/realms/simva/.well-known/openid-configuration}"
+      MINIO_IDENTITY_OPENID_SCOPES: "${SIMVA_MINIO_IDENTITY_OPENID_SCOPES:-openid,policy_role_attribute}"
+      MINIO_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}"
+    hostname: minio.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     dns:
-      - 172.30.0.53
+      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:
-          - minio.internal.test
+          - minio.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - minio.internal.test
+          - minio.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.minio.loadbalancer.server.port=9000"
-      - "traefik.http.routers.minio.rule=Host(`minio.${DOMAIN_SUFFIX:-external.test}`)"
+      - "traefik.http.routers.minio.rule=Host(`minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.minio.entrypoints=websecure"
       - "traefik.http.routers.minio.tls=true"
 
-# mc config host add --insecure simva-minio https://minio.${DOMAIN_SUFFIX:-external.test} minio password
+# mc config host add --insecure simva-minio https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test} minio password
 # mc --debug --insecure mb simva-minio/prueba
 # mc --debug --insecure ls simva-minio
 # https://github.com/minio/minio/issues/7086 -> write-user-folder.json
 # https://github.com/minio/minio/issues/8345 -> write-user-folder-jwt.json
 #
 # Not required (already configured using env variables but useful:
-#   /usr/bin/mc --debug --insecure admin config set simva-minio identity_openid config_url="https://sso.external.test/auth/realms/simva/.well-known/openid-configuration" client_id="https://minio.external.test";
+#   /usr/bin/mc --debug --insecure admin config set simva-minio identity_openid config_url="https://${SIMVA_SSO_HOST:-sso.external.test}/auth/realms/simva/.well-known/openid-configuration" client_id="https://minio.external.test";
 #   /usr/bin/mc --debug --insecure admin service restart simva-minio;
+
+# XXX remove mcs password
   mc:
-    image: minio/mc:RELEASE.2020-05-28T23-43-36Z
+    image: minio/mc:RELEASE.2020-06-20T00-18-43Z
     entrypoint: >
       /bin/sh -c "
       if [ ! -e '/minio-initialized' ]; then
@@ -69,17 +72,21 @@ services:
       fi
       "
     volumes:
-      - ./policies:/policies:ro
-    depends_on:
-      - minio
-    hostname: mc.internal.test
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/minio/policies:/policies:ro
+      # Add extra CA (for self-signed certificates)
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.mc/certs/CAs/
+    environment:
+      MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MINIO_URL: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
+      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
+    hostname: mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     dns:
-      - 172.30.0.53
+      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       traefik_services:
         aliases:
-          - mc.internal.test
-
+          - mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 #  kes:
 #    image: minio/kes:v0.9.0
 #    hostname: kes.internal.test
@@ -88,4 +95,4 @@ services:
 #    networks:
 #      default:
 #        aliases:
-#          - kes.internal.test
+#          - kes.${SIMVA_INTERNAL_DOMAIN:-internal.test}
