@@ -129,6 +129,10 @@ services:
         /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder-jwt /policies/write-user-folder-jwt.json;
         /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder /policies/readonly-user-folder.json;
         /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder-jwt /policies/readonly-user-folder-jwt.json;
+        /usr/bin/mc --debug admin user add simva-minio $${MINIO_MCS_USER} $${MINIO_MCS_SECRET}
+        /usr/bin/mc --debug admin policy add simva-minio/ mcsAdmin /policies/mcsAdmin.json;
+        /usr/bin/mc --debug admin policy add simva-minio/ mcsRestrictedAdmin /policies/mcsRestrictedAdmin.json;
+        /usr/bin/mc --debug admin policy set simva-minio/ mcsAdmin user=$${MINIO_MCS_USER}
         /usr/bin/mc --debug mb simva-minio/traces;
         touch /minio-initialized;
       fi
@@ -143,6 +147,8 @@ services:
       MINIO_URL: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
+      MINIO_MCS_USER: "${SIMVA_MINIO_MCS_USER:-mcs}"
+      MINIO_MCS_SECRET: "${SIMVA_MINIO_MCS_SECRET:-password}"
       MC_WAIT_TIME: "10"
       MC_MAX_RETRIES: "10"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}

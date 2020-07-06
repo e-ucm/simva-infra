@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  mcs:
+    image: minio/mcs:v0.1.1
+    command: server
+    volumes:
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.mcs/certs/CAs/
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+    environment:
+      MCS_HMAC_JWT_SECRET: "${SIMVA_MCS_HMAC_JWT_SECRET:-YOURJWTSIGNINGSECRET}"
+      #required to encrypt jwet payload
+      MCS_PBKDF_PASSPHRASE: "${SIMVA_MCS_PBKDF_PASSPHRASE:-SECRET}"
+      #required to encrypt jwet payload
+      MCS_PBKDF_SALT: "${SIMVA_MCS_PBKDF_SALT:-SECRET}"
+      # Minio user for MCS
+      MCS_ACCESS_KEY: "${SIMVA_MINIO_MCS_USER:-mcs}"
+      MCS_SECRET_KEY: "${SIMVA_MINIO_MCS_SECRET:-password}"
+      # Required using self signed certificates
+      MCS_MINIO_SERVER_TLS_ROOT_CAS: "/root/.mcs/certs/CAs/rootCA.pem"
+      MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MCS_MINIO_SERVER: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+    restart: unless-stopped
+    hostname: mcs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    dns:
+      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
+    networks:
+      traefik_services:
+        aliases:
+          - mcs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - mcs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mcs.loadbalancer.server.port=9090"
+      - "traefik.http.routers.mcs.rule=Host(`mcs.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.mcs.entrypoints=websecure"
+      - "traefik.http.routers.mcs.tls=true"
