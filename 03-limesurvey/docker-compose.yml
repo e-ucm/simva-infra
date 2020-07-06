@@ -9,6 +9,14 @@ services:
 
   limesurvey:
     image: eucm/limesurvey:4.2.3
+    entrypoint:
+      - '/bin/bash'
+      - '-c'
+      - '/container-tools/wait-for-it.sh -h $${LIMESURVEY_DB_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- /container-tools/wait-for-it.sh -h $${LIMESURVEY_SSO_HOST} -p 443 -t $${WAIT_TIMEOUT} -- /usr/bin/entrypoint $$@'
+    command:
+      - '--'
+      - '/usr/bin/server'
+      - 'start'
     environment:
       DEBUG: "${SIMVA_LIMESURVEY_DEBUG_ENTRYPOINT:-false}"
       LIMESURVEY_DB_HOST: mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
@@ -37,6 +45,7 @@ services:
       SIMPLESAMLPHP_SIGN_AUTHN_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_LOGOUT_REQUESTS: "true"
       LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}"
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/simplesamlphp-data/config:/etc/simplesamlphp
       - ${SIMVA_TLS_HOME?TLS home folder required}:/etc/simplesamlphp/certs:ro
@@ -44,8 +53,7 @@ services:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/plugins:/var/www/html/plugins
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/upload:/var/www/html/upload
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/tmp:/var/www/html/tmp
-    depends_on:
-      - mariadb
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     hostname: limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     dns:
       - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
