@@ -87,12 +87,3 @@ services:
       traefik_services:
         aliases:
           - mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-#  kes:
-#    image: minio/kes:v0.9.0
-#    hostname: kes.internal.test
-#    dns:
-#      - 172.30.0.53
-#    networks:
-#      default:
-#        aliases:
-#          - kes.${SIMVA_INTERNAL_DOMAIN:-internal.test}
