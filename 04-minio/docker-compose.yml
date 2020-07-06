@@ -62,6 +62,12 @@ services:
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
       MC_WAIT_TIME: "10"
       MC_MAX_RETRIES: "10"
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -sS http://localhost:9000/minio/health/live || exit 1"
+      interval: 30s
+      timeout: 5s
+      retries: 3
     hostname: minio.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     dns:
       - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
