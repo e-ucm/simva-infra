@@ -11,22 +11,57 @@ services:
 # https://github.com/minio/minio/blob/master/docs/sts/keycloak.md
 # https://github.com/minio/minio/blob/master/docs/sts/wso2.md
   minio:
-
-    command: server /data
     image: minio/minio:RELEASE.2020-07-02T00-15-09Z
+    entrypoint: >
+      /bin/sh -c '
+      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_SSO_HOST};
+        if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
+          cp /root/.minio/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
+          cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
+        fi;
+        wait_time=$${MC_WAIT_TIME};
+        count=$${MC_MAX_RETRIES};
+        done="ko";
+        while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
+          echo 1>&2 "Checking minio: $$(($${MC_WAIT_TIME}-$$count+1)) pass";
+          wget "https://$${MINIO_SSO_HOST}/auth/realms/simva/.well-known/openid-configuration" -O - >/dev/null;
+          ret=$$?;
+          if [ $$ret -eq 0 ]; then
+            done="ok";
+          else
+            echo 1>&2 "Keycloak not available, waiting $${wait_time}s";
+            sleep $${wait_time};
+          fi;
+          count=$$((count-1));
+        done;
+        if [ $$count -eq 0 ]; then
+          echo 1>&2 "Keycloak not available !";
+          exit 1
+        fi;
+        /usr/bin/docker-entrypoint.sh $$@;
+      '
+    command:
+     - '--'
+     - 'server'
+     - '/data'
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio:/data
 # be advised if minio is launched as a non-root user you need to change this setting
 # Note too that this setting it is only needed if using a non-recognized CA
 # (https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html#install-certificates-from-third-party-cas)
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
       MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_OPENID_CLIENT_ID:-https://minio.external.test}"
       MINIO_IDENTITY_OPENID_CONFIG_URL: "${SIMVA_MINIO_IDENTITY_OPENID_CONFIG_URL:-https://sso.external.test/auth/realms/simva/.well-known/openid-configuration}"
       MINIO_IDENTITY_OPENID_SCOPES: "${SIMVA_MINIO_IDENTITY_OPENID_SCOPES:-openid,policy_role_attribute}"
-      MINIO_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}"
+      MINIO_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}:443"
+      MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
+      MC_WAIT_TIME: "10"
+      MC_MAX_RETRIES: "10"
     hostname: minio.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     dns:
       - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
@@ -58,28 +93,53 @@ services:
   mc:
     image: minio/mc:RELEASE.2020-06-26T19-56-55Z
     entrypoint: >
-      /bin/sh -c "
-      if [ ! -e '/minio-initialized' ]; then
-        echo 'Waiting 30s';
-        sleep 30;
-        /usr/bin/mc config host add --insecure simva-minio https://minio.${DOMAIN_SUFFIX:-external.test} minio password;
-        /usr/bin/mc --debug --insecure admin policy add simva-minio/ write-user-folder /policies/write-user-folder.json;
-        /usr/bin/mc --debug --insecure admin policy add simva-minio/ write-user-folder-jwt /policies/write-user-folder-jwt.json;
-        /usr/bin/mc --debug --insecure admin policy add simva-minio/ readonly-user-folder /policies/readonly-user-folder.json;
-        /usr/bin/mc --debug --insecure admin policy add simva-minio/ readonly-user-folder-jwt /policies/readonly-user-folder-jwt.json;
-        /usr/bin/mc --debug --insecure mb simva-minio/traces;
+      /bin/sh -c '
+      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/minio-initialized" ]; then
+        if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
+          cp /root/.mc/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
+          cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
+        fi;
+        wait_time=$${MC_WAIT_TIME};
+        count=$${MC_MAX_RETRIES};
+        done="ko";
+        while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
+          echo 1>&2 "Checking minio: $$(($${MC_WAIT_TIME}-$$count+1)) pass";
+          wget "$${MINIO_URL}/minio/health/live" -O - >/dev/null;
+          ret=$$?;
+          if [ $$ret -eq 0 ]; then
+            done="ok";
+          else
+            echo 1>&2 "Minio not available, waiting $${wait_time}s";
+            sleep $${wait_time};
+          fi;
+          count=$$((count-1));
+        done;
+        if [ $$count -eq 0 ]; then
+          echo 1>&2 "Minio not available !";
+          exit 1
+        fi;
+        /usr/bin/mc config host add simva-minio $${MINIO_URL} $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY};
+        /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder /policies/write-user-folder.json;
+        /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder-jwt /policies/write-user-folder-jwt.json;
+        /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder /policies/readonly-user-folder.json;
+        /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder-jwt /policies/readonly-user-folder-jwt.json;
+        /usr/bin/mc --debug mb simva-minio/traces;
         touch /minio-initialized;
       fi
-      "
+      '
     volumes:
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/minio/policies:/policies:ro
       # Add extra CA (for self-signed certificates)
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.mc/certs/CAs/
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
       MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_URL: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
+      MC_WAIT_TIME: "10"
+      MC_MAX_RETRIES: "10"
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
     hostname: mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     dns:
       - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
