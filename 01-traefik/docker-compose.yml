@@ -2,7 +2,7 @@ version: '3.7'
 
 networks:
   traefik_services:
-    name: "${SERVICE_NETWORK:-traefik_services}"
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
     external: true
 
 services:
@@ -192,7 +192,7 @@ services:
         aliases:
           - "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     labels:
-      - "dps.network=${SERVICE_NETWORK:-traefik_services}"
+      - "dps.network=${SIMVA_SERVICE_NETWORK:-traefik_services}"
       - "traefik.enable=true"
       # Global redirect http to https
       - "traefik.http.routers.http-catchall.entrypoints=web"
