@@ -78,7 +78,7 @@ services:
       - "traefik.http.routers.ls.tls=true"
 
   mariadb:
-    image: ${MARIADB_IMAGE:-mariadb}:${MARIADB_VERSION:-10.4.13}
+    image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/mariadb:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
@@ -106,7 +106,7 @@ services:
           - mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
   mariadb-backup:
-    image: ${MARIADB_IMAGE:-mariadb}:${MARIADB_VERSION:-10.4.13}
+    image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/mariadb-dump:/dump
       - /etc/localtime:/etc/localtime:ro

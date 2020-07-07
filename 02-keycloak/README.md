@@ -181,7 +181,7 @@ docker run --rm \
     -e DB_USER=${SIMVA_KEYCLOAK_MYSQL_USER:-keycloak} \
     -e DB_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_PASSWORD:-password} \
     --network 02-keycloak_default \
-    ${KEYCLOAK_IMAGE:-jboss/keycloak}:${KEYCLOAK_VERSION:-10.0.2} \
+    ${SIMVA_KEYCLOAK_IMAGE:-jboss/keycloak}:${SIMVA_KEYCLOAK_VERSION:-10.0.2} \
     -Dkeycloak.migration.action=export \
     -Dkeycloak.migration.provider=dir \
     -Dkeycloak.migration.dir=/tmp/keycloak-export \
@@ -199,7 +199,7 @@ docker run --rm \
     -e DB_USER=${SIMVA_KEYCLOAK_MYSQL_USER:-keycloak} \
     -e DB_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_PASSWORD:-password} \
     --network 02-keycloak_default \
-    ${KEYCLOAK_IMAGE:-jboss/keycloak}:${KEYCLOAK_VERSION:-10.0.2} \
+    ${SIMVA_KEYCLOAK_IMAGE:-jboss/keycloak}:${SIMVA_KEYCLOAK_VERSION:-10.0.2} \
     -Dkeycloak.migration.action=import \
     -Dkeycloak.migration.provider=dir \
     -Dkeycloak.migration.dir=/backups \
