@@ -1,0 +1,366 @@
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
+
+PROJECT_NAME='simva'
+PROJECT_URL='https://github.com/e-ucm/simva-infra'
+# https://stackoverflow.com/a/246128
+PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+OLD_PATH=$PATH
+
+if [[ -e "${PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
+    source "${PROJECT_DIR}/etc/simva.d/simva-env.sh"
+fi
+
+export PATH=$PATH::${PROJECT_DIR}/bin
+
+DEPENDENCIES="find mkcert jq"
+
+# main entrypoint, called after defining all functions (see last line)
+function main() {
+
+    if [[ $# -eq 0 ]]; then
+        help
+        exit 1
+    fi
+
+    prepare_output
+    case "$1" in
+        "install")
+            check_docker_launched
+            install
+            exit 0
+        ;;
+        "uninstall")
+            check_docker_launched
+            uninstall
+            exit 0
+        ;;
+        "start")
+            check_docker_launched
+            start
+            exit 0
+        ;;
+        "stop")
+            check_docker_launched
+            stop
+            exit 0
+        ;;
+        "help")
+            help
+            exit 0
+        ;;
+        *)
+            echo 1>&2 "'$1' is NOT a valid operation"
+            help
+            exit 1
+        ;;
+    esac
+}
+
+# ----
+# ---- Non-command, auxiliary functions start here
+# ----
+
+# only for installs & uninstalls
+function require_root() {
+    if [[ $EUID -ne 0 ]]; then
+        echo 1>&2 "need super-user (root) privileges to run this script; exiting"
+        exit 1
+    fi
+}
+
+# color setup (for pretty output)
+function prepare_output() {
+    # modified from http://unix.stackexchange.com/a/10065/69064
+    if [ -t 1 ]; then
+        ncolors=$(tput colors)
+        if test -n "$ncolors" && test $ncolors -ge 8; then
+            bold="$(tput bold)"
+            underline="$(tput smul)"
+            standout="$(tput smso)"
+            normal="$(tput sgr0)"
+            black="$(tput setaf 0)"
+            red="$(tput setaf 1)"
+            green="$(tput setaf 2)"
+            yellow="$(tput setaf 3)"
+            blue="$(tput setaf 4)"
+            magenta="$(tput setaf 5)"
+            cyan="$(tput setaf 6)"
+            white="$(tput setaf 7)"
+        fi
+    fi
+}
+
+# pretty output
+function recho() {
+  echo "${red}S${yellow}I${green}M${blue}V${magenta}A${normal} $@"
+}
+
+# check docker running; start if not
+function check_docker_launched() {
+  if ( docker info > /dev/null 2>&1 ) ; then
+    recho "(docker daemon already running; this is good)"
+    DOCKER_WAS_RUNNING=1
+  else
+    recho "docker not running; attempting to launch it ..."
+    require_root
+    docker daemon >docker-log.txt 2>&1 &
+    sleep 2s
+  fi
+}
+
+function check_dependencies() {
+    local launch_bash_options=$-
+    local ret_value=0
+    for binary in ${DEPENDENCIES}; do
+        set +e
+        ret=$(which ${binary} >/dev/null 2>&1)
+        set -e
+        if [[ ${ret} -ne 0 ]]; then
+          echo 1>&2 "not found: ${exec}"
+          ret_value=1
+        fi
+    done
+
+    if [[ $launch_bash_options =~ e ]]; then
+        set -e
+    else
+        set +e
+    fi
+
+    return ${ret_value}
+}
+
+# install
+# start
+# stop
+
+function execute_before_hooks() {
+    local phase=${1}
+    local folder="${SIMVA_HOME}/etc/hooks"
+
+    case "${phase}" in
+        "install")
+            folder="${folder}/before-install.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "uninstall")
+            folder="${folder}/before-uninstall.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "start")
+            folder="${folder}/before-start.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "stop")
+            folder="${folder}/before-stop.d"
+            run_scripts_from_folder ${folder}
+        ;;
+    esac
+
+    for stack in ${SIMVA_STACKS}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        local old_path=$PATH
+        export PATH=$PATH:${STACK_HOME}/bin
+        pushd ${STACK_HOME} >/dev/null 2>&1
+        folder="${STACK_HOME}/etc/hooks"
+
+        [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
+
+        case "${phase}" in
+            "install")
+                folder="${folder}/before-install.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "uninstall")
+                folder="${folder}/before-uninstall.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "start")
+                folder="${folder}/before-start.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "stop")
+                folder="${folder}/before-stop.d"
+                run_scripts_from_folder ${folder}
+            ;;
+        esac
+
+        unset COMPOSE_FILE
+        unset COMPOSE_PATH_SEPARATOR
+
+        popd >/dev/null 2>&1
+        export PATH=${old_path}
+    done
+}
+
+function execute_after_hooks() {
+    local phase=${1}
+    local folder="${SIMVA_HOME}/etc/hooks"
+
+    for stack in ${SIMVA_STACKS}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        local old_path=$PATH
+        export PATH=$PATH:${STACK_HOME}/bin
+        pushd ${STACK_HOME} >/dev/null 2>&1
+        folder="${STACK_HOME}/etc/hooks"
+
+        [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
+
+        case "${phase}" in
+            "install")
+                folder="${folder}/after-install.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "uninstall")
+                folder="${folder}/after-uninstall.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "start")
+                folder="${folder}/after-start.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "stop")
+                folder="${folder}/after-stop.d"
+                run_scripts_from_folder ${folder}
+            ;;
+        esac
+
+        unset COMPOSE_FILE
+        unset COMPOSE_PATH_SEPARATOR
+
+        popd >/dev/null 2>&1
+        export PATH=${old_path}
+    done
+
+    folder="${SIMVA_HOME}/etc/hooks"
+    case "${phase}" in
+        "install")
+            folder="${folder}/after-install.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "uninstall")
+            folder="${folder}/after-uninstall.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "start")
+            folder="${folder}/after-start.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "stop")
+            folder="${folder}/after-stop.d"
+            run_scripts_from_folder ${folder}
+        ;;
+    esac
+
+}
+
+function docker_compose_stacks() {
+    local stacks=${1}
+    local waiting_time=${2}
+    shift 2
+    for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        local old_path=$PATH
+        export PATH=$PATH:${STACK_HOME}/bin
+        pushd ${STACK_HOME} >/dev/null 2>&1
+        echo 1>&2 "Stack: ${stack}"
+        echo 1>&2 "STACK_HOME: ${STACK_HOME}"
+
+        [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
+        docker-compose $@
+
+        unset COMPOSE_FILE
+        unset COMPOSE_PATH_SEPARATOR
+
+        popd >/dev/null 2>&1
+        export PATH=${old_path}
+        echo 1>&2 "Waiting ${waiting_time}s"
+        sleep ${waiting_time}
+    done
+}
+
+function run_scripts_from_folder() {
+    local folder=${1}
+    if [[ -d "${folder}" ]]; then
+        for FILE in $(find ${folder} -iname \*.sh -type f -executable | sort); do
+            ${FILE}
+        done
+    fi
+}
+
+# ----
+# ---- Commands start here, in their order according to the help screen
+# ----
+
+# help contents
+function help() {
+    local binary=$(basename $0)
+    cat 1>&2 << EOF
+Usage: ${binary} [OPERATION | --help]
+
+Manage the ${PROJECT_NAME} service.
+The system consists of several linked services, provided by docker containers.
+See ${PROJECT_URL} for details.
+
+OPERATION one of the following:
+
+    start:
+        Launch all containers by stages, waiting for dependencies to become available.
+    stop:
+        Gracefully stop all containers, so that no data is lost; you can then inspect
+        their data in ./data, or restart them.
+
+    help:
+        Display this help and exit
+EOF
+}
+
+# download images
+function install() {
+    local wait_time=10
+    local phase="install"
+    execute_before_hooks ${phase}
+    docker_compose_stacks "${SIMVA_STACKS}" ${wait_time} "pull"
+    execute_after_hooks ${phase}
+}
+
+# remove containers
+function uninstall() {
+    local wait_time=10
+    local phase="uninstall"
+    local reverse_stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
+    execute_before_hooks ${phase}
+    docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
+    execute_after_hooks ${phase}
+}
+
+
+# start containers
+function start() {
+    local wait_time=10
+    if [[ ! -e "${PROJECT_DIR}/.simva-initialized" ]]; then
+        wait_time=120;
+        recho "SIMVA it is not initialized, this launch will take longer than normal."
+        touch "${PROJECT_DIR}/.simva-initialized"
+    fi
+    local phase="start"
+    execute_before_hooks ${phase}
+    docker_compose_stacks "${SIMVA_STACKS}" ${wait_time} "up -d"
+    execute_after_hooks ${phase}
+}
+
+# start containers
+function stop() {
+    local wait_time=10
+    local phase="stop"
+    execute_before_hooks ${phase}
+    docker_compose_stacks "${SIMVA_STACKS}" ${wait_time} ${phase}
+    execute_after_hooks ${phase}
+}
+
+# entrypoint
+require_root
+check_dependencies
+main $@

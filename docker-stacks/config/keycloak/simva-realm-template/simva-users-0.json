@@ -1,0 +1,129 @@
+{
+  "realm" : "simva",
+  "users" : [ {
+    "id" : "747393fa-ddb2-4b9a-bbd7-e54d0aa4fdac",
+    "createdTimestamp" : 1592588127442,
+    "username" : "administrator",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Administrator",
+    "lastName" : "Administrator",
+    "email" : "administrator@external.test",
+    "credentials" : [ {
+      "id" : "1b0d2adf-20cd-485e-8396-7ce79942e625",
+      "type" : "password",
+      "createdDate" : 1592588138265,
+      "secretData" : "{\"value\":\"LcEygBtRzdFTTNM3BteYMVTG9HHBYtvzM3luYmcblJ30I30MmFO+Um4udBtxMx0/gpzeowyo55BM12bZ9RPq8Q==\",\"salt\":\"bFb9jEXEGycWlXElQIBt6A==\"}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "uma_authorization", "administrator", "offline_access" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "d22fe280-ad59-46ab-90a4-89049e9518a6",
+    "createdTimestamp" : 1592588089565,
+    "username" : "researcher",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Researcher",
+    "lastName" : "Researcher",
+    "email" : "researcher@external.test",
+    "credentials" : [ {
+      "id" : "779aa3d0-a7c7-4f1d-a3f7-cb546399ae93",
+      "type" : "password",
+      "createdDate" : 1592588100119,
+      "secretData" : "{\"value\":\"lSC4cpT+saOYB5Krh6tWSRbxyZpnbGD8/4N2p6V+hFa/NW+/2HfpigCmJZhbMh1zLkw5keXioyhzoJrFuPYwaQ==\",\"salt\":\"HjvPCdzx/pyMGb0YBCHQww==\"}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "uma_authorization", "offline_access", "researcher" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "25b70094-4cbc-4e57-b555-eccd0e879da6",
+    "createdTimestamp" : 1592588013241,
+    "username" : "student",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Student",
+    "lastName" : "Student",
+    "email" : "student@external.test",
+    "credentials" : [ {
+      "id" : "ad102266-601d-44af-a678-84c33e7b5db2",
+      "type" : "password",
+      "createdDate" : 1592588021194,
+      "secretData" : "{\"value\":\"PkLIx3Wm0qEIEaN98PL1uYf6YqpIt4QI7NVv1kBn/BvBoO9S849Ybs8llwy//hajAm1b2Q67MwuiBfizpo0Dkg==\",\"salt\":\"fCqHhRzTgy44CmP1MpH6vQ==\"}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "student", "uma_authorization", "offline_access" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "102f1cde-078c-4253-8d1c-25689602c773",
+    "createdTimestamp" : 1592586858577,
+    "username" : "teacher",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "teacher",
+    "lastName" : "Teacher",
+    "email" : "teacher@external.test",
+    "credentials" : [ {
+      "id" : "da4a2a9b-d321-4ef5-be04-6f3050f5f470",
+      "type" : "password",
+      "createdDate" : 1592586892890,
+      "secretData" : "{\"value\":\"vAGNUHHEqMiLKJnh4tkzcU/Y+g33ok0NvXxWFPSpOo+8b6lnyu5kW3YteQ7r6La4Tza7mKmBhjpdOGyWFSKH1w==\",\"salt\":\"UKPni6Wr+qNbNlYO5wLtTA==\"}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "uma_authorization", "teacher", "offline_access" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "34c47206-d4b1-4d7b-859f-c5ce260ade75",
+    "createdTimestamp" : 1592588057292,
+    "username" : "teaching-assistant",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Teaching",
+    "lastName" : "Assistant",
+    "email" : "teaching-assistant@external.test",
+    "credentials" : [ {
+      "id" : "68a63b77-5b73-45ed-9dd6-f7f346d65643",
+      "type" : "password",
+      "createdDate" : 1592588074036,
+      "secretData" : "{\"value\":\"IGQjUtpVRmeOu57xS0hOE6ZRTLAj0hgg2WpajYkPzZc04SADvC8Fb+JNx1IgRH13lQy0dJyE/SCQ8PmDv0RzGQ==\",\"salt\":\"maNCYdOBaiLSBnKXnCsJHw==\"}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "uma_authorization", "teaching-assistant", "offline_access" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
