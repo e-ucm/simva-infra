@@ -75,12 +75,12 @@ services:
       # https://www.keycloak.org/docs/latest/server_installation/#profiles
       - "-Dkeycloak.profile.feature.scripts=enabled"
       #- "-Dkeycloak.profile.feature.upload_scripts=enabled"
-      - "-Dkeycloak.migration.action=import"
-      - "-Dkeycloak.migration.provider=dir"
-      - "-Dkeycloak.migration.dir=/var/tmp/simva-realm"
-      - "-Dkeycloak.migration.strategy=IGNORE_EXISTING"
-      - "-Dkeycloak.migration.usersExportStrategy=SAME_FILE"
-      - "-Dkeycloak.migration.realmName=simva"
+      #- "-Dkeycloak.migration.action=import"
+      #- "-Dkeycloak.migration.provider=dir"
+      #- "-Dkeycloak.migration.dir=/var/tmp/simva-realm"
+      #- "-Dkeycloak.migration.strategy=IGNORE_EXISTING"
+      #- "-Dkeycloak.migration.usersExportStrategy=SAME_FILE"
+      #- "-Dkeycloak.migration.realmName=simva"
     environment:
       - DB_VENDOR=mariadb
       - DB_ADDR=mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
@@ -91,6 +91,7 @@ services:
       - KEYCLOAK_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       - PROXY_ADDRESS_FORWARDING=true
       - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-120}
+      - KEYCLOAK_IMPORT=/var/tmp/simva-realm/simva-realm-full.json
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/jboss/keycloak/standalone/deployments
