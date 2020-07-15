@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+
+  ksqldb-cli:
+    image: confluentinc/cp-ksqldb-cli:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    depends_on:
+      - kafka-broker1
+      - kafka-connect
+      - ksqldb-server
+    entrypoint: /bin/sh
+    tty: true
+    depends_on:
+      - zk1
+      - kafka1
+      - connect
+      - ksqldb-server
+    hostname: ksqldb-cli.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ksqldb-cli.${SIMVA_INTERNAL_DOMAIN:-internal.test}

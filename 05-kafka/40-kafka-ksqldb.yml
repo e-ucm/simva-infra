@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+
+  ksqldb-server:
+    image: confluentinc/cp-ksqldb-server:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    environment:
+      KSQL_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092
+      KSQL_LISTENERS: http://0.0.0.0:8088/
+      KSQL_KSQL_SERVICE_ID: ksqldb-server_
+    depends_on:
+      - zk1
+      - kafka1
+      - connect
+    hostname: ksqldb-server.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ksqldb-server.${SIMVA_INTERNAL_DOMAIN:-internal.test}

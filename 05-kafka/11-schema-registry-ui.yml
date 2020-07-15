@@ -1,0 +1,30 @@
+version: '3.7'
+
+networks:
+  traefik_services:
+    external: true
+
+services:
+
+  schema-registry-ui:
+#    image: landoop/schema-registry-ui:0.9.5
+    image: landoop/schema-registry-ui:latest
+    environment:
+      SCHEMAREGISTRY_URL: http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085/
+      PROXY: "true"
+    depends_on:
+      - schema-registry
+    hostname: schema-registry-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - schema-registry-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - schema-registry-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.schema-registry-ui.loadbalancer.server.port=8000"
+      - "traefik.http.routers.schema-registry-ui.rule=Host(`schema-registry-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.schema-registry-ui.entrypoints=websecure"
+      - "traefik.http.routers.schema-registry-ui.tls=true"

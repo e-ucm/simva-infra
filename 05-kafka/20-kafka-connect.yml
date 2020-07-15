@@ -1,0 +1,105 @@
+version: '3.7'
+
+networks:
+  traefik_services:
+    external: true
+
+services:
+
+  connect:
+    image: confluentinc/cp-kafka-connect:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    command: >
+      bash -c '
+        # Add extra jar files to all storage plugins
+        cp -a /usr/share/simva/kafka-connect-storage-common/* /usr/share/java/kafka-connect-storage-common;
+        if [[ -e "$${SIMVA_CA_FILE}" ]]; then
+          echo 1>&2 "Check if $${SIMVA_CA_FILE} is already imported into $${JDK_TRUSTORE}";
+          keytool -list -keystore $${JDK_TRUSTORE} -storepass "$${JDK_TRUSTORE_PASSWORD}" -alias "$${SIMVA_CA_ALIAS}" >/dev/null 2>&1;
+          ca_already_imported=$$?;
+          if [[ $${ca_already_imported} -ne 0 ]]; then
+            echo 1>&2 "Not imported, importing ...";
+            launch_bash_options=$$-
+            set -e
+            keytool -importcert -trustcacerts -noprompt -keystore $${JDK_TRUSTORE} -storepass "$${JDK_TRUSTORE_PASSWORD}" -file "$${SIMVA_CA_FILE}" -alias "$${SIMVA_CA_ALIAS}" >/dev/null 2>&1;
+            if [[ $$launch_bash_options =~ e ]]; then
+              set -e
+            else
+              set +e
+            fi
+            echo 1>&2 "$${SIMVA_CA_FILE} imported";
+          else
+            echo 1>&2 "$${SIMVA_CA_FILE} already imported";
+          fi;
+        fi
+        # Run
+        exec /etc/confluent/docker/run;
+      '
+    environment:
+      # Bootstrap options
+      # NOTE: To avoid to change the sourcecode we modify the JDK truststore so the AWS S3 client can connect to minio using a self-signed certificate
+      JDK_TRUSTORE: "/usr/lib/jvm/zulu-8-amd64/jre/lib/security/cacerts"
+      JDK_TRUSTORE_PASSWORD: "changeit"
+      SIMVA_CA_ALIAS: "simvaCA"
+      SIMVA_CA_FILE: "/usr/share/simva/ca/rootCA.pem"
+
+      # Kafka connect options
+      CONNECT_BOOTSTRAP_SERVERS: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092"
+      CONNECT_REST_PORT: 8083
+      CONNECT_LISTENERS: http://0.0.0.0:8083
+
+      CONNECT_GROUP_ID: "connect-cluster"
+      CONNECT_PRODUCER_CLIENT_ID: "connect-worker-producer"
+
+      CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: connect-status
+
+      CONNECT_REPLICATION_FACTOR: 1
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
+      # We had this values in the previous tests
+      #CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+      #CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085"
+      #CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      #CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http:/schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085"
+      #CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      #CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
+      CONNECT_PLUGIN_PATH: '/usr/share/java,/etc/kafka-connect/jars'
+
+      # Reduce Connect memory utilization
+      KAFKA_HEAP_OPTS: "-Xms256M -Xmx512M"
+      # https://github.com/confluentinc/cp-demo/blob/${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}-post/docker-compose.yml
+      KAFKA_JVM_PERFORMANCE_OPTS: -server -XX:+UseG1GC -XX:GCTimeRatio=1
+                  -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20
+                  -XX:MaxGCPauseMillis=10000 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent
+                  -XX:MaxInlineLevel=15 -Djava.awt.headless=true
+    volumes:
+      # kafka-connect plugins have their own classpath, so it is required to add manually extensions to storage
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/connect/kafka-connect-storage-common:/usr/share/simva/kafka-connect-storage-common
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/connect:/usr/share/simva
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/usr/share/simva/ca
+    depends_on:
+      - zk1
+      - kafka1
+      #- schema-registry
+    hostname: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    dns:
+      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
+    networks:
+      default:
+        aliases:
+          - connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}

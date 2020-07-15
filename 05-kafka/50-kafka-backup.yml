@@ -1,0 +1,4 @@
+version: '3.7'
+
+services:
+  # https://medium.com/@anatolyz/introducing-kafka-backup-9dc0677ea7ee

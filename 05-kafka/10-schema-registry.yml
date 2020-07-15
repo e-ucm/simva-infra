@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+    depends_on:
+      - zk1
+      - kafka1
+    hostname: schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
