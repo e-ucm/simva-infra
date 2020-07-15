@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   mcs:
-    image: minio/mcs:v0.1.1
+    image: minio/mcs:v0.2.0
     command: server
     volumes:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.mcs/certs/CAs/
