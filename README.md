@@ -20,6 +20,19 @@ To be precise, SIMVA tool aims to simplify the possible issues:
 
 This respository allows you to to launch a complete SIMVA environment.
 
+## Instructions
+
+1. Clone this repository
+2. Verify that you have latest [Vagrant](https://vagrantup.com) and  [VirtualBox](https://www.virtualbox.org/) (tested with 6.0)
+3. Open a terminal in the cloned directory and run `vagrant up`
+> Note: The first time you run this command it will take a long time because Vagrant needs to download, aprovision and install the base required software.
+4. run `vagrant ssh` to get inside VM
+5. run `cd docker-stacks`
+6. run `./simva install`
+> Note: The first time you run this command it will take a long time because it is required to download all docker images required for SIMVA.
+6. run `./simva start` to start all containers.
+> Note: The first time you run this command it will take a long time because all componentes need to initialize.
+
 # Patreons
 
 A special thanks to our patreons for supporting this project:
@@ -47,10 +60,6 @@ A special thanks to our patreons for supporting this project:
 # License
 
 This project is licensed under the Apache 2.0 License - see the [LICENSE](https://github.com/e-ucm/simva-infra/blob/master/LICENSE) file for details.
-
-
-https://docs.docker.com/compose/compose-file/#variable-substitution
-https://docs.docker.com/compose/environment-variables/#the-env-file
 
 ## Notes
 
