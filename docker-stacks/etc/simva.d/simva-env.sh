@@ -97,6 +97,7 @@ export SIMVA_WAIT_TIMEOUT="120"
 
 export SIMVA_SSO_HOST="sso.${SIMVA_EXTERNAL_DOMAIN}"
 export SIMVA_SSO_REALM="simva"
+export SIMVA_SSO_OPENID_CONFIG_URL="https://${SIMVA_SSO_HOST}/auth/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration"
 
 export SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD="root"
 export SIMVA_LIMESURVEY_MYSQL_DATABASE="limesurvey"
@@ -124,7 +125,6 @@ export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_IDP_METADATA_URL="https://${SIMVA_SSO_H
 export SIMVA_MINIO_ACCESS_KEY="minio"
 export SIMVA_MINIO_SECRET_KEY="password"
 export SIMVA_MINIO_OPENID_CLIENT_ID="https://minio.${SIMVA_EXTERNAL_DOMAIN}"
-export SIMVA_MINIO_IDENTITY_OPENID_CONFIG_URL="https://${SIMVA_SSO_HOST}/auth/realms/simva/.well-known/openid-configuration"
 export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 
 export SIMVA_MINIO_MCS_USER="mcs"
