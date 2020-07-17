@@ -1,0 +1,115 @@
+version: '3.7'
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+  anaconda:
+    image: continuumio/anaconda3:2020.02
+    entrypoint: >
+      /bin/bash -c '
+        set -euo pipefail;
+        if [[ ! -e /anaconda-initialized ]]; then
+          # Install gosu
+          apt-get update;
+          apt-get install -y gosu;
+          rm -rf /var/lib/apt/lists/*;
+
+          # Install tini
+          TINI_VERSION="v0.19.0";
+          TINI_DOWNLOAD_URL="https://github.com/krallin/tini/releases/download/$${TINI_VERSION}/tini-amd64";
+          TINI_DOWNLOAD_SHA256SUM_URL="$${TINI_DOWNLOAD_URL}.sha256sum";
+          curl -sSL "$${TINI_DOWNLOAD_URL}" > /tmp/tini-amd64;
+          curl -sSL "$${TINI_DOWNLOAD_SHA256SUM_URL}" > /tmp/sha256sum;
+          pushd /tmp;
+          sha256sum -c sha256sum;
+          popd;
+          mv /tmp/tini-amd64 /usr/local/bin/tini
+          chmod +x /usr/local/bin/tini
+
+          # Anaconda jupyter install
+          groupadd -r anaconda;
+          useradd -r -g anaconda -s /bin/bash anaconda;
+          if [[ ! -d /home/anaconda ]]; then
+            mkdir /home/anaconda;
+          fi;
+          chown anaconda: -R /home/anaconda;
+          if [[ ! -d /opt/notebooks ]]; then
+            mkdir /opt/notebooks;
+          fi;
+          chown anaconda: -R /opt/notebooks;
+
+          # Jupyter ipauth (OAuth2 install)
+          # XXX: Need to submit the modifications to support keycloak
+          # pip install ipyauth;
+          pip install /opt/packages/ipyauth.tar.gz
+          /opt/conda/bin/jupyter nbextension enable --py --sys-prefix ipyauth.ipyauth_widget;
+          /opt/conda/bin/jupyter serverextension enable --py --sys-prefix ipyauth.ipyauth_callback;
+
+          # Install other dependencies required by the Demo Notebook
+          pip install boto3 jwt;
+
+          date > /anaconda-initialized;
+          echo "SIMVA: Anaconda jupyter installed and initialized"
+        fi;
+        # Generate user config folder / file
+        if [[ ! -e "/home/anaconda/.jupyter/jupyter_notebook_config.py" ]]; then
+          gosu anaconda /opt/conda/bin/jupyter notebook --generate-config
+        fi;
+
+        # Setup password
+        export JUPYTER_PASSWORD=$${JUPYTER_PASSWORD:-jupyter};
+        password=$$(python3 -c "from notebook.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
+        unset JUPYTER_PASSWORD;
+        sed -r -i -e "s/^#?c.NotebookApp.password(\s)+=(.*)/c.NotebookApp.password = '"'"'$${password}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
+
+        /usr/local/bin/tini -- $$@
+      '
+    command:
+     - '--'
+     - 'gosu anaconda /opt/conda/bin/jupyter notebook --notebook-dir=/opt/notebooks --ip="0.0.0.0" --port=8888 --no-browser'
+    volumes:
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/packages:/opt/packages/
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks:/opt/notebooks/
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/jupyter-config:/home/anaconda/.jupyter/
+# be advised if minio is launched as a non-root user you need to change this setting
+# Note too that this setting it is only needed if using a non-recognized CA
+# (https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html#install-certificates-from-third-party-cas)
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+    environment:
+      JUPYTER_PASSWORD: "${SIMVA_JUPYTER_PASSWORD:-password}"
+      MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_OPENID_CLIENT_ID:-https://jupyter.external.test}"
+      MINIO_IDENTITY_OPENID_CONFIG_URL: "${SIMVA_SSO_OPENID_CONFIG_URL:-https://sso.external.test/auth/realms/simva/.well-known/openid-configuration}"
+      MINIO_IDENTITY_OPENID_SCOPES: "${SIMVA_MINIO_IDENTITY_OPENID_SCOPES:-openid,policy_role_attribute}"
+      MINIO_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}:443"
+      MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      MINIO_URL: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
+      MC_WAIT_TIME: "10"
+      MC_MAX_RETRIES: "10"
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -sS http://localhost:8888/ || exit 1"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    hostname: jupyter.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    dns:
+      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
+    networks:
+      default:
+        aliases:
+          - jupyter.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - jupyter.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.jupyter.loadbalancer.server.port=8888"
+      - "traefik.http.routers.jupyter.rule=Host(`jupyter.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.jupyter.entrypoints=websecure"
+      - "traefik.http.routers.jupyter.tls=true"
