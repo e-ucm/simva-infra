@@ -355,8 +355,9 @@ function start() {
 function stop() {
     local wait_time=10
     local phase="stop"
+    local reverse_stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
     execute_before_hooks ${phase}
-    docker_compose_stacks "${SIMVA_STACKS}" ${wait_time} ${phase}
+    docker_compose_stacks "${reverse_stacks}" ${wait_time} ${phase}
     execute_after_hooks ${phase}
 }
 
