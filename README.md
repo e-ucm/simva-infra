@@ -83,3 +83,9 @@ sudo iptables -t nat -I PREROUTING 1 -p tcp --dport 80  -d 127.0.0.1 -j REDIRECT
 sudo iptables -t nat -I OUTPUT -p tcp -o lo -d 127.0.0.1 --dport 80 -j REDIRECT --to-ports 8080
 sudo iptables -t nat -I OUTPUT -p tcp -o lo -d 127.0.0.1 --dport 443 -j REDIRECT --to-ports 8443
 ```
+
+### (Windows) redirect ports using netsh
+
+See:
+- https://davidhamann.de/2019/06/20/setting-up-portproxy-netsh/
+- https://docs.microsoft.com/en-us/windows-server/networking/technologies/netsh/netsh-interface-portproxy
