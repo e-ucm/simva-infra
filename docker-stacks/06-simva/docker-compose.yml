@@ -1,0 +1,120 @@
+version: '3.7'
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+  kafka_services:
+    driver: bridge
+    name: "${SIMVA_KAFKA_NETWORK:-kafka_services}"
+    external: true
+
+services:
+  mongodb:
+    image: mongo:4.2.8
+    volumes:
+    - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/mongo:/data/db
+    hostname: simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+  simva-api:
+    image: node:12.18.2
+    command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
+    stdin_open: true
+    tty: true
+    environment:
+      DEBUG: "${SIMVA_DEBUG:-true}"
+      NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
+      EXTERNAL_URL: https://simva.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      MONGO_HOST: simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      MONGO_DB: /simva
+      KAFKA_HOST: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      KAFKA_PORT: 9092
+      KAFKA_TOPIC: ${SIMVA_TRACES_TOPIC:-traces}
+      MINIO_URL: https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}/
+      MINIO_BUCKET: ${SIMVA_TRACES_BUCKET_NAME:-traces}
+      LIMESURVEY_PROTOCOL: http
+      LIMESURVEY_HOST: limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      LIMESURVEY_PORT: 80
+      LIMESURVEY_EXTERNAL: https://limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}/
+      LIMESURVEY_ADMIN_USER: ${SIMVA_LIMESURVEY_ADMIN_USER:-admin}
+      LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-password2}
+      A2_HOST: a2
+      A2_PORT: 3000
+      A2_PROTOCOL: http
+      A2_ADMIN_USER: root
+      A2_ADMIN_PASSWORD: r0qha5N6e2u8bhbHkgiaWlbQ80usTBvp
+      A2_EXTERNAL: https://analytics.simva.e-ucm.es
+      NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
+      SSO_ENABLED: "true"
+      SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      SSO_ADMIN_USER: ${SIMVA_SSO_ADMIN_USER:-administrator}
+      SSO_ADMIN_PASSWORD: ${SIMVA_SSO_ADMIN_PASSWORD:-administrator}
+    volumes:
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api:/app
+    depends_on:
+      - mongodb
+    hostname: simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    dns:
+      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
+    networks:
+      default:
+        aliases:
+          - simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      kafka_services:
+        aliases:
+          - simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.simva-api.loadbalancer.server.port=3000"
+      - "traefik.http.routers.simva-api.rule=Host(`simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.simva-api.entrypoints=websecure"
+      - "traefik.http.routers.simva-api.tls=true"
+
+  simva-front:
+    image: node:12.18.2
+    command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
+    stdin_open: true
+    tty: true
+    environment:
+      DEBUG: "${SIMVA_DEBUG:-true}"
+      NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
+      SIMVA_PORT: "443"
+      SIMVA_HOST: "simva.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_PROTOCOL: "https"
+      NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
+      MONGO_DB: /simva
+      SIMVA_API_HOST: "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_API_PORT: "443"
+      SIMVA_API_PROTOCOL: "https"
+      SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      SSO_CLIENT_ID: "${SIMVA_FRONT_SSO_CLIENT_ID:-simva}"
+      SSO_CLIENT_SECRET: "${SIMVA_FRONT_SSO_CLIENT_KEY:-secret}"
+    volumes:
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front:/app
+    depends_on:
+      - simva-api
+    hostname: simva-front.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    dns:
+      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
+    networks:
+      default:
+        aliases:
+          - simva-front.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - simva-front.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.simva-front.loadbalancer.server.port=3050"
+      - "traefik.http.routers.simva-front.rule=Host(`simva.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.simva-front.entrypoints=websecure"
+      - "traefik.http.routers.simva-front.tls=true"
