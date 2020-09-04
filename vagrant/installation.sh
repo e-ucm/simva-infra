@@ -20,4 +20,4 @@ fi
 apt-get install --no-install-recommends -y \
     jq
 
-cp -a /vagrant/docker-stacks
+cp -a /vagrant/docker-stacks /home/vagrant
