@@ -3,6 +3,10 @@
 # values: development, production
 export SIMVA_ENVIRONMENT="development"
 
+export SIMVA_DEBUG="false"
+
+[[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_DEBUG="true"
+
 export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka"
 
 # SIMVA installation folder
@@ -143,5 +147,16 @@ export SIMVA_KAFKA_NETWORK="kafka_services"
 export SIMVA_KAFKA_CONNECT_SINK_MINIO_URL="https://minio.${SIMVA_EXTERNAL_DOMAIN}"
 export SIMVA_KAFKA_CONNECT_SINK_USER="simva-sink"
 export SIMVA_KAFKA_CONNECT_SINK_SECRET="password"
+
+
+export SIMVA_TRACES_TOPIC="traces"
+export SIMVA_TRACES_BUCKET_NAME="traces"
+export SIMVA_SINK_TOPICS_DIR="kafka-topics"
+
+export SIMVA_FRONT_SSO_CLIENT_ID="simva"
+export SIMVA_FRONT_SSO_CLIENT_KEY="secret"
+
+export SIMVA_SSO_ADMIN_USER="administrator"
+export SIMVA_SSO_ADMIN_PASSWORD="administrator"
 
 true

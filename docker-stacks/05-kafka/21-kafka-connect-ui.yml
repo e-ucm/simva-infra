@@ -2,6 +2,7 @@ version: '3.7'
 
 networks:
   traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
     external: true
 
 services:
