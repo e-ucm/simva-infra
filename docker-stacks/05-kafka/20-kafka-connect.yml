@@ -19,12 +19,10 @@ services:
           if [[ $${ca_already_imported} -ne 0 ]]; then
             echo 1>&2 "Not imported, importing ...";
             launch_bash_options=$$-
-            set -e
+            set +e
             keytool -importcert -trustcacerts -noprompt -keystore $${JDK_TRUSTORE} -storepass "$${JDK_TRUSTORE_PASSWORD}" -file "$${SIMVA_CA_FILE}" -alias "$${SIMVA_CA_ALIAS}" >/dev/null 2>&1;
             if [[ $$launch_bash_options =~ e ]]; then
               set -e
-            else
-              set +e
             fi
             echo 1>&2 "$${SIMVA_CA_FILE} imported";
           else

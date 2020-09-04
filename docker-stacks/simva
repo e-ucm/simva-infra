@@ -116,7 +116,7 @@ function check_dependencies() {
     for binary in ${DEPENDENCIES}; do
         set +e
         ret=$(which ${binary} >/dev/null 2>&1)
-        set -e
+
         if [[ ${ret} -ne 0 ]]; then
           echo 1>&2 "not found: ${exec}"
           ret_value=1
@@ -125,8 +125,6 @@ function check_dependencies() {
 
     if [[ $launch_bash_options =~ e ]]; then
         set -e
-    else
-        set +e
     fi
 
     return ${ret_value}

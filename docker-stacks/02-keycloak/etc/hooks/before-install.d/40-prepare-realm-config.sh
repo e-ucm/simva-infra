@@ -26,11 +26,8 @@ __file_env() {
     export "$var"="$val"
     unset "$fileVar"
 
-    # XXX: shouldn't be +u / -u option ?
-    if [[ $save_bash_options =~ e ]]; then
-        set -e
-    else
-        set +e
+    if [[ $save_bash_options =~ u ]]; then
+        set -u
     fi
 }
 
