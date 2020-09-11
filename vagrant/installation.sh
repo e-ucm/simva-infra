@@ -18,6 +18,7 @@ if [[ ! -z ${mkcert_installed} ]]; then
 fi
 
 apt-get install --no-install-recommends -y \
-    jq
+    jq \
+    openjdk-8-jre-headless
 
 cp -a /vagrant/docker-stacks /home/vagrant
