@@ -7,7 +7,7 @@ export SIMVA_DEBUG="false"
 
 [[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_DEBUG="true"
 
-export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka"
+export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva"
 
 # SIMVA installation folder
 export SIMVA_HOME="${PROJECT_DIR}"
