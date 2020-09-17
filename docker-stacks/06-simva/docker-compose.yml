@@ -86,9 +86,7 @@ services:
     environment:
       DEBUG: "${SIMVA_DEBUG:-true}"
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
-      SIMVA_PORT: "443"
-      SIMVA_HOST: "simva.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      SIMVA_PROTOCOL: "https"
+      SIMVA_URL: "https://simva.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
       MONGO_DB: /simva
       SIMVA_API_HOST: "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
