@@ -25,25 +25,27 @@ function main() {
     fi
 
     prepare_output
-    case "$1" in
+    local command="$1"
+    shift
+    case "$command" in
         "install")
             check_docker_launched
-            install
+            install $@
             exit 0
         ;;
         "uninstall")
             check_docker_launched
-            uninstall
+            uninstall $@
             exit 0
         ;;
         "start")
             check_docker_launched
-            start
+            start $@
             exit 0
         ;;
         "stop")
             check_docker_launched
-            stop
+            stop $@
             exit 0
         ;;
         "help")
@@ -329,6 +331,9 @@ function uninstall() {
     local wait_time=10
     local phase="uninstall"
     local reverse_stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
+    if [[ $# -gt 0 ]]; then
+        reverse_stacks=$@
+    fi
     execute_before_hooks ${phase}
     docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
     execute_after_hooks ${phase}
@@ -337,7 +342,11 @@ function uninstall() {
 
 # start containers
 function start() {
+    local stacks=${SIMVA_STACKS}
     local wait_time=10
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
     if [[ ! -e "${PROJECT_DIR}/.simva-initialized" ]]; then
         wait_time=120;
         recho "SIMVA it is not initialized, this launch will take longer than normal."
@@ -345,7 +354,7 @@ function start() {
     fi
     local phase="start"
     execute_before_hooks ${phase}
-    docker_compose_stacks "${SIMVA_STACKS}" ${wait_time} "up -d"
+    docker_compose_stacks "${stacks}" ${wait_time} "up -d"
     execute_after_hooks ${phase}
 }
 
@@ -353,9 +362,12 @@ function start() {
 function stop() {
     local wait_time=10
     local phase="stop"
-    local reverse_stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
+    local stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
     execute_before_hooks ${phase}
-    docker_compose_stacks "${reverse_stacks}" ${wait_time} ${phase}
+    docker_compose_stacks "${stacks}" ${wait_time} ${phase}
     execute_after_hooks ${phase}
 }
 
