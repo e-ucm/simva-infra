@@ -48,6 +48,12 @@ function main() {
             stop $@
             exit 0
         ;;
+        "restart")
+            check_docker_launched
+            stop $@
+            start $@
+            exit 0
+        ;;
         "help")
             help
             exit 0
@@ -319,10 +325,15 @@ EOF
 
 # download images
 function install() {
+    local stacks=${SIMVA_STACKS}
     local wait_time=10
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+
     local phase="install"
     execute_before_hooks ${phase}
-    docker_compose_stacks "${SIMVA_STACKS}" ${wait_time} "pull"
+    docker_compose_stacks "${stacks}" ${wait_time} "pull"
     execute_after_hooks ${phase}
 }
 
