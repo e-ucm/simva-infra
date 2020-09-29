@@ -8,7 +8,7 @@ networks:
 services:
 
   limesurvey:
-    image: eucm/limesurvey:4.3.3-1
+    image: eucm/limesurvey:4.3.15-2
     entrypoint:
       - '/bin/bash'
       - '-c'
@@ -27,7 +27,7 @@ services:
       LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-password2}
       LIMESURVEY_ADMIN_NAME: ${SIMVA_LIMESURVEY_ADMIN_NAME:-Simva Administrator}
       LIMESURVEY_ADMIN_EMAIL: ${SIMVA_LIMESURVEY_ADMIN_EMAIL:-lime-dev@limesurvey.external.test}
-      LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE: "${SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE:-https___sso_external_test_auth_realms_simva}"
+      LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE: "${SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE:-limesurvey}"
       LIMESURVEY_SAML_PLUGIN_UID_MAPPING: "username"
       SIMPLESAMLPHP_PATH: "/simplesamlphp"
       SIMPLESAMLPHP_SESSION_COOKIE_PATH: "/"
@@ -38,9 +38,11 @@ services:
       MSMTP_HOST: "${SIMVA_LIMESURVEY_MSMTP_HOST:-mail.keycloak.internal.test}"
       MSMTP_FROM: "${SIMVA_LIMESURVEY_MSMTP_FROM:-no-reply@limesurvey.external.test}"
       SIMPLESAMLPHP_LOG_LEVEL: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL:-INFO}"
+      SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_NAME:-limesurvey}"
       SIMPLESAMLPHP_SP_PRIVATE_KEY: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-example.key}
       SIMPLESAMLPHP_SP_CERT: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-example.crt}
       SIMPLESAMLPHP_SP_CERT_SUBJ: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ:-/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=limesurvey.internal.test}"
+      SIMPLESAMLPHP_SP_IDP_ID: "${SIMPLESAMLPHP_SP_IDP_ID:-https://sso.external.test/auth/realms/simva}"
       SIMPLESAMLPHP_SP_IDP_METADATA_URL: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_IDP_METADATA_URL:-https://sso.external.test/auth/realms/simva/protocol/saml/descriptor}"
       SIMPLESAMLPHP_SIGN_AUTHN_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_LOGOUT_REQUESTS: "true"

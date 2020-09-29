@@ -106,7 +106,7 @@
       "attributes" : { }
     } ],
     "client" : {
-      "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/metadata.php/https___sso_external_test_auth_realms_simva" : [ ],
+      "limesurvey" : [ ],
       "realm-management" : [ {
         "id" : "33c9b791-8ab1-4875-aab6-2ba98d2e19a3",
         "name" : "view-clients",
@@ -514,13 +514,13 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "11c9bde7-5875-4fc7-88b7-02425ed57543",
-    "clientId" : "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/metadata.php/https___sso_external_test_auth_realms_simva",
+    "clientId" : "limesurvey",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "f600b9f7-d1f7-4f64-8b6f-b4bce3cff44a",
-    "redirectUris" : [ "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/saml2-acs.php/https___sso_external_test_auth_realms_simva" ],
+    "redirectUris" : [ "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/saml2-acs.php/limesurvey" ],
     "webOrigins" : [ "https://limesurvey.external.test" ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -535,11 +535,11 @@
     "attributes" : {
       "saml.force.post.binding" : "true",
       "saml.encrypt" : "true",
-      "saml_assertion_consumer_url_post" : "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/saml2-acs.php/https___sso_external_test_auth_realms_simva",
+      "saml_assertion_consumer_url_post" : "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/saml2-acs.php/limesurvey",
       "saml.server.signature" : "true",
       "saml.server.signature.keyinfo.ext" : "false",
       "saml.signing.certificate" : "MIIDjDCCAnSgAwIBAgIRAIYo6XOlPfFQoNaQ8y+m/vwwDQYJKoZIhvcNAQELBQAwFjEUMBIGA1UEAwwLRWFzeS1SU0EgQ0EwHhcNMjAwNzAxMDAyMTA3WhcNMjMwNjE2MDAyMTA3WjAjMSEwHwYDVQQDDBhsaW1lc3VydmV5LmludGVybmFsLnRlc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDg+mLIYuFBUIgpITqstXrquJdOIP2WlbxBvWVRHWiNxrioSNnq9Z5cPfOA3godzh6VQet0OTCW/V1v3Pe0I+rIdG+9ylFrsuw/uo7EIhzJ6wIJgSGruzkyI9z9wF1SZeaAlLc2KAN6m67lwIjd8uqSnsCModxqTorJZh+4YyCnsxJjU5hOrhSdOgJ2JS356T4S2aKkh+3HI4BwpFuMdiy2CdmuGV1W4/oqtvY3juDm9zgqHdHjwTgRxVh3jYgpfNB7+sMOQqdsBaHwFbIfQIiNE0Kcg9//YspIWcaR1OrNEEvJuOHlPo86pc9D3h5gSAONhqkLbnvVVWQ8sWcN6iEDAgMBAAGjgccwgcQwCQYDVR0TBAIwADAdBgNVHQ4EFgQUFZBu9KcET7RM0i1V0hj3m7gEdmwwUQYDVR0jBEowSIAUNOD0d021fHYcir4UebCMny2eQVChGqQYMBYxFDASBgNVBAMMC0Vhc3ktUlNBIENBghQKYZ5QXA2IZ0lkvCmR69N/b3COujATBgNVHSUEDDAKBggrBgEFBQcDATALBgNVHQ8EBAMCBaAwIwYDVR0RBBwwGoIYbGltZXN1cnZleS5pbnRlcm5hbC50ZXN0MA0GCSqGSIb3DQEBCwUAA4IBAQDLl4k5vMndDSnHCKaznJCUjahRw4C6U/prbz4Y4e26+p4IjkWwc6yi4Elfw6k7CBItAXzf+AZ0/wPIWjsP63xlKdl5P7fgTIGiyCH/4tVVqmAMBPhs0IIsJZefnRr2jhqcajhyd4Vhl3KxLebVUUG9yNxkd66AvyaSAKfbwP5iL80gXbMMipZjqus5An49ohqTKSFXfP4QRp5KdfOP0Nqa9hb2sDRa8NKYLdygiwW7m1r/gMNJlmZPrwfp4UCf8EDMCe+yG3QeSEyTv8mPZ/j2fDWmHZo1iXaGqjZOvyfJ3VOiwfdkIm/21+fqEYLLHB5/b1wsnd170faLabr/YT1V",
-      "saml_single_logout_service_url_redirect" : "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/saml2-logout.php/https___sso_external_test_auth_realms_simva",
+      "saml_single_logout_service_url_redirect" : "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/saml2-logout.php/limesurvey",
       "saml.signature.algorithm" : "RSA_SHA256",
       "saml_force_name_id_format" : "false",
       "saml.client.signature" : "true",
