@@ -116,3 +116,33 @@ services:
       - "traefik.http.routers.simva-front.rule=Host(`simva.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.simva-front.entrypoints=websecure"
       - "traefik.http.routers.simva-front.tls=true"
+
+  simva-trace-allocator:
+    image: node:12.18.2
+    command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
+    stdin_open: true
+    tty: true
+    environment:
+      DEBUG: "${SIMVA_DEBUG:-true}"
+      NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
+      NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
+      SIMVA_HOST: "simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      SIMVA_PORT: "80"
+      SIMVA_PROTOCOL: "http"
+      MINIO_BUCKET: ${SIMVA_TRACES_BUCKET_NAME:-traces}
+      MINIO_HOST: "minio.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      MINIO_SSL: "false"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-root}"
+      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
+    volumes:
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator:/app
+    depends_on:
+      - simva-api
+    networks:
+      default:
+        aliases:
+          - simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
