@@ -27,5 +27,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.ls-phpmyadmin.loadbalancer.server.port=80"
       - "traefik.http.routers.ls-phpmyadmin.rule=Host(`phpmyadmin-ls.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.ls-phpmyadmin.entrypoints=websecure"
-      - "traefik.http.routers.ls-phpmyadmin.tls=true"  

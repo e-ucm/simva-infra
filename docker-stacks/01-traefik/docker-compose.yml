@@ -101,17 +101,15 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.dns.loadbalancer.server.port=5380"
       - "traefik.http.routers.dns.rule=Host(`dns.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.dns.entrypoints=websecure"
-      - "traefik.http.routers.dns.tls=true"
 
   traefik:
-    image: traefik:2.2.5
+    image: traefik:2.2.11
     entrypoint:
       - '/bin/sh'
       - '-c'
       - |
-        mkdir -p /etc/traefik/conf/dynamic-config;
-        cat << EOF > /etc/traefik/conf/dynamic-config/file-provider.toml
+        mkdir -p /etc/traefik/dynamic-config;
+        cat << EOF > /etc/traefik/dynamic-config/file-provider.toml
         [[tls.certificates]]
           certFile = "/etc/traefik/ssl/traefik-fullchain.pem"
           keyFile = "/etc/traefik/ssl/traefik-key.pem"
@@ -126,8 +124,6 @@ services:
         [tls.options]
           [tls.options.default]
             minVersion = "VersionTLS12"
-          [tls.options.myTLSOptions]
-            minVersion = "VersionTLS13"
 
         [http.middlewares]
           [http.middlewares.dashboardAuth.basicAuth]
@@ -135,48 +131,17 @@ services:
             users = [
               "${SIMVA_TRAEFIK_DASHBOARD_USER:?Traefik dashboard username must be configured}:${SIMVA_TRAEFIK_DASHBOARD_PASSWORD:?Traefik's dashboard password must be configured}"
             ]
-          [http.middlewares.redirect-to-https.redirectScheme]
-            scheme = "https"
-            permanent = true
         EOF
         exec /entrypoint.sh "$$@"
     command:
       - "--"
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --entrypoints.websecure.http.tls=true
-      - --entryPoints.ping.address=:8082
-      - --ping=true
-      - --ping.entryPoint=ping
-      - --global.checkNewVersion=false
-      - --global.sendAnonymousUsage=false
-      - --serversTransport.insecureSkipVerify=${SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY:-false}
-      - --serverstransport.rootcas=${SIMVA_SSL_ROOT_CAS:-/home/vagrant/docker-stacks/config/tls/rootCA.pem}
-      - --api.dashboard=true
-      - --providers.file.directory=/etc/traefik/conf/dynamic-config
-      - --providers.file.watch=true
-      - --providers.docker=true
-      - --providers.docker.exposedByDefault=false
-      - --providers.docker.endpoint=tcp://socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2375
-      - --providers.docker.network=traefik_services
-      - --providers.docker.watch=true
-      - --providers.docker.defaultRule=Host(`{{ .Name }}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)
-      - --log.level=${SIMVA_TRAEFIK_LOG_LEVEL:-INFO}
-      - --log.format=json
+      - "traefik"
     volumes:
-      - "${SIMVA_TLS_HOME:?TLS home folder required}:/etc/traefik/ssl:ro"
+      - ${SIMVA_TLS_HOME:?TLS home folder required}:/etc/traefik/ssl:ro
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/traefik/traefik/static-conf:/etc/traefik
     depends_on:
       - socket-proxy
       - dns-proxy-server
-    ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
-      - target: 443
-        published: 443
-        protocol: tcp
-        mode: host
     healthcheck:
       test: "traefik healthcheck --entryPoints.ping.address=:8082 --ping.entryPoint=ping --ping"
       interval: 10s
@@ -194,15 +159,8 @@ services:
     labels:
       - "dps.network=${SIMVA_SERVICE_NETWORK:-traefik_services}"
       - "traefik.enable=true"
-      # Global redirect http to https
-      - "traefik.http.routers.http-catchall.entrypoints=web"
-      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
-      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https@file"
       # Access API enpoint through traefik itself
       - "traefik.http.services.api.loadbalancer.server.port=8080"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.tls.options=myTLSOptions@file"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=dashboardAuth@file"

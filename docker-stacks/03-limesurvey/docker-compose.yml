@@ -76,8 +76,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.ls.loadbalancer.server.port=80"
       - "traefik.http.routers.ls.rule=Host(`limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.ls.entrypoints=websecure"
-      - "traefik.http.routers.ls.tls=true"
 
   mariadb:
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}

@@ -31,3 +31,7 @@ if [[ ! -e "${SIMVA_TLS_HOME}/traefik.pem" ]]; then
     cat ${SIMVA_TLS_HOME}/ca/rootCA.pem >> ${SIMVA_TLS_HOME}/traefik-fullchain.pem
     keytool -importcert -trustcacerts -noprompt -storepass ${TRUSTSTORE_PASSWORD} -keystore ${SIMVA_TLS_HOME}/truststore.jks -alias ${TRUSTSTORE_CA_ALIAS} -file ${SIMVA_TLS_HOME}/ca/rootCA.pem 
 fi
+
+if [[ ! -e "${SIMVA_TLS_HOME}/dhparam.pem" ]]; then
+    openssl dhparam -out "${SIMVA_TLS_HOME}/dhparam.pem" 2048
+fi

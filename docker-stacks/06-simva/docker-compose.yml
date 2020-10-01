@@ -75,8 +75,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.simva-api.loadbalancer.server.port=3000"
       - "traefik.http.routers.simva-api.rule=Host(`simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.simva-api.entrypoints=websecure"
-      - "traefik.http.routers.simva-api.tls=true"
 
   simva-front:
     image: node:12.18.2
@@ -114,5 +112,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.simva-front.loadbalancer.server.port=3050"
       - "traefik.http.routers.simva-front.rule=Host(`simva.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.simva-front.entrypoints=websecure"
-      - "traefik.http.routers.simva-front.tls=true"

@@ -25,8 +25,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.topics-ui.loadbalancer.server.port=8000"
       - "traefik.http.routers.topics-ui.rule=Host(`topics-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.topics-ui.entrypoints=websecure"
-      - "traefik.http.routers.topics-ui.tls=true"
 
   zoonavigator:
     restart: unless-stopped
@@ -50,5 +48,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.zoonavigator.loadbalancer.server.port=9000"
       - "traefik.http.routers.zoonavigator.rule=Host(`zoonavigator.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.zoonavigator.entrypoints=websecure"
-      - "traefik.http.routers.zoonavigator.tls=true"

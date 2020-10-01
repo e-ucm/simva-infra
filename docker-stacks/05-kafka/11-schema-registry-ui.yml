@@ -26,5 +26,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.schema-registry-ui.loadbalancer.server.port=8000"
       - "traefik.http.routers.schema-registry-ui.rule=Host(`schema-registry-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.schema-registry-ui.entrypoints=websecure"
-      - "traefik.http.routers.schema-registry-ui.tls=true"

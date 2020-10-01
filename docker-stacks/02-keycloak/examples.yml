@@ -20,8 +20,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.whoami.loadbalancer.server.port=80"
       - "traefik.http.routers.whoami.rule=Host(`whoami.${DOMAIN_SUFFIX:-external.test}`)"
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.tls=true"
 
   simplesamlphp:
     image: eucm/simplesamlphp:1.18.7
@@ -53,5 +51,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.simplesamlphp.loadbalancer.server.port=80"
       - "traefik.http.routers.simplesamlphp.rule=Host(`simplesamlphp.${DOMAIN_SUFFIX:-external.test}`)"
-      - "traefik.http.routers.simplesamlphp.entrypoints=websecure"
-      - "traefik.http.routers.simplesamlphp.tls=true"

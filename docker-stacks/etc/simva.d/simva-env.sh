@@ -45,6 +45,12 @@ export SIMVA_NETWORK_CIDR="172.30.0.0/24"
 # SIMVA's service network DNS IP
 export SIMVA_DNS_SERVICE_IP="172.30.0.53"
 
+export SIMVA_LOAD_BALANCER_IPS="172.30.0.80"
+
+[[ "${SIMVA_ENVIRONMENT}" == "production" ]] && SIMVA_LOAD_BALANCER_IPS="127.0.0.1"
+
+export SIMVA_DEV_LOAD_BALANCER="false"
+
 # Domain used for docker containers hostnames
 export SIMVA_INTERNAL_DOMAIN="internal.test"
 
@@ -64,6 +70,9 @@ export SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY="false"
 
 # Traefik: logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO
 export SIMVA_TRAEFIK_LOG_LEVEL="INFO"
+
+# Traefik: control access log generation: true, false
+export SIMVA_TRAEFIK_ACCESS_LOG="false"
 
 # Traefik dashboard is protected using basic authentication
 export SIMVA_TRAEFIK_DASHBOARD_USER="admin"

@@ -82,8 +82,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.minio.loadbalancer.server.port=9000"
       - "traefik.http.routers.minio.rule=Host(`minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.minio.entrypoints=websecure"
-      - "traefik.http.routers.minio.tls=true"
 
 # mc config host add --insecure simva-minio https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test} minio password
 # mc --debug --insecure mb simva-minio/prueba
