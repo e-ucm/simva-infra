@@ -10,7 +10,7 @@ export SIMVA_DEBUG="false"
 export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva"
 
 # SIMVA installation folder
-export SIMVA_HOME="${PROJECT_DIR}"
+export SIMVA_HOME="${SIMVA_PROJECT_DIR}"
 
 export SIMVA_DATA_HOME="${SIMVA_HOME}/data"
 

@@ -2,17 +2,17 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-PROJECT_NAME='simva'
-PROJECT_URL='https://github.com/e-ucm/simva-infra'
+export SIMVA_PROJECT_NAME='simva'
+export SIMVA_PROJECT_URL='https://github.com/e-ucm/simva-infra'
 # https://stackoverflow.com/a/246128
-PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+export SIMVA_PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 OLD_PATH=$PATH
 
-if [[ -e "${PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
-    source "${PROJECT_DIR}/etc/simva.d/simva-env.sh"
+if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
+    source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
 fi
 
-export PATH=$PATH::${PROJECT_DIR}/bin
+export PATH=$PATH:${SIMVA_PROJECT_DIR}/bin
 
 DEPENDENCIES="find mkcert jq"
 
@@ -306,9 +306,9 @@ function help() {
     cat 1>&2 << EOF
 Usage: ${binary} [OPERATION | --help]
 
-Manage the ${PROJECT_NAME} service.
+Manage the ${SIMVA_PROJECT_NAME} service.
 The system consists of several linked services, provided by docker containers.
-See ${PROJECT_URL} for details.
+See ${SIMVA_PROJECT_URL} for details.
 
 OPERATION one of the following:
 
@@ -358,10 +358,10 @@ function start() {
     if [[ $# -gt 0 ]]; then
         stacks=$@
     fi
-    if [[ ! -e "${PROJECT_DIR}/.simva-initialized" ]]; then
+    if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
         wait_time=120;
         recho "SIMVA it is not initialized, this launch will take longer than normal."
-        touch "${PROJECT_DIR}/.simva-initialized"
+        touch "${SIMVA_PROJECT_DIR}/.simva-initialized"
     fi
     local phase="start"
     execute_before_hooks ${phase}
