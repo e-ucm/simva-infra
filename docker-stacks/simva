@@ -167,12 +167,14 @@ function execute_before_hooks() {
 
     for stack in ${SIMVA_STACKS}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
         local old_path=$PATH
         export PATH=$PATH:${STACK_HOME}/bin
         pushd ${STACK_HOME} >/dev/null 2>&1
         folder="${STACK_HOME}/etc/hooks"
 
         [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
+        [[ -e "${STACK_CONF}/simva-env.sh" ]] && source "${STACK_CONF}/simva-env.sh"
 
         case "${phase}" in
             "install")
@@ -207,12 +209,14 @@ function execute_after_hooks() {
 
     for stack in ${SIMVA_STACKS}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
         local old_path=$PATH
         export PATH=$PATH:${STACK_HOME}/bin
         pushd ${STACK_HOME} >/dev/null 2>&1
         folder="${STACK_HOME}/etc/hooks"
 
         [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
+        [[ -e "${STACK_CONF}/simva-env.sh" ]] && source "${STACK_CONF}/simva-env.sh"
 
         case "${phase}" in
             "install")
@@ -268,6 +272,7 @@ function docker_compose_stacks() {
     shift 2
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
         local old_path=$PATH
         export PATH=$PATH:${STACK_HOME}/bin
         pushd ${STACK_HOME} >/dev/null 2>&1
@@ -275,6 +280,7 @@ function docker_compose_stacks() {
         echo 1>&2 "STACK_HOME: ${STACK_HOME}"
 
         [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
+        [[ -e "${STACK_CONF}/simva-env.sh" ]] && source "${STACK_CONF}/simva-env.sh"
         docker-compose $@
 
         unset COMPOSE_FILE
