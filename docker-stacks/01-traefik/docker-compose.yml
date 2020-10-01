@@ -77,8 +77,10 @@ services:
       - "/app/dns-proxy-server"
     environment:
       MG_LOG_LEVEL: "${SIMVA_DNS_PROXY_SERVER_LOG_LEVEL:-INFO}"
-      MG_DOCKER_HOST: "tcp://socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2375"
-      MG_DOCKER_API_VERSION: "v1.24"
+#      MG_DOCKER_HOST: "tcp://socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2375"
+#      MG_DOCKER_API_VERSION: "v1.24"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - socket-proxy
 # XXX Seems there is no binary to do the healthcheck
