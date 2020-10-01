@@ -15,6 +15,7 @@ fi
 export PATH=$PATH:${SIMVA_PROJECT_DIR}/bin
 
 DEPENDENCIES="find mkcert jq"
+DEFAULT_WAIT_TIME="10"
 
 # main entrypoint, called after defining all functions (see last line)
 function main() {
@@ -30,28 +31,28 @@ function main() {
     case "$command" in
         "install")
             check_docker_launched
-            install $@
+            install "1" $@
             exit 0
         ;;
         "uninstall")
             check_docker_launched
-            uninstall $@
+            uninstall "1" $@
             exit 0
         ;;
         "start")
             check_docker_launched
-            start $@
+            start ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
         "stop")
             check_docker_launched
-            stop $@
+            stop ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
         "restart")
             check_docker_launched
-            stop $@
-            start $@
+            stop ${DEFAULT_WAIT_TIME} $@
+            start ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
         "help")
@@ -123,9 +124,9 @@ function check_dependencies() {
     local ret_value=0
     for binary in ${DEPENDENCIES}; do
         set +e
-        ret=$(which ${binary} >/dev/null 2>&1)
+        ret_value=$(which ${binary} >/dev/null 2>&1)
 
-        if [[ ${ret} -ne 0 ]]; then
+        if [[ ${ret_value} -ne 0 ]]; then
           echo 1>&2 "not found: ${exec}"
           ret_value=1
         fi
@@ -331,8 +332,14 @@ EOF
 
 # download images
 function install() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
     local stacks=${SIMVA_STACKS}
-    local wait_time=10
     if [[ $# -gt 0 ]]; then
         stacks=$@
     fi
@@ -345,7 +352,13 @@ function install() {
 
 # remove containers
 function uninstall() {
-    local wait_time=10
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
     local phase="uninstall"
     local reverse_stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
     if [[ $# -gt 0 ]]; then
@@ -359,8 +372,14 @@ function uninstall() {
 
 # start containers
 function start() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
     local stacks=${SIMVA_STACKS}
-    local wait_time=10
     if [[ $# -gt 0 ]]; then
         stacks=$@
     fi
@@ -377,7 +396,13 @@ function start() {
 
 # start containers
 function stop() {
-    local wait_time=10
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
     local phase="stop"
     local stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
     if [[ $# -gt 0 ]]; then
