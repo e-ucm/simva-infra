@@ -2,19 +2,20 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-PROJECT_NAME='simva'
-PROJECT_URL='https://github.com/e-ucm/simva-infra'
+export SIMVA_PROJECT_NAME='simva'
+export SIMVA_PROJECT_URL='https://github.com/e-ucm/simva-infra'
 # https://stackoverflow.com/a/246128
-PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+export SIMVA_PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 OLD_PATH=$PATH
 
-if [[ -e "${PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
-    source "${PROJECT_DIR}/etc/simva.d/simva-env.sh"
+if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
+    source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
 fi
 
-export PATH=$PATH::${PROJECT_DIR}/bin
+export PATH=$PATH:${SIMVA_PROJECT_DIR}/bin
 
 DEPENDENCIES="find mkcert jq"
+DEFAULT_WAIT_TIME="10"
 
 # main entrypoint, called after defining all functions (see last line)
 function main() {
@@ -30,28 +31,28 @@ function main() {
     case "$command" in
         "install")
             check_docker_launched
-            install $@
+            install "1" $@
             exit 0
         ;;
         "uninstall")
             check_docker_launched
-            uninstall $@
+            uninstall "1" $@
             exit 0
         ;;
         "start")
             check_docker_launched
-            start $@
+            start ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
         "stop")
             check_docker_launched
-            stop $@
+            stop ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
         "restart")
             check_docker_launched
-            stop $@
-            start $@
+            stop ${DEFAULT_WAIT_TIME} $@
+            start ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
         "help")
@@ -123,9 +124,9 @@ function check_dependencies() {
     local ret_value=0
     for binary in ${DEPENDENCIES}; do
         set +e
-        ret=$(which ${binary} >/dev/null 2>&1)
+        ret_value=$(which ${binary} >/dev/null 2>&1)
 
-        if [[ ${ret} -ne 0 ]]; then
+        if [[ ${ret_value} -ne 0 ]]; then
           echo 1>&2 "not found: ${exec}"
           ret_value=1
         fi
@@ -167,12 +168,14 @@ function execute_before_hooks() {
 
     for stack in ${SIMVA_STACKS}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
         local old_path=$PATH
         export PATH=$PATH:${STACK_HOME}/bin
         pushd ${STACK_HOME} >/dev/null 2>&1
         folder="${STACK_HOME}/etc/hooks"
 
         [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
+        [[ -e "${STACK_CONF}/simva-env.sh" ]] && source "${STACK_CONF}/simva-env.sh"
 
         case "${phase}" in
             "install")
@@ -207,12 +210,14 @@ function execute_after_hooks() {
 
     for stack in ${SIMVA_STACKS}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
         local old_path=$PATH
         export PATH=$PATH:${STACK_HOME}/bin
         pushd ${STACK_HOME} >/dev/null 2>&1
         folder="${STACK_HOME}/etc/hooks"
 
         [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
+        [[ -e "${STACK_CONF}/simva-env.sh" ]] && source "${STACK_CONF}/simva-env.sh"
 
         case "${phase}" in
             "install")
@@ -268,6 +273,7 @@ function docker_compose_stacks() {
     shift 2
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
         local old_path=$PATH
         export PATH=$PATH:${STACK_HOME}/bin
         pushd ${STACK_HOME} >/dev/null 2>&1
@@ -275,6 +281,7 @@ function docker_compose_stacks() {
         echo 1>&2 "STACK_HOME: ${STACK_HOME}"
 
         [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
+        [[ -e "${STACK_CONF}/simva-env.sh" ]] && source "${STACK_CONF}/simva-env.sh"
         docker-compose $@
 
         unset COMPOSE_FILE
@@ -306,9 +313,9 @@ function help() {
     cat 1>&2 << EOF
 Usage: ${binary} [OPERATION | --help]
 
-Manage the ${PROJECT_NAME} service.
+Manage the ${SIMVA_PROJECT_NAME} service.
 The system consists of several linked services, provided by docker containers.
-See ${PROJECT_URL} for details.
+See ${SIMVA_PROJECT_URL} for details.
 
 OPERATION one of the following:
 
@@ -325,8 +332,14 @@ EOF
 
 # download images
 function install() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
     local stacks=${SIMVA_STACKS}
-    local wait_time=10
     if [[ $# -gt 0 ]]; then
         stacks=$@
     fi
@@ -339,7 +352,13 @@ function install() {
 
 # remove containers
 function uninstall() {
-    local wait_time=10
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
     local phase="uninstall"
     local reverse_stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
     if [[ $# -gt 0 ]]; then
@@ -353,15 +372,21 @@ function uninstall() {
 
 # start containers
 function start() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
     local stacks=${SIMVA_STACKS}
-    local wait_time=10
     if [[ $# -gt 0 ]]; then
         stacks=$@
     fi
-    if [[ ! -e "${PROJECT_DIR}/.simva-initialized" ]]; then
+    if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
         wait_time=120;
         recho "SIMVA it is not initialized, this launch will take longer than normal."
-        touch "${PROJECT_DIR}/.simva-initialized"
+        touch "${SIMVA_PROJECT_DIR}/.simva-initialized"
     fi
     local phase="start"
     execute_before_hooks ${phase}
@@ -371,7 +396,13 @@ function start() {
 
 # start containers
 function stop() {
-    local wait_time=10
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
     local phase="stop"
     local stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
     if [[ $# -gt 0 ]]; then

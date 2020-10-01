@@ -116,8 +116,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
       - "traefik.http.routers.keycloak.rule=Host(`sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.keycloak.entrypoints=websecure"
-      - "traefik.http.routers.keycloak.tls=true"
 
   mail:
     image: maildev/maildev:1.1.0
@@ -142,5 +140,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.mail.loadbalancer.server.port=80"
       - "traefik.http.routers.mail.rule=Host(`mail.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.mail.entrypoints=websecure"
-      - "traefik.http.routers.mail.tls=true"

@@ -11,5 +11,3 @@ services:
       - "traefik.enable=true"
       - "traefik.tcp.services.simva-mongodb.loadbalancer.server.port=27017"
       - "traefik.tcp.routers.simva-mongodb.rule=HostSNI(`simva-mongo.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.tcp.routers.simva-mongodb.entrypoints=websecure"
-      - "traefik.tcp.routers.simva-mongodb.tls=true"

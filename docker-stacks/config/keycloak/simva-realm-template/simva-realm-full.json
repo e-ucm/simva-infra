@@ -106,7 +106,7 @@
       "attributes" : { }
     } ],
     "client" : {
-      "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/metadata.php/https___sso_external_test_auth_realms_simva" : [ ],
+      "limesurvey" : [ ],
       "realm-management" : [ {
         "id" : "33c9b791-8ab1-4875-aab6-2ba98d2e19a3",
         "name" : "view-clients",
@@ -287,7 +287,7 @@
         "containerId" : "075bbc66-a6d8-4a8e-96bb-72dcfe427662",
         "attributes" : { }
       } ],
-      "https://minio.external.test" : [ ],
+      "minio" : [ ],
       "account" : [ {
         "id" : "a08e7db7-b6fe-4e81-b772-7dc717328307",
         "name" : "manage-account-links",
@@ -514,14 +514,14 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "11c9bde7-5875-4fc7-88b7-02425ed57543",
-    "clientId" : "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/metadata.php/https___sso_external_test_auth_realms_simva",
+    "clientId" : "limesurvey",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "secret" : "f600b9f7-d1f7-4f64-8b6f-b4bce3cff44a",
-    "redirectUris" : [ "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/saml2-acs.php/https___sso_external_test_auth_realms_simva" ],
-    "webOrigins" : [ "https://limesurvey.external.test" ],
+    "secret" : "{{ .clients.limesurvey.secret }}",
+    "redirectUris" : [ "{{ .clients.limesurvey.sspBaseUrl }}/saml2-acs.php/limesurvey" ],
+    "webOrigins" : [ "{{ .clients.limesurvey.baseUrl }}" ],
     "notBefore" : 0,
     "bearerOnly" : false,
     "consentRequired" : false,
@@ -535,15 +535,15 @@
     "attributes" : {
       "saml.force.post.binding" : "true",
       "saml.encrypt" : "true",
-      "saml_assertion_consumer_url_post" : "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/saml2-acs.php/https___sso_external_test_auth_realms_simva",
+      "saml_assertion_consumer_url_post" : "{{ .clients.limesurvey.sspBaseUrl }}/saml2-acs.php/limesurvey",
       "saml.server.signature" : "true",
       "saml.server.signature.keyinfo.ext" : "false",
-      "saml.signing.certificate" : "MIIDjDCCAnSgAwIBAgIRAIYo6XOlPfFQoNaQ8y+m/vwwDQYJKoZIhvcNAQELBQAwFjEUMBIGA1UEAwwLRWFzeS1SU0EgQ0EwHhcNMjAwNzAxMDAyMTA3WhcNMjMwNjE2MDAyMTA3WjAjMSEwHwYDVQQDDBhsaW1lc3VydmV5LmludGVybmFsLnRlc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDg+mLIYuFBUIgpITqstXrquJdOIP2WlbxBvWVRHWiNxrioSNnq9Z5cPfOA3godzh6VQet0OTCW/V1v3Pe0I+rIdG+9ylFrsuw/uo7EIhzJ6wIJgSGruzkyI9z9wF1SZeaAlLc2KAN6m67lwIjd8uqSnsCModxqTorJZh+4YyCnsxJjU5hOrhSdOgJ2JS356T4S2aKkh+3HI4BwpFuMdiy2CdmuGV1W4/oqtvY3juDm9zgqHdHjwTgRxVh3jYgpfNB7+sMOQqdsBaHwFbIfQIiNE0Kcg9//YspIWcaR1OrNEEvJuOHlPo86pc9D3h5gSAONhqkLbnvVVWQ8sWcN6iEDAgMBAAGjgccwgcQwCQYDVR0TBAIwADAdBgNVHQ4EFgQUFZBu9KcET7RM0i1V0hj3m7gEdmwwUQYDVR0jBEowSIAUNOD0d021fHYcir4UebCMny2eQVChGqQYMBYxFDASBgNVBAMMC0Vhc3ktUlNBIENBghQKYZ5QXA2IZ0lkvCmR69N/b3COujATBgNVHSUEDDAKBggrBgEFBQcDATALBgNVHQ8EBAMCBaAwIwYDVR0RBBwwGoIYbGltZXN1cnZleS5pbnRlcm5hbC50ZXN0MA0GCSqGSIb3DQEBCwUAA4IBAQDLl4k5vMndDSnHCKaznJCUjahRw4C6U/prbz4Y4e26+p4IjkWwc6yi4Elfw6k7CBItAXzf+AZ0/wPIWjsP63xlKdl5P7fgTIGiyCH/4tVVqmAMBPhs0IIsJZefnRr2jhqcajhyd4Vhl3KxLebVUUG9yNxkd66AvyaSAKfbwP5iL80gXbMMipZjqus5An49ohqTKSFXfP4QRp5KdfOP0Nqa9hb2sDRa8NKYLdygiwW7m1r/gMNJlmZPrwfp4UCf8EDMCe+yG3QeSEyTv8mPZ/j2fDWmHZo1iXaGqjZOvyfJ3VOiwfdkIm/21+fqEYLLHB5/b1wsnd170faLabr/YT1V",
-      "saml_single_logout_service_url_redirect" : "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp/saml2-logout.php/https___sso_external_test_auth_realms_simva",
+      "saml.signing.certificate" : "{{ .clients.limesurvey.certificate }}",
+      "saml_single_logout_service_url_redirect" : "{{ .clients.limesurvey.sspBaseUrl }}/saml2-logout.php/limesurvey",
       "saml.signature.algorithm" : "RSA_SHA256",
       "saml_force_name_id_format" : "false",
       "saml.client.signature" : "true",
-      "saml.encryption.certificate" : "MIIDjDCCAnSgAwIBAgIRAIYo6XOlPfFQoNaQ8y+m/vwwDQYJKoZIhvcNAQELBQAwFjEUMBIGA1UEAwwLRWFzeS1SU0EgQ0EwHhcNMjAwNzAxMDAyMTA3WhcNMjMwNjE2MDAyMTA3WjAjMSEwHwYDVQQDDBhsaW1lc3VydmV5LmludGVybmFsLnRlc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDg+mLIYuFBUIgpITqstXrquJdOIP2WlbxBvWVRHWiNxrioSNnq9Z5cPfOA3godzh6VQet0OTCW/V1v3Pe0I+rIdG+9ylFrsuw/uo7EIhzJ6wIJgSGruzkyI9z9wF1SZeaAlLc2KAN6m67lwIjd8uqSnsCModxqTorJZh+4YyCnsxJjU5hOrhSdOgJ2JS356T4S2aKkh+3HI4BwpFuMdiy2CdmuGV1W4/oqtvY3juDm9zgqHdHjwTgRxVh3jYgpfNB7+sMOQqdsBaHwFbIfQIiNE0Kcg9//YspIWcaR1OrNEEvJuOHlPo86pc9D3h5gSAONhqkLbnvVVWQ8sWcN6iEDAgMBAAGjgccwgcQwCQYDVR0TBAIwADAdBgNVHQ4EFgQUFZBu9KcET7RM0i1V0hj3m7gEdmwwUQYDVR0jBEowSIAUNOD0d021fHYcir4UebCMny2eQVChGqQYMBYxFDASBgNVBAMMC0Vhc3ktUlNBIENBghQKYZ5QXA2IZ0lkvCmR69N/b3COujATBgNVHSUEDDAKBggrBgEFBQcDATALBgNVHQ8EBAMCBaAwIwYDVR0RBBwwGoIYbGltZXN1cnZleS5pbnRlcm5hbC50ZXN0MA0GCSqGSIb3DQEBCwUAA4IBAQDLl4k5vMndDSnHCKaznJCUjahRw4C6U/prbz4Y4e26+p4IjkWwc6yi4Elfw6k7CBItAXzf+AZ0/wPIWjsP63xlKdl5P7fgTIGiyCH/4tVVqmAMBPhs0IIsJZefnRr2jhqcajhyd4Vhl3KxLebVUUG9yNxkd66AvyaSAKfbwP5iL80gXbMMipZjqus5An49ohqTKSFXfP4QRp5KdfOP0Nqa9hb2sDRa8NKYLdygiwW7m1r/gMNJlmZPrwfp4UCf8EDMCe+yG3QeSEyTv8mPZ/j2fDWmHZo1iXaGqjZOvyfJ3VOiwfdkIm/21+fqEYLLHB5/b1wsnd170faLabr/YT1V",
+      "saml.encryption.certificate" : "{{ .clients.limesurvey.certificate }}",
       "saml.authnstatement" : "true",
       "saml_name_id_format" : "username",
       "saml_signature_canonicalization_method" : "http://www.w3.org/2001/10/xml-exc-c14n#"
@@ -555,16 +555,16 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "99f4b767-b158-4d61-b418-b6d3e988c91d",
-    "clientId" : "https://minio.external.test",
-    "rootUrl" : "https://minio.external.test",
-    "adminUrl" : "https://minio.external.test",
+    "clientId" : "minio",
+    "rootUrl" : "{{ .clients.minio.baseUrl }}",
+    "adminUrl" : "{{ .clients.minio.baseUrl }}",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "secret" : "858e724d-a489-4ece-9630-a8976ecb61e9",
-    "redirectUris" : [ "https://minio.external.test/*" ],
-    "webOrigins" : [ "https://minio.external.test" ],
+    "secret" : "{{ .clients.minio.secret }}",
+    "redirectUris" : [ "{{ .clients.minio.baseUrl }}/*" ],
+    "webOrigins" : [ "{{ .clients.minio.baseUrl }}" ],
     "notBefore" : 0,
     "bearerOnly" : false,
     "consentRequired" : false,
@@ -667,6 +667,48 @@
         "jsonType.label" : "String"
       }
     } ],
+    "defaultClientScopes" : [ "web-origins", "role_list", "profile", "roles", "email" ],
+    "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
+  }, {
+    "id" : "caa0515a-884a-4cd5-8821-6b56a44d9683",
+    "clientId" : "simva",
+    "rootUrl" : "{{ .clients.simva.baseUrl }}",
+    "adminUrl" : "{{ .clients.simva.baseUrl }}",
+    "surrogateAuthRequired" : false,
+    "enabled" : true,
+    "alwaysDisplayInConsole" : false,
+    "clientAuthenticatorType" : "client-secret",
+    "secret" : "{{ .clients.simva.secret }}",
+    "redirectUris" : [ "{{ .clients.simva.baseUrl }}/*" ],
+    "webOrigins" : [ "{{ .clients.simva.baseUrl }}" ],
+    "notBefore" : 0,
+    "bearerOnly" : false,
+    "consentRequired" : false,
+    "standardFlowEnabled" : true,
+    "implicitFlowEnabled" : false,
+    "directAccessGrantsEnabled" : true,
+    "serviceAccountsEnabled" : false,
+    "publicClient" : false,
+    "frontchannelLogout" : false,
+    "protocol" : "openid-connect",
+    "attributes" : {
+      "saml.assertion.signature" : "false",
+      "saml.force.post.binding" : "false",
+      "saml.multivalued.roles" : "false",
+      "saml.encrypt" : "false",
+      "saml.server.signature" : "false",
+      "saml.server.signature.keyinfo.ext" : "false",
+      "exclude.session.state.from.auth.response" : "false",
+      "saml_force_name_id_format" : "false",
+      "saml.client.signature" : "false",
+      "tls.client.certificate.bound.access.tokens" : "false",
+      "saml.authnstatement" : "false",
+      "display.on.consent.screen" : "false",
+      "saml.onetimeuse.condition" : "false"
+    },
+    "authenticationFlowBindingOverrides" : { },
+    "fullScopeAllowed" : true,
+    "nodeReRegistrationTimeout" : -1,
     "defaultClientScopes" : [ "web-origins", "role_list", "profile", "roles", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   } ],
@@ -953,7 +995,7 @@
         "attribute.nameformat" : "Basic",
         "Script" : "/**\n* Available variables: \n* user - the current user\n* realm - the current realm\n* clientSession - the current clientSession\n* userSession - the current userSession\n* keycloakSession - the current userSession\n*/\nvar firstName = user.getFirstName();\nvar lastName = user.getLastName();\nfirstName + ' ' + lastName;",
         "friendly.name" : "User's Full name",
-        "attribute.name" : "name"
+        "attribute.name" : "fullname"
       }
     } ]
   }, {
@@ -1917,8 +1959,8 @@
       "id" : "1b0d2adf-20cd-485e-8396-7ce79942e625",
       "type" : "password",
       "createdDate" : 1592588138265,
-      "secretData" : "{\"value\":\"LcEygBtRzdFTTNM3BteYMVTG9HHBYtvzM3luYmcblJ30I30MmFO+Um4udBtxMx0/gpzeowyo55BM12bZ9RPq8Q==\",\"salt\":\"bFb9jEXEGycWlXElQIBt6A==\"}",
-      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
+      "secretData" : "{{ .users.administrator.secretData }}",
+      "credentialData" : "{{ .users.administrator.credentialData }}"
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
@@ -1942,8 +1984,8 @@
       "id" : "779aa3d0-a7c7-4f1d-a3f7-cb546399ae93",
       "type" : "password",
       "createdDate" : 1592588100119,
-      "secretData" : "{\"value\":\"lSC4cpT+saOYB5Krh6tWSRbxyZpnbGD8/4N2p6V+hFa/NW+/2HfpigCmJZhbMh1zLkw5keXioyhzoJrFuPYwaQ==\",\"salt\":\"HjvPCdzx/pyMGb0YBCHQww==\"}",
-      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
+      "secretData" : "{{ .users.researcher.secretData }}",
+      "credentialData" : "{{ .users.researcher.credentialData }}"
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
@@ -1967,8 +2009,8 @@
       "id" : "ad102266-601d-44af-a678-84c33e7b5db2",
       "type" : "password",
       "createdDate" : 1592588021194,
-      "secretData" : "{\"value\":\"PkLIx3Wm0qEIEaN98PL1uYf6YqpIt4QI7NVv1kBn/BvBoO9S849Ybs8llwy//hajAm1b2Q67MwuiBfizpo0Dkg==\",\"salt\":\"fCqHhRzTgy44CmP1MpH6vQ==\"}",
-      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
+      "secretData" : "{{ .users.student.secretData }}",
+      "credentialData" : "{{ .users.student.credentialData }}"
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
@@ -1992,8 +2034,8 @@
       "id" : "da4a2a9b-d321-4ef5-be04-6f3050f5f470",
       "type" : "password",
       "createdDate" : 1592586892890,
-      "secretData" : "{\"value\":\"vAGNUHHEqMiLKJnh4tkzcU/Y+g33ok0NvXxWFPSpOo+8b6lnyu5kW3YteQ7r6La4Tza7mKmBhjpdOGyWFSKH1w==\",\"salt\":\"UKPni6Wr+qNbNlYO5wLtTA==\"}",
-      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
+      "secretData" : "{{ .users.teacher.secretData }}",
+      "credentialData" : "{{ .users.teacher.credentialData }}"
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
@@ -2017,8 +2059,8 @@
       "id" : "68a63b77-5b73-45ed-9dd6-f7f346d65643",
       "type" : "password",
       "createdDate" : 1592588074036,
-      "secretData" : "{\"value\":\"IGQjUtpVRmeOu57xS0hOE6ZRTLAj0hgg2WpajYkPzZc04SADvC8Fb+JNx1IgRH13lQy0dJyE/SCQ8PmDv0RzGQ==\",\"salt\":\"maNCYdOBaiLSBnKXnCsJHw==\"}",
-      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
+      "secretData" : "{{ .users.teaching_assistant.secretData }}",
+      "credentialData" : "{{ .users.teaching_assistant.credentialData }}"
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],

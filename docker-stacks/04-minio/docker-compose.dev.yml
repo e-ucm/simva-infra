@@ -35,5 +35,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.mcs.loadbalancer.server.port=9090"
       - "traefik.http.routers.mcs.rule=Host(`mcs.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.mcs.entrypoints=websecure"
-      - "traefik.http.routers.mcs.tls=true"

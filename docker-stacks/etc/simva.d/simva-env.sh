@@ -10,7 +10,7 @@ export SIMVA_DEBUG="false"
 export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva"
 
 # SIMVA installation folder
-export SIMVA_HOME="${PROJECT_DIR}"
+export SIMVA_HOME="${SIMVA_PROJECT_DIR}"
 
 export SIMVA_DATA_HOME="${SIMVA_HOME}/data"
 
@@ -45,6 +45,12 @@ export SIMVA_NETWORK_CIDR="172.30.0.0/24"
 # SIMVA's service network DNS IP
 export SIMVA_DNS_SERVICE_IP="172.30.0.53"
 
+export SIMVA_LOAD_BALANCER_IPS="172.30.0.80"
+
+[[ "${SIMVA_ENVIRONMENT}" == "production" ]] && SIMVA_LOAD_BALANCER_IPS="127.0.0.1"
+
+export SIMVA_DEV_LOAD_BALANCER="false"
+
 # Domain used for docker containers hostnames
 export SIMVA_INTERNAL_DOMAIN="internal.test"
 
@@ -65,6 +71,9 @@ export SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY="false"
 # Traefik: logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO
 export SIMVA_TRAEFIK_LOG_LEVEL="INFO"
 
+# Traefik: control access log generation: true, false
+export SIMVA_TRAEFIK_ACCESS_LOG="false"
+
 # Traefik dashboard is protected using basic authentication
 export SIMVA_TRAEFIK_DASHBOARD_USER="admin"
 
@@ -81,10 +90,6 @@ export SIMVA_TRAEFIK_DASHBOARD_PASSWORD="\\\$apr1\\\$97xk9Kkr\\\$gavbmzhrI6uOVYN
 # example: foo.crt,bar.crt
 export SIMVA_SSL_ROOT_CAS="${SIMVA_DATA_HOME}/tls/rootCA.pem"
 
-if [[ -e "${SIMVA_HOME}/bin/simva-users-passwords.sh" ]]; then
-    source "${SIMVA_HOME}/bin/simva-users-passwords.sh"
-fi
-
 # Keycloak mariadb database configuration
 
 export SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD="root"
@@ -97,7 +102,6 @@ export SIMVA_KEYCLOAK_ADMIN_USER="admin"
 export SIMVA_KEYCLOAK_ADMIN_PASSWORD="password"
 
 export SIMVA_WAIT_TIMEOUT="120"
-
 
 export SIMVA_SSO_HOST="sso.${SIMVA_EXTERNAL_DOMAIN}"
 export SIMVA_SSO_REALM="simva"
@@ -118,17 +122,20 @@ export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="password"
 
 export SIMVA_LIMESURVEY_MSMTP_HOST="mail.keycloak.${SIMVA_INTERNAL_DOMAIN}"
 export SIMVA_LIMESURVEY_MSMTP_FROM="no-reply@limesurvey.${SIMVA_EXTERNAL_DOMAIN}"
+export SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH="/simplesamlphp"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL="INFO"
+export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_NAME="limesurvey"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY="limesurvey-key.pem"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT="limesurvey-fullchain.pem"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ="/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
 
-export SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE="https___sso_external_test_auth_realms_simva"
-export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_IDP_METADATA_URL="https://${SIMVA_SSO_HOST}/auth/realms/${SIMVA_SSO_REALM}/protocol/saml/descriptor"
+export SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE="limesurvey"
+export SIMPLESAMLPHP_SP_IDP_ID="https://${SIMVA_SSO_HOST}/auth/realms/${SIMVA_SSO_REALM}"
+export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_IDP_METADATA_URL="${SIMPLESAMLPHP_SP_IDP_ID}/protocol/saml/descriptor"
 
 export SIMVA_MINIO_ACCESS_KEY="minio"
 export SIMVA_MINIO_SECRET_KEY="password"
-export SIMVA_MINIO_OPENID_CLIENT_ID="https://minio.${SIMVA_EXTERNAL_DOMAIN}"
+export SIMVA_MINIO_OPENID_CLIENT_ID="minio"
 export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 
 export SIMVA_MINIO_MCS_USER="mcs"
