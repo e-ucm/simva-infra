@@ -166,4 +166,11 @@ export SIMVA_FRONT_SSO_CLIENT_KEY="secret"
 export SIMVA_SSO_ADMIN_USER="administrator"
 export SIMVA_SSO_ADMIN_PASSWORD="administrator"
 
+export SIMAV_A2_HOST="a2"
+export SIMVA_A2_PORT="3000"
+export SIMVA_A2_PROTOCOL="http"
+export SIMVA_A2_ADMIN_USER="root"
+export SIMVA_A2_ADMIN_PASSWORD="password"
+export SIMVA_A2_EXTERNAL="https://analytics.${SIMVA_EXTERNAL_DOMAIN}"
+
 true
