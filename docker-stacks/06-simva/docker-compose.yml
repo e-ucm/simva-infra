@@ -28,7 +28,7 @@ services:
     environment:
       DEBUG: "${SIMVA_DEBUG:-true}"
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
-      EXTERNAL_URL: https://simva.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      EXTERNAL_URL: https://${SIMVA_EXTERNAL_DOMAIN:-external.test}
       MONGO_HOST: simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       MONGO_DB: /simva
       KAFKA_HOST: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
@@ -84,7 +84,7 @@ services:
     environment:
       DEBUG: "${SIMVA_DEBUG:-true}"
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
-      SIMVA_URL: "https://simva.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_URL: "https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
       MONGO_DB: /simva
       SIMVA_API_HOST: "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
@@ -111,7 +111,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.simva-front.loadbalancer.server.port=3050"
-      - "traefik.http.routers.simva-front.rule=Host(`simva.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.simva-front.rule=Host(`${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
   simva-trace-allocator:
     image: node:12.18.2
