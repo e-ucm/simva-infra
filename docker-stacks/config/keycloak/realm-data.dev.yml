@@ -1,18 +1,23 @@
 ---
 users:
-  administrator: 
+  administrator:
+    password: "administrator"
     secretData: "{\\\"value\\\":\\\"LcEygBtRzdFTTNM3BteYMVTG9HHBYtvzM3luYmcblJ30I30MmFO+Um4udBtxMx0/gpzeowyo55BM12bZ9RPq8Q==\\\",\\\"salt\\\":\\\"bFb9jEXEGycWlXElQIBt6A==\\\"}"
     credentialData: "{\\\"hashIterations\\\":27500,\\\"algorithm\\\":\\\"pbkdf2-sha256\\\"}"
   researcher:
+    password: "researcher"
     secretData: "{\\\"value\\\":\\\"lSC4cpT+saOYB5Krh6tWSRbxyZpnbGD8/4N2p6V+hFa/NW+/2HfpigCmJZhbMh1zLkw5keXioyhzoJrFuPYwaQ==\\\",\\\"salt\\\":\\\"HjvPCdzx/pyMGb0YBCHQww==\\\"}"
     credentialData: "{\\\"hashIterations\\\":27500,\\\"algorithm\\\":\\\"pbkdf2-sha256\\\"}"
   teacher:
+    password: "teacher"
     secretData: "{\\\"value\\\":\\\"vAGNUHHEqMiLKJnh4tkzcU/Y+g33ok0NvXxWFPSpOo+8b6lnyu5kW3YteQ7r6La4Tza7mKmBhjpdOGyWFSKH1w==\\\",\\\"salt\\\":\\\"UKPni6Wr+qNbNlYO5wLtTA==\\\"}"
     credentialData: "{\\\"hashIterations\\\":27500,\\\"algorithm\\\":\\\"pbkdf2-sha256\\\"}"
   teaching_assistant:
+    password: "teaching-assistant"
     secretData: "{\\\"value\\\":\\\"IGQjUtpVRmeOu57xS0hOE6ZRTLAj0hgg2WpajYkPzZc04SADvC8Fb+JNx1IgRH13lQy0dJyE/SCQ8PmDv0RzGQ==\\\",\\\"salt\\\":\\\"maNCYdOBaiLSBnKXnCsJHw==\\\"}"
     credentialData: "{\\\"hashIterations\\\":27500,\\\"algorithm\\\":\\\"pbkdf2-sha256\\\"}"
   student:
+    password: "student"
     secretData: "{\\\"value\\\":\\\"PkLIx3Wm0qEIEaN98PL1uYf6YqpIt4QI7NVv1kBn/BvBoO9S849Ybs8llwy//hajAm1b2Q67MwuiBfizpo0Dkg==\\\",\\\"salt\\\":\\\"fCqHhRzTgy44CmP1MpH6vQ==\\\"}"
     credentialData: "{\\\"hashIterations\\\":27500,\\\"algorithm\\\":\\\"pbkdf2-sha256\\\"}"
 clients:

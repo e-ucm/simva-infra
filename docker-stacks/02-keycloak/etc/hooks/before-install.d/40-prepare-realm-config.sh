@@ -88,7 +88,8 @@ function generate_realm_data() {
         done < <(${SIMVA_HOME}/bin/pbkdf2 -b64 -l 64 -i 27500 -j ${user_password})
         secretData=$(echo ${secretData} | sed -e 's/"/\\\\\\"/g')
         credentialData=$(echo ${credentialData} | sed -e 's/"/\\\\\\"/g')
-        echo "  ${user}:" >> ${conf_file}
+        echo "  ${user}:" >> ${user_password}
+        echo "    password: \"${conf_file}\"" >> ${conf_file}
         echo "    secretData: \"${secretData}\"" >> ${conf_file}
         echo "    credentialData: \"${credentialData}\"" >> ${conf_file}
     done
