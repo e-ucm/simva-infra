@@ -33,9 +33,9 @@ This respository allows you to to launch a complete SIMVA environment.
 6. run `./simva start` to start all containers.
 > Note: The first time you run this command it will take a long time because all componentes need to initialize.
 
-# Patreons
+# Acknowledgements
 
-A special thanks to our patreons for supporting this project:
+Authors of this project were supported by:
 
 <table>
   <tr>
