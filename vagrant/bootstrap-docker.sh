@@ -20,8 +20,8 @@ sudo apt-get install \
 
 # Docker's official GPG key
 echo "\nAdding Docker's official GPG key"
-curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg -o docker-ce.gpgkey
-sudo apt-key add docker-ce.gpgkey
+curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg -o /tmp/docker-ce.gpgkey
+sudo apt-key add /tmp/docker-ce.gpgkey
 
 # Add stable branch repository
 echo "\nAdd Docker-CE repository"
