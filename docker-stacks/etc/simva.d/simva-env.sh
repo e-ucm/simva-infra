@@ -88,7 +88,7 @@ export SIMVA_TRAEFIK_DASHBOARD_PASSWORD="\\\$apr1\\\$97xk9Kkr\\\$gavbmzhrI6uOVYN
 # Authorities when using a self-signed TLS certificate
 #
 # example: foo.crt,bar.crt
-export SIMVA_SSL_ROOT_CAS="${SIMVA_DATA_HOME}/tls/ca/rootCA.pem"
+export SIMVA_SSL_ROOT_CAS="${SIMVA_TLS_HOME}/ca/rootCA.pem"
 
 # Keycloak mariadb database configuration
 
