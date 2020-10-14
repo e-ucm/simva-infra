@@ -11,3 +11,32 @@ services:
       - "traefik.enable=true"
       - "traefik.tcp.services.simva-mongodb.loadbalancer.server.port=27017"
       - "traefik.tcp.routers.simva-mongodb.rule=HostSNI(`simva-mongo.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+
+  simva-api:
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: host
+      - target: 9229
+        published: 9230
+        protocol: tcp
+        mode: host
+
+  simva-front:
+    ports:
+      - target: 3050
+        published: 3050
+        protocol: tcp
+        mode: host
+      - target: 9229
+        published: 9229
+        protocol: tcp
+        mode: host
+
+  simva-trace-allocator:
+    ports:
+      - target: 9229
+        published: 9231
+        protocol: tcp
+        mode: host
