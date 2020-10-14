@@ -1,0 +1,16 @@
+version: '3.7'
+
+networks:
+  default:
+    name: "traefik_services"
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "${SIMVA_NETWORK_INTERFACE:-simva0}"
+    ipam:
+      driver: default
+      config:
+        - subnet: "${SIMVA_NETWORK_CIDR:-172.30.0.0/24}"
+
+services:
+  noop:
+    image: eucm/noop

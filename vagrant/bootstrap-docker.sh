@@ -20,8 +20,8 @@ sudo apt-get install \
 
 # Docker's official GPG key
 echo "\nAdding Docker's official GPG key"
-curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg -o docker-ce.gpgkey
-sudo apt-key add docker-ce.gpgkey
+curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg -o /tmp/docker-ce.gpgkey
+sudo apt-key add /tmp/docker-ce.gpgkey
 
 # Add stable branch repository
 echo "\nAdd Docker-CE repository"
@@ -30,7 +30,7 @@ sudo add-apt-repository \
    $(lsb_release -cs) \
    stable"
    
-DOCKER_VERSION=5:19.03.11~3-0~ubuntu-focal
+DOCKER_VERSION=5:19.03.12~3-0~ubuntu-focal
 # Update repository info and install Docker-CE
 echo "\nUpdate repository info and installing Docker-CE"
 sudo apt-get update
@@ -44,6 +44,6 @@ sudo usermod -aG docker vagrant
 sudo systemctl enable docker
 
 
-DOCKER_COMPOSE_VERSION=1.26.0
+DOCKER_COMPOSE_VERSION=1.27.2
 sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose

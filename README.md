@@ -20,6 +20,19 @@ To be precise, SIMVA tool aims to simplify the possible issues:
 
 This respository allows you to to launch a complete SIMVA environment.
 
+## Instructions
+
+1. Clone this repository
+2. Verify that you have latest [Vagrant](https://vagrantup.com) and  [VirtualBox](https://www.virtualbox.org/) (tested with 6.0)
+3. Open a terminal in the cloned directory and run `vagrant up`
+> Note: The first time you run this command it will take a long time because Vagrant needs to download, aprovision and install the base required software.
+4. run `vagrant ssh` to get inside VM
+5. run `cd docker-stacks`
+6. run `./simva install`
+> Note: The first time you run this command it will take a long time because it is required to download all docker images required for SIMVA.
+6. run `./simva start` to start all containers.
+> Note: The first time you run this command it will take a long time because all componentes need to initialize.
+
 # Patreons
 
 A special thanks to our patreons for supporting this project:
@@ -50,6 +63,12 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](https:
 
 ## Notes
 
+By default Vagrant maps the following ports:
+- 8080 (host) -> 80 (guest)
+- 8443 (host) -> 443 (guest)
+
+To simplify things you may want to apply the following instructions in order to map to regular ports using the OS firewall / capabilities.
+
 ### (Linux) redirect ports using iptables
 
 ```
@@ -57,10 +76,16 @@ sudo iptables -I INPUT 1 -p tcp --dport 8443 -j ACCEPT
 sudo iptables -I INPUT 1 -p tcp --dport 8080 -j ACCEPT
 sudo iptables -I INPUT 1 -p tcp --dport 443 -j ACCEPT
 sudo iptables -I INPUT 1 -p tcp --dport 80 -j ACCEPT
-sudo iptables -t nat -I PREROUTING 1 -p tcp --dport 443 -j REDIRECT --to-ports 8443
-sudo iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 8080
+sudo iptables -t nat -I PREROUTING 1 -p tcp --dport 443 -d 127.0.0.1 -j REDIRECT --to-ports 8443
+sudo iptables -t nat -I PREROUTING 1 -p tcp --dport 80  -d 127.0.0.1 -j REDIRECT --to-ports 8080
 # https://serverfault.com/questions/211536/iptables-port-redirect-not-working-for-localhost
 # PREROUTING isn't used by the loopback interface, you need to also add an OUTPUT rule:
-sudo iptables -t nat -I OUTPUT -p tcp -o lo --dport 80 -j REDIRECT --to-ports 8080
-sudo iptables -t nat -I OUTPUT -p tcp -o lo --dport 443 -j REDIRECT --to-ports 8443
+sudo iptables -t nat -I OUTPUT -p tcp -o lo -d 127.0.0.1 --dport 80 -j REDIRECT --to-ports 8080
+sudo iptables -t nat -I OUTPUT -p tcp -o lo -d 127.0.0.1 --dport 443 -j REDIRECT --to-ports 8443
 ```
+
+### (Windows) redirect ports using netsh
+
+See:
+- https://davidhamann.de/2019/06/20/setting-up-portproxy-netsh/
+- https://docs.microsoft.com/en-us/windows-server/networking/technologies/netsh/netsh-interface-portproxy

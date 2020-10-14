@@ -1,0 +1,225 @@
+version: '3.7'
+
+networks:
+  default:
+    name: "simva-local_dev"
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "sdev0"
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.29.0.0/24"
+
+services:
+  dns-proxy-server:
+    image: eucm/dns-proxy-server:2.19.0-dh-2
+    entrypoint:
+      - '/bin/sh'
+      - '-c'
+      - |
+        [ ! -d "/app/conf" ] && mkdir -p /app/conf;
+        [ ! -f "/app/conf/config.json" ] && cat << EOF > /app/conf/config.json
+        {
+          "version": 2,
+          "remoteDnsServers": [
+            "8.8.8.8:53",
+            "8.8.4.4:53"
+          ],
+          "envs": [
+            {
+              "name": "",
+              "hostnames": [
+                {
+                  "id": 1562843575352085033,
+                  "hostname": ".external.test",
+                  "ip": "172.29.0.1",
+                  "ttl": 3600,
+                  "type": "A"
+                },
+                {
+                  "id": 1562843575352085034,
+                  "hostname": ".dev.test",
+                  "ip": "172.29.0.1",
+                  "ttl": 3600,
+                  "type": "A"
+                }
+              ]
+            }
+          ],
+          "activeEnv": "",
+          "webServerPort": 5380,
+          "dnsServerPort": 53,
+          "defaultDns": false,
+          "logLevel": "INFO",
+          "logFile": "console",
+          "dpsNetwork": false,
+          "dpsNetworkAutoConnect": false,
+          "registerContainerNames": true,
+          "hostMachineHostname": "host.docker.test",
+          "domain": "docker.test"
+        }
+        EOF
+        exec /usr/bin/docker-entrypoint "$$@"
+    command:
+      - "--"
+      - "/app/dns-proxy-server"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      MG_LOG_LEVEL: "DEBUG"
+    hostname: "dns.dev.test"
+    networks:
+      default:
+        ipv4_address: "172.29.0.53"
+        aliases:
+          - "dns.dev.test"
+
+#
+#
+#
+  mongodb:
+    image: mongo:4.2.8
+    volumes:
+    - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/mongo:/data/db
+    hostname: simva-mongo.dev.test
+    networks:
+      default:
+        aliases:
+          - simva-mongo.dev.test
+
+  simva-api:
+    image: node:12.18.2
+    command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
+    stdin_open: true
+    tty: true
+    environment:
+      DEBUG: "true"
+      NODE_ENV: "development"
+      EXTERNAL_URL: http://localhost:3000
+      MONGO_HOST: simva-mongo.dev.test
+      MONGO_DB: /simva
+      KAFKA_HOST: kafka1.dev.test
+      KAFKA_PORT: 9092
+      KAFKA_TOPIC: ${SIMVA_TRACES_TOPIC:-traces}
+      MINIO_URL: https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}/
+      MINIO_BUCKET: ${SIMVA_TRACES_BUCKET_NAME:-traces}
+      LIMESURVEY_PROTOCOL: https
+      LIMESURVEY_HOST: limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      LIMESURVEY_PORT: 443
+      LIMESURVEY_EXTERNAL: https://limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}/
+      LIMESURVEY_ADMIN_USER: ${SIMVA_LIMESURVEY_ADMIN_USER:-admin}
+      LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-password2}
+      A2_HOST: "${SIMAV_A2_HOST:-a2}"
+      A2_PORT: "${SIMVA_A2_PORT:-3000}"
+      A2_PROTOCOL: "${SIMVA_A2_PROTOCOL:-http}"
+      A2_ADMIN_USER: "${SIMVA_A2_ADMIN_USER:-root}"
+      A2_ADMIN_PASSWORD: "${SIMVA_A2_ADMIN_PASSWORD:-password}"
+      A2_EXTERNAL: "${SIMVA_A2_EXTERNAL:-https://analytics.simva.e-ucm.es}"
+      NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
+      SSO_ENABLED: "true"
+      SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      SSO_ADMIN_USER: ${SIMVA_SSO_ADMIN_USER:-administrator}
+      SSO_ADMIN_PASSWORD: ${SIMVA_SSO_ADMIN_PASSWORD:-administrator}
+    volumes:
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
+#      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api:/app
+# XXX For development
+      - /home/casa/ivan/keycloak-nodejs/simva:/app
+
+    depends_on:
+      - mongodb
+    hostname: simva-api.dev.test
+    dns:
+      - 172.29.0.53
+    networks:
+      default:
+        aliases:
+          - simva-api.dev.test
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: host
+      - target: 9229
+        published: 9230
+        protocol: tcp
+        mode: host
+
+  simva-front:
+    image: node:12.18.2
+    command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
+    stdin_open: true
+    tty: true
+    environment:
+      DEBUG: "true"
+      NODE_ENV: "development"
+      SIMVA_URL: "http://localhost:3050"
+      NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
+      MONGO_DB: /simva
+      SIMVA_API_HOST: simva-api.dev.test
+      SIMVA_API_PORT: "3000"
+      SIMVA_API_PROTOCOL: "http"
+      SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      SSO_CLIENT_ID: "${SIMVA_FRONT_SSO_CLIENT_ID:-simva-dev}"
+      SSO_CLIENT_SECRET: "${SIMVA_FRONT_SSO_CLIENT_KEY:-38a56398-fb71-4781-9d65-9b27035b82c6}"
+    volumes:
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
+#      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front:/app
+# XXX For development
+      - /home/casa/ivan/keycloak-nodejs/simva-front:/app
+    depends_on:
+      - simva-api
+    hostname: simva-front.dev.test
+    dns:
+      - 172.29.0.53
+    networks:
+      default:
+        aliases:
+          - simva-front.dev.test
+    ports:
+      - target: 3050
+        published: 3050
+        protocol: tcp
+        mode: host
+      - target: 9229
+        published: 9229
+        protocol: tcp
+        mode: host
+
+  simva-trace-allocator:
+    image: node:12.18.2
+    command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
+    stdin_open: true
+    tty: true
+    environment:
+      DEBUG: "true"
+      NODE_ENV: "development"
+      NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
+      SIMVA_HOST: "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_PORT: "443"
+      SIMVA_PROTOCOL: "https"
+      MINIO_BUCKET: ${SIMVA_TRACES_BUCKET_NAME:-traces}
+      MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      MINIO_SSL: "true"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-root}"
+      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
+    volumes:
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
+#      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator:/app
+# XXX For development
+      - /home/casa/ivan/keycloak-nodejs/simva-trace-allocator:/app
+    depends_on:
+      - simva-api
+    hostname: simva-trace-allocator.dev.test
+    dns:
+      - 172.29.0.53
+    networks:
+      default:
+        aliases:
+          - simva-trace-allocator.dev.test
+    ports:
+      - target: 9229
+        published: 9231
+        protocol: tcp
+        mode: host

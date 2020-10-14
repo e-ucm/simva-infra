@@ -1,0 +1,29 @@
+version: '3.7'
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+
+  connect-ui:
+#    image: landoop/kafka-connect-ui:0.9.7
+    image: landoop/kafka-connect-ui:latest
+    environment:
+      CONNECT_URL: http://connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8083/
+      PROXY: "true"
+    depends_on:
+      - connect
+    hostname: connect-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - connect-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - connect-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.connect-ui.loadbalancer.server.port=8000"
+      - "traefik.http.routers.connect-ui.rule=Host(`connect-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
