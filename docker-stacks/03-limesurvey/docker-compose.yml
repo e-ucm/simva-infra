@@ -8,7 +8,7 @@ networks:
 services:
 
   limesurvey:
-    image: eucm/limesurvey:4.3.15-2
+    image: eucm/limesurvey:4.3.15-4
     entrypoint:
       - '/bin/bash'
       - '-c'
