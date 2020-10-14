@@ -55,6 +55,11 @@ function main() {
             start ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
+        "log")
+            check_docker_launched
+            log $@
+            exit 0
+        ;;
         "help")
             help
             exit 0
@@ -324,6 +329,8 @@ OPERATION one of the following:
     stop:
         Gracefully stop all containers, so that no data is lost; you can then inspect
         their data in ./data, or restart them.
+    log <stack> [<other docker-compose logs params>]:
+        Show <stack> logs.
 
     help:
         Display this help and exit
@@ -413,6 +420,18 @@ function stop() {
     execute_after_hooks ${phase}
 }
 
+# log stack
+function log() {
+    local wait_time=0
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing stack";
+        exit 1;
+    fi
+    local stack=${1}
+    shift
+
+    docker_compose_stacks "${stack}" ${wait_time} logs $@
+}
 # entrypoint
 require_root
 check_dependencies
