@@ -116,6 +116,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
       - "traefik.http.routers.keycloak.rule=Host(`sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.keycloak.middlewares=secHeaders@file"
 
   mail:
     image: maildev/maildev:1.1.0

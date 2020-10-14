@@ -133,6 +133,9 @@ services:
             users = [
               "${SIMVA_TRAEFIK_DASHBOARD_USER:?Traefik dashboard username must be configured}:${SIMVA_TRAEFIK_DASHBOARD_PASSWORD:?Traefik's dashboard password must be configured}"
             ]
+          [http.middlewares.secHeaders.headers]
+            contentTypeNosniff = true
+            contentSecurityPolicy = "frame-src 'self' https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none';${SIMVA_TRAEFIK_EXTRA_CSP_POLICY}"
         EOF
         exec /entrypoint.sh "$$@"
     command:

@@ -84,6 +84,10 @@ export SIMVA_TRAEFIK_DASHBOARD_USER="admin"
 # XXX Better use the approach of _FILE variables to read the variable from a file (check file_env)
 export SIMVA_TRAEFIK_DASHBOARD_PASSWORD="\\\$apr1\\\$97xk9Kkr\\\$gavbmzhrI6uOVYNOfYByQ/"
 
+export SIMVA_TRAEFIK_EXTRA_CSP_POLICY=""
+
+[[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_TRAEFIK_EXTRA_CSP_POLICY=" report-uri https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}/report-violation; report-to https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}/report-violation;"
+
 # Traefik: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
 #
