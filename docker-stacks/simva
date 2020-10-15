@@ -341,11 +341,17 @@ See ${SIMVA_PROJECT_URL} for details.
 
 OPERATION one of the following:
 
+    install:
+        Install SIMVA locally (download docker images, build required tools, etc.)
+    uninstall:
+        Stop and remove containers, also remove docker volumes too.
     start:
         Launch all containers by stages, waiting for dependencies to become available.
     stop:
         Gracefully stop all containers, so that no data is lost; you can then inspect
         their data in ./data, or restart them.
+    restart:
+        Gracefully stop all containers and start them again.
     log <stack> [<other docker-compose logs params>]:
         Show <stack> logs.
     build <stack> <docker-compose build params>:
