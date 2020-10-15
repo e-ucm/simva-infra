@@ -60,6 +60,11 @@ function main() {
             log $@
             exit 0
         ;;
+        "build")
+            check_docker_launched
+            build $@
+            exit 0
+        ;;
         "help")
             help
             exit 0
@@ -343,6 +348,8 @@ OPERATION one of the following:
         their data in ./data, or restart them.
     log <stack> [<other docker-compose logs params>]:
         Show <stack> logs.
+    build <stack> <docker-compose build params>:
+        Allow to run docker-compose build in a stack.
 
     help:
         Display this help and exit
@@ -444,6 +451,20 @@ function log() {
 
     docker_compose_stacks "${stack}" ${wait_time} logs $@
 }
+
+# build stack
+function build() {
+    local wait_time=0
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing stack";
+        exit 1;
+    fi
+    local stack=${1}
+    shift
+
+    docker_compose_stacks "${stack}" ${wait_time} build $@
+}
+
 # entrypoint
 require_root
 check_dependencies
