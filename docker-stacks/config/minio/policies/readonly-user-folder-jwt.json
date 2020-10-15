@@ -42,8 +42,8 @@
           "Condition":{
              "StringLike":{
                 "s3:prefix":[
-                   "users/${jwt:sub}",
-                   "users/${jwt:sub}/*"
+                   "users/${jwt:preferred_username}",
+                   "users/${jwt:preferred_username}/*"
                 ]
              }
           }
@@ -55,7 +55,7 @@
              "s3:GetObject"
           ],
           "Resource":[
-             "arn:aws:s3:::traces/users/${jwt:sub}/*"
+             "arn:aws:s3:::traces/users/${jwt:preferred_username}/*"
           ]
        }
     ]
