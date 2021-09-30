@@ -7,7 +7,7 @@ networks:
 
 services:
   anaconda:
-    image: continuumio/anaconda3:2020.02
+    image: continuumio/anaconda3:2021.05
     entrypoint: >
       /bin/bash -c '
         set -euo pipefail;
@@ -16,7 +16,6 @@ services:
           apt-get update;
           apt-get install -y gosu;
           rm -rf /var/lib/apt/lists/*;
-
           # Install tini
           TINI_VERSION="v0.19.0";
           TINI_DOWNLOAD_URL="https://github.com/krallin/tini/releases/download/$${TINI_VERSION}/tini-amd64";
@@ -28,7 +27,6 @@ services:
           popd;
           mv /tmp/tini-amd64 /usr/local/bin/tini
           chmod +x /usr/local/bin/tini
-
           # Anaconda jupyter install
           groupadd -r anaconda;
           useradd -r -g anaconda -s /bin/bash anaconda;
@@ -40,17 +38,19 @@ services:
             mkdir /opt/notebooks;
           fi;
           chown anaconda: -R /opt/notebooks;
-
           # Jupyter ipauth (OAuth2 install)
-          # XXX: Need to submit the modifications to support keycloak
+          # XXX: Merge request that includes modifications for ipyauth to support keycloak pending for approval from the maintainer.
+          # workaround install local package
           # pip install ipyauth;
           pip install /opt/packages/ipyauth.tar.gz
           /opt/conda/bin/jupyter nbextension enable --py --sys-prefix ipyauth.ipyauth_widget;
           /opt/conda/bin/jupyter serverextension enable --py --sys-prefix ipyauth.ipyauth_callback;
-
           # Install other dependencies required by the Demo Notebook
           pip install boto3 jwt;
-
+          # Paquete a instalar
+          pip install ipympl
+          jupyter nbextension enable ipympl --py --sys-prefix
+          chown -R anaconda: /opt/conda
           date > /anaconda-initialized;
           echo "SIMVA: Anaconda jupyter installed and initialized"
         fi;
@@ -58,13 +58,12 @@ services:
         if [[ ! -e "/home/anaconda/.jupyter/jupyter_notebook_config.py" ]]; then
           gosu anaconda /opt/conda/bin/jupyter notebook --generate-config
         fi;
-
         # Setup password
         export JUPYTER_PASSWORD=$${JUPYTER_PASSWORD:-jupyter};
         password=$$(python3 -c "from notebook.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
         unset JUPYTER_PASSWORD;
-        sed -r -i -e "s/^#?c.NotebookApp.password(\s)+=(.*)/c.NotebookApp.password = '"'"'$${password}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
-
+        ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
+        sed -r -i -e "s/^#?\s*c.NotebookApp.password\s+=.*/c.NotebookApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
         /usr/local/bin/tini -- $$@
       '
     command:
