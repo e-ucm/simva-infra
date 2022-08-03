@@ -53,6 +53,7 @@ services:
       SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       SSO_ADMIN_USER: ${SIMVA_SSO_ADMIN_USER:-administrator}
       SSO_ADMIN_PASSWORD: ${SIMVA_SSO_ADMIN_PASSWORD:-administrator}
+      MAX_UPLOAD_FILE_SIZE: "${SIMVA_MAX_UPLOAD_FILE_SIZE:-33554432}"
     volumes:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api:/app
