@@ -57,6 +57,7 @@ services:
     volumes:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api:/app
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
     depends_on:
       - mongodb
     hostname: simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
