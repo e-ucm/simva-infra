@@ -21,7 +21,7 @@ services:
           - simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
   simva-api:
-    image: node:12.18.2
+    image: node:14
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
