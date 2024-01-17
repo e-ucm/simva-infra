@@ -48,7 +48,11 @@ services:
       SIMPLESAMLPHP_SIGN_LOGOUT_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_REDIRECTS_REQUESTS: "true"
       SIMPLESAMLPHP_ENCRYPTED_ASSERTIONS: "true"
-      SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE:-limesurvey}"
+      # ###################################################
+      # Duplicated: should be SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_NAME or SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE ?
+      #
+      # SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE:-limesurvey}"
+      # ###################################################
       LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
     volumes:
