@@ -142,7 +142,7 @@ The file `examples.yml` allow to deploy two example containers that can be used 
 - eucm/simplesamlphp. To verify Keycloak as a SAML2 IdP.
 ```
 cd /home/vagrant/02-keycloak
-docker-compose -f examples.yml up -d
+docker compose -f examples.yml up -d
 ```
 
 Then perform the following steps:
