@@ -28,9 +28,6 @@ services:
       traefik_services:
         aliases:
           - mcs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-      traefik_services:
-        aliases:
-          - mcs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mcs.loadbalancer.server.port=9090"
