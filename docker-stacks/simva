@@ -297,7 +297,7 @@ function docker_compose_stacks() {
 
         [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
         [[ -e "${STACK_CONF}/simva-env.sh" ]] && source "${STACK_CONF}/simva-env.sh"
-        docker-compose $@
+        docker compose $@
 
         unset COMPOSE_FILE
         unset COMPOSE_PATH_SEPARATOR
@@ -341,7 +341,7 @@ OPERATION one of the following:
     stop:
         Gracefully stop all containers, so that no data is lost; you can then inspect
         their data in ./data, or restart them.
-    log <stack> [<other docker-compose logs params>]:
+    log <stack> [<other docker compose logs params>]:
         Show <stack> logs.
 
     help:
@@ -403,7 +403,7 @@ function start() {
         stacks=$@
     fi
     if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
-        wait_time=120;
+        wait_time=20;
         recho "SIMVA it is not initialized, this launch will take longer than normal."
     fi
     local phase="start"
