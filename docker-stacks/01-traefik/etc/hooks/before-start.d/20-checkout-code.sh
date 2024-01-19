@@ -24,7 +24,7 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
     popd > /dev/null 2>&1
 
     # Verify checksusms of current files
-    pushd ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/csp-reporter > /dev/null 2>&1
+    pushd ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter > /dev/null 2>&1
     old_bash_opts=$-
     set +e
     sha256sum -c --status ${tmp_dir}/sha256sums
