@@ -113,7 +113,7 @@ function prepare_output() {
 
 # pretty output
 function recho() {
-  echo "${red}S${yellow}I${green}M${blue}V${magenta}A${normal} $@"
+    echo "${red}S${yellow}I${green}M${blue}V${magenta}A${normal} $@"
 }
 
 # check docker running; start if not
@@ -147,6 +147,26 @@ function check_dependencies() {
     fi
 
     return ${ret_value}
+}
+
+function version_lt () {
+    if [[ $# -lt 2 ]]; then
+       echo >&2 "Expected two version numbers"
+       exit 1
+    fi
+
+    local newest=$( ( echo "$1"; echo "$2" ) | sort -V | tail -n1)
+    return [[ "$1" != "$newest" ]]
+}
+
+function version_gt () {
+    if [[ $# -lt 2 ]]; then
+       echo >&2 "Expected two version numbers"
+       exit 1
+    fi
+
+    local newest=$( ( echo "$1"; echo "$2" ) | sort -V | tail -n1)
+    return [[ "$1" == "$newest" ]]
 }
 
 # install
@@ -351,12 +371,11 @@ OPERATION one of the following:
         Gracefully stop all containers, so that no data is lost; you can then inspect
         their data in ./data, or restart them.
     restart:
-        Gracefully stop all containers and start them again.
-    log <stack> [<other docker-compose logs params>]:
+            Gracefully stop all containers and start them again.
+    log <stack> [<other docker compose logs params>]:
         Show <stack> logs.
-    build <stack> <docker-compose build params>:
-        Allow to run docker-compose build in a stack.
-
+    build <stack> <docker compose build params>:
+        Allow to run docker compose build in a stack.
     help:
         Display this help and exit
 EOF
@@ -418,7 +437,7 @@ function start() {
     if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
         wait_time=20;
         recho "SIMVA it is not initialized, this launch will take longer than normal."
-    fi
+            fi
     local phase="start"
     execute_before_hooks ${phase} ${stacks}
     docker_compose_stacks "${stacks}" ${wait_time} "up -d"
