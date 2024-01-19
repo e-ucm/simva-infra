@@ -1,61 +1,60 @@
-{  
+{
     "Version":"2012-10-17",
-    "Statement":[  
-       {  
+    "Statement":[
+       {
           "Sid":"AllowGroupToSeeBucketListInTheConsole",
           "Effect":"Allow",
-          "Action":[  
+          "Action":[
              "s3:GetBucketLocation",
              "s3:ListAllMyBuckets"
           ],
-          "Resource":[  
+          "Resource":[
              "arn:aws:s3:::*"
           ]
        },
-       {  
+       {
           "Sid":"AllowRootAndUserListingInBucket",
           "Effect":"Allow",
-          "Action":[  
+          "Action":[
              "s3:ListBucket"
           ],
-          "Resource":[  
-             "arn:aws:s3:::traces"
+          "Resource":[
+             "arn:aws:s3:::traces/kafka-topics"
           ],
-          "Condition":{  
-             "StringEquals":{  
-                "s3:prefix":[  
+          "Condition":{
+             "StringEquals":{
+                "s3:prefix":[
                    "",
-                   "users/"
+                   "traces/*"
                 ]
              }
           }
        },
-       {  
+       {
           "Sid":"AllowListingOfUserFolder",
           "Effect":"Allow",
-          "Action":[  
+          "Action":[
              "s3:ListBucket"
           ],
-          "Resource":[  
-             "arn:aws:s3:::traces"
+          "Resource":[
+             "arn:aws:s3:::traces/kafka-topics"
           ],
-          "Condition":{  
-             "StringLike":{  
-                "s3:prefix":[  
-                   "users/${jwt:sub}",
-                   "users/${jwt:sub}/*"
+          "Condition":{
+             "StringLike":{
+                "s3:prefix":[
+                   "*/*"
                 ]
              }
           }
        },
-       {  
+       {
           "Sid":"AllowAllS3ActionsInUserFolder",
           "Effect":"Allow",
-          "Action":[  
-             "s3:*"
+          "Action":[
+             "s3:GetObject"
           ],
-          "Resource":[  
-             "arn:aws:s3:::traces/users/${jwt:preferred_username}/*"
+          "Resource":[
+             "arn:aws:s3:::traces/kafka-topics/traces/*/*"
           ]
        }
     ]

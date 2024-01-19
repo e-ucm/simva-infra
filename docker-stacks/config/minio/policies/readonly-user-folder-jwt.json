@@ -42,8 +42,8 @@
           "Condition":{
              "StringLike":{
                 "s3:prefix":[
-                   "users/${jwt:preferred_username}",
-                   "users/${jwt:preferred_username}/*"
+                   "users/${jwt:sub}",
+                   "users/${jwt:sub}/*"
                 ]
              }
           }

@@ -1,5 +1,15 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   traefik_services:
     name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
@@ -11,7 +21,8 @@ services:
 # https://github.com/minio/minio/blob/master/docs/sts/keycloak.md
 # https://github.com/minio/minio/blob/master/docs/sts/wso2.md
   minio:
-    image: minio/minio:RELEASE.2020-09-10T22-02-45Z
+    << : *default-opts
+    image: minio/minio:RELEASE.2020-09-26T03-44-56Z
     entrypoint: >
       /bin/sh -c '
       /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_SSO_HOST};
@@ -45,6 +56,7 @@ services:
      - 'server'
      - '/data'
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio:/data
 # be advised if minio is launched as a non-root user you need to change this setting
 # Note too that this setting it is only needed if using a non-recognized CA
@@ -95,6 +107,7 @@ services:
 
 # XXX remove mcs password
   mc:
+    << : *default-opts
     image: minio/mc:RELEASE.2020-09-03T00-08-28Z
     entrypoint: >
       /bin/sh -c '
@@ -127,6 +140,7 @@ services:
         /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder-jwt /policies/write-user-folder-jwt.json;
         /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder /policies/readonly-user-folder.json;
         /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder-jwt /policies/readonly-user-folder-jwt.json;
+        /usr/bin/mc --debug admin policy add simva-minio/ simva-adv4-user /policies/simva-adv4-user.json;
         /usr/bin/mc --debug admin user add simva-minio $${MINIO_MCS_USER} $${MINIO_MCS_SECRET}
         /usr/bin/mc --debug admin policy add simva-minio/ mcsAdmin /policies/mcsAdmin.json;
         /usr/bin/mc --debug admin policy add simva-minio/ mcsRestrictedAdmin /policies/mcsRestrictedAdmin.json;
@@ -139,6 +153,7 @@ services:
       fi
       '
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/minio/policies:/policies:ro
       # Add extra CA (for self-signed certificates)
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.mc/certs/CAs/
