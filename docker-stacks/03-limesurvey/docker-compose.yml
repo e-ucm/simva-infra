@@ -1,5 +1,15 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   traefik_services:
     name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
@@ -8,6 +18,7 @@ networks:
 services:
 
   limesurvey:
+    << : *default-opts
     image: eucm/limesurvey:4.3.15-4
     entrypoint:
       - '/bin/bash'
@@ -56,6 +67,7 @@ services:
       LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/simplesamlphp-data/config:/etc/simplesamlphp
       - ${SIMVA_TLS_HOME?TLS home folder required}:/etc/simplesamlphp/certs:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/etc:/etc/limesurvey
@@ -86,6 +98,7 @@ services:
       - "traefik.http.routers.ls.middlewares=secHeaders@file"
 
   mariadb:
+    << : *default-opts
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/mariadb:/var/lib/mysql
@@ -114,6 +127,7 @@ services:
           - mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
   mariadb-backup:
+    << : *default-opts
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/mariadb-dump:/dump
