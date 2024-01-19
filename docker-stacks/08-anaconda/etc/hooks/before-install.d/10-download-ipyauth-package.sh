@@ -7,7 +7,7 @@ IPYAUTH_DOWNLOAD_URL="https://github.com/e-ucm/ipyauth/releases/download/${IPYAU
 IPYAUTH_SHA256SUM="c3145bafd5def59ab3c9cfb5760d0ceaabe465f4fc96d16545d12ec0c78cff1b"
 
 if [[ ! -e "${SIMVA_DATA_HOME}/anaconda/packages/ipyauth-${IPYAUTH_VERSION}.tar.gz" ]]; then
-    curl -sSL "$${IPYAUTH_DOWNLOAD_URL}" > "${SIMVA_DATA_HOME}/anaconda/packages/ipyauth-${IPYAUTH_VERSION}.tar.gz"
+    curl -sSL "${IPYAUTH_DOWNLOAD_URL}" > "${SIMVA_DATA_HOME}/anaconda/packages/ipyauth-${IPYAUTH_VERSION}.tar.gz"
     echo "$IPYAUTH_SHA256SUM ${SIMVA_DATA_HOME}/anaconda/packages/ipyauth-${IPYAUTH_VERSION}.tar.gz" | sha256sum -c -
 fi
 

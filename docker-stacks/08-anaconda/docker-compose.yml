@@ -1,5 +1,15 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   traefik_services:
     name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
@@ -7,6 +17,7 @@ networks:
 
 services:
   anaconda:
+    << : *default-opts
     image: continuumio/anaconda3:2021.05
     entrypoint: >
       /bin/bash -c '
@@ -110,5 +121,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.jupyter.loadbalancer.server.port=8888"
       - "traefik.http.routers.jupyter.rule=Host(`jupyter.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.jupyter.entrypoints=websecure"
-      - "traefik.http.routers.jupyter.tls=true"

@@ -11,7 +11,7 @@ export SIMVA_LOGGING_MAX_FILE_SIZE="20m"
 
 export SIMVA_LOGGING_MAX_FILES="5"
 
-export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva 80-anaconda"
+export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva 08-anaconda"
 
 # SIMVA installation folder
 export SIMVA_HOME="${SIMVA_PROJECT_DIR}"
