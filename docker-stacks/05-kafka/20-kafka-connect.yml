@@ -1,12 +1,22 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   traefik_services:
     external: true
 
 services:
-
   connect:
+    << : *default-opts
     image: confluentinc/cp-kafka-connect:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
     command: >
       bash -c '
@@ -83,6 +93,7 @@ services:
                   -XX:MaxGCPauseMillis=10000 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent
                   -XX:MaxInlineLevel=15 -Djava.awt.headless=true
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       # kafka-connect plugins have their own classpath, so it is required to add manually extensions to storage
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/connect/kafka-connect-storage-common:/usr/share/simva/kafka-connect-storage-common
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/connect:/usr/share/simva

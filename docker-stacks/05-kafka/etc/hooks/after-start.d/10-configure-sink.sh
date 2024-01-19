@@ -6,7 +6,7 @@ wait_time=10;
 count=20;
 done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
-    echo 1>&2 "Checking minio: $((20-$count+1)) pass";
+    echo 1>&2 "Checking kafka connect: $((20-$count+1)) pass";
     set +e
     docker compose exec connect curl -f -sS http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/
     ret=$?;
