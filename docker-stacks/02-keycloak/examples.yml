@@ -8,6 +8,8 @@ services:
 
   whoami:
     image: containous/whoami
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     hostname: whoami.keycloak.internal.test
     networks:
       default:

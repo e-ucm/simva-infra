@@ -1,5 +1,15 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   traefik_services:
     name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
@@ -7,6 +17,7 @@ networks:
 
 services:
   mariadb:
+    << : *default-opts
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/mariadb:/var/lib/mysql
@@ -32,6 +43,7 @@ services:
           - mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
   mariadb-backup:
+    << : *default-opts
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/mariadb-dump:/dump
@@ -64,6 +76,7 @@ services:
 # XXX Improve healthcheck
 # see: https://issues.redhat.com/browse/KEYCLOAK-1578, https://github.com/thomasdarimont/keycloak-health-checks/
   keycloak:
+    << : *default-opts
     image: ${SIMVA_KEYCLOAK_IMAGE:-jboss/keycloak}:${SIMVA_KEYCLOAK_VERSION:-10.0.2}
     entrypoint:
       - '/bin/bash'
@@ -87,8 +100,11 @@ services:
       - DB_DATABASE=${SIMVA_KEYCLOAK_MYSQL_DATABASE:-keycloak}
       - DB_USER=${SIMVA_KEYCLOAK_MYSQL_USER:-keycloak}
       - DB_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_PASSWORD:-password}
-      - KEYCLOAK_USER=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
-      - KEYCLOAK_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
+# XXX Seems that fails to start the server if the user is already added
+# Verify: https://stackoverflow.com/a/60067870
+# Verify: https://issues.redhat.com/browse/KEYCLOAK-12896
+#      - KEYCLOAK_USER=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
+#      - KEYCLOAK_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       - PROXY_ADDRESS_FORWARDING=true
       - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-120}
       - KEYCLOAK_IMPORT=/var/tmp/simva-realm/simva-realm-full.json
@@ -119,6 +135,7 @@ services:
       - "traefik.http.routers.keycloak.middlewares=secHeaders@file"
 
   mail:
+    << : *default-opts
     image: maildev/maildev:1.1.0
     environment:
       - MAILDEV_SMTP_PORT=25

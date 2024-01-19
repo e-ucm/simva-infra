@@ -88,8 +88,8 @@ function generate_realm_data() {
         done < <(${SIMVA_HOME}/bin/pbkdf2 -b64 -l 64 -i 27500 -j ${user_password})
         secretData=$(echo ${secretData} | sed -e 's/"/\\\\\\"/g')
         credentialData=$(echo ${credentialData} | sed -e 's/"/\\\\\\"/g')
-        echo "  ${user}:" >> ${user_password}
-        echo "    password: \"${conf_file}\"" >> ${conf_file}
+        echo "  ${user}:" >> ${conf_file}
+        echo "    password: \"${user_password}\"" >> ${conf_file}
         echo "    secretData: \"${secretData}\"" >> ${conf_file}
         echo "    credentialData: \"${credentialData}\"" >> ${conf_file}
     done
@@ -171,6 +171,7 @@ function configure_realm_file() {
 }
 
 function configure_realm_development() {
+    generate_realm_data "${STACK_CONF}/realm-data.dev.yml"
     configure_realm_dir "dev"
     configure_realm_file "dev"
 }
