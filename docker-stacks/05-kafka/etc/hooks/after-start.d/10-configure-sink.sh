@@ -8,7 +8,7 @@ done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
     echo 1>&2 "Checking minio: $((20-$count+1)) pass";
     set +e
-    docker-compose exec connect curl -f -sS http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/
+    docker compose exec connect curl -f -sS http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/
     ret=$?;
     set -e
     if [ $ret -eq 0 ]; then
@@ -57,7 +57,7 @@ JQ_SCRIPT
 
   connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
 
-  docker-compose exec connect curl -f -sS \
+  docker compose exec connect curl -f -sS \
     --header 'Content-Type: application/json' \
     --header 'Accept: application/json' \
     --request POST \

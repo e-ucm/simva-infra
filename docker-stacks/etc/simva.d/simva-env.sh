@@ -177,4 +177,6 @@ export SIMVA_A2_ADMIN_USER="root"
 export SIMVA_A2_ADMIN_PASSWORD="password"
 export SIMVA_A2_EXTERNAL="https://analytics.${SIMVA_EXTERNAL_DOMAIN}"
 
+export SIMVA_MAX_UPLOAD_FILE_SIZE="33554432" #32mb
+
 true

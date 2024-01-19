@@ -21,7 +21,7 @@ services:
           - simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
   simva-api:
-    image: node:12.18.2
+    image: node:14
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
@@ -53,9 +53,11 @@ services:
       SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       SSO_ADMIN_USER: ${SIMVA_SSO_ADMIN_USER:-administrator}
       SSO_ADMIN_PASSWORD: ${SIMVA_SSO_ADMIN_PASSWORD:-administrator}
+      MAX_UPLOAD_FILE_SIZE: "${SIMVA_MAX_UPLOAD_FILE_SIZE:-33554432}"
     volumes:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api:/app
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
     depends_on:
       - mongodb
     hostname: simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
@@ -122,9 +124,9 @@ services:
       DEBUG: "${SIMVA_DEBUG:-true}"
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
-      SIMVA_HOST: "simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      SIMVA_PORT: "80"
-      SIMVA_PROTOCOL: "http"
+      SIMVA_HOST: "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_PORT: "443"
+      SIMVA_PROTOCOL: "https"
       MINIO_BUCKET: ${SIMVA_TRACES_BUCKET_NAME:-traces}
       MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       MINIO_SSL: "true"

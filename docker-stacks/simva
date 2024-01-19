@@ -302,7 +302,7 @@ function docker_compose_stacks() {
 
         [[ -e "${STACK_HOME}/etc/simva.d/simva-env.sh" ]] && source "${STACK_HOME}/etc/simva.d/simva-env.sh"
         [[ -e "${STACK_CONF}/simva-env.sh" ]] && source "${STACK_CONF}/simva-env.sh"
-        docker-compose $@
+        docker compose $@
 
         unset COMPOSE_FILE
         unset COMPOSE_PATH_SEPARATOR
@@ -416,7 +416,7 @@ function start() {
         stacks=$@
     fi
     if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
-        wait_time=120;
+        wait_time=20;
         recho "SIMVA it is not initialized, this launch will take longer than normal."
     fi
     local phase="start"
