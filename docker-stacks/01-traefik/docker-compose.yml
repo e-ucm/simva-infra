@@ -1,5 +1,15 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   traefik_services:
     name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
@@ -7,8 +17,10 @@ networks:
 
 services:
   socket-proxy:
+    << : *default-opts
     image: tecnativa/docker-socket-proxy
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       LOG_LEVEL: "${SIMVA_SOCKET_PROXY_LOG_LEVEL:-info}"
@@ -30,6 +42,7 @@ services:
           - "socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
 
   dns-proxy-server:
+    << : *default-opts
     image: eucm/dns-proxy-server:2.19.0-dh-2
     entrypoint:
       - '/bin/sh'
@@ -40,8 +53,8 @@ services:
         {
           "version": 2,
           "remoteDnsServers": [
-            "8.8.8.8:53",
-            "8.8.4.4:53"
+            "${SIMVA_TRAEFIK_DNS_SERVER_1:-8.8.8.8:53}",
+            "${SIMVA_TRAEFIK_DNS_SERVER_2:-8.8.4.4:53}"
           ],
           "envs": [
             {
@@ -80,6 +93,7 @@ services:
 #      MG_DOCKER_HOST: "tcp://socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2375"
 #      MG_DOCKER_API_VERSION: "v1.24"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - socket-proxy
@@ -105,6 +119,7 @@ services:
       - "traefik.http.routers.dns.rule=Host(`dns.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
   traefik:
+    << : *default-opts
     image: traefik:2.2.11
     entrypoint:
       - '/bin/sh'
@@ -134,14 +149,19 @@ services:
               "${SIMVA_TRAEFIK_DASHBOARD_USER:?Traefik dashboard username must be configured}:${SIMVA_TRAEFIK_DASHBOARD_PASSWORD:?Traefik's dashboard password must be configured}"
             ]
           [http.middlewares.secHeaders.headers]
+            #// accessControlAllowHeaders = "Set-Cookie,Content-Type"
+            #// accessControlAllowMethods = ["GET", "POST", "DELETE", "OPTIONS", "PUT"]
+            #// accessControlAllowOrigin = "*"
             contentTypeNosniff = true
-            contentSecurityPolicy = "frame-src 'self' https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none';${SIMVA_TRAEFIK_EXTRA_CSP_POLICY}"
+            #customFrameOptionsValue = "ALLOW-FROM https://simva.e-ucm.es"
+            #contentSecurityPolicy = "frame-src 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none'; report-uri https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}/report-violation; report-to https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}/report-violation;"
         EOF
         exec /entrypoint.sh "$$@"
     command:
       - "--"
       - "traefik"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME:?TLS home folder required}:/etc/traefik/ssl:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/traefik/traefik/static-conf:/etc/traefik
     depends_on:

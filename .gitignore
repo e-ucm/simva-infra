@@ -1,1 +1,3 @@
 .vagrant
+docker-stacks/trace-allocator.log
+docker-stacks/.simva-initialized

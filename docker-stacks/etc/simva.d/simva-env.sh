@@ -7,7 +7,11 @@ export SIMVA_DEBUG="false"
 
 [[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_DEBUG="true"
 
-export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva"
+export SIMVA_LOGGING_MAX_FILE_SIZE="20m"
+
+export SIMVA_LOGGING_MAX_FILES="5"
+
+export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva 80-anaconda"
 
 # SIMVA installation folder
 export SIMVA_HOME="${SIMVA_PROJECT_DIR}"
@@ -88,11 +92,15 @@ export SIMVA_TRAEFIK_EXTRA_CSP_POLICY=""
 
 [[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_TRAEFIK_EXTRA_CSP_POLICY=" report-uri https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}/report-violation; report-to https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}/report-violation;"
 
+#Traefik: DNS Servers
+export SIMVA_TRAEFIK_DNS_SERVER_1="8.8.8.8:53"
+export SIMVA_TRAEFIK_DNS_SERVER_2="8.8.4.4:53"
+
 # Traefik: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
 #
 # example: foo.crt,bar.crt
-export SIMVA_SSL_ROOT_CAS="${SIMVA_TLS_HOME}/ca/rootCA.pem"
+export SIMVA_SSL_ROOT_CAS="${SIMVA_DATA_HOME}/tls/ca/isrgrootx1.pem"
 
 # Keycloak mariadb database configuration
 
@@ -179,4 +187,5 @@ export SIMVA_A2_EXTERNAL="https://analytics.${SIMVA_EXTERNAL_DOMAIN}"
 
 export SIMVA_MAX_UPLOAD_FILE_SIZE="33554432" #32mb
 
+export SIMVA_JUPYTER_PASSWORD="password"
 true
