@@ -61,6 +61,11 @@ export SIMVA_INTERNAL_DOMAIN="internal.test"
 # Domain used for registering public-faced docker container hostnames
 export SIMVA_EXTERNAL_DOMAIN="external.test"
 
+# SIMVA API default user
+export SIMVA_API_ADMIN_USERNAME="admin"
+export SIMVA_API_ADMIN_EMAIL="${SIMVA_API_ADMIN_USERNAME}@${SIMVA_EXTERNAL_DOMAIN}"
+export SIMVA_API_ADMIN_PASSWORD="password"
+
 # tecnativa/socket-proxy logging level, possible values: info, debug
 export SIMVA_SOCKET_PROXY_LOG_LEVEL="info"
 
@@ -90,7 +95,7 @@ export SIMVA_TRAEFIK_DASHBOARD_PASSWORD="\\\$apr1\\\$97xk9Kkr\\\$gavbmzhrI6uOVYN
 
 export SIMVA_TRAEFIK_EXTRA_CSP_POLICY=""
 
-[[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_TRAEFIK_EXTRA_CSP_POLICY=" report-uri https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}/report-violation; report-to https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}/report-violation;"
+[[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_TRAEFIK_EXTRA_CSP_POLICY=" report-uri https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN}/report-violation; report-to https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN}/report-violation;"
 
 #Traefik: DNS Servers
 export SIMVA_TRAEFIK_DNS_SERVER_1="8.8.8.8:53"

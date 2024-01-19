@@ -1,5 +1,15 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   default:
     name: "simva-local_dev"
@@ -13,6 +23,7 @@ networks:
 
 services:
   dns-proxy-server:
+    << : *default-opts
     image: eucm/dns-proxy-server:2.19.0-dh-2
     entrypoint:
       - '/bin/sh'
@@ -65,6 +76,7 @@ services:
       - "--"
       - "/app/dns-proxy-server"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       MG_LOG_LEVEL: "DEBUG"
@@ -79,9 +91,11 @@ services:
 #
 #
   mongodb:
+    << : *default-opts
     image: mongo:4.2.8
     volumes:
-    - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/mongo:/data/db
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/mongo:/data/db
     hostname: simva-mongo.dev.test
     networks:
       default:
@@ -89,6 +103,7 @@ services:
           - simva-mongo.dev.test
 
   simva-api:
+    << : *default-opts
     image: node:12.18.2
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
@@ -147,6 +162,7 @@ services:
         mode: host
 
   simva-front:
+    << : *default-opts
     image: node:12.18.2
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
@@ -154,16 +170,19 @@ services:
     environment:
       DEBUG: "true"
       NODE_ENV: "development"
-      SIMVA_URL: "http://localhost:3050"
+      SIMVA_PORT: "3050"
+      SIMVA_HOST: "localhost"
+      SIMVA_PROTOCOL: "http"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
       MONGO_DB: /simva
       SIMVA_API_HOST: simva-api.dev.test
       SIMVA_API_PORT: "3000"
       SIMVA_API_PROTOCOL: "http"
       SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-      SSO_CLIENT_ID: "${SIMVA_FRONT_SSO_CLIENT_ID:-simva-dev}"
-      SSO_CLIENT_SECRET: "${SIMVA_FRONT_SSO_CLIENT_KEY:-38a56398-fb71-4781-9d65-9b27035b82c6}"
+      SSO_CLIENT_ID: "${SIMVA_FRONT_SSO_CLIENT_ID:-simva}"
+      SSO_CLIENT_SECRET: "${SIMVA_FRONT_SSO_CLIENT_KEY:-secret}"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
 #      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front:/app
 # XXX For development
@@ -184,42 +203,5 @@ services:
         mode: host
       - target: 9229
         published: 9229
-        protocol: tcp
-        mode: host
-
-  simva-trace-allocator:
-    image: node:12.18.2
-    command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
-    stdin_open: true
-    tty: true
-    environment:
-      DEBUG: "true"
-      NODE_ENV: "development"
-      NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
-      SIMVA_HOST: "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      SIMVA_PORT: "443"
-      SIMVA_PROTOCOL: "https"
-      MINIO_BUCKET: ${SIMVA_TRACES_BUCKET_NAME:-traces}
-      MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      MINIO_SSL: "true"
-      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-root}"
-      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
-    volumes:
-      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
-#      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator:/app
-# XXX For development
-      - /home/casa/ivan/keycloak-nodejs/simva-trace-allocator:/app
-    depends_on:
-      - simva-api
-    hostname: simva-trace-allocator.dev.test
-    dns:
-      - 172.29.0.53
-    networks:
-      default:
-        aliases:
-          - simva-trace-allocator.dev.test
-    ports:
-      - target: 9229
-        published: 9231
         protocol: tcp
         mode: host

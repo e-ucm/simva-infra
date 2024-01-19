@@ -44,9 +44,9 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
     fi
 
     popd > /dev/null 2>&1
-    rsync_opts="--exclude .gitignore"
-    if [[ ${reinstall_deps} -eq 0 ]]; then
-        rsync_opts="--exclude node_modules"
+    rsync_opts="--exclude node_modules"
+    if [[ ${reinstall_deps} -ne 0 ]]; then
+        rsync_opts=""
     fi
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/ > /dev/null 2>&1
 
@@ -78,9 +78,9 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
         set -e
     fi
     popd > /dev/null 2>&1
-    rsync_opts="--exclude .gitignore"
-    if [[ ${reinstall_deps} -eq 0 ]]; then
-        rsync_opts="--exclude node_modules"
+    rsync_opts="--exclude node_modules"
+    if [[ ${reinstall_deps} -ne 0 ]]; then
+        rsync_opts=""
     fi
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front/ > /dev/null 2>&1
 
@@ -112,9 +112,9 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
         set -e
     fi
     popd > /dev/null 2>&1
-    rsync_opts="--exclude .gitignore"
-    if [[ ${reinstall_deps} -eq 0 ]]; then
-        rsync_opts="--exclude node_modules"
+    rsync_opts="--exclude node_modules"
+    if [[ ${reinstall_deps} -ne 0 ]]; then
+        rsync_opts=""
     fi
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator/ > /dev/null 2>&1
 fi

@@ -1,5 +1,15 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   traefik_services:
     name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
@@ -10,19 +20,51 @@ networks:
     external: true
 
 services:
+  dozzle:
+    << : *default-opts
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    hostname: logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    environment:
+      DOZZLE_USERNAME: simva
+      DOZZLE_PASSWORD: l0gg1ng
+      DOZZLE_KEY: s3cr3ts1mv4
+    dns:
+      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
+    networks:
+      default:
+        aliases:
+          - logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.logs.loadbalancer.server.port=8080"
+      - "traefik.http.routers.logs.rule=Host(`logs.simva.e-ucm.es`)"
+      - "traefik.http.routers.logs.middlewares=dashboardAuth@file"
+
   mongodb:
+    << : *default-opts
     image: mongo:4.2.8
     volumes:
-    - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/mongo:/data/db
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/mongo:/data/db
     hostname: simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
           - simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    ports:
+        - "27017:27017"
 
   simva-api:
+    << : *default-opts
     image: node:14
-    command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
+    command: bash -c "mkdir -p /storage && cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
     environment:
@@ -54,9 +96,13 @@ services:
       SSO_ADMIN_USER: ${SIMVA_SSO_ADMIN_USER:-administrator}
       SSO_ADMIN_PASSWORD: ${SIMVA_SSO_ADMIN_PASSWORD:-administrator}
       MAX_UPLOAD_FILE_SIZE: "${SIMVA_MAX_UPLOAD_FILE_SIZE:-33554432}"
+      SIMVA_STORAGE_PATH: /storage/
+    restart: unless-stopped
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api:/app
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/storage:/storage
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
     depends_on:
       - mongodb
@@ -79,6 +125,7 @@ services:
       - "traefik.http.routers.simva-api.rule=Host(`simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
   simva-front:
+    << : *default-opts
     image: node:12.18.2
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
@@ -88,14 +135,17 @@ services:
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       SIMVA_URL: "https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
-      MONGO_DB: /simva
+      MONGO_HOST: simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      MONGO_DB: /simva-front
       SIMVA_API_HOST: "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_API_PORT: "443"
       SIMVA_API_PROTOCOL: "https"
       SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       SSO_CLIENT_ID: "${SIMVA_FRONT_SSO_CLIENT_ID:-simva}"
       SSO_CLIENT_SECRET: "${SIMVA_FRONT_SSO_CLIENT_KEY:-secret}"
+    restart: unless-stopped
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front:/app
     depends_on:
@@ -116,25 +166,37 @@ services:
       - "traefik.http.routers.simva-front.rule=Host(`${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
   simva-trace-allocator:
-    image: node:12.18.2
+    << : *default-opts
+    image: node:20.9.0-bullseye
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
     environment:
       DEBUG: "${SIMVA_DEBUG:-true}"
+      TRY_RECOVERY: "true"
+      REMOVE_DRY_RUN: "false"
+      LOG_LEVEL: "debug"
+      REFRESH_INTERVAL: "14400000"
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
-      SIMVA_HOST: "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      SIMVA_PORT: "443"
-      SIMVA_PROTOCOL: "https"
+      SIMVA_HOST: "simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      SIMVA_PORT: "3000"
+      SIMVA_PROTOCOL: "http"
+      SIMVA_USER: "${SIMVA_API_ADMIN_USERNAME}"
+      SIMVA_EMAIL: "${SIMVA_API_ADMIN_USER}"
+      SIMVA_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD}"
+      LOCAL_STATE: "/data"
       MINIO_BUCKET: ${SIMVA_TRACES_BUCKET_NAME:-traces}
       MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       MINIO_SSL: "true"
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-root}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
+    restart: unless-stopped
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator:/app
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator-data:/data
     depends_on:
       - simva-api
     hostname: simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
