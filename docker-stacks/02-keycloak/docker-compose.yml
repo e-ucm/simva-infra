@@ -103,8 +103,8 @@ services:
 # XXX Seems that fails to start the server if the user is already added
 # Verify: https://stackoverflow.com/a/60067870
 # Verify: https://issues.redhat.com/browse/KEYCLOAK-12896
-#      - KEYCLOAK_USER=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
-#      - KEYCLOAK_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
+      - KEYCLOAK_USER=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
+      - KEYCLOAK_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       - PROXY_ADDRESS_FORWARDING=true
       - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-120}
       - KEYCLOAK_IMPORT=/var/tmp/simva-realm/simva-realm-full.json
