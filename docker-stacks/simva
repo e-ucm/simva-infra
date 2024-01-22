@@ -415,9 +415,9 @@ function uninstall() {
     if [[ $# -gt 0 ]]; then
         reverse_stacks=$@
     fi
-    execute_before_hooks ${phase} ${stacks}
+    execute_before_hooks ${phase} ${reverse_stacks}
     docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
-    execute_after_hooks ${phase} ${stacks}
+    execute_after_hooks ${phase} ${reverse_stacks}
 }
 
 
