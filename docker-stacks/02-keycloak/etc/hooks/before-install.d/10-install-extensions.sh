@@ -2,7 +2,7 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-EXTENSIONS_DIR="${STACK_HOME}/extensions"
+EXTENSIONS_DIR="${STACK_HOME}extensions"
 
 for extension in $(find ${EXTENSIONS_DIR} -mindepth 1 -maxdepth 1 -type d); do
     extension_name=${extension#"$EXTENSIONS_DIR"}
@@ -14,5 +14,5 @@ for extension in $(find ${EXTENSIONS_DIR} -mindepth 1 -maxdepth 1 -type d); do
             -e MAVEN_CONFIG=/usr/src/mymaven/.m2 \
             maven:3.6.3-jdk-8-slim mvn -Duser.home=/usr/src/mymaven clean package
     fi
-    cp "${extension}/target/${extension_name}.jar" "${SIMVA_DATA_HOME}/keycloak/deployments"
+    cp "${extension}/target${extension_name}.jar" "${SIMVA_DATA_HOME}/keycloak/deployments"
 done
