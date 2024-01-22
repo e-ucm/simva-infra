@@ -30,6 +30,8 @@ function __docker_alias_entrypoint() {
 #        --entrypoint "${2}" \
 #        "${@:3}"
 #}
+#Removed in volume Keycloak-admin-cli-${SIMVA_KEYCLOAK_VERSION:-10.0.2}.jar because not necessary
+# -v ${SIMVA_DATA_HOME}/keycloak/kcadm/keycloak-admin-cli-${SIMVA_KEYCLOAK_VERSION:-10.0.2}.jar:/opt/jboss/keycloak/bin/client/keycloak-admin-cli-${SIMVA_KEYCLOAK_VERSION:-10.0.2}.jar \
 # Fixes KEYCLOAK-14595
 function __docker_alias_keycloak_entrypoint() {
     docker run -it --rm \
@@ -38,7 +40,7 @@ function __docker_alias_keycloak_entrypoint() {
         -e HOME=$1 \
         -e KC_OPTS="-Duser.home=$1" \
         -v $(pwd):$1 -w $1 \
-        -v ${SIMVA_DATA_HOME}/keycloak/kcadm/keycloak-admin-cli-${SIMVA_KEYCLOAK_VERSION:-10.0.2}.jar:/opt/jboss/keycloak/bin/client/keycloak-admin-cli-${SIMVA_KEYCLOAK_VERSION:-10.0.2}.jar \
+        -v ${SIMVA_DATA_HOME}/keycloak/kcadm/:/opt/jboss/keycloak/bin/client/ \
         --entrypoint "${2}" \
         "${@:3}"
 }

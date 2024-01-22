@@ -113,7 +113,7 @@ services:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/jboss/keycloak/standalone/deployments
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm:/var/tmp/simva-realm:ro
-      - ${SIMVA_DATA_HOME}/keycloak/kcadm/keycloak-admin-cli-${SIMVA_KEYCLOAK_VERSION:-10.0.2}.jar:/opt/jboss/keycloak/bin/client/keycloak-admin-cli-${SIMVA_KEYCLOAK_VERSION:-10.0.2}.jar
+      - ${SIMVA_DATA_HOME}/keycloak/kcadm/:/opt/jboss/keycloak/bin/client/
     restart: unless-stopped
     healthcheck:
       test: "curl -sS http://localhost:8080 || exit 1"
