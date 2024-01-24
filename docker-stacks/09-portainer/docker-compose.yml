@@ -1,0 +1,41 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - 9443:9443
+    volumes:
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/portainer/:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    command: --admin-password "${SIMVA_PORTAINER_ADMIN_PASSWORD}"
+    hostname: portainer.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    dns:
+      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
+    networks:
+      default:
+        aliases:
+          - portainer.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - portainer.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.logs.loadbalancer.server.port=9000"
+      - "traefik.http.routers.logs.rule=Host(`portainer.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"

@@ -20,33 +20,6 @@ networks:
     external: true
 
 services:
-  dozzle:
-    << : *default-opts
-    container_name: dozzle
-    image: amir20/dozzle:latest
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    hostname: logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    environment:
-      DOZZLE_USERNAME: simva
-      DOZZLE_PASSWORD: l0gg1ng
-      DOZZLE_KEY: s3cr3ts1mv4
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
-    networks:
-      default:
-        aliases:
-          - logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-      traefik_services:
-        aliases:
-          - logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.logs.loadbalancer.server.port=8080"
-      - "traefik.http.routers.logs.rule=Host(`logs.simva.e-ucm.es`)"
-      - "traefik.http.routers.logs.middlewares=dashboardAuth@file"
-
   mongodb:
     << : *default-opts
     image: mongo:4.2.8

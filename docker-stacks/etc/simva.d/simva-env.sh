@@ -192,5 +192,13 @@ export SIMVA_A2_EXTERNAL="https://analytics.${SIMVA_EXTERNAL_DOMAIN}"
 
 export SIMVA_MAX_UPLOAD_FILE_SIZE="33554432" #32mb
 
+# Portainer: passwords must be hashed using MD5, SHA1, or BCrypt.
+# Note: Use htpasswd to generate the passwords and escape $ with \$.
+# docker run --rm httpd:2.4-alpine htpasswd -nbB admin 'password' | cut -d ":" -f 21
+#
+# Default: password
+# XXX Better use the approach of _FILE variables to read the variable from a file (check file_env)
+export SIMVA_PORTAINER_ADMIN_PASSWORD="\$\$2y\$\$05\$\$bpeBlWUW7tEdwMUn2KcRZeF7WMZnPAHbZZb17elunirVSX8ieIXvy"
+
 export SIMVA_JUPYTER_PASSWORD="password"
 true
