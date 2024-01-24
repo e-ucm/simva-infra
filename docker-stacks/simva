@@ -340,7 +340,9 @@ function run_scripts_from_folder() {
     local folder=${1}
     if [[ -d "${folder}" ]]; then
         for FILE in $(find ${folder} -iname \*.sh -type f -executable | sort); do
+            echo "Running hook script file : ${FILE}"
             ${FILE}
+            echo "Running hook script file done : ${FILE}"
         done
     fi
 }
