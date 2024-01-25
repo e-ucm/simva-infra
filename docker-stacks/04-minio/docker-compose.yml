@@ -34,7 +34,7 @@ services:
         count=$${MC_MAX_RETRIES};
         done="ko";
         while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
-          echo 1>&2 "Checking minio: $$(($${MC_WAIT_TIME}-$$count+1)) pass";
+          echo 1>&2 "Checking Keycloak availability for minio: $$(($${MC_WAIT_TIME}-$$count+1)) pass";
           wget "https://$${MINIO_SSO_HOST}/auth/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
           ret=$$?;
           if [ $$ret -eq 0 ]; then
@@ -120,6 +120,25 @@ services:
         count=$${MC_MAX_RETRIES};
         done="ko";
         while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
+          echo 1>&2 "Checking Keycloak availability for minio: $$(($${MC_WAIT_TIME}-$$count+1)) pass";
+          wget "https://$${MINIO_SSO_HOST}/auth/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
+          ret=$$?;
+          if [ $$ret -eq 0 ]; then
+            done="ok";
+          else
+            echo 1>&2 "Keycloak not available, waiting $${wait_time}s";
+            sleep $${wait_time};
+          fi;
+          count=$$((count-1));
+        done;
+        if [ $$count -eq 0 ]; then
+          echo 1>&2 "Keycloak not available !";
+          exit 1
+        fi;
+        wait_time=$${MC_WAIT_TIME};
+        count=$${MC_MAX_RETRIES};
+        done="ko";
+        while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
           echo 1>&2 "Checking minio: $$(($${MC_WAIT_TIME}-$$count+1)) pass";
           wget "$${MINIO_URL}/minio/health/live" -O - >/dev/null;
           ret=$$?;
@@ -159,6 +178,8 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.mc/certs/CAs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
+      MINIO_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}:443"
+      MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_URL: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
