@@ -22,11 +22,14 @@ services:
     entrypoint: >
       /bin/bash -c '
         set -euo pipefail;
+
+        # Check if Anaconda has been initialized
         if [[ ! -e /anaconda-initialized ]]; then
           # Install gosu
           apt-get update;
           apt-get install -y gosu;
           rm -rf /var/lib/apt/lists/*;
+
           # Install tini
           TINI_VERSION="v0.19.0";
           TINI_DOWNLOAD_URL="https://github.com/krallin/tini/releases/download/$${TINI_VERSION}/tini-amd64";
@@ -38,9 +41,16 @@ services:
           popd;
           mv /tmp/tini-amd64 /usr/local/bin/tini
           chmod +x /usr/local/bin/tini
-          # Anaconda jupyter install
-          groupadd -r anaconda;
-          useradd -r -g anaconda -s /bin/bash anaconda;
+          
+          # Anaconda Jupyter install
+          # Check if the group 'anaconda' exists
+          if [[! getent group anaconda > /dev/null]]; then
+              groupadd -r anaconda
+          fi;
+          # Check if the user 'anaconda' exists
+          if [[! getent passwd anaconda > /dev/null]]; then
+              useradd -r -g anaconda -s /bin/bash anaconda
+          fi;
           if [[ ! -d /home/anaconda ]]; then
             mkdir /home/anaconda;
           fi;
@@ -56,25 +66,32 @@ services:
           pip install /opt/packages/ipyauth.tar.gz
           /opt/conda/bin/jupyter nbextension enable --py --sys-prefix ipyauth.ipyauth_widget;
           /opt/conda/bin/jupyter serverextension enable --py --sys-prefix ipyauth.ipyauth_callback;
+
           # Install other dependencies required by the Demo Notebook
           pip install boto3 jwt;
+
           # Paquete a instalar
           pip install ipympl
           jupyter nbextension enable ipympl --py --sys-prefix
+
           chown -R anaconda: /opt/conda
           date > /anaconda-initialized;
-          echo "SIMVA: Anaconda jupyter installed and initialized"
+          echo "SIMVA: Anaconda Jupyter installed and initialized"
         fi;
+
         # Generate user config folder / file
         if [[ ! -e "/home/anaconda/.jupyter/jupyter_notebook_config.py" ]]; then
-          gosu anaconda /opt/conda/bin/jupyter notebook --generate-config
+            gosu anaconda /opt/conda/bin/jupyter notebook --generate-config
         fi;
+
         # Setup password
         export JUPYTER_PASSWORD=$${JUPYTER_PASSWORD:-jupyter};
         password=$$(python3 -c "from notebook.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
         unset JUPYTER_PASSWORD;
         ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
         sed -r -i -e "s/^#?\s*c.NotebookApp.password\s+=.*/c.NotebookApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
+        
+        # Run the Jupyter Notebook
         /usr/local/bin/tini -- $$@
       '
     command:
