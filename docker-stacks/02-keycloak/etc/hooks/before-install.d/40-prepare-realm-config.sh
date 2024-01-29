@@ -117,7 +117,9 @@ function generate_realm_data() {
     client_secret=$(get_or_generate_password "simva" "${STACK_CONF}/simva-env.sh")
 
     echo "  simva:" >> ${conf_file}
-    echo "    baseUrl: \"https://simva.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    baseUrl: \"https://${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    apiUrl: \"https://simva-api.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    ssoUrl: \"https://sso.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
 }
 

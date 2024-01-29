@@ -711,8 +711,189 @@
     "nodeReRegistrationTimeout" : -1,
     "defaultClientScopes" : [ "web-origins", "role_list", "profile", "roles", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
-  } ],
-  "clientScopes" : [ {
+  },
+  {
+    "id": "a86d361b-922d-452c-94db-805a1ddd2516",
+    "clientId": "lti-tool",
+    "surrogateAuthRequired": false,
+    "enabled": true,
+    "alwaysDisplayInConsole": false,
+    "clientAuthenticatorType": "client-jwt",
+    "secret": "**********",
+    "redirectUris": [
+      "https://60f6eddc8adb.ngrok.io/lti/"
+    ],
+    "webOrigins": [],
+    "notBefore": 0,
+    "bearerOnly": false,
+    "consentRequired": false,
+    "standardFlowEnabled": true,
+    "implicitFlowEnabled": true,
+    "directAccessGrantsEnabled": false,
+    "serviceAccountsEnabled": true,
+    "publicClient": false,
+    "frontchannelLogout": false,
+    "protocol": "openid-connect",
+    "attributes": {
+      "saml.assertion.signature": "false",
+      "saml.force.post.binding": "false",
+      "saml.multivalued.roles": "false",
+      "saml.encrypt": "false",
+      "use.jwks.url": "true",
+      "saml.server.signature": "false",
+      "saml.server.signature.keyinfo.ext": "false",
+      "exclude.session.state.from.auth.response": "false",
+      "jwks.url": "https://60f6eddc8adb.ngrok.io/lti/keys",
+      "saml_force_name_id_format": "false",
+      "saml.client.signature": "false",
+      "tls.client.certificate.bound.access.tokens": "false",
+      "saml.authnstatement": "false",
+      "display.on.consent.screen": "false",
+      "saml.onetimeuse.condition": "false"
+    },
+    "authenticationFlowBindingOverrides": {},
+    "fullScopeAllowed": true,
+    "nodeReRegistrationTimeout": -1,
+    "protocolMappers": [
+      {
+        "id": "5b6714a3-0851-49b8-a832-ee5d0697cdf7",
+        "name": "Client ID",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-usersessionmodel-note-mapper",
+        "consentRequired": false,
+        "config": {
+          "user.session.note": "clientId",
+          "userinfo.token.claim": "true",
+          "id.token.claim": "true",
+          "access.token.claim": "true",
+          "claim.name": "clientId",
+          "jsonType.label": "String"
+        }
+      },
+      {
+        "id": "11d14b59-0dbc-4b8c-a6c2-77b3d232464c",
+        "name": "Client IP Address",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-usersessionmodel-note-mapper",
+        "consentRequired": false,
+        "config": {
+          "user.session.note": "clientAddress",
+          "userinfo.token.claim": "true",
+          "id.token.claim": "true",
+          "access.token.claim": "true",
+          "claim.name": "clientAddress",
+          "jsonType.label": "String"
+        }
+      },
+      {
+        "id": "29f30440-78e0-4871-9a62-88489e85062f",
+        "name": "lti-mapper",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-lti13-mapper",
+        "consentRequired": false,
+        "config": {
+          "lti3_platform.auth.id": "SIMVA_CLIENT_ID",
+          "lti3_platform.url": "{{ .clients.simva.baseUrl }}/lti/claims",
+          "lti3_platform.auth.url": "{{ .clients.simva.ssoUrl }}/auth/realms/simva/protocol/openid-connect/token",
+          "lti3_platform.headers.bearer.token": "false",
+          "access.token.claim": "true",
+          "lti3_platform.auth.pass": "SIMVA_CLIENT_PASSWORD",
+          "jsonType.label": "JSON",
+          "lti3_platform.parameters.method": "GET",
+          "lti3_platform.parameters.clientid": "true",
+          "userinfo.token.claim": "true",
+          "id.token.claim": "true",
+          "lti3_platform.parameters.username": "true"
+        }
+      },
+      {
+        "id": "42fe0db3-e541-4dc1-9408-c1e5d095e222",
+        "name": "Client Host",
+        "protocol": "openid-connect",
+        "protocolMapper": "oidc-usersessionmodel-note-mapper",
+        "consentRequired": false,
+        "config": {
+          "user.session.note": "clientHost",
+          "userinfo.token.claim": "true",
+          "id.token.claim": "true",
+          "access.token.claim": "true",
+          "claim.name": "clientHost",
+          "jsonType.label": "String"
+        }
+      }
+    ],
+    "defaultClientScopes": [
+      "web-origins",
+      "role_list",
+      "profile",
+      "roles",
+      "email"
+    ],
+    "optionalClientScopes": [
+      "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+      "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+      "address",
+      "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
+      "https://purl.imsglobal.org/spec/lti-ags/scope/score",
+      "phone",
+      "offline_access",
+      "microprofile-jwt",
+      "https://purl.imsglobal.org/spec/lti-ap/scope/control.all",
+      "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly"
+    ]
+  }],
+  "clientScopes" : [ 
+    {
+      "id": "08b2e074-6c40-4b4e-bb96-4a55b4b6b250",
+      "name": "https://purl.imsglobal.org/spec/lti-ap/scope/control.all",
+      "description": "https://purl.imsglobal.org/spec/lti-ap/scope/control.all",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "id": "15769ada-8b09-44ca-8282-12139b3a94b2",
+      "name": "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly",
+      "description": "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "id": "3c64e095-0256-4b48-97de-ead68af607bf",
+      "name": "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
+      "description": "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "id": "3d5d9e1f-a12b-4d3f-8c7f-d0e7c034e766",
+      "name": "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+      "description": "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "id": "3f9730f4-9dea-415d-809b-aa5663c1a33e",
+      "name": "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+      "description": "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
     "id" : "0d4ad893-6c6f-4150-9dd1-40761cf91c9f",
     "name" : "address",
     "description" : "OpenID Connect built-in scope: address",

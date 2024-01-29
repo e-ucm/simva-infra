@@ -31,4 +31,6 @@ clients:
     secret: "858e724d-a489-4ece-9630-a8976ecb61e9"
   simva:
     baseUrl: "https://external.test"
+    apiUrl: "https://simva-api.external.test"
+    ssoUrl: "https://sso.external.test"
     secret: "secret"
