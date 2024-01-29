@@ -44,11 +44,11 @@ services:
           
           # Anaconda Jupyter install
           # Check if the group 'anaconda' exists
-          if [[! getent group anaconda > /dev/null]]; then
+          if ! getent group anaconda > /dev/null; then
               groupadd -r anaconda
           fi;
           # Check if the user 'anaconda' exists
-          if [[! getent passwd anaconda > /dev/null]]; then
+          if ! getent passwd anaconda > /dev/null; then
               useradd -r -g anaconda -s /bin/bash anaconda
           fi;
           if [[ ! -d /home/anaconda ]]; then
