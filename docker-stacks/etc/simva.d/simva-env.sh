@@ -133,7 +133,6 @@ export SIMVA_LIMESURVEY_ADMIN_USER="admin"
 export SIMVA_LIMESURVEY_ADMIN_PASSWORD="password2"
 export SIMVA_LIMESURVEY_ADMIN_NAME="Simva Administrator"
 export SIMVA_LIMESURVEY_ADMIN_EMAIL="lime-dev@limesurvey.${SIMVA_EXTERNAL_DOMAIN}"
-
 export SIMVA_LIMESURVEY_DEBUG_ENTRYPOINT="false"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="password"
 
@@ -201,4 +200,20 @@ export SIMVA_MAX_UPLOAD_FILE_SIZE="33554432" #32mb
 export SIMVA_PORTAINER_ADMIN_PASSWORD="\$\$2y\$\$05\$\$bpeBlWUW7tEdwMUn2KcRZeF7WMZnPAHbZZb17elunirVSX8ieIXvy"
 
 export SIMVA_JUPYTER_PASSWORD="password"
-true
+
+########################################################
+# ################### KEYCLOAK USERS ###################
+# AUX VARIABLES FOR KEYCLOAK prepare_realm_config SCRIPT
+########################################################
+export SIMVA_LIMESURVEY_USER="${SIMVA_LIMESURVEY_ADMIN_USER}"
+export SIMVA_LIMESURVEY_PASSWORD="${SIMVA_LIMESURVEY_ADMIN_PASSWORD}"
+
+export SIMVA_ADMINISTRATOR_USER="${SIMVA_SSO_ADMIN_USER}"
+export SIMVA_ADMINISTRATOR_PASSWORD="${SIMVA_SSO_ADMIN_PASSWORD}"
+
+export SIMVA_MINIO_USER="${SIMVA_MINIO_ACCESS_KEY}"
+export SIMVA_MINIO_PASSWORD="${SIMVA_MINIO_SECRET_KEY}"
+
+export SIMVA_SIMVA_USER="simva"
+export SIMVA_SIMVA_PASSWORD="${SIMVA_API_ADMIN_PASSWORD}"
+########################################################
