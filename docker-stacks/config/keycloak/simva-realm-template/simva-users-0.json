@@ -21,7 +21,30 @@
     "requiredActions" : [ ],
     "realmRoles" : [ "uma_authorization", "administrator", "offline_access" ],
     "clientRoles" : {
-      "account" : [ "view-profile", "manage-account" ]
+      "account" : [ 
+        "view-profile",
+        "manage-account"
+      ],
+      "realm-management" : [
+        "view-clients",
+        "view-events",
+        "view-authorization",
+        "create-client",
+        "manage-authorization",
+        "manage-realm",
+        "manage-identity-providers",
+        "query-clients",
+        "query-groups",
+        "manage-clients",
+        "impersonation",
+        "query-realms",
+        "view-users",
+        "query-users",
+        "view-realm",
+        "view-identity-providers",
+        "manage-events",
+        "manage-users"
+      ]
     },
     "notBefore" : 0,
     "groups" : [ ]
