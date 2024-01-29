@@ -721,7 +721,7 @@
     "clientAuthenticatorType": "client-jwt",
     "secret": "**********",
     "redirectUris": [
-      "https://60f6eddc8adb.ngrok.io/lti/"
+      "{{ .clients.simva.baseUrl }/lti/"
     ],
     "webOrigins": [],
     "notBefore": 0,
@@ -743,7 +743,7 @@
       "saml.server.signature": "false",
       "saml.server.signature.keyinfo.ext": "false",
       "exclude.session.state.from.auth.response": "false",
-      "jwks.url": "https://60f6eddc8adb.ngrok.io/lti/keys",
+      "jwks.url": "{{ .clients.simva.baseUrl }/lti/keys",
       "saml_force_name_id_format": "false",
       "saml.client.signature": "false",
       "tls.client.certificate.bound.access.tokens": "false",
