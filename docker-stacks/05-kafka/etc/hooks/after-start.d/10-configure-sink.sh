@@ -6,6 +6,48 @@ wait_time=10;
 count=20;
 done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
+  echo 1>&2 "Checking Keycloak availability for kafka: $((20-$count+1)) pass";
+  set +e
+  wget "${SIMVA_SSO_OPENID_CONFIG_URL}" -O - >/dev/null;
+  ret=$?;
+  set -e
+  if [ $ret -eq 0 ]; then
+    done="ok";
+  else
+    echo 1>&2 "Keycloak not available, waiting ${wait_time}s";
+    sleep ${wait_time};
+  fi;
+  count=$count-1;
+done;
+if [ $count -eq 0 ]; then
+  echo 1>&2 "Keycloak not available !";
+  exit 1
+fi;
+
+count=20;
+done="ko";
+while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
+  echo 1>&2 "Checking minio: $((20-$count+1)) pass";
+  set +e
+  wget "${SIMVA_KAFKA_CONNECT_SINK_MINIO_URL}/minio/health/live" -O - >/dev/null;
+  ret=$?;
+  set -e
+  if [ $ret -eq 0 ]; then
+    done="ok";
+  else
+    echo 1>&2 "Minio not available, waiting ${wait_time}s";
+    sleep ${wait_time};
+  fi;
+  count=$(($count-1));
+done;
+if [ $count -eq 0 ]; then
+  echo 1>&2 "Minio not available !";
+  exit 1
+fi;
+
+count=20;
+done="ko";
+while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
     echo 1>&2 "Checking kafka connect: $((20-$count+1)) pass";
     set +e
     docker compose exec connect curl -f -sS http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/
