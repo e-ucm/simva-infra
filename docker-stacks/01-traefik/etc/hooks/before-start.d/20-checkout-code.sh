@@ -23,22 +23,17 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
     sha256sum package.json > sha256sums
     popd > /dev/null 2>&1
 
-    # Verify checksusms of current files
-    pushd ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter > /dev/null 2>&1
-    old_bash_opts=$-
-    set +e
-    sha256sum -c --status ${tmp_dir}/sha256sums
+    # Verify checksums of current files
+    oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums)
+    newSha=$(cat ${tmp_dir}/sha256sums)
+    echo $oldSha
+    echo $newSha
 
     # If checksums do not verify -> reinstall dependencies
-    reinstall_deps=$?
-    if [[ ${old_bash_opts} =~ e ]]; then
-        set -e
-    fi
-
-    popd > /dev/null 2>&1
     rsync_opts="--exclude node_modules"
-    if [[ ${reinstall_deps} -ne 0 ]]; then
+    if [[ ! ${newSha} == ${oldSha} ]]; then
         rsync_opts=""
     fi
+    echo $rsync_opts
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/ > /dev/null 2>&1
 fi
