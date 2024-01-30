@@ -31,14 +31,19 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
     sha256sum package.json package-lock.json > sha256sums
     popd > /dev/null 2>&1
 
-    # Verify checksusms of current files
+    # Verify checksums of current files
     pushd ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api > /dev/null 2>&1
     old_bash_opts=$-
     set +e
     sha256sum -c --status ${tmp_dir}/sha256sums
+    
+    echo $tmp_dir
+    echo $(cat ${tmp_dir}/sha256sums)
+    echo $(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/sha256sums)
 
     # If checksums do not verify -> reinstall dependencies
     reinstall_deps=$?
+    echo $reinstall_deps
     if [[ ${old_bash_opts} =~ e ]]; then
         set -e
     fi
@@ -48,6 +53,7 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
     if [[ ${reinstall_deps} -ne 0 ]]; then
         rsync_opts=""
     fi
+    echo $rsync_opts
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/ > /dev/null 2>&1
 
     ############################################################
