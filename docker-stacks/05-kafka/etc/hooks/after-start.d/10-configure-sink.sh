@@ -17,7 +17,7 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
     echo 1>&2 "Keycloak not available, waiting ${wait_time}s";
     sleep ${wait_time};
   fi;
-  count=$count-1;
+  count=$((count-1));
 done;
 if [ $count -eq 0 ]; then
   echo 1>&2 "Keycloak not available !";
@@ -38,7 +38,7 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
     echo 1>&2 "Minio not available, waiting ${wait_time}s";
     sleep ${wait_time};
   fi;
-  count=$(($count-1));
+  count=$((count-1));
 done;
 if [ $count -eq 0 ]; then
   echo 1>&2 "Minio not available !";
