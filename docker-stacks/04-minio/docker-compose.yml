@@ -114,7 +114,7 @@ services:
     image: minio/mc:RELEASE.2020-09-03T00-08-28Z
     entrypoint: >
       /bin/sh -c '
-      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/minio-initialized" ]; then
+      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/data/minio-initialized" ]; then
         if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
           cp /root/.mc/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
           cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
@@ -142,7 +142,7 @@ services:
           echo 1>&2 "Keycloak available !";
         fi;
       fi;
-      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/minio-initialized" ]; then
+      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/data/minio-initialized" ]; then
         wait_time=$${MC_WAIT_TIME};
         count=$${MC_MAX_RETRIES};
         done="ko";
@@ -179,10 +179,11 @@ services:
         /usr/bin/mc --debug admin policy add simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json;
         /usr/bin/mc --debug admin policy set simva-minio/ simvaSink user=$${SIMVA_SINK_USER}
         /usr/bin/mc --debug mb simva-minio/traces;
-        touch /minio-initialized;
+        touch /data/minio-initialized;
       fi
       '
     volumes:
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio:/data
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/minio/policies:/policies:ro
       # Add extra CA (for self-signed certificates)

@@ -24,7 +24,7 @@ services:
         set -euo pipefail;
 
         # Check if Anaconda has been initialized
-        if [[ ! -e /anaconda-initialized ]]; then
+        if [[ ! -e /home/anaconda/.jupyter/anaconda-initialized ]]; then
           # Install gosu
           apt-get update;
           apt-get install -y gosu;
@@ -75,7 +75,7 @@ services:
           jupyter nbextension enable ipympl --py --sys-prefix
 
           chown -R anaconda: /opt/conda
-          date > /anaconda-initialized;
+          date > /home/anaconda/.jupyter/anaconda-initialized;
           echo "SIMVA: Anaconda Jupyter installed and initialized"
         fi;
 
