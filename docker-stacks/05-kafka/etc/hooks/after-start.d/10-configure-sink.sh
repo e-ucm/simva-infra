@@ -20,11 +20,11 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   fi;
   count=$((count-1));
 done;
-if $count -eq 0 && "$done" != "ok"; then
+if [ $count -eq 0 ] && [ "$done" != "ok" ]; then
   echo 1>&2 "Keycloak not available !";
   exit 1
 fi;
-if "$done" == "ok"; then
+if [ "$done" == "ok" ]; then
   echo 1>&2 "Keycloak available !";
 fi;
 
@@ -44,11 +44,11 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   fi;
   count=$((count-1));
 done;
-if $count -eq 0 && "$done" != "ok"; then
+if [ $count -eq 0 ] && [ "$done" != "ok" ]; then
   echo 1>&2 "Minio not available !";
   exit 1
 fi;
-if "$done" == "ok"; then
+if [ "$done" == "ok" ]; then
   echo 1>&2 "Minio available !";
 fi;
 
@@ -68,11 +68,11 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
     fi;
     count=$((count-1));
 done;
-if $count -eq 0 && "$done" != "ok"; then
+if [ $count -eq 0 ] && [ "$done" != "ok" ]; then
   echo 1>&2 "Kafka Connect not available !";
   exit 1
 fi;
-if "$done" == "ok"; then
+if [ "$done" == "ok" ]; then
   echo 1>&2 "Kafka Connect available !";
 fi;
 
