@@ -2,11 +2,12 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-wait_time=10;
-count=20;
+mc_max_retries=${SIMVA_MAX_RETRIES:-20}
+wait_time=${SIMVA_WAIT_TIME:-10};
+count=${mc_max_retries};
 done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
-  echo 1>&2 "Checking Keycloak availability for kafka: $((20-$count+1)) pass";
+  echo 1>&2 "Checking Keycloak availability for kafka: $((${mc_max_retries}-$count+1)) pass";
   set +e
   wget "${SIMVA_SSO_OPENID_CONFIG_URL}" -O - >/dev/null;
   ret=$?;
@@ -24,10 +25,10 @@ if [ $count -eq 0 ]; then
   exit 1
 fi;
 
-count=20;
+count=${mc_max_retries};
 done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
-  echo 1>&2 "Checking minio: $((20-$count+1)) pass";
+  echo 1>&2 "Checking minio: $((${mc_max_retries}-$count+1)) pass";
   set +e
   wget "${SIMVA_KAFKA_CONNECT_SINK_MINIO_URL}/minio/health/live" -O - >/dev/null;
   ret=$?;
@@ -45,10 +46,10 @@ if [ $count -eq 0 ]; then
   exit 1
 fi;
 
-count=20;
+count=${mc_max_retries};
 done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
-    echo 1>&2 "Checking kafka connect: $((20-$count+1)) pass";
+    echo 1>&2 "Checking kafka connect: $((${mc_max_retries}-$count+1)) pass";
     set +e
     docker compose exec connect curl -f -sS http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/
     ret=$?;

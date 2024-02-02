@@ -116,8 +116,8 @@ services:
       MINIO_URL: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
 
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
-      MC_WAIT_TIME: "10"
-      MC_MAX_RETRIES: "10"
+      MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
     restart: unless-stopped
     healthcheck:
       test: "curl -sS http://localhost:8888/ || exit 1"

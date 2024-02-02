@@ -72,8 +72,8 @@ services:
       MINIO_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}:443"
       MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
-      MC_WAIT_TIME: "10"
-      MC_MAX_RETRIES: "10"
+      MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
     restart: unless-stopped
     healthcheck:
       test: "curl -sS http://localhost:9000/minio/health/live || exit 1"
@@ -188,8 +188,8 @@ services:
       MINIO_MCS_SECRET: "${SIMVA_MINIO_MCS_SECRET:-password}"
       SIMVA_SINK_USER: "${SIMVA_KAFKA_CONNECT_SINK_USER:-simva-sink}"
       SIMVA_SINK_SECRET: "${SIMVA_KAFKA_CONNECT_SINK_SECRET:-password}"
-      MC_WAIT_TIME: "10"
-      MC_MAX_RETRIES: "10"
+      MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
     hostname: mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     dns:

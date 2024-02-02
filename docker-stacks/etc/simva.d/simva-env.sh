@@ -108,7 +108,6 @@ export SIMVA_TRAEFIK_DNS_SERVER_2="8.8.4.4:53"
 export SIMVA_SSL_ROOT_CAS="${SIMVA_DATA_HOME}/tls/ca/isrgrootx1.pem"
 
 # Keycloak mariadb database configuration
-
 export SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD="root"
 export SIMVA_KEYCLOAK_MYSQL_DATABASE="keycloak"
 export SIMVA_KEYCLOAK_MYSQL_USER="keycloak"
@@ -119,6 +118,10 @@ export SIMVA_KEYCLOAK_ADMIN_USER="admin"
 export SIMVA_KEYCLOAK_ADMIN_PASSWORD="password"
 
 export SIMVA_WAIT_TIMEOUT="120"
+
+#Checking time and max retries for KeyCloak, Minio,Kafka and Anaconda availabled
+export SIMVA_WAIT_TIME='10'
+export SIMVA_MAX_RETRIES='20'
 
 export SIMVA_SSO_HOST="sso.${SIMVA_EXTERNAL_DOMAIN}"
 export SIMVA_SSO_REALM="simva"
