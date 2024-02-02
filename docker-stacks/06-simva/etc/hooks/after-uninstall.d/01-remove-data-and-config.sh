@@ -20,4 +20,4 @@ rm -rf ./*
 # Removing Simva Trace Allocator logs
 if [[ -e "${SIMVA_PROJECT_DIR}/trace-allocator.log" ]]; then
     rm "${SIMVA_PROJECT_DIR}/trace-allocator.log"
-ficd 
+fi
