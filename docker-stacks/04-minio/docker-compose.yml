@@ -71,7 +71,7 @@ services:
       MINIO_IDENTITY_OPENID_SCOPES: "${SIMVA_MINIO_IDENTITY_OPENID_SCOPES:-openid,policy_role_attribute}"
       MINIO_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}:443"
       MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
-      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
       MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
       MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
     restart: unless-stopped
@@ -190,7 +190,7 @@ services:
       SIMVA_SINK_SECRET: "${SIMVA_KAFKA_CONNECT_SINK_SECRET:-password}"
       MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
       MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
-      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
     hostname: mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     dns:
       - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}

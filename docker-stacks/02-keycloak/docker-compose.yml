@@ -54,7 +54,7 @@ services:
       - MYSQL_ROOT_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD:-root}
       - BACKUP_NUM_KEEP=7
       - BACKUP_FREQUENCY=1d
-      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-120}
+      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-240}
     entrypoint: |
       bash -c '/container-tools/wait-for-it.sh -h $${MYSQL_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- bash -s <<EOF
       trap "break;exit" SIGHUP SIGINT SIGTERM
@@ -106,7 +106,7 @@ services:
       - KEYCLOAK_USER=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
       - KEYCLOAK_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       - PROXY_ADDRESS_FORWARDING=true
-      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-120}
+      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-240}
       - KEYCLOAK_IMPORT=/var/tmp/simva-realm/simva-realm-full.json
     volumes:
       - /etc/localtime:/etc/localtime:ro

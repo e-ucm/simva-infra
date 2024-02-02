@@ -65,7 +65,7 @@ services:
       # SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE:-limesurvey}"
       # ###################################################
       LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}"
-      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/simplesamlphp-data/config:/etc/simplesamlphp
@@ -138,7 +138,7 @@ services:
       - MYSQL_ROOT_PASSWORD=${SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD:-root}
       - BACKUP_NUM_KEEP=7
       - BACKUP_FREQUENCY=1d
-      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-120}
+      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-240}
     entrypoint: |
       bash -c '/container-tools/wait-for-it.sh -h $${MYSQL_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- bash -s <<EOF
       trap "break;exit" SIGHUP SIGINT SIGTERM

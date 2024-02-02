@@ -117,11 +117,11 @@ export SIMVA_KEYCLOAK_MYSQL_PASSWORD="password"
 export SIMVA_KEYCLOAK_ADMIN_USER="admin"
 export SIMVA_KEYCLOAK_ADMIN_PASSWORD="password"
 
-export SIMVA_WAIT_TIMEOUT="120"
+export SIMVA_WAIT_TIMEOUT="240"
 
 #Checking time and max retries for KeyCloak, Minio,Kafka and Anaconda availabled
-export SIMVA_WAIT_TIME='10'
-export SIMVA_MAX_RETRIES='20'
+export SIMVA_WAIT_TIME="10"
+export SIMVA_MAX_RETRIES="20"
 
 export SIMVA_SSO_HOST="sso.${SIMVA_EXTERNAL_DOMAIN}"
 export SIMVA_SSO_REALM="simva"
