@@ -65,6 +65,11 @@ function main() {
             build $@
             exit 0
         ;;
+        "setExecutable")
+            check_docker_launched
+            setExecutable ${DEFAULT_WAIT_TIME} $@
+            exit 0
+        ;;
         "help")
             help
             exit 0
@@ -347,6 +352,13 @@ function run_scripts_from_folder() {
     fi
 }
 
+function setExecutable_scripts_from_folder() {
+    local folder=${1}
+    if [[ -d "${folder}" ]]; then
+        chmod a+x ${folder}/*
+    fi
+}
+
 # ----
 # ---- Commands start here, in their order according to the help screen
 # ----
@@ -373,7 +385,9 @@ OPERATION one of the following:
         Gracefully stop all containers, so that no data is lost; you can then inspect
         their data in ./data, or restart them.
     restart:
-            Gracefully stop all containers and start them again.
+        Gracefully stop all containers and start them again.
+    setExecutable:
+        Set executable all scripts before and after hooks 
     log <stack> [<other docker compose logs params>]:
         Show <stack> logs.
     build <stack> <docker compose build params>:
@@ -401,6 +415,41 @@ function install() {
     execute_before_hooks ${phase} ${stacks}
     docker_compose_stacks "${stacks}" ${wait_time} "pull"
     execute_after_hooks ${phase} ${stacks}
+}
+
+# Set executable 
+function setExecutable() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    for stack in ${stacks}; do
+        HooksFolder="${SIMVA_HOME}/${stack}/etc/hooks"
+        folder="${HooksFolder}/after-install.d"
+        setExecutable_scripts_from_folder ${folder}
+        folder="${HooksFolder}/after-uninstall.d"
+        setExecutable_scripts_from_folder ${folder}
+        folder="${HooksFolder}/after-start.d"
+        setExecutable_scripts_from_folder ${folder}
+        folder="${HooksFolder}/after-stop.d"
+        setExecutable_scripts_from_folder ${folder}
+    done;
+    HooksFolder="${SIMVA_HOME}/etc/hooks"
+    folder="${HooksFolder}/after-install.d"
+    setExecutable_scripts_from_folder ${folder}
+    folder="${HooksFolder}/after-uninstall.d"
+    setExecutable_scripts_from_folder ${folder}
+    folder="${HooksFolder}/after-start.d"
+    setExecutable_scripts_from_folder ${folder}
+    folder="${HooksFolder}/after-stop.d"
+    setExecutable_scripts_from_folder ${folder}
 }
 
 # remove containers
