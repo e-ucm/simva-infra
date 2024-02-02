@@ -135,6 +135,8 @@ services:
           echo 1>&2 "Keycloak not available !";
           exit 1
         fi;
+      fi;
+      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/minio-initialized" ]; then
         wait_time=$${MC_WAIT_TIME};
         count=$${MC_MAX_RETRIES};
         done="ko";
