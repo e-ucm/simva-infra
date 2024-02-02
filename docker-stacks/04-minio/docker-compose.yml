@@ -34,7 +34,7 @@ services:
         count=$${MC_MAX_RETRIES};
         done="ko";
         while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
-          echo 1>&2 "Checking Keycloak availability for minio: $$(($${MC_WAIT_TIME}-$$count+1)) pass";
+          echo 1>&2 "Checking Keycloak availability for minio: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
           wget "https://$${MINIO_SSO_HOST}/auth/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
           ret=$$?;
           if [ $$ret -eq 0 ]; then
@@ -45,9 +45,12 @@ services:
           fi;
           count=$$((count-1));
         done;
-        if [ $$count -eq 0 ]; then
+        if [ $$count -eq 0 && "$$done" != "ok"]; then
           echo 1>&2 "Keycloak not available !";
           exit 1
+        fi;
+        if [ "$$done" == "ok"]; then
+          echo 1>&2 "Keycloak available !";
         fi;
         /usr/bin/docker-entrypoint.sh $$@;
       '
@@ -120,7 +123,7 @@ services:
         count=$${MC_MAX_RETRIES};
         done="ko";
         while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
-          echo 1>&2 "Checking Keycloak availability for minio: $$(($${MC_WAIT_TIME}-$$count+1)) pass";
+          echo 1>&2 "Checking Keycloak availability for minio: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
           wget "https://$${MINIO_SSO_HOST}/auth/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
           ret=$$?;
           if [ $$ret -eq 0 ]; then
@@ -131,9 +134,12 @@ services:
           fi;
           count=$$((count-1));
         done;
-        if [ $$count -eq 0 ]; then
+        if [ $$count -eq 0 && "$$done" != "ok"]; then
           echo 1>&2 "Keycloak not available !";
           exit 1
+        fi;
+        if [ "$$done" == "ok"]; then
+          echo 1>&2 "Keycloak available !";
         fi;
       fi;
       /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/minio-initialized" ]; then
@@ -141,7 +147,7 @@ services:
         count=$${MC_MAX_RETRIES};
         done="ko";
         while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
-          echo 1>&2 "Checking minio: $$(($${MC_WAIT_TIME}-$$count+1)) pass";
+          echo 1>&2 "Checking minio: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
           wget "$${MINIO_URL}/minio/health/live" -O - >/dev/null;
           ret=$$?;
           if [ $$ret -eq 0 ]; then
@@ -152,9 +158,12 @@ services:
           fi;
           count=$$((count-1));
         done;
-        if [ $$count -eq 0 ]; then
+        if [ $$count -eq 0  && "$$done" != "ok"]; then
           echo 1>&2 "Minio not available !";
           exit 1
+        fi;
+        if [ "$$done" == "ok"]; then
+          echo 1>&2 "Minio available !";
         fi;
         /usr/bin/mc config host add simva-minio $${MINIO_URL} $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY};
         /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder /policies/write-user-folder.json;

@@ -20,9 +20,12 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   fi;
   count=$((count-1));
 done;
-if [ $count -eq 0 ]; then
+if [ $count -eq 0 && "$done" != "ok"]; then
   echo 1>&2 "Keycloak not available !";
   exit 1
+fi;
+if [ "$done" == "ok"]; then
+  echo 1>&2 "Keycloak available !";
 fi;
 
 count=${mc_max_retries};
@@ -41,9 +44,12 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   fi;
   count=$((count-1));
 done;
-if [ $count -eq 0 ]; then
+if [ $count -eq 0 && "$done" != "ok"]; then
   echo 1>&2 "Minio not available !";
   exit 1
+fi;
+if [ "$done" == "ok"]; then
+  echo 1>&2 "Minio available !";
 fi;
 
 count=${mc_max_retries};
@@ -62,9 +68,12 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
     fi;
     count=$((count-1));
 done;
-if [ $count -eq 0 ]; then
-    echo 1>&2 "Kafka connect not available !";
-    exit 1
+if [ $count -eq 0 && "$done" != "ok"]; then
+  echo 1>&2 ""Kafka Connect not available !";
+  exit 1
+fi;
+if [ "$done" == "ok"]; then
+  echo 1>&2 ""Kafka Connect available !";
 fi;
 
 connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json" -r)
