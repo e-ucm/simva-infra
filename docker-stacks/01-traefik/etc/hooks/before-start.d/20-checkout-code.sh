@@ -25,7 +25,7 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
 
     # Verify checksums of current files
     newSha=$(cat ${tmp_dir}/sha256sums)
-    if [! -e ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums ]; then 
+    if ! -e ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums; then 
         oldSha=""
     else 
         oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums)
