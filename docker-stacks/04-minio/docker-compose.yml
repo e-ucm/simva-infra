@@ -45,7 +45,7 @@ services:
           fi;
           count=$$((count-1));
         done;
-        if [ $$count -eq 0 && "$$done" != "ok"]; then
+        if [ $$count -eq 0 ] && [ "$$done" != "ok"]; then
           echo 1>&2 "Keycloak not available !";
           exit 1
         fi;
@@ -134,11 +134,11 @@ services:
           fi;
           count=$$((count-1));
         done;
-        if [ $$count -eq 0 && "$$done" != "ok"]; then
+        if [ $$count -eq 0 ] && [ "$$done" != "ok"]; then
           echo 1>&2 "Keycloak not available !";
           exit 1
         fi;
-        if [ "$$done" == "ok"]; then
+        if [ "$$done" == "ok" ]; then
           echo 1>&2 "Keycloak available !";
         fi;
       fi;
@@ -158,7 +158,7 @@ services:
           fi;
           count=$$((count-1));
         done;
-        if [ $$count -eq 0  && "$$done" != "ok"]; then
+        if [ $$count -eq 0  ] && [ "$$done" != "ok"]; then
           echo 1>&2 "Minio not available !";
           exit 1
         fi;

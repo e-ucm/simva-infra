@@ -114,7 +114,6 @@ services:
       MINIO_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}:443"
       MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       MINIO_URL: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
-
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
       MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
       MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
