@@ -183,7 +183,7 @@ function execute_before_hooks() {
     shift
     local folder="${SIMVA_HOME}/etc/hooks"
     local stacks="${SIMVA_STACKS}"
-    if [[ $# -gt 0 ]]; then
+        if [[ $# -gt 0 ]]; then
         stacks=$@
     fi
 
@@ -420,6 +420,72 @@ function install() {
     execute_after_hooks ${phase} ${stacks}
 }
 
+# remove containers
+function uninstall() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
+    local phase="uninstall"
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+    execute_before_hooks ${phase} ${reverse_stacks}
+    docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
+    execute_after_hooks ${phase} ${reverse_stacks}
+}
+
+
+# start stacks
+function start() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
+        wait_time=20;
+        recho "SIMVA it is not initialized, this launch will take longer than normal."
+    fi
+    local phase="start"
+    execute_before_hooks ${phase} ${stacks}
+    docker_compose_stacks "${stacks}" ${wait_time} "up -d"
+    execute_after_hooks ${phase} ${stacks}
+    touch "${SIMVA_PROJECT_DIR}/.simva-initialized"
+}
+
+# stop stacks
+function stop() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
+    local phase="stop"
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+    execute_before_hooks ${phase} ${reverse_stacks}
+    docker_compose_stacks "${reverse_stacks}" ${wait_time} ${phase}
+    execute_after_hooks ${phase} ${reverse_stacks}
+}
+
+
 # Set executable 
 function setExecutable() {
     if [[ $# -lt 1 ]]; then
@@ -469,70 +535,6 @@ function setExecutable() {
     setExecutable_scripts_from_folder ${folder}
     folder="${HooksFolder}/before-stop.d"
     setExecutable_scripts_from_folder ${folder}
-}
-
-# remove containers
-function uninstall() {
-    if [[ $# -lt 1 ]]; then
-        echo >&2 "missing wait_time";
-        exit 1;
-    fi
-    local wait_time=${1}
-    shift
-
-    local phase="uninstall"
-    local stacks=${SIMVA_STACKS}
-    if [[ $# -gt 0 ]]; then
-        stacks=$@
-    fi
-    local reverse_stacks=$(for s in ${stacks}; do echo $s; done | sort -r)
-    execute_before_hooks ${phase} ${reverse_stacks}
-    docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
-    execute_after_hooks ${phase} ${reverse_stacks}
-}
-
-
-# start stacks
-function start() {
-    if [[ $# -lt 1 ]]; then
-        echo >&2 "missing wait_time";
-        exit 1;
-    fi
-    local wait_time=${1}
-    shift
-
-    local stacks=${SIMVA_STACKS}
-    if [[ $# -gt 0 ]]; then
-        stacks=$@
-    fi
-    if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
-        wait_time=20;
-        recho "SIMVA it is not initialized, this launch will take longer than normal."
-            fi
-    local phase="start"
-    execute_before_hooks ${phase} ${stacks}
-    docker_compose_stacks "${stacks}" ${wait_time} "up -d"
-    execute_after_hooks ${phase} ${stacks}
-    touch "${SIMVA_PROJECT_DIR}/.simva-initialized"
-}
-
-# stop stacks
-function stop() {
-    if [[ $# -lt 1 ]]; then
-        echo >&2 "missing wait_time";
-        exit 1;
-    fi
-    local wait_time=${1}
-    shift
-
-    local stacks=${SIMVA_STACKS}
-    if [[ $# -gt 0 ]]; then
-        stacks=$@
-    fi
-    local reverse_stacks=$(for s in ${stacks}; do echo $s; done | sort -r)
-    execute_before_hooks ${phase} ${stacks}
-    docker_compose_stacks "${stacks}" ${wait_time} ${phase}
-    execute_after_hooks ${phase} ${stacks}
 }
 
 # log stack
