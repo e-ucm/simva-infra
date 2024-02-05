@@ -27,7 +27,7 @@ services:
 # sol: https://github.com/stefanprodan/dockprom/issues/205#issuecomment-798628548
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/connect-ui:/etc/:ro
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/connect-ui/resolv.conf:/etc/resolv.conf:ro
     depends_on:
       - connect
     hostname: connect-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
