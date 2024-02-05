@@ -33,8 +33,8 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
 
     # Verify checksums of current files
     newSha=$(cat ${tmp_dir}/sha256sums)
-    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums" ] ; then 
-        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums)
+    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/sha256sums" ] ; then 
+        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/sha256sums)
     else 
         oldSha=""
     fi
@@ -67,8 +67,8 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
 
     # Verify checksums of current files
     newSha=$(cat ${tmp_dir}/sha256sums)
-    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums" ]; then 
-        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums)
+    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front/sha256sums" ]; then 
+        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front/sha256sums)
     else 
         oldSha=""
     fi
@@ -101,8 +101,8 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
 
     # Verify checksums of current files
     newSha=$(cat ${tmp_dir}/sha256sums)
-    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums" ]; then 
-        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums)
+    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator/sha256sums" ]; then 
+        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator/sha256sums)
     else 
         oldSha=""
     fi
