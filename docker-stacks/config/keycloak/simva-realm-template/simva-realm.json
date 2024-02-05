@@ -1579,7 +1579,7 @@
       "config" : {
         "privateKey" : [ 
           "-----BEGIN PRIVATE KEY-----",
-          "{{ .clients.limesurvey.certificate }}",
+          "{{ .clients.limesurvey.privatekey }}",
           "-----END PRIVATE KEY-----"
         ],
         "certificate" : [ 
