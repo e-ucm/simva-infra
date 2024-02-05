@@ -1576,8 +1576,16 @@
       "providerId" : "rsa-generated",
       "subComponents" : { },
       "config" : {
-        "privateKey" : [ "{{ .clients.limesurvey.certificate }}" ],
-        "certificate" : [ "{{ .clients.limesurvey.certificate }}" ],
+        "privateKey" : [ 
+          "-----BEGIN PRIVATE KEY-----",
+          "{{ .clients.limesurvey.certificate }}",
+          "-----END PRIVATE KEY-----"
+        ],
+        "certificate" : [ 
+          "-----BEGIN CERTIFICATE-----",
+          "{{ .clients.limesurvey.certificate }}",
+          "-----END CERTIFICATE-----"
+        ],
         "priority" : [ "100" ]
       }
     }, {
@@ -1587,7 +1595,7 @@
       "subComponents" : { },
       "config" : {
         "kid" : [ "6cb0eaf4-b9c5-44ed-863d-9ddc1e9fa283" ],
-        "secret" : [ "**********" ],
+        "secret" : [ "{{ .clients.limesurvey.secret }}" ],
         "priority" : [ "100" ],
         "algorithm" : [ "HS256" ]
       }
@@ -1598,7 +1606,7 @@
       "subComponents" : { },
       "config" : {
         "kid" : [ "88795781-b402-4552-8b5e-8675909540b5" ],
-        "secret" : [ "**********" ],
+        "secret" : [ "{{ .clients.limesurvey.secret }}" ],
         "priority" : [ "100" ]
       }
     } ]
