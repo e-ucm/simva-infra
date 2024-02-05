@@ -355,7 +355,6 @@ function run_scripts_from_folder() {
 function setExecutable_scripts_from_folder() {
     local folder=${1}
     if [[ -d "${folder}" ]]; then
-        echo "Set executable script from ${folder}"
         for FILE in $(find ${folder} -iname \*.sh -type f | sort); do
             echo "Set executable script file : ${FILE}"
             chmod a+x ${FILE}
@@ -444,6 +443,14 @@ function setExecutable() {
         setExecutable_scripts_from_folder ${folder}
         folder="${HooksFolder}/after-stop.d"
         setExecutable_scripts_from_folder ${folder}
+        folder="${HooksFolder}/before-install.d"
+        setExecutable_scripts_from_folder ${folder}
+        folder="${HooksFolder}/before-uninstall.d"
+        setExecutable_scripts_from_folder ${folder}
+        folder="${HooksFolder}/before-start.d"
+        setExecutable_scripts_from_folder ${folder}
+        folder="${HooksFolder}/before-stop.d"
+        setExecutable_scripts_from_folder ${folder}
     done;
     HooksFolder="${SIMVA_HOME}/etc/hooks"
     folder="${HooksFolder}/after-install.d"
@@ -453,6 +460,14 @@ function setExecutable() {
     folder="${HooksFolder}/after-start.d"
     setExecutable_scripts_from_folder ${folder}
     folder="${HooksFolder}/after-stop.d"
+    setExecutable_scripts_from_folder ${folder}
+    folder="${HooksFolder}/before-install.d"
+    setExecutable_scripts_from_folder ${folder}
+    folder="${HooksFolder}/before-uninstall.d"
+    setExecutable_scripts_from_folder ${folder}
+    folder="${HooksFolder}/before-start.d"
+    setExecutable_scripts_from_folder ${folder}
+    folder="${HooksFolder}/before-stop.d"
     setExecutable_scripts_from_folder ${folder}
 }
 
