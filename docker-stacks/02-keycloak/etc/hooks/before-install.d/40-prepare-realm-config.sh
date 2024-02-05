@@ -108,7 +108,7 @@ function generate_realm_data() {
     echo "    sspBaseUrl: \"https://limesurvey.${SIMVA_EXTERNAL_DOMAIN}${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}/module.php/saml/sp\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
     echo "    certificate: \"${limesurvey_cert}\"" >> ${conf_file}
-    echo "    privatekey: \"${limesurvey_privatekey}\"" >> ${conf_file}
+    #echo "    privatekey: \"${limesurvey_privatekey}\"" >> ${conf_file}
 
     client_secret=$(get_or_generate_password "minio" "${STACK_CONF}/simva-env.sh")
 
