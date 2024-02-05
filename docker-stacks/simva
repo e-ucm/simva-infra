@@ -481,10 +481,11 @@ function uninstall() {
     shift
 
     local phase="uninstall"
-    local reverse_stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
+    local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        reverse_stacks=$@
+        stacks=$@
     fi
+    local reverse_stacks=$(for s in ${stacks}; do echo $s; done | sort -r)
     execute_before_hooks ${phase} ${reverse_stacks}
     docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
     execute_after_hooks ${phase} ${reverse_stacks}
@@ -524,11 +525,11 @@ function stop() {
     local wait_time=${1}
     shift
 
-    local phase="stop"
-    local stacks=$(for s in ${SIMVA_STACKS}; do echo $s; done | sort -r)
+    local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
         stacks=$@
     fi
+    local reverse_stacks=$(for s in ${stacks}; do echo $s; done | sort -r)
     execute_before_hooks ${phase} ${stacks}
     docker_compose_stacks "${stacks}" ${wait_time} ${phase}
     execute_after_hooks ${phase} ${stacks}
