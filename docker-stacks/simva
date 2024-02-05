@@ -355,7 +355,11 @@ function run_scripts_from_folder() {
 function setExecutable_scripts_from_folder() {
     local folder=${1}
     if [[ -d "${folder}" ]]; then
-        chmod a+x ${folder}/*
+        echo "Set executable script from ${folder}"
+        for FILE in $(find ${folder} -iname \*.sh -type f | sort); do
+            echo "Set executable script file : ${FILE}"
+            chmod a+x ${FILE}
+        done
     fi
 }
 
