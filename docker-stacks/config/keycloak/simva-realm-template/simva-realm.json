@@ -1570,46 +1570,6 @@
       "subType" : "anonymous",
       "subComponents" : { },
       "config" : { }
-    } ],
-    "org.keycloak.keys.KeyProvider" : [ {
-      "id" : "17d4056e-0454-4f5b-bdfb-d061d699cdd7",
-      "name" : "rsa-generated",
-      "providerId" : "rsa-generated",
-      "subComponents" : { },
-      "config" : {
-        "privateKey" : [ 
-          "-----BEGIN PRIVATE KEY-----",
-          "{{ .clients.limesurvey.privatekey }}",
-          "-----END PRIVATE KEY-----"
-        ],
-        "certificate" : [ 
-          "-----BEGIN CERTIFICATE-----",
-          "{{ .clients.limesurvey.certificate }}",
-          "-----END CERTIFICATE-----"
-        ],
-        "priority" : [ "100" ]
-      }
-    }, {
-      "id" : "3aa67255-742f-45fb-9be6-89cc68ad4f21",
-      "name" : "hmac-generated",
-      "providerId" : "hmac-generated",
-      "subComponents" : { },
-      "config" : {
-        "kid" : [ "6cb0eaf4-b9c5-44ed-863d-9ddc1e9fa283" ],
-        "secret" : [ "{{ .clients.limesurvey.secret }}" ],
-        "priority" : [ "100" ],
-        "algorithm" : [ "HS256" ]
-      }
-    }, {
-      "id" : "738a43d4-4703-44cc-843a-056119684b54",
-      "name" : "aes-generated",
-      "providerId" : "aes-generated",
-      "subComponents" : { },
-      "config" : {
-        "kid" : [ "88795781-b402-4552-8b5e-8675909540b5" ],
-        "secret" : [ "{{ .clients.limesurvey.secret }}" ],
-        "priority" : [ "100" ]
-      }
     } ]
   },
   "internationalizationEnabled" : false,
