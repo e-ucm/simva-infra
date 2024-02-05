@@ -117,7 +117,7 @@ export SIMVA_KEYCLOAK_MYSQL_PASSWORD="password"
 export SIMVA_KEYCLOAK_ADMIN_USER="admin"
 export SIMVA_KEYCLOAK_ADMIN_PASSWORD="password"
 
-export SIMVA_WAIT_TIMEOUT="240"
+export SIMVA_WAIT_TIMEOUT="120"
 
 #Checking time and max retries for KeyCloak, Minio,Kafka and Anaconda availabled
 export SIMVA_WAIT_TIME="10"
