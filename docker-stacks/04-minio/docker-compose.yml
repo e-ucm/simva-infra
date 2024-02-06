@@ -45,11 +45,11 @@ services:
           fi;
           count=$$((count-1));
         done;
-        if [ $$count -eq 0 ] && [ "$$done" != "ok"]; then
+        if [ $$count -eq 0 ] && [ "$$done" != "ok" ]; then
           echo 1>&2 "Keycloak not available !";
           exit 1
         fi;
-        if [ "$$done" == "ok"]; then
+        if [ "$$done" == "ok" ]; then
           echo 1>&2 "Keycloak available !";
         fi;
         /usr/bin/docker-entrypoint.sh $$@;
@@ -134,7 +134,7 @@ services:
           fi;
           count=$$((count-1));
         done;
-        if [ $$count -eq 0 ] && [ "$$done" != "ok"]; then
+        if [ $$count -eq 0 ] && [ "$$done" != "ok" ]; then
           echo 1>&2 "Keycloak not available !";
           exit 1
         fi;
@@ -158,11 +158,11 @@ services:
           fi;
           count=$$((count-1));
         done;
-        if [ $$count -eq 0  ] && [ "$$done" != "ok"]; then
+        if [ $$count -eq 0 ] && [ "$$done" != "ok" ]; then
           echo 1>&2 "Minio not available !";
           exit 1
         fi;
-        if [ "$$done" == "ok"]; then
+        if [ "$$done" == "ok" ]; then
           echo 1>&2 "Minio available !";
         fi;
         /usr/bin/mc config host add simva-minio $${MINIO_URL} $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY};
