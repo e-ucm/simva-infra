@@ -69,9 +69,6 @@ export SIMVA_API_ADMIN_PASSWORD="password"
 # tecnativa/socket-proxy logging level, possible values: info, debug
 export SIMVA_SOCKET_PROXY_LOG_LEVEL="info"
 
-# dns-proxy-server logging level, possible values: INFO, DEBUG
-export SIMVA_DNS_PROXY_SERVER_LOG_LEVEL="INFO"
-
 # Traefik: disables SSL certificate verification
 #
 # Note: It is far better (and more secure) to config SIMVA_SSL_ROOT_CAS
@@ -96,10 +93,6 @@ export SIMVA_TRAEFIK_DASHBOARD_PASSWORD="\\\$apr1\\\$97xk9Kkr\\\$gavbmzhrI6uOVYN
 export SIMVA_TRAEFIK_EXTRA_CSP_POLICY=""
 
 [[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_TRAEFIK_EXTRA_CSP_POLICY=" report-uri https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN}/report-violation; report-to https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN}/report-violation;"
-
-#Traefik: DNS Servers
-export SIMVA_TRAEFIK_DNS_SERVER_1="8.8.8.8:53"
-export SIMVA_TRAEFIK_DNS_SERVER_2="8.8.4.4:53"
 
 # Traefik: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
@@ -173,7 +166,7 @@ export SIMVA_KAFKA_NETWORK="kafka_services"
 export SIMVA_KAFKA_CONNECT_SINK_MINIO_URL="https://minio.${SIMVA_EXTERNAL_DOMAIN}"
 export SIMVA_KAFKA_CONNECT_SINK_USER="simva-sink"
 export SIMVA_KAFKA_CONNECT_SINK_SECRET="password"
-
+export SIMVA_KAFKA_DNS_IP="127.0.0.11"
 
 export SIMVA_TRACES_TOPIC="traces"
 export SIMVA_TRACES_BUCKET_NAME="traces"
