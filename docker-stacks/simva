@@ -39,6 +39,11 @@ function main() {
             uninstall "1" $@
             exit 0
         ;;
+        "purge")
+            check_docker_launched
+            purge ${DEFAULT_WAIT_TIME} $@
+            exit 0
+        ;;
         "start")
             check_docker_launched
             start ${DEFAULT_WAIT_TIME} $@
@@ -196,6 +201,10 @@ function execute_before_hooks() {
             folder="${folder}/before-uninstall.d"
             run_scripts_from_folder ${folder}
         ;;
+        "purge")
+            folder="${folder}/before-purge.d"
+            run_scripts_from_folder ${folder}
+        ;;
         "start")
             folder="${folder}/before-start.d"
             run_scripts_from_folder ${folder}
@@ -224,6 +233,10 @@ function execute_before_hooks() {
             ;;
             "uninstall")
                 folder="${folder}/before-uninstall.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "purge")
+                folder="${folder}/before-purge.d"
                 run_scripts_from_folder ${folder}
             ;;
             "start")
@@ -273,6 +286,10 @@ function execute_after_hooks() {
                 folder="${folder}/after-uninstall.d"
                 run_scripts_from_folder ${folder}
             ;;
+            "purge")
+                folder="${folder}/purge.d"
+                run_scripts_from_folder ${folder}
+            ;;
             "start")
                 folder="${folder}/after-start.d"
                 run_scripts_from_folder ${folder}
@@ -298,6 +315,10 @@ function execute_after_hooks() {
         ;;
         "uninstall")
             folder="${folder}/after-uninstall.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "purge")
+            folder="${folder}/purge.d"
             run_scripts_from_folder ${folder}
         ;;
         "start")
@@ -382,6 +403,8 @@ OPERATION one of the following:
         Install SIMVA locally (download docker images, build required tools, etc.)
     uninstall:
         Stop and remove containers, also remove docker volumes too.
+    purge:
+        Remove data from each stack
     start:
         Launch all containers by stages, waiting for dependencies to become available.
     stop:
@@ -440,6 +463,25 @@ function uninstall() {
     execute_after_hooks ${phase} ${reverse_stacks}
 }
 
+# purge data
+function purge() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
+    local phase="purge"
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+    execute_before_hooks ${phase} ${reverse_stacks}
+    docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
+    execute_after_hooks ${phase} ${reverse_stacks}
+}
 
 # start stacks
 function start() {
@@ -505,11 +547,15 @@ function setExecutable() {
         setExecutable_scripts_from_folder ${folder}
         folder="${HooksFolder}/after-uninstall.d"
         setExecutable_scripts_from_folder ${folder}
+        folder="${HooksFolder}/purge.d"
+        setExecutable_scripts_from_folder ${folder}
         folder="${HooksFolder}/after-start.d"
         setExecutable_scripts_from_folder ${folder}
         folder="${HooksFolder}/after-stop.d"
         setExecutable_scripts_from_folder ${folder}
         folder="${HooksFolder}/before-install.d"
+        setExecutable_scripts_from_folder ${folder}
+        folder="${HooksFolder}/before-purge.d"
         setExecutable_scripts_from_folder ${folder}
         folder="${HooksFolder}/before-uninstall.d"
         setExecutable_scripts_from_folder ${folder}
@@ -523,6 +569,8 @@ function setExecutable() {
     setExecutable_scripts_from_folder ${folder}
     folder="${HooksFolder}/after-uninstall.d"
     setExecutable_scripts_from_folder ${folder}
+    folder="${HooksFolder}/purge.d"
+    setExecutable_scripts_from_folder ${folder}
     folder="${HooksFolder}/after-start.d"
     setExecutable_scripts_from_folder ${folder}
     folder="${HooksFolder}/after-stop.d"
@@ -530,6 +578,8 @@ function setExecutable() {
     folder="${HooksFolder}/before-install.d"
     setExecutable_scripts_from_folder ${folder}
     folder="${HooksFolder}/before-uninstall.d"
+    setExecutable_scripts_from_folder ${folder}
+    folder="${HooksFolder}/before-purge.d"
     setExecutable_scripts_from_folder ${folder}
     folder="${HooksFolder}/before-start.d"
     setExecutable_scripts_from_folder ${folder}
