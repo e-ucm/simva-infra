@@ -34,8 +34,6 @@ services:
       MCS_MINIO_SERVER: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
     restart: unless-stopped
     hostname: mcs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       traefik_services:
         aliases:

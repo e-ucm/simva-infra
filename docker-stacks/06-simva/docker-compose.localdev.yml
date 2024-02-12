@@ -145,8 +145,6 @@ services:
     depends_on:
       - mongodb
     hostname: simva-api.dev.test
-    dns:
-      - 172.29.0.53
     networks:
       default:
         aliases:
@@ -190,8 +188,6 @@ services:
     depends_on:
       - simva-api
     hostname: simva-front.dev.test
-    dns:
-      - 172.29.0.53
     networks:
       default:
         aliases:

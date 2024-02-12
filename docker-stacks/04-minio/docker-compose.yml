@@ -84,8 +84,6 @@ services:
       timeout: 5s
       retries: 3
     hostname: minio.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:
@@ -204,8 +202,6 @@ services:
       MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
     hostname: mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       traefik_services:
         aliases:

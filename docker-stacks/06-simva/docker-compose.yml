@@ -80,8 +80,6 @@ services:
     depends_on:
       - mongodb
     hostname: simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:
@@ -124,8 +122,6 @@ services:
     depends_on:
       - simva-api
     hostname: simva-front.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:
@@ -173,8 +169,6 @@ services:
     depends_on:
       - simva-api
     hostname: simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:

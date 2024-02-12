@@ -41,83 +41,6 @@ services:
         aliases:
           - "socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
 
-  dns-proxy-server:
-    << : *default-opts
-    image: eucm/dns-proxy-server:2.19.0-dh-2
-    entrypoint:
-      - '/bin/sh'
-      - '-c'
-      - |
-        [ ! -d "/app/conf" ] && mkdir -p /app/conf;
-        [ ! -f "/app/conf/config.json" ] && cat << EOF > /app/conf/config.json
-        {
-          "version": 2,
-          "remoteDnsServers": [
-            "${SIMVA_TRAEFIK_DNS_SERVER_1:-8.8.8.8:53}",
-            "${SIMVA_TRAEFIK_DNS_SERVER_2:-8.8.4.4:53}"
-          ],
-          "envs": [
-            {
-              "name": "",
-              "hostnames": [
-                {
-                  "id": 1562843575352085033,
-                  "hostname": ".${SIMVA_EXTERNAL_DOMAIN:-external.test}",
-                  "ip": "127.0.0.1",
-                  "target": "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}",
-                  "ttl": 3600,
-                  "type": "CNAME"
-                }
-              ]
-            }
-          ],
-          "activeEnv": "",
-          "webServerPort": 5380,
-          "dnsServerPort": 53,
-          "defaultDns": false,
-          "logLevel": "INFO",
-          "logFile": "console",
-          "dpsNetwork": false,
-          "dpsNetworkAutoConnect": false,
-          "registerContainerNames": true,
-          "hostMachineHostname": "host.docker.test",
-          "domain": "docker.test"
-        }
-        EOF
-        exec /usr/bin/docker-entrypoint "$$@"
-    command:
-      - "--"
-      - "/app/dns-proxy-server"
-    environment:
-      MG_LOG_LEVEL: "${SIMVA_DNS_PROXY_SERVER_LOG_LEVEL:-INFO}"
-#      MG_DOCKER_HOST: "tcp://socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2375"
-#      MG_DOCKER_API_VERSION: "v1.24"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    depends_on:
-      - socket-proxy
-# XXX Seems there is no binary to do the healthcheck
-#    healthcheck:
-#      test: "wget --quiet --tries=1 --spider http://localhost:5380/env/active"
-#      interval: 60s
-#      timeout: 20s
-#      retries: 3
-    restart: unless-stopped
-    hostname: "dns.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-    networks:
-      default:
-        aliases:
-          - "dns.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      traefik_services:
-        ipv4_address: "${SIMVA_DNS_SERVICE_IP:-172.30.0.53}"
-        aliases:
-          - "dns.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.dns.loadbalancer.server.port=5380"
-      - "traefik.http.routers.dns.rule=Host(`dns.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-
   traefik:
     << : *default-opts
     image: traefik:2.2.11
@@ -166,7 +89,6 @@ services:
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/traefik/traefik/static-conf:/etc/traefik
     depends_on:
       - socket-proxy
-      - dns-proxy-server
     healthcheck:
       test: "traefik healthcheck --entryPoints.ping.address=:8082 --ping.entryPoint=ping --ping"
       interval: 10s
@@ -181,6 +103,12 @@ services:
       traefik_services:
         aliases:
           - "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"  
+          - "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "jupyter.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
     labels:
       - "dps.network=${SIMVA_SERVICE_NETWORK:-traefik_services}"
       - "traefik.enable=true"

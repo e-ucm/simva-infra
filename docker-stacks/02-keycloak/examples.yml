@@ -40,8 +40,6 @@ services:
       SIMPLESAMLPHP_SIGN_AUTHN_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_LOGOUT_REQUESTS: "true"
     hostname: simplesamlphp.keycloak.internal.test
-    dns:
-      - 172.30.0.53
     networks:
       default:
         aliases:

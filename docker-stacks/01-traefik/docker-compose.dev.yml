@@ -15,8 +15,6 @@ services:
     << : *default-opts
     image: containous/whoami
     hostname: "whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:
@@ -56,8 +54,6 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter:/app
     hostname: csp-reporter.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:

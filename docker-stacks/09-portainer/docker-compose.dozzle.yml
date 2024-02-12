@@ -28,8 +28,6 @@ services:
       DOZZLE_USERNAME: simva
       DOZZLE_PASSWORD: l0gg1ng
       DOZZLE_KEY: s3cr3ts1mv4
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:

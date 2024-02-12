@@ -26,8 +26,6 @@ services:
     restart: unless-stopped
     command: --admin-password "${SIMVA_PORTAINER_ADMIN_PASSWORD}"
     hostname: portainer.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:
