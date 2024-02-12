@@ -188,7 +188,7 @@ function execute_before_hooks() {
     shift
     local folder="${SIMVA_HOME}/etc/hooks"
     local stacks="${SIMVA_STACKS}"
-        if [[ $# -gt 0 ]]; then
+    if [[ $# -gt 0 ]]; then
         stacks=$@
     fi
 
@@ -475,9 +475,9 @@ function purge() {
     local phase="purge"
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$@
+                stacks=$@
     fi
-    local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+        local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     execute_before_hooks ${phase} ${reverse_stacks}
     docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
     execute_after_hooks ${phase} ${reverse_stacks}
