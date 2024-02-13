@@ -1,3 +1,10 @@
+##########################
+# REMOVE LIMESURVEY CONFIG
+##########################
+# Removing Limesurvey etc config 
+cd "${SIMVA_CONFIG_HOME}/limesurvey/etc"
+rm -rf ./*
+
 ########################
 # REMOVE LIMESURVEY DATA
 ########################

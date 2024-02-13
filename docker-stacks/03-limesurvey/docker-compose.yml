@@ -70,7 +70,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/simplesamlphp-data/config:/etc/simplesamlphp
       - ${SIMVA_TLS_HOME?TLS home folder required}:/etc/simplesamlphp/certs:ro
-      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/limesurvey/etc:/etc/limesurvey:ro
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/limesurvey/etc:/etc/limesurvey
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/plugins:/var/www/html/plugins
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/upload:/var/www/html/upload
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/tmp:/var/www/html/tmp
