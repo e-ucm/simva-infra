@@ -103,8 +103,8 @@ export SIMVA_SSO_OPENID_CONFIG_URL="https://${SIMVA_SSO_HOST}/auth/realms/${SIMV
 export SIMVA_SSO_PROTOCOL="https"
 export SIMVA_SSO_PORT="443"
 export SIMVA_SSO_ENABLED="true"
-export SSO_SSL_REQUIRED="external"
-export SSO_PUBLIC_CLIENT="false"
+export SIMVA_SSO_SSL_REQUIRED="external"
+export SIMVA_SSO_PUBLIC_CLIENT="false"
 export SIMVA_SSO_AUTH_PATH="/auth"
 
 #Limesurvey host
@@ -142,6 +142,10 @@ export SIMAV_A2_HOST="a2"
 export SIMVA_A2_PORT="3000"
 export SIMVA_A2_PROTOCOL="http"
 export SIMVA_A2_EXTERNAL="https://analytics.${SIMVA_EXTERNAL_DOMAIN}"
+
+#SIMVA FRONT HOST
+export SIMVA_FRONT_PROTOCOL="https"
+export SIMVA_FRONT_PORT="3050"
 
 #SIMVA Trace Allocator
 export SIMVA_TRACE_ALLOCATOR_REFRESH_INTERVAL="14400000"
