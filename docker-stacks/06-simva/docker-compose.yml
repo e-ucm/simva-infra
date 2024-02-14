@@ -124,7 +124,7 @@ services:
       DEBUG: "${SIMVA_DEBUG:-true}"
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       NODE_EXTRA_CA_CERTS: "/var/lib/simva/ca/rootCA.pem"
-      SIMVA_HOST:  "simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      SIMVA_HOST:  "${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       SIMVA_PORT: "3000"
       SIMVA_PROTOCOL: "http"
       SIMVA_URL: "https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
