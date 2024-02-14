@@ -132,7 +132,7 @@ services:
       A2_ADMIN_PASSWORD: "${SIMVA_A2_ADMIN_PASSWORD:-password}"
       A2_EXTERNAL: "${SIMVA_A2_EXTERNAL:-https://analytics.simva.e-ucm.es}"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
-      SSO_ENABLED: "true"
+      SSO_ENABLED: "${SIMVA_SSO_ENABLED:-true}"
       SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       SSO_ADMIN_USER: ${SIMVA_SSO_ADMIN_USER:-administrator}
       SSO_ADMIN_PASSWORD: ${SIMVA_SSO_ADMIN_PASSWORD:-administrator}
