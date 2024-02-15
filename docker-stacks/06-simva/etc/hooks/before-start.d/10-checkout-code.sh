@@ -5,15 +5,24 @@ set -euo pipefail
 
 
 SIMVA_API_GIT_REPO_URL=https://github.com/e-ucm/simva.git
-SIMVA_API_GIT_REF=${SIMVA_API_GIT_REF:-dev}
+SIMVA_API_GIT_REF=${SIMVA_API_GIT_REF:-master}
 
 SIMVA_FRONT_GIT_REPO_URL=https://github.com/e-ucm/simva-front.git
-SIMVA_FRONT_GIT_REF=${SIMVA_FRONT_GIT_REF:-dev}
+SIMVA_FRONT_GIT_REF=${SIMVA_FRONT_GIT_REF:-master}
 
 SIMVA_TRACE_ALLOCATOR_GIT_REPO_URL=https://github.com/e-ucm/simva-trace-allocator.git
-SIMVA_TRACE_ALLOCATOR_GIT_REF=${SIMVA_TRACE_ALLOCATOR_GIT_REF:-dev}
+SIMVA_TRACE_ALLOCATOR_GIT_REF=${SIMVA_TRACE_ALLOCATOR_GIT_REF:-master}
 
-if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
+RUNCHECKOUTCODE=false
+if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
+    echo "SIMVA it is not initialized, initializing checkout code."
+    RUNCHECKOUTCODE=true
+fi
+if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]] ; then
+    echo "SIMVA is in development environment, launch checkout code."
+    RUNCHECKOUTCODE=true
+fi
+if [[ ${RUNCHECKOUTCODE} ]] ; then
 
     ###########################################################
     ######################### BACKEND #########################
