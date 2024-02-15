@@ -22,7 +22,7 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]] ; then
     echo "SIMVA is in development environment, launch checkout code."
     RUNCHECKOUTCODE=true
 fi
-if [[ ${RUNCHECKOUTCODE} ]] ; then
+if [[ ${RUNCHECKOUTCODE} == true ]] ; then
 
     ###########################################################
     ######################### BACKEND #########################
