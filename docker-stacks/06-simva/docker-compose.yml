@@ -26,11 +26,11 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/mongo:/data/db
-    hostname: simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     ports:
         - "27017:27017"
 
@@ -41,31 +41,43 @@ services:
     stdin_open: true
     tty: true
     environment:
+      #DEBUG
       DEBUG: "${SIMVA_DEBUG:-true}"
+      #NODE
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       NODE_EXTRA_CA_CERTS: "/var/lib/simva/ca/rootCA.pem"
+      #EXTERNAL URL
       EXTERNAL_URL: "https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      #API
       PORT: "3000"
       ADMIN_USERNAME: "${SIMVA_API_ADMIN_USERNAME:-admin}"
       ADMIN_EMAIL: "${SIMVA_API_ADMIN_EMAIL:-admin@external.test}"
       ADMIN_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD:-password}"
       MAX_UPLOAD_FILE_SIZE: "${SIMVA_MAX_UPLOAD_FILE_SIZE:-33554432}"
-      MONGO_HOST: "simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      MONGO_DB: "/simva"
+      #MONGO DB
+      MONGO_HOST: "${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      MONGO_DB: "${SIMVA_API_MONGO_DB:-/simva}"
+      LTI_MONGO_DB: "${SIMVA_API_LTI_MONGO_DB:-/lti_simva}"
+      #KAFKA
       KAFKA_HOST: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       KAFKA_PORT: "9092"
       KAFKA_TOPIC: "${SIMVA_TRACES_TOPIC:-traces}"
+      #MINIO
       MINIO_URL: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-root}"
+      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
       MINIO_BUCKET: "${SIMVA_TRACES_BUCKET_NAME:-traces}"
       MINIO_TOPICS_DIR: "${SIMVA_SINK_TOPICS_DIR:-kafka-topics}"
       MINIO_USERS_DIR: "${SIMVA_SINK_USERS_DIR:-users}"
-      MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces.json}"
-      LIMESURVEY_PROTOCOL: "https"
+      MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces-v2.json}"
+      #LIMESURVEY
       LIMESURVEY_HOST: "limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      LIMESURVEY_PROTOCOL: "https"
       LIMESURVEY_PORT: "443"
       LIMESURVEY_EXTERNAL: "https://limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
       LIMESURVEY_ADMIN_USER: "${SIMVA_LIMESURVEY_ADMIN_USER:-admin}"
       LIMESURVEY_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-password2}"
+      #SSO KEYCLOAK
       SSO_ENABLED: "${SIMVA_SSO_ENABLED:-true}"
       SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       SSO_CLIENT_ID: "${SIMVA_FRONT_SSO_CLIENT_ID:-simva}"
@@ -76,19 +88,25 @@ services:
       SSO_PROTOCOL: "${SIMVA_SSO_PROTOCOL:-https}"
       SSO_PORT: "${SIMVA_SSO_PORT:-443}"
       SSO_AUTH_PATH: "${SIMVA_SSO_AUTH_PATH:-/auth}"
+      #SSO_PUBLIC_KEY: TODO
       SSO_ADMIN_USER: "${SIMVA_SSO_ADMIN_USER:-administrator}"
       SSO_ADMIN_PASSWORD: "${SIMVA_SSO_ADMIN_PASSWORD:-administrator}"
-      SIMVA_STORAGE_PATH: "/storage/"
+      #A2
       A2_HOST: "${SIMAV_A2_HOST:-a2}"
-      A2_PORT: "${SIMVA_A2_PORT:-3000}"
       A2_PROTOCOL: "${SIMVA_A2_PROTOCOL:-http}"
+      A2_PORT: "${SIMVA_A2_PORT:-3000}"
       A2_ADMIN_USER: "${SIMVA_A2_ADMIN_USER:-root}"
       A2_ADMIN_PASSWORD: "${SIMVA_A2_ADMIN_PASSWORD:-password}"
       A2_EXTERNAL: "${SIMVA_A2_EXTERNAL:-https://analytics.simva.e-ucm.es}"
+      #ANALYTICS BACKEND
+      ANALYTICSBACKEND_API: "${SIMVA_A2_ANALYTICSBACKEND_API:-/api/proxy/gleaner}"
+      #LTI
       LTI_PLATFORM_SIGNING_KEY: "${SIMVA_LTI_PLATFORM_SIGNING_KEY:-LTISIGNINGKEY}"
       LTI_PLATFORM_DB_NAME: "${SIMVA_LTI_PLATFORM_DB_NAME:-/lti}"
       LTI_PLATFORM_DB_USER:  "${SIMVA_LTI_PLATFORM_DB_USER:-root}"
       LTI_PLATFORM_DB_PASSWORD: "${SIMVA_LTI_PLATFORM_DB_PASSWORD:-password}"
+      #STORAGE
+      SIMVA_STORAGE_PATH: "/storage/"
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -121,15 +139,20 @@ services:
     stdin_open: true
     tty: true
     environment:
+      #LOG/DEBUG
       DEBUG: "${SIMVA_DEBUG:-true}"
+      #NODES
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       NODE_EXTRA_CA_CERTS: "/var/lib/simva/ca/rootCA.pem"
-      SIMVA_HOST:  "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      #SIMVA
       SIMVA_PORT: "${SIMVA_FRONT_PORT:-3050}"
+      SIMVA_HOST:  "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_PROTOCOL: "${SIMVA_FRONT_PROTOCOL:-https}"
       SIMVA_URL: "https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      MONGO_HOST: "simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      MONGO_DB: "/simva-front"
+      #MONGO DB
+      MONGO_HOST: "${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      MONGO_DB: "${SIMVA_FRONT_MONGO_DB:-/simva-front}"
+      #SSO KEYCLOAK
       SSO_HOST: "sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SSO_PROTOCOL: "${SIMVA_SSO_PROTOCOL:-https}"
       SSO_PORT: "${SIMVA_SSO_PORT:-443}"
@@ -139,9 +162,11 @@ services:
       SSO_CLIENT_SECRET: "${SIMVA_FRONT_SSO_CLIENT_KEY:-secret}"
       SSO_SSL_REQUIRED: "${SIMVA_SSO_SSL_REQUIRED:-external}"
       SSO_PUBLIC_CLIENT: "${SIMVA_SSO_PUBLIC_CLIENT:-false}"
+      #SIMVA API
       SIMVA_API_HOST: "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_API_PORT: "443"
       SIMVA_API_PROTOCOL: "https"
+      #LIMESURVEY
       LIMESURVEY_HOST: "https://limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
       LIMESURVEY_PROTOCOL: "https"
       LIMESURVEY_PORT: "443"
@@ -174,26 +199,39 @@ services:
     stdin_open: true
     tty: true
     environment:
+      #DEBUG
       DEBUG: "${SIMVA_DEBUG:-true}"
-      TRY_RECOVERY: "true"
-      REMOVE_DRY_RUN: "false"
+      #LOG
       LOG_LEVEL: "debug"
-      BATCH_SIZE: "${SIMVA_TRACE_ALLOCATOR_BATCH_SIZE:-100}"
-      REFRESH_INTERVAL: "${SIMVA_TRACE_ALLOCATOR_REFRESH_INTERVAL:-14400000}"
+      #NODE
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       NODE_EXTRA_CA_CERTS: "/var/lib/simva/ca/rootCA.pem"
-      SIMVA_HOST: "simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      SIMVA_PORT: "3000"
-      SIMVA_PROTOCOL: "http"
-      SIMVA_USER: "${SIMVA_API_ADMIN_USERNAME}"
-      SIMVA_EMAIL: "${SIMVA_API_ADMIN_EMAIL}"
-      SIMVA_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD}"
-      LOCAL_STATE: "/data"
-      MINIO_BUCKET: ${SIMVA_TRACES_BUCKET_NAME:-traces}
+      #TRACE ALLOCATOR
+      BATCH_SIZE: "${SIMVA_TRACE_ALLOCATOR_BATCH_SIZE:-100}"
+      MAX_DELAY: ${SIMVA_TRACE_ALLOCATOR_TRY_RECOVERY:-true}
+      REFRESH_INTERVAL: "${SIMVA_TRACE_ALLOCATOR_REFRESH_INTERVAL:-14400000}"
+      LOCAL_STATE: "${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-true}"
+      REMOTE_STATE: "${SIMVA_TRACE_ALLOCATOR_REMOTE_STATE:-true}"
+      REMOVE_DRY_RUN: "${SIMVA_TRACE_ALLOCATOR_REMOVE_DRY_RUN:-true}"
+      GC_INTERVAL: "${SIMVA_TRACE_ALLOCATOR_GC_INTERVAL:-}"
+      COPY_INSTEAD_RENAME: "${SIMVA_TRACE_ALLOCATOR_COPY_INSTEAD_RENAME:-true}"
+      TRY_RECOVERY: ${SIMVA_TRACE_ALLOCATOR_TRY_RECOVERY:-true}
+      #MINIO
       MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       MINIO_SSL: "true"
+#     MINIO_PORT: TODO 443
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-root}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
+      MINIO_BUCKET: "${SIMVA_TRACES_BUCKET_NAME:-traces}"
+      MINIO_TOPICS_DIR: "${SIMVA_SINK_TOPICS_DIR:-kafka-topics}"
+      MINIO_USERS_DIR: "${SIMVA_SINK_USERS_DIR:-users}"
+      MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces_v2.json}"
+      #SIMVA API
+      SIMVA_HOST: "simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      SIMVA_PROTOCOL: "http"
+      SIMVA_PORT: "3000"
+      SIMVA_USER: "${SIMVA_API_ADMIN_USERNAME}"
+      SIMVA_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD}"
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
