@@ -17,8 +17,8 @@ services:
     networks:
       traefik_services:
         aliases:
-          - simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.tcp.services.simva-mongodb.loadbalancer.server.port=27017"
-      - "traefik.tcp.routers.simva-mongodb.rule=HostSNI(`simva-mongo.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.tcp.routers.simva-mongodb.rule=HostSNI(`${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"

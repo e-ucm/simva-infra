@@ -23,7 +23,7 @@ services:
     << : *default-opts
     image: phpmyadmin/phpmyadmin:5.0.2
     environment:
-      PMA_HOST: "mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      PMA_HOST: "mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     depends_on:
       - mariadb
     volumes:
@@ -32,10 +32,10 @@ services:
     networks:
       default:
         aliases:
-          - phpmyadmin.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - phpmyadmin.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - phpmyadmin.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - phpmyadmin.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.ls-phpmyadmin.loadbalancer.server.port=80"

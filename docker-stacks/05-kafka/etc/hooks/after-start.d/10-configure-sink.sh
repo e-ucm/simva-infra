@@ -33,7 +33,7 @@ done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   echo 1>&2 "Checking minio: $((${mc_max_retries}-$count+1)) pass";
   set +e
-  wget "${SIMVA_KAFKA_CONNECT_SINK_MINIO_URL}/minio/health/live" -O - >/dev/null;
+  wget "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/minio/health/live" -O - >/dev/null;
   ret=$?;
   set -e
   if [ $ret -eq 0 ]; then
@@ -99,7 +99,7 @@ if [[ $ret -ne 0 ]]; then
 JQ_SCRIPT
 )
   cat ${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json | jq \
-  --arg minioUrl "${SIMVA_KAFKA_CONNECT_SINK_MINIO_URL}" \
+  --arg minioUrl "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
   --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \
   --arg bucketName "${SIMVA_TRACES_BUCKET_NAME}" \

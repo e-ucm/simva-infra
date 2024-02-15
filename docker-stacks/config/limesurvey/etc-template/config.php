@@ -26,7 +26,7 @@
 return array(
     'components' => array(
         'db' => array(
-            'connectionString' => 'mysql:host=mariadb.limesurvey.<<SIMVA_INTERNAL_DOMAIN>>;port=3306;dbname=<<SIMVA_LIMESURVEY_MYSQL_DATABASE>>;',
+            'connectionString' => 'mysql:host=mariadb.<<SIMVA_LIMESURVEY_HOST_SUBDOMAIN>>.<<SIMVA_INTERNAL_DOMAIN>>;port=3306;dbname=<<SIMVA_LIMESURVEY_MYSQL_DATABASE>>;',
             'emulatePrepare' => true,
             'username' => '<<SIMVA_LIMESURVEY_MYSQL_USER>>',
             'password' => '<<SIMVA_LIMESURVEY_MYSQL_PASSWORD>>',

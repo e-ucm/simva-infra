@@ -104,8 +104,8 @@ function generate_realm_data() {
     client_secret=$(get_or_generate_password "limesurvey" "${STACK_CONF}/simva-env.sh")
 
     echo "  limesurvey:" >> ${conf_file}
-    echo "    baseUrl: \"https://limesurvey.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
-    echo "    sspBaseUrl: \"https://limesurvey.${SIMVA_EXTERNAL_DOMAIN}${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}/module.php/saml/sp\"" >> ${conf_file}
+    echo "    baseUrl: \"https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    sspBaseUrl: \"https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN}${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}/module.php/saml/sp\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
     echo "    certificate: \"${limesurvey_cert}\"" >> ${conf_file}
     #echo "    privatekey: \"${limesurvey_privatekey}\"" >> ${conf_file}
@@ -113,15 +113,15 @@ function generate_realm_data() {
     client_secret=$(get_or_generate_password "minio" "${STACK_CONF}/simva-env.sh")
 
     echo "  minio:" >> ${conf_file}
-    echo "    baseUrl: \"https://minio.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    baseUrl: \"https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
 
     client_secret=$(get_or_generate_password "simva" "${STACK_CONF}/simva-env.sh")
 
     echo "  simva:" >> ${conf_file}
     echo "    baseUrl: \"https://${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
-    echo "    apiUrl: \"https://simva-api.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
-    echo "    ssoUrl: \"https://sso.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    apiUrl: \"https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    ssoUrl: \"https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
 }
 

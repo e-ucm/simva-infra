@@ -32,7 +32,7 @@ services:
     networks:
       traefik_services:
         aliases:
-          - simva-mongo.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
     ports:
       - target: 80
         published: 80

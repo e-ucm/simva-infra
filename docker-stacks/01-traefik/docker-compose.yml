@@ -95,25 +95,25 @@ services:
       timeout: 20s
       retries: 3
     restart: unless-stopped
-    hostname: "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+    hostname: "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     networks:
       default:
         aliases:
-          - "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       traefik_services:
         aliases:
-          - "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-          - "sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-          - "limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-          - "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-          - "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"  
+          - "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"  
           - "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-          - "jupyter.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
     labels:
       - "dps.network=${SIMVA_SERVICE_NETWORK:-traefik_services}"
       - "traefik.enable=true"
       # Access API enpoint through traefik itself
       - "traefik.http.services.api.loadbalancer.server.port=8080"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.dashboard.rule=Host(`${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=dashboardAuth@file"

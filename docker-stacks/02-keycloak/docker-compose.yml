@@ -36,11 +36,11 @@ services:
       timeout: 20s
       retries: 3
     restart: unless-stopped
-    hostname: mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
   mariadb-backup:
     << : *default-opts
@@ -50,7 +50,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
-      - MYSQL_HOST=mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      - MYSQL_HOST=mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       - MYSQL_ROOT_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD:-root}
       - BACKUP_NUM_KEEP=7
       - BACKUP_FREQUENCY=1d
@@ -65,7 +65,7 @@ services:
       done
       EOF'
     restart: unless-stopped
-    hostname: mariadb-backup.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: mariadb-backup.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
@@ -96,7 +96,7 @@ services:
       #- "-Dkeycloak.migration.realmName=simva"
     environment:
       - DB_VENDOR=mariadb
-      - DB_ADDR=mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      - DB_ADDR=mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       - DB_DATABASE=${SIMVA_KEYCLOAK_MYSQL_DATABASE:-keycloak}
       - DB_USER=${SIMVA_KEYCLOAK_MYSQL_USER:-keycloak}
       - DB_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_PASSWORD:-password}
@@ -131,7 +131,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
-      - "traefik.http.routers.keycloak.rule=Host(`sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.keycloak.rule=Host(`${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.keycloak.middlewares=secHeaders@file"
 
   mail:
@@ -146,14 +146,14 @@ services:
       interval: 60s
       timeout: 20s
       retries: 3
-    hostname: mail.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: mail.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - "mail.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "mail.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       traefik_services:
         aliases:
-          - "mail.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "mail.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mail.loadbalancer.server.port=80"

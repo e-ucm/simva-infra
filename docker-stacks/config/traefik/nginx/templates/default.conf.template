@@ -61,6 +61,6 @@ server {
         proxy_buffers           32 4k;
 
         # END proxy_params
-        proxy_pass http://traefik.${SIMVA_EXTERNAL_DOMAIN}:80;
+        proxy_pass http://${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_EXTERNAL_DOMAIN}:80;
     }
 }

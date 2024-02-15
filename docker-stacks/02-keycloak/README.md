@@ -176,7 +176,7 @@ docker run --rm \
     --name keycloak_exporter \
     -v /tmp:/tmp/keycloak-export:Z \
     -e DB_VENDOR=mariadb \
-    -e DB_ADDR=mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test} \
+    -e DB_ADDR=mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test} \
     -e DB_DATABASE=${SIMVA_KEYCLOAK_MYSQL_DATABASE:-keycloak} \
     -e DB_USER=${SIMVA_KEYCLOAK_MYSQL_USER:-keycloak} \
     -e DB_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_PASSWORD:-password} \
@@ -194,7 +194,7 @@ docker run --rm \
     --name keycloak_importer \
     -v /tmp:/tmp/keycloak-import:Z \
     -e DB_VENDOR=mariadb \
-    -e DB_ADDR=mariadb.keycloak.${SIMVA_INTERNAL_DOMAIN:-internal.test} \
+    -e DB_ADDR=mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test} \
     -e DB_DATABASE=${SIMVA_KEYCLOAK_MYSQL_DATABASE:-keycloak} \
     -e DB_USER=${SIMVA_KEYCLOAK_MYSQL_USER:-keycloak} \
     -e DB_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_PASSWORD:-password} \

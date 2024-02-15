@@ -72,6 +72,9 @@ export SIMVA_EXTERNAL_DOMAIN="external.test"
 # tecnativa/socket-proxy logging level, possible values: info, debug
 export SIMVA_SOCKET_PROXY_LOG_LEVEL="info"
 
+# TRAEFIK host subdomain
+export SIMVA_TRAEFIK_HOST_SUBDOMAIN="traefik"
+
 # Traefik: disables SSL certificate verification
 #
 # Note: It is far better (and more secure) to config SIMVA_SSL_ROOT_CAS
@@ -97,7 +100,8 @@ export SIMVA_WAIT_TIME="10"
 export SIMVA_MAX_RETRIES="20"
 
 #Keyclock Simva SSO host
-export SIMVA_SSO_HOST="sso.${SIMVA_EXTERNAL_DOMAIN}"
+export SIMVA_SSO_HOST_SUBDOMAIN="sso"
+export SIMVA_SSO_HOST="${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
 export SIMVA_SSO_REALM="simva"
 export SIMVA_SSO_OPENID_CONFIG_URL="https://${SIMVA_SSO_HOST}/auth/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration"
 export SIMVA_SSO_PROTOCOL="https"
@@ -108,8 +112,8 @@ export SIMVA_SSO_PUBLIC_CLIENT="false"
 export SIMVA_SSO_AUTH_PATH="/auth"
 
 #Limesurvey host
-export SIMVA_LIMESURVEY_URL="https://limesurvey.${SIMVA_EXTERNAL_DOMAIN}"
-export SIMVA_LIMESURVEY_MSMTP_HOST="mail.keycloak.${SIMVA_INTERNAL_DOMAIN}"
+export SIMVA_LIMESURVEY_HOST_SUBDOMAIN="limesurvey"
+export SIMVA_LIMESURVEY_MSMTP_HOST="mail.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN}"
 export SIMVA_LIMESURVEY_MSMTP_FROM="no-reply@limesurvey.${SIMVA_EXTERNAL_DOMAIN}"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH="/simplesamlphp"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL="INFO"
@@ -122,14 +126,13 @@ export SIMPLESAMLPHP_SP_IDP_ID="https://${SIMVA_SSO_HOST}/auth/realms/${SIMVA_SS
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_IDP_METADATA_URL="${SIMPLESAMLPHP_SP_IDP_ID}/protocol/saml/descriptor"
 
 #Minio host
-export SIMVA_MINIO_URL="https://minio.${SIMVA_EXTERNAL_DOMAIN}"
+export SIMVA_MINIO_HOST_SUBDOMAIN="minio"
 export SIMVA_MINIO_OPENID_CLIENT_ID="minio"
 export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 
 #Kafka info
 export SIMVA_CONFLUENT_PLATFORM_VERSION="5.5.0"
 export SIMVA_KAFKA_NETWORK="kafka_services"
-export SIMVA_KAFKA_CONNECT_SINK_MINIO_URL=${SIMVA_MINIO_URL}
 export SIMVA_KAFKA_DNS_IP="127.0.0.11"
 export SIMVA_TRACES_TOPIC="traces"
 export SIMVA_TRACES_BUCKET_NAME="traces"
@@ -138,10 +141,10 @@ export SIMVA_SINK_USERS_DIR="users"
 export SIMVA_SINK_TRACES_FILE="traces.json"
 
 #Analytics A2 host
+export SIMVA_ANALYTICS_HOST_SUBDOMAIN="analytics"
 export SIMAV_A2_HOST="a2"
 export SIMVA_A2_PORT="3000"
 export SIMVA_A2_PROTOCOL="http"
-export SIMVA_A2_EXTERNAL="https://analytics.${SIMVA_EXTERNAL_DOMAIN}"
 export SIMVA_A2_ANALYTICSBACKEND_API="/api/proxy/gleaner"
 
 #SIMVA FRONT HOST
@@ -153,6 +156,9 @@ export SIMVA_MONGO_HOST_SUBDOMAIN="simva-mongo"
 export SIMVA_API_MONGO_DB="/simva"
 export SIMVA_API_LTI_MONGO_DB="/lti_simva"
 export SIMVA_FRONT_MONGO_DB="/simva-front"
+
+#SIMVA API
+export SIMVA_SIMVA_API_HOST_SUBDOMAIN="simva-api"
 
 #SIMVA Trace Allocator
 export SIMVA_TRACE_ALLOCATOR_BATCH_SIZE="100"
@@ -167,6 +173,12 @@ export SIMVA_TRACE_ALLOCATOR_TRY_RECOVERY="true"
 
 # SIMVA Max Upload file size
 export SIMVA_MAX_UPLOAD_FILE_SIZE="33554432" #32mb
+
+#Jupyter Notebook
+export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
+
+#Portainer
+export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
 
 ####################################################################
 ######## Authentification username and password (TO MODIFY) ########

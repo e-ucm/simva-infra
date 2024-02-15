@@ -63,7 +63,7 @@ services:
       KAFKA_PORT: "9092"
       KAFKA_TOPIC: "${SIMVA_TRACES_TOPIC:-traces}"
       #MINIO
-      MINIO_URL: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
+      MINIO_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-root}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
       MINIO_BUCKET: "${SIMVA_TRACES_BUCKET_NAME:-traces}"
@@ -71,10 +71,10 @@ services:
       MINIO_USERS_DIR: "${SIMVA_SINK_USERS_DIR:-users}"
       MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces-v2.json}"
       #LIMESURVEY
-      LIMESURVEY_HOST: "limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      LIMESURVEY_HOST: "${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       LIMESURVEY_PROTOCOL: "https"
       LIMESURVEY_PORT: "443"
-      LIMESURVEY_EXTERNAL: "https://limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
+      LIMESURVEY_EXTERNAL: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
       LIMESURVEY_ADMIN_USER: "${SIMVA_LIMESURVEY_ADMIN_USER:-admin}"
       LIMESURVEY_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-password2}"
       #SSO KEYCLOAK
@@ -84,7 +84,7 @@ services:
       SSO_CLIENT_SECRET: "${SIMVA_FRONT_SSO_CLIENT_KEY:-secret}"
       SSO_SSL_REQUIRED: "${SIMVA_SSO_SSL_REQUIRED:-external}"
       SSO_PUBLIC_CLIENT: "${SIMVA_SSO_PUBLIC_CLIENT:-false}"
-      SSO_HOST: "sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SSO_PROTOCOL: "${SIMVA_SSO_PROTOCOL:-https}"
       SSO_PORT: "${SIMVA_SSO_PORT:-443}"
       SSO_AUTH_PATH: "${SIMVA_SSO_AUTH_PATH:-/auth}"
@@ -97,7 +97,7 @@ services:
       A2_PORT: "${SIMVA_A2_PORT:-3000}"
       A2_ADMIN_USER: "${SIMVA_A2_ADMIN_USER:-root}"
       A2_ADMIN_PASSWORD: "${SIMVA_A2_ADMIN_PASSWORD:-password}"
-      A2_EXTERNAL: "${SIMVA_A2_EXTERNAL:-https://analytics.simva.e-ucm.es}"
+      A2_EXTERNAL: "https://${SIMVA_ANALYTICS_HOST_SUBDOMAIN:-analytics}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       #ANALYTICS BACKEND
       ANALYTICSBACKEND_API: "${SIMVA_A2_ANALYTICSBACKEND_API:-/api/proxy/gleaner}"
       #LTI
@@ -116,21 +116,21 @@ services:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
     depends_on:
       - mongodb
-    hostname: simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       kafka_services:
         aliases:
-          - simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.simva-api.loadbalancer.server.port=3000"
-      - "traefik.http.routers.simva-api.rule=Host(`simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.simva-api.rule=Host(`${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
   simva-front:
     << : *default-opts
@@ -153,7 +153,7 @@ services:
       MONGO_HOST: "${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       MONGO_DB: "${SIMVA_FRONT_MONGO_DB:-/simva-front}"
       #SSO KEYCLOAK
-      SSO_HOST: "sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SSO_PROTOCOL: "${SIMVA_SSO_PROTOCOL:-https}"
       SSO_PORT: "${SIMVA_SSO_PORT:-443}"
       SSO_AUTH_PATH: "${SIMVA_SSO_AUTH_PATH:-/auth}"
@@ -163,11 +163,11 @@ services:
       SSO_SSL_REQUIRED: "${SIMVA_SSO_SSL_REQUIRED:-external}"
       SSO_PUBLIC_CLIENT: "${SIMVA_SSO_PUBLIC_CLIENT:-false}"
       #SIMVA API
-      SIMVA_API_HOST: "simva-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_API_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_API_PORT: "443"
       SIMVA_API_PROTOCOL: "https"
       #LIMESURVEY
-      LIMESURVEY_HOST: "https://limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
+      LIMESURVEY_HOST: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
       LIMESURVEY_PROTOCOL: "https"
       LIMESURVEY_PORT: "443"
       LIMESURVEY_ADMIN_USER: "${SIMVA_LIMESURVEY_ADMIN_USER:-admin}"
@@ -217,7 +217,7 @@ services:
       COPY_INSTEAD_RENAME: "${SIMVA_TRACE_ALLOCATOR_COPY_INSTEAD_RENAME:-true}"
       TRY_RECOVERY: ${SIMVA_TRACE_ALLOCATOR_TRY_RECOVERY:-true}
       #MINIO
-      MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      MINIO_HOST: "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       MINIO_SSL: "true"
 #     MINIO_PORT: TODO 443
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-root}"
@@ -227,7 +227,7 @@ services:
       MINIO_USERS_DIR: "${SIMVA_SINK_USERS_DIR:-users}"
       MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces_v2.json}"
       #SIMVA API
-      SIMVA_HOST: "simva-api.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      SIMVA_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       SIMVA_PROTOCOL: "http"
       SIMVA_PORT: "3000"
       SIMVA_USER: "${SIMVA_API_ADMIN_USERNAME}"

@@ -96,11 +96,11 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/mongo:/data/db
-    hostname: simva-mongo.dev.test
+    hostname: ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.dev.test
     networks:
       default:
         aliases:
-          - simva-mongo.dev.test
+          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.dev.test
 
   simva-api:
     << : *default-opts
@@ -112,17 +112,17 @@ services:
       DEBUG: "true"
       NODE_ENV: "development"
       EXTERNAL_URL: http://localhost:3000
-      MONGO_HOST: simva-mongo.dev.test
+      MONGO_HOST: ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.dev.test
       MONGO_DB: /simva
       KAFKA_HOST: kafka1.dev.test
       KAFKA_PORT: 9092
       KAFKA_TOPIC: ${SIMVA_TRACES_TOPIC:-traces}
-      MINIO_URL: https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}/
+      MINIO_URL: https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/
       MINIO_BUCKET: ${SIMVA_TRACES_BUCKET_NAME:-traces}
       LIMESURVEY_PROTOCOL: https
-      LIMESURVEY_HOST: limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      LIMESURVEY_HOST: ${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       LIMESURVEY_PORT: 443
-      LIMESURVEY_EXTERNAL: https://limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}/
+      LIMESURVEY_EXTERNAL: https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/
       LIMESURVEY_ADMIN_USER: ${SIMVA_LIMESURVEY_ADMIN_USER:-admin}
       LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-password2}
       A2_HOST: "${SIMAV_A2_HOST:-a2}"
@@ -130,10 +130,10 @@ services:
       A2_PROTOCOL: "${SIMVA_A2_PROTOCOL:-http}"
       A2_ADMIN_USER: "${SIMVA_A2_ADMIN_USER:-root}"
       A2_ADMIN_PASSWORD: "${SIMVA_A2_ADMIN_PASSWORD:-password}"
-      A2_EXTERNAL: "${SIMVA_A2_EXTERNAL:-https://analytics.simva.e-ucm.es}"
+      A2_EXTERNAL: "https://${SIMVA_ANALYTICS_HOST_SUBDOMAIN:-analytics}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
       SSO_ENABLED: "${SIMVA_SSO_ENABLED:-true}"
-      SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      SSO_HOST: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       SSO_ADMIN_USER: ${SIMVA_SSO_ADMIN_USER:-administrator}
       SSO_ADMIN_PASSWORD: ${SIMVA_SSO_ADMIN_PASSWORD:-administrator}
     volumes:
@@ -144,11 +144,11 @@ services:
 
     depends_on:
       - mongodb
-    hostname: simva-api.dev.test
+    hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}dev.test
     networks:
       default:
         aliases:
-          - simva-api.dev.test
+          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}dev.test
     ports:
       - target: 3000
         published: 3000
@@ -173,10 +173,10 @@ services:
       SIMVA_PROTOCOL: "http"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
       MONGO_DB: /simva
-      SIMVA_API_HOST: simva-api.dev.test
+      SIMVA_API_HOST: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}dev.test
       SIMVA_API_PORT: "3000"
       SIMVA_API_PROTOCOL: "http"
-      SSO_HOST: sso.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      SSO_HOST: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       SSO_CLIENT_ID: "${SIMVA_FRONT_SSO_CLIENT_ID:-simva}"
       SSO_CLIENT_SECRET: "${SIMVA_FRONT_SSO_CLIENT_KEY:-secret}"
     volumes:

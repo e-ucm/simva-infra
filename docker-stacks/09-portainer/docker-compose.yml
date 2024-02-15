@@ -25,15 +25,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     command: --admin-password "${SIMVA_PORTAINER_ADMIN_PASSWORD}"
-    hostname: portainer.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: ${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - portainer.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - portainer.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.logs.loadbalancer.server.port=9000"
-      - "traefik.http.routers.logs.rule=Host(`portainer.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.logs.rule=Host(`${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"

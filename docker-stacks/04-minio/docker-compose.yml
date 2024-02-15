@@ -72,7 +72,7 @@ services:
       MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_OPENID_CLIENT_ID:-minio}"
       MINIO_IDENTITY_OPENID_CONFIG_URL: "${SIMVA_SSO_OPENID_CONFIG_URL:-https://sso.external.test/auth/realms/simva/.well-known/openid-configuration}"
       MINIO_IDENTITY_OPENID_SCOPES: "${SIMVA_MINIO_IDENTITY_OPENID_SCOPES:-openid,policy_role_attribute}"
-      MINIO_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}:443"
+      MINIO_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
       MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
@@ -83,27 +83,27 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-    hostname: minio.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: ${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - minio.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - minio.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.minio.loadbalancer.server.port=9000"
-      - "traefik.http.routers.minio.rule=Host(`minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.minio.rule=Host(`${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
-# mc config host add --insecure simva-minio https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test} minio password
+# mc config host add --insecure simva-minio https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test} minio password
 # mc --debug --insecure mb simva-minio/prueba
 # mc --debug --insecure ls simva-minio
 # https://github.com/minio/minio/issues/7086 -> write-user-folder.json
 # https://github.com/minio/minio/issues/8345 -> write-user-folder-jwt.json
 #
 # Not required (already configured using env variables but useful:
-#   /usr/bin/mc --debug --insecure admin config set simva-minio identity_openid config_url="https://${SIMVA_SSO_HOST:-sso.external.test}/auth/realms/simva/.well-known/openid-configuration" client_id="https://minio.external.test";
+#   /usr/bin/mc --debug --insecure admin config set simva-minio identity_openid config_url="https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/simva/.well-known/openid-configuration" client_id="https://minio.external.test";
 #   /usr/bin/mc --debug --insecure admin service restart simva-minio;
 
 # XXX remove mcs password
@@ -188,10 +188,10 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.mc/certs/CAs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
-      MINIO_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}:443"
+      MINIO_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
-      MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
-      MINIO_URL: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MINIO_HOST: "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MINIO_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
       MINIO_MCS_USER: "${SIMVA_MINIO_MCS_USER:-mcs}"

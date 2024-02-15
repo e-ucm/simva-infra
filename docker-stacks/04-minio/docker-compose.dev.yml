@@ -30,8 +30,8 @@ services:
       MCS_SECRET_KEY: "${SIMVA_MINIO_MCS_SECRET:-password}"
       # Required using self signed certificates
       MCS_MINIO_SERVER_TLS_ROOT_CAS: "/root/.mcs/certs/CAs/rootCA.pem"
-      MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
-      MCS_MINIO_SERVER: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MINIO_HOST: "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MCS_MINIO_SERVER: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
     restart: unless-stopped
     hostname: mcs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
