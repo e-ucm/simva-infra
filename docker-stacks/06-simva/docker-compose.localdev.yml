@@ -126,13 +126,13 @@ services:
       LIMESURVEY_ADMIN_USER: ${SIMVA_LIMESURVEY_ADMIN_USER:-admin}
       LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-password2}
       A2_HOST: "${SIMAV_A2_HOST:-a2}"
-      A2_PORT: "${SIMVA_A2_PORT:-3000}"
-      A2_PROTOCOL: "${SIMVA_A2_PROTOCOL:-http}"
+      A2_PORT: "3000"
+      A2_PROTOCOL: "http"
       A2_ADMIN_USER: "${SIMVA_A2_ADMIN_USER:-root}"
       A2_ADMIN_PASSWORD: "${SIMVA_A2_ADMIN_PASSWORD:-password}"
       A2_EXTERNAL: "https://${SIMVA_ANALYTICS_HOST_SUBDOMAIN:-analytics}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
-      SSO_ENABLED: "${SIMVA_SSO_ENABLED:-true}"
+      SSO_ENABLED: "true"
       SSO_HOST: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       SSO_ADMIN_USER: ${SIMVA_SSO_ADMIN_USER:-administrator}
       SSO_ADMIN_PASSWORD: ${SIMVA_SSO_ADMIN_PASSWORD:-administrator}

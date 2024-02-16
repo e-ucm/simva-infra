@@ -1,20 +1,32 @@
 #!/usr/bin/env bash
 
+###############################
+# SIMVA ENVIRONMENT AND DEBUG #
+###############################
 # values: development, production
-export SIMVA_ENVIRONMENT="development"
+export SIMVA_ENVIRONMENT="production"
 
 export SIMVA_DEBUG="false"
 [[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_DEBUG="true"
 
-#Logging file 
+#######################
+# SIMVA LOGGING FILES #
+#######################
+# SIMVA Logging max file size
 export SIMVA_LOGGING_MAX_FILE_SIZE="20m"
-
+# SIMVA Logging max files
 export SIMVA_LOGGING_MAX_FILES="5"
+# SIMVA Max Upload file size
+export SIMVA_MAX_UPLOAD_FILE_SIZE="33554432" #32mb
 
-#SIMVA Stacks
+################
+# SIMVA STACKS #
+################
 export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva 08-anaconda 09-portainer"
 
-# SIMVA installation folder
+#############################
+# SIMVA installation folder #
+#############################
 export SIMVA_HOME="${SIMVA_PROJECT_DIR}"
 
 export SIMVA_DATA_HOME="${SIMVA_HOME}/data"
@@ -29,10 +41,10 @@ export SIMVA_TLS_GENERATE_SELF_SIGNED="false"
 
 export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 
-#Service Network
-export SIMVA_SERVICE_NETWORK="traefik_services"
-
-#images versions
+###########################################
+# Images versions and SIMVA Git reference #
+###########################################
+# Images versions
 export SIMVA_KEYCLOAK_IMAGE="jboss/keycloak"
 export SIMVA_KEYCLOAK_VERSION="10.0.2"
 
@@ -41,9 +53,15 @@ export SIMVA_MARIADB_VERSION="10.4.13"
 
 #Git reference branch
 export CSP_REPORTER_GIT_REF="master"
-export SIMVA_API_GIT_REF="dev"
-export SIMVA_FRONT_GIT_REF="dev"
-export SIMVA_TRACE_ALLOCATOR_GIT_REF="dev"
+export SIMVA_API_GIT_REF="master"
+export SIMVA_FRONT_GIT_REF="master"
+export SIMVA_TRACE_ALLOCATOR_GIT_REF="master"
+
+###################
+# Service Network #
+###################
+# Service Network
+export SIMVA_SERVICE_NETWORK="traefik_services"
 
 #Simva External IP
 export SIMVA_HOST_EXTERNAL_IP="192.168.253.2"
@@ -59,22 +77,46 @@ export SIMVA_DNS_SERVICE_IP="172.30.0.53"
 
 # SIMVA Load Balancer IPs
 export SIMVA_DEV_LOAD_BALANCER="false"
-
 export SIMVA_LOAD_BALANCER_IPS="172.30.0.80"
 [[ "${SIMVA_ENVIRONMENT}" == "production" ]] && SIMVA_LOAD_BALANCER_IPS="127.0.0.1"
 
+########################
+# Domain and subdomain #
+########################
 # Domain used for docker containers hostnames
 export SIMVA_INTERNAL_DOMAIN="internal.test"
-
 # Domain used for registering public-faced docker container hostnames
 export SIMVA_EXTERNAL_DOMAIN="external.test"
+# Traefik Host
+export SIMVA_TRAEFIK_HOST_SUBDOMAIN="traefik"
+#Keyclock Simva SSO Host
+export SIMVA_SSO_HOST_SUBDOMAIN="sso"
+#Mail Host
+export SIMVA_MAIL_HOST_SUBDOMAIN="mail"
+#Limesurvey host
+export SIMVA_LIMESURVEY_HOST_SUBDOMAIN="limesurvey"
+#Minio host
+export SIMVA_MINIO_HOST_SUBDOMAIN="minio"
+#Analytics A2 host
+export SIMVA_ANALYTICS_HOST_SUBDOMAIN="analytics"
+#SIMVA MONGO DB 
+export SIMVA_MONGO_HOST_SUBDOMAIN="simva-mongo"
+#SIMVA API
+export SIMVA_SIMVA_API_HOST_SUBDOMAIN="simva-api"
+#Jupyter Notebook
+export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
+#Portainer
+export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
 
+#####################
+# Socket Proxy info #
+#####################
 # tecnativa/socket-proxy logging level, possible values: info, debug
 export SIMVA_SOCKET_PROXY_LOG_LEVEL="info"
 
-# TRAEFIK host subdomain
-export SIMVA_TRAEFIK_HOST_SUBDOMAIN="traefik"
-
+################
+# Traefik info #
+################
 # Traefik: disables SSL certificate verification
 #
 # Note: It is far better (and more secure) to config SIMVA_SSL_ROOT_CAS
@@ -94,43 +136,39 @@ export SIMVA_TRAEFIK_EXTRA_CSP_POLICY=""
 # example: foo.crt,bar.crt
 export SIMVA_SSL_ROOT_CAS="${SIMVA_DATA_HOME}/tls/ca/isrgrootx1.pem"
 
+###################################################################
+# Checking time for KeyCloak, Minio,Kafka and Anaconda availabled #
+###################################################################
 #Checking time and max retries for KeyCloak, Minio,Kafka and Anaconda availabled
 export SIMVA_WAIT_TIMEOUT="120"
 export SIMVA_WAIT_TIME="10"
 export SIMVA_MAX_RETRIES="20"
 
-#Keyclock Simva SSO host
-export SIMVA_SSO_HOST_SUBDOMAIN="sso"
-export SIMVA_SSO_HOST="${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
+#################
+# Keycloak info #
+#################
 export SIMVA_SSO_REALM="simva"
-export SIMVA_SSO_OPENID_CONFIG_URL="https://${SIMVA_SSO_HOST}/auth/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration"
-export SIMVA_SSO_PROTOCOL="https"
-export SIMVA_SSO_PORT="443"
-export SIMVA_SSO_ENABLED="true"
-export SIMVA_SSO_SSL_REQUIRED="external"
-export SIMVA_SSO_PUBLIC_CLIENT="false"
-export SIMVA_SSO_AUTH_PATH="/auth"
 
-#Limesurvey host
-export SIMVA_LIMESURVEY_HOST_SUBDOMAIN="limesurvey"
-export SIMVA_LIMESURVEY_MSMTP_HOST="mail.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN}"
-export SIMVA_LIMESURVEY_MSMTP_FROM="no-reply@limesurvey.${SIMVA_EXTERNAL_DOMAIN}"
+###################
+# Limesurvey info #
+###################
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH="/simplesamlphp"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL="INFO"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_NAME="limesurvey"
+export SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE="limesurvey"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY="limesurvey-key.pem"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT="limesurvey-fullchain.pem"
-export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ="/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-export SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE="limesurvey"
-export SIMPLESAMLPHP_SP_IDP_ID="https://${SIMVA_SSO_HOST}/auth/realms/${SIMVA_SSO_REALM}"
-export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_IDP_METADATA_URL="${SIMPLESAMLPHP_SP_IDP_ID}/protocol/saml/descriptor"
+export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ="/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
 
-#Minio host
-export SIMVA_MINIO_HOST_SUBDOMAIN="minio"
+##############
+# Minio info #
+##############
 export SIMVA_MINIO_OPENID_CLIENT_ID="minio"
 export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 
-#Kafka info
+##############
+# Kafka info #
+##############
 export SIMVA_CONFLUENT_PLATFORM_VERSION="5.5.0"
 export SIMVA_KAFKA_NETWORK="kafka_services"
 export SIMVA_KAFKA_DNS_IP="127.0.0.11"
@@ -140,52 +178,37 @@ export SIMVA_SINK_TOPICS_DIR="kafka-topics"
 export SIMVA_SINK_USERS_DIR="users"
 export SIMVA_SINK_TRACES_FILE="traces.json"
 
-#Analytics A2 host
-export SIMVA_ANALYTICS_HOST_SUBDOMAIN="analytics"
+#####################
+# Analytics A2 info #
+#####################
 export SIMAV_A2_HOST="a2"
-export SIMVA_A2_PORT="3000"
-export SIMVA_A2_PROTOCOL="http"
 export SIMVA_A2_ANALYTICSBACKEND_API="/api/proxy/gleaner"
 
-#SIMVA FRONT HOST
-export SIMVA_FRONT_PROTOCOL="https"
-export SIMVA_FRONT_PORT="3050"
-
-#SIMVA MONGO DB 
-export SIMVA_MONGO_HOST_SUBDOMAIN="simva-mongo"
+#######################
+# SIMVA MONGO DB INFO #
+#######################
 export SIMVA_API_MONGO_DB="/simva"
 export SIMVA_API_LTI_MONGO_DB="/lti_simva"
 export SIMVA_FRONT_MONGO_DB="/simva-front"
 
-#SIMVA API
-export SIMVA_SIMVA_API_HOST_SUBDOMAIN="simva-api"
-
-#SIMVA Trace Allocator
+##############################
+# SIMVA Trace Allocator INFO #
+##############################
 export SIMVA_TRACE_ALLOCATOR_BATCH_SIZE="100"
-export SIMVA_TRACE_ALLOCATOR_MAX_DELAY="300000" #5 mins in ms - 5*60*1000
-export SIMVA_TRACE_ALLOCATOR_REFRESH_INTERVAL="14400000" #4 hours in ms -4*60*60*1000
+export SIMVA_TRACE_ALLOCATOR_MAX_DELAY="300000" #5 mins in ms - 5*60*1000 = 300.000 ms
+export SIMVA_TRACE_ALLOCATOR_REFRESH_INTERVAL="14400000" #4 hours in ms -4*60*60*1000 = 14.400.000 ms
 export SIMVA_TRACE_ALLOCATOR_LOCAL_STATE="/data"
 export SIMVA_TRACE_ALLOCATOR_REMOTE_STATE="state"
 export SIMVA_TRACE_ALLOCATOR_REMOVE_DRY_RUN="false"
-export SIMVA_TRACE_ALLOCATOR_GC_INTERVAL="864000000" #10 days in ms - 10*24*60*60*1000
+export SIMVA_TRACE_ALLOCATOR_GC_INTERVAL="864000000" #10 days in ms - 10*24*60*60*10000 = 864.000.000 ms
 export SIMVA_TRACE_ALLOCATOR_COPY_INSTEAD_RENAME="true"
 export SIMVA_TRACE_ALLOCATOR_TRY_RECOVERY="true"
-
-# SIMVA Max Upload file size
-export SIMVA_MAX_UPLOAD_FILE_SIZE="33554432" #32mb
-
-#Jupyter Notebook
-export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
-
-#Portainer
-export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
 
 ####################################################################
 ######## Authentification username and password (TO MODIFY) ########
 ####################################################################
 # Traefik dashboard is protected using basic authentication
 export SIMVA_TRAEFIK_DASHBOARD_USER="admin"
-
 # Traefik: passwords must be hashed using MD5, SHA1, or BCrypt.
 # Note: Use htpasswd to generate the passwords.
 #

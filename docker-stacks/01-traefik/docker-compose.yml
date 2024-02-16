@@ -77,7 +77,7 @@ services:
             #// accessControlAllowOrigin = "*"
             contentTypeNosniff = true
             #customFrameOptionsValue = "ALLOW-FROM https://simva.e-ucm.es"
-            #contentSecurityPolicy = "frame-src 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none'; report-uri https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}/report-violation; report-to https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}/report-violation;"
+            #contentSecurityPolicy = "frame-src 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none'; ${SIMVA_TRAEFIK_EXTRA_CSP_POLICY}"
         EOF
         exec /entrypoint.sh "$$@"
     command:

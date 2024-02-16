@@ -46,24 +46,19 @@ services:
       SIMPLESAMLPHP_ENABLE_DEFAULT_VHOST: "true"
       SIMPLESAMLPHP_INTERNAL_PROXY_HOSTNAME: "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       SIMPLESAMLPHP_ADMIN_PROTECT_INDEX_PAGE: "true"
-      MSMTP_HOST: "${SIMVA_LIMESURVEY_MSMTP_HOST:-mail.keycloak.internal.test}"
-      MSMTP_FROM: "${SIMVA_LIMESURVEY_MSMTP_FROM:-no-reply@limesurvey.external.test}"
+      MSMTP_HOST: "${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      MSMTP_FROM: "no-reply@${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMPLESAMLPHP_LOG_LEVEL: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL:-INFO}"
       SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_NAME:-limesurvey}"
       SIMPLESAMLPHP_SP_PRIVATE_KEY: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-example.key}
       SIMPLESAMLPHP_SP_CERT: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-example.crt}
       SIMPLESAMLPHP_SP_CERT_SUBJ: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ:-/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=limesurvey.internal.test}"
-      SIMPLESAMLPHP_SP_IDP_ID: "${SIMPLESAMLPHP_SP_IDP_ID:-https://sso.external.test/auth/realms/simva}"
-      SIMPLESAMLPHP_SP_IDP_METADATA_URL: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_IDP_METADATA_URL:-https://sso.external.test/auth/realms/simva/protocol/saml/descriptor}"
+      SIMPLESAMLPHP_SP_IDP_ID: ""https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}"
+      SIMPLESAMLPHP_SP_IDP_METADATA_URL: ""https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/protocol/saml/descriptor""
       SIMPLESAMLPHP_SIGN_AUTHN_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_LOGOUT_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_REDIRECTS_REQUESTS: "true"
       SIMPLESAMLPHP_ENCRYPTED_ASSERTIONS: "true"
-      # ###################################################
-      # Duplicated: should be SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_NAME or SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE ?
-      #
-      # SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE:-limesurvey}"
-      # ###################################################
       LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
     volumes:
@@ -151,4 +146,4 @@ services:
     networks:
       default:
         aliases:
-          - mariadb.limesurvey-backup.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}-backup.${SIMVA_INTERNAL_DOMAIN:-internal.test}
