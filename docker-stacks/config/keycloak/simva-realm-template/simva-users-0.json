@@ -115,6 +115,9 @@
       "secretData" : "{{ .users.teacher.secretData }}",
       "credentialData" : "{{ .users.teacher.credentialData }}"
     } ],
+    "attributes" : {
+      "policy" : [ "readonly-user-folder-jwt" ]
+    },
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
     "realmRoles" : [ "uma_authorization", "teacher", "offline_access" ],
