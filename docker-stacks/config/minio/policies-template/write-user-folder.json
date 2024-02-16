@@ -19,12 +19,13 @@
              "s3:ListBucket"
           ],
           "Resource":[
-             "arn:aws:s3:::traces/kafka-topics"
+             "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>"
           ],
           "Condition":{
              "StringEquals":{
                 "s3:prefix":[
-                   "traces/*/"
+                   "",
+                   "<<SIMVA_SINK_USERS_DIR>>/"
                 ]
              }
           }
@@ -36,12 +37,13 @@
              "s3:ListBucket"
           ],
           "Resource":[
-             "arn:aws:s3:::traces/kafka-topics"
+             "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>"
           ],
           "Condition":{
              "StringLike":{
                 "s3:prefix":[
-                   "*/*/"
+                   "<<SIMVA_SINK_USERS_DIR>>/${aws:username}",
+                   "<<SIMVA_SINK_USERS_DIR>>/${aws:username}/*"
                 ]
              }
           }
@@ -50,10 +52,10 @@
           "Sid":"AllowAllS3ActionsInUserFolder",
           "Effect":"Allow",
           "Action":[
-             "s3:GetObject"
+             "s3:*"
           ],
           "Resource":[
-             "arn:aws:s3:::traces/kafka-topics/traces/*/*"
+             "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>/<<SIMVA_SINK_USERS_DIR>>/${aws:username}/*"
           ]
        }
     ]

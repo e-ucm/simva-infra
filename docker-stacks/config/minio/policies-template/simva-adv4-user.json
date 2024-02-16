@@ -5,10 +5,10 @@
             "Sid": "AllowListAccessToSpecificStudyFolders",
             "Effect": "Allow",
             "Action": "s3:ListBucket",
-            "Resource": "arn:aws:s3:::traces",
+            "Resource": "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>",
             "Condition": {
                 "StringLike": {
-                    "s3:prefix": "kafka-topics/traces/_id=*/"
+                    "s3:prefix": "<<SIMVA_SINK_TOPICS_DIR>>/<<SIMVA_TRACES_TOPIC>>/_id=*/"
                 }
             }
         },
@@ -16,7 +16,7 @@
             "Sid": "AllowReadAccessToSpecificStudyFolders",
             "Effect": "Allow",
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::traces/kafka-topics/traces/_id=*/*"
+            "Resource": "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>/<<SIMVA_SINK_TOPICS_DIR>>/<<SIMVA_TRACES_TOPIC>>/_id=*/*"
         }
     ]
 }

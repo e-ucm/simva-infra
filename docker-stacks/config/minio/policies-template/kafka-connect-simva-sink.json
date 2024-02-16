@@ -19,14 +19,14 @@
              "s3:ListBucket"
           ],
           "Resource":[
-             "arn:aws:s3:::traces"
+             "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>"
           ],
           "Condition":{
              "StringEquals":{
                 "s3:prefix":[
                    "",
-                   "kafka-topics/",
-                   "kafka-topics/*"
+                   "<<SIMVA_TRACES_BUCKET_NAME>>/",
+                   "<<SIMVA_TRACES_BUCKET_NAME>>/*"
                 ]
              }
           }
@@ -38,7 +38,7 @@
              "s3:*"
           ],
           "Resource":[
-             "arn:aws:s3:::traces/kafka-topics/*"
+             "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>/<<SIMVA_SINK_TOPICS_DIR>>/*"
           ]
        }
     ]
