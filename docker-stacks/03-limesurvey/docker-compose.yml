@@ -53,8 +53,8 @@ services:
       SIMPLESAMLPHP_SP_PRIVATE_KEY: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-example.key}
       SIMPLESAMLPHP_SP_CERT: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-example.crt}
       SIMPLESAMLPHP_SP_CERT_SUBJ: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ:-/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=limesurvey.internal.test}"
-      SIMPLESAMLPHP_SP_IDP_ID: ""https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}"
-      SIMPLESAMLPHP_SP_IDP_METADATA_URL: ""https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/protocol/saml/descriptor""
+      SIMPLESAMLPHP_SP_IDP_ID: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}"
+      SIMPLESAMLPHP_SP_IDP_METADATA_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/protocol/saml/descriptor"
       SIMPLESAMLPHP_SIGN_AUTHN_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_LOGOUT_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_REDIRECTS_REQUESTS: "true"
