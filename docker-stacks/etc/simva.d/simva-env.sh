@@ -172,9 +172,9 @@ export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 export SIMVA_CONFLUENT_PLATFORM_VERSION="5.5.0"
 export SIMVA_KAFKA_NETWORK="kafka_services"
 export SIMVA_KAFKA_DNS_IP="127.0.0.11"
-export SIMVA_TRACES_TOPIC="traces"
 export SIMVA_TRACES_BUCKET_NAME="traces"
 export SIMVA_SINK_TOPICS_DIR="kafka-topics"
+export SIMVA_TRACES_TOPIC="traces"
 export SIMVA_SINK_USERS_DIR="users"
 export SIMVA_SINK_TRACES_FILE="traces.json"
 
@@ -275,7 +275,6 @@ export SIMVA_A2_ADMIN_PASSWORD="password"
 
 #SIMVA LTI plateform
 export SIMVA_LTI_PLATFORM_SIGNING_KEY="LTISIGNINGKEY"
-export SIMVA_LTI_PLATFORM_DB_NAME="/lti"
 export SIMVA_LTI_PLATFORM_DB_USER="root"
 export SIMVA_LTI_PLATFORM_DB_PASSWORD="password"
 
