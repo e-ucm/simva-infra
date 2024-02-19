@@ -48,8 +48,10 @@ services:
       NODE_EXTRA_CA_CERTS: "/var/lib/simva/ca/rootCA.pem"
       #EXTERNAL URL
       EXTERNAL_URL: "https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      #API
-      PORT: "3000"
+      #SIMVA API (SELF)
+      SIMVA_API_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_API_PORT: "${SIMVA_SIMVA_API_PORT:443}"
+      SIMVA_API_PROTOCOL: "https"
       ADMIN_USERNAME: "${SIMVA_API_ADMIN_USERNAME:-admin}"
       ADMIN_EMAIL: "${SIMVA_API_ADMIN_USERNAME:-admin}@${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       ADMIN_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD:-password}"
