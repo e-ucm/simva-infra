@@ -323,7 +323,7 @@ export SIMVA_STUDENT_USER="student"
 #export SIMVA_STUDENT_PASSWORD="password"
 
 # Template teaching-assistant Username and password FOR KEYCLOAK
-export SIMVA_TEACHING-ASSISTANT_USER="teaching-assistant" 
+export SIMVA_TEACHING_ASSISTANT_USER="teaching-assistant" 
 #export SIMVA_TEACHING-ASSISTANT_PASSWORD="password" 
 
 # Template teacher Username and password FOR KEYCLOAK

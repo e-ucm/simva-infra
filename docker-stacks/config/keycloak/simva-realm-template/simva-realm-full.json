@@ -1,6 +1,6 @@
 {
-  "id" : "simva",
-  "realm" : "simva",
+  "id" : "{{ .client.simva.realmId }}",
+  "realm" : "{{ .client.simva.realmId }}",
   "notBefore" : 0,
   "revokeRefreshToken" : false,
   "refreshTokenMaxReuse" : 0,
@@ -44,7 +44,7 @@
       "name" : "student",
       "composite" : false,
       "clientRole" : false,
-      "containerId" : "simva",
+      "containerId" : "{{ .client.simva.realmId }}",
       "attributes" : { }
     }, {
       "id" : "240ee9db-710f-4c0e-a85c-00373de51eed",
@@ -52,7 +52,7 @@
       "description" : "${role_uma_authorization}",
       "composite" : false,
       "clientRole" : false,
-      "containerId" : "simva",
+      "containerId" : "{{ .client.simva.realmId }}",
       "attributes" : { }
     }, {
       "id" : "41b71acb-3157-4d88-a0c7-40463783bbcc",
@@ -62,7 +62,7 @@
         "realm" : [ "teaching-assistant" ]
       },
       "clientRole" : false,
-      "containerId" : "simva",
+      "containerId" : "{{ .client.simva.realmId }}",
       "attributes" : {
         "policy" : [ "readonly-user-folder-jwt" ]
       }
@@ -74,7 +74,7 @@
         "realm" : [ "researcher" ]
       },
       "clientRole" : false,
-      "containerId" : "simva",
+      "containerId" : "{{ .client.simva.realmId }}",
       "attributes" : { }
     }, {
       "id" : "9fee483e-4a26-4686-9abe-30ccae18e4bd",
@@ -84,7 +84,7 @@
         "realm" : [ "student" ]
       },
       "clientRole" : false,
-      "containerId" : "simva",
+      "containerId" : "{{ .client.simva.realmId }}",
       "attributes" : { }
     }, {
       "id" : "bb848d70-8926-4e91-bee9-0932338d0da4",
@@ -92,7 +92,7 @@
       "description" : "${role_offline-access}",
       "composite" : false,
       "clientRole" : false,
-      "containerId" : "simva",
+      "containerId" : "{{ .client.simva.realmId }}",
       "attributes" : { }
     }, {
       "id" : "c92eba8b-0518-4cec-92e6-ceea5361e537",
@@ -102,11 +102,11 @@
         "realm" : [ "teacher" ]
       },
       "clientRole" : false,
-      "containerId" : "simva",
+      "containerId" : "{{ .client.simva.realmId }}",
       "attributes" : { }
     } ],
     "client" : {
-      "limesurvey" : [ ],
+      "{{ .client.limesurvey.clientId }}" : [ ],
       "realm-management" : [ {
         "id" : "33c9b791-8ab1-4875-aab6-2ba98d2e19a3",
         "name" : "view-clients",
@@ -287,7 +287,7 @@
         "containerId" : "075bbc66-a6d8-4a8e-96bb-72dcfe427662",
         "attributes" : { }
       } ],
-      "minio" : [ ],
+      "{{ .client.minio.clientId }}" : [ ],
       "account" : [ {
         "id" : "a08e7db7-b6fe-4e81-b772-7dc717328307",
         "name" : "manage-account-links",
@@ -396,14 +396,14 @@
     "clientId" : "account",
     "name" : "${client_account}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/simva/account/",
+    "baseUrl" : "/realms/{{ .client.simva.realmId }}/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "**********",
     "defaultRoles" : [ "view-profile", "manage-account" ],
-    "redirectUris" : [ "/realms/simva/account/*" ],
+    "redirectUris" : [ "/realms/{{ .client.simva.realmId }}/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -426,13 +426,13 @@
     "clientId" : "account-console",
     "name" : "${client_account-console}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/simva/account/",
+    "baseUrl" : "/realms/{{ .client.simva.realmId }}/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "**********",
-    "redirectUris" : [ "/realms/simva/account/*" ],
+    "redirectUris" : [ "/realms/{{ .client.simva.realmId }}/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -516,7 +516,7 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "11c9bde7-5875-4fc7-88b7-02425ed57543",
-    "clientId" : "limesurvey",
+    "clientId" : "{{ .client.limesurvey.clientId }}",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
@@ -557,7 +557,7 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "99f4b767-b158-4d61-b418-b6d3e988c91d",
-    "clientId" : "minio",
+    "clientId" : "{{ .client.minio.clientId }}",
     "rootUrl" : "{{ .clients.minio.baseUrl }}",
     "adminUrl" : "{{ .clients.minio.baseUrl }}",
     "surrogateAuthRequired" : false,
@@ -673,7 +673,7 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "caa0515a-884a-4cd5-8821-6b56a44d9683",
-    "clientId" : "simva",
+    "clientId" : "{{ .client.simva.clientId }}",
     "rootUrl" : "{{ .clients.simva.baseUrl }}",
     "adminUrl" : "{{ .clients.simva.baseUrl }}",
     "surrogateAuthRequired" : false,
@@ -715,12 +715,12 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id": "bb87edf1-7ef9-4fbb-a8ec-eef0a5a48ddf",
-    "clientId": "lti-tool",
+    "clientId": "{{ .clients.lti-tool.clientId }}",
     "surrogateAuthRequired": false,
     "enabled": true,
     "alwaysDisplayInConsole": false,
     "clientAuthenticatorType": "client-jwt",
-    "secret": "**********",
+    "secret": "{{ .clients.lti-tool.secret }}",
     "redirectUris": [
       "{{ .clients.simva.baseUrl }}/lti/"
     ],
@@ -810,7 +810,7 @@
         "config": {
           "lti3_platform.auth.id": "SIMVA_CLIENT_ID",
           "lti3_platform.url": "{{ .clients.simva.baseUrl }}/lti/claims",
-          "lti3_platform.auth.url": "{{ .clients.simva.ssoUrl }}/auth/realms/simva/protocol/openid-connect/token",
+          "lti3_platform.auth.url": "{{ .clients.simva.ssoUrl }}/auth/realms/{{ .client.simva.realmId }}/protocol/openid-connect/token",
           "lti3_platform.headers.bearer.token": "false",
           "access.token.claim": "true",
           "lti3_platform.auth.pass": "SIMVA_CLIENT_PASSWORD",
@@ -2208,13 +2208,13 @@
   "users" : [ {
     "id" : "747393fa-ddb2-4b9a-bbd7-e54d0aa4fdac",
     "createdTimestamp" : 1592588127442,
-    "username" : "administrator",
+    "username" : "{{ .users.administrator.username }}",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "Administrator",
     "lastName" : "Administrator",
-    "email" : "administrator@external.test",
+    "email" :  "{{ .users.administrator.username }}@{{ .clients.simva.externalDomain }}",
     "credentials" : [ {
       "id" : "1b0d2adf-20cd-485e-8396-7ce79942e625",
       "type" : "password",
@@ -2253,13 +2253,13 @@
   }, {
     "id" : "d22fe280-ad59-46ab-90a4-89049e9518a6",
     "createdTimestamp" : 1592588089565,
-    "username" : "researcher",
+    "username" : "{{ .users.researcher.username }}",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "Researcher",
     "lastName" : "Researcher",
-    "email" : "researcher@external.test",
+    "email" :  "{{ .users.researcher.username }}@{{ .clients.simva.externalDomain }}",
     "credentials" : [ {
       "id" : "779aa3d0-a7c7-4f1d-a3f7-cb546399ae93",
       "type" : "password",
@@ -2278,13 +2278,13 @@
   }, {
     "id" : "25b70094-4cbc-4e57-b555-eccd0e879da6",
     "createdTimestamp" : 1592588013241,
-    "username" : "student",
+    "username" :  "{{ .users.student.username }}",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "Student",
     "lastName" : "Student",
-    "email" : "student@external.test",
+    "email" :  "{{ .users.student.username }}@{{ .clients.simva.externalDomain }}",
     "credentials" : [ {
       "id" : "ad102266-601d-44af-a678-84c33e7b5db2",
       "type" : "password",
@@ -2303,13 +2303,13 @@
   }, {
     "id" : "102f1cde-078c-4253-8d1c-25689602c773",
     "createdTimestamp" : 1592586858577,
-    "username" : "teacher",
+    "username" :  "{{ .users.teacher.username }}",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "teacher",
     "lastName" : "Teacher",
-    "email" : "teacher@external.test",
+    "email" :  "{{ .users.teacher.username }}@{{ .clients.simva.externalDomain }}",
     "credentials" : [ {
       "id" : "da4a2a9b-d321-4ef5-be04-6f3050f5f470",
       "type" : "password",
@@ -2328,13 +2328,13 @@
   }, {
     "id" : "34c47206-d4b1-4d7b-859f-c5ce260ade75",
     "createdTimestamp" : 1592588057292,
-    "username" : "teaching-assistant",
+    "username" :  "{{ .users.teaching_assistant.username }}",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "Teaching",
     "lastName" : "Assistant",
-    "email" : "teaching-assistant@external.test",
+    "email" :  "{{ .users.teaching_assistant.username }}@{{ .clients.simva.externalDomain }}",
     "credentials" : [ {
       "id" : "68a63b77-5b73-45ed-9dd6-f7f346d65643",
       "type" : "password",

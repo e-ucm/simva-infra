@@ -81,9 +81,10 @@ function generate_realm_data() {
     echo "users:" >> ${conf_file}
 
     # Update users config
-    users="student teaching-assistant teacher researcher administrator"
+    users="student teaching_assistant teacher researcher administrator"
     for user in $users; do
         user=$(echo ${user} | sed -e 's/[^0-9A-Za-z_]/_/g' )
+        user_username=$(get_or_generate_username "${user}" "${STACK_CONF}/simva-env.sh")
         user_password=$(get_or_generate_password "${user}" "${STACK_CONF}/simva-env.sh")
 
         secretData=""
@@ -94,35 +95,57 @@ function generate_realm_data() {
         secretData=$(echo ${secretData} | sed -e 's/"/\\\\\\"/g')
         credentialData=$(echo ${credentialData} | sed -e 's/"/\\\\\\"/g')
         echo "  ${user}:" >> ${conf_file}
+        echo "    username: \"${user_username}\"" >> ${conf_file}
         echo "    password: \"${user_password}\"" >> ${conf_file}
         echo "    secretData: \"${secretData}\"" >> ${conf_file}
         echo "    credentialData: \"${credentialData}\"" >> ${conf_file}
     done
 
     echo "clients:" >> ${conf_file}
-
-    client_secret=$(get_or_generate_password "limesurvey" "${STACK_CONF}/simva-env.sh")
+    client_id=$(get_or_generate_username "limesurvey_admin" "${STACK_CONF}/simva-env.sh")
+    client_secret=$(get_or_generate_password "limesurvey_admin" "${STACK_CONF}/simva-env.sh")
 
     echo "  limesurvey:" >> ${conf_file}
     echo "    baseUrl: \"https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
     echo "    sspBaseUrl: \"https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN}${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}/module.php/saml/sp\"" >> ${conf_file}
+    echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
     echo "    certificate: \"${limesurvey_cert}\"" >> ${conf_file}
-    #echo "    privatekey: \"${limesurvey_privatekey}\"" >> ${conf_file}
 
+    client_id=$(get_or_generate_username "minio" "${STACK_CONF}/simva-env.sh")
     client_secret=$(get_or_generate_password "minio" "${STACK_CONF}/simva-env.sh")
 
     echo "  minio:" >> ${conf_file}
     echo "    baseUrl: \"https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
 
+    client_id=$(get_or_generate_username "simva" "${STACK_CONF}/simva-env.sh")
     client_secret=$(get_or_generate_password "simva" "${STACK_CONF}/simva-env.sh")
 
     echo "  simva:" >> ${conf_file}
+    echo "    externalDomain: \"${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
     echo "    baseUrl: \"https://${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
     echo "    apiUrl: \"https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
-    echo "    ssoUrl: \"https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    ssoUrl: \"https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}    
+    echo "    realmId: \"${SIMVA_SSO_REALM}\"" >> ${conf_file}
+    echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
+    
+    client_id=$(get_or_generate_username "lti_platform" "${STACK_CONF}/simva-env.sh")
+    client_secret=$(get_or_generate_password "lti_platform" "${STACK_CONF}/simva-env.sh")
+
+    echo "  lti-platform:" >> ${conf_file}
+    echo "    clientId: \"${client_id}\"" >> ${conf_file}
+    echo "    secret: \"${client_secret}\"" >> ${conf_file}
+
+    client_id=$(get_or_generate_username "lti_tool" "${STACK_CONF}/simva-env.sh")
+    client_secret=$(get_or_generate_password "lti_tool" "${STACK_CONF}/simva-env.sh")
+
+    echo "  lti-tool:" >> ${conf_file}
+    echo "    clientId: \"${client_id}\"" >> ${conf_file}
+    echo "    secret: \"${client_secret}\"" >> ${conf_file}
+
 }
 
 function get_or_generate_password() {
@@ -145,6 +168,28 @@ function get_or_generate_password() {
 
     echo ${client_secret}
 }
+
+function get_or_generate_username() {
+    local client=${1}
+    local conf=${2:-""}
+
+    local var="SIMVA_${client^^}_USER"
+    var=$(echo $var | sed -e 's/[^0-9A-Za-z_]/_/g' )
+
+    __file_env $var ''
+
+    if [[ -z "${!var}" ]]; then
+        client_user=${client}
+        if [[ -e ${conf} ]]; then
+            echo "export ${var}=\"${client_user}\"" >> "${conf}"
+        fi
+    else
+        client_user=${!var}
+    fi
+
+    echo ${client_user}
+}
+
 
 function configure_realm_dir() {
     if [[  $# -lt 1 ]]; then

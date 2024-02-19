@@ -1,15 +1,15 @@
 {
-  "realm" : "simva",
+  "realm" : "{{ .client.simva.realmId }}",
   "users" : [ {
     "id" : "747393fa-ddb2-4b9a-bbd7-e54d0aa4fdac",
     "createdTimestamp" : 1592588127442,
-    "username" : "administrator",
+    "username" : "{{ .users.administrator.username }}",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "Administrator",
     "lastName" : "Administrator",
-    "email" : "administrator@external.test",
+    "email" :  "{{ .users.administrator.username }}@{{ .clients.simva.externalDomain }}",
     "credentials" : [ {
       "id" : "1b0d2adf-20cd-485e-8396-7ce79942e625",
       "type" : "password",
@@ -51,13 +51,13 @@
   }, {
     "id" : "d22fe280-ad59-46ab-90a4-89049e9518a6",
     "createdTimestamp" : 1592588089565,
-    "username" : "researcher",
+    "username" : "{{ .users.researcher.username }}",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "Researcher",
     "lastName" : "Researcher",
-    "email" : "researcher@external.test",
+    "email" :  "{{ .users.researcher.username }}@{{ .clients.simva.externalDomain }}",
     "credentials" : [ {
       "id" : "779aa3d0-a7c7-4f1d-a3f7-cb546399ae93",
       "type" : "password",
@@ -76,13 +76,13 @@
   }, {
     "id" : "25b70094-4cbc-4e57-b555-eccd0e879da6",
     "createdTimestamp" : 1592588013241,
-    "username" : "student",
+    "username" :  "{{ .users.student.username }}",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "Student",
     "lastName" : "Student",
-    "email" : "student@external.test",
+    "email" :  "{{ .users.student.username }}@{{ .clients.simva.externalDomain }}",
     "credentials" : [ {
       "id" : "ad102266-601d-44af-a678-84c33e7b5db2",
       "type" : "password",
@@ -101,13 +101,13 @@
   }, {
     "id" : "102f1cde-078c-4253-8d1c-25689602c773",
     "createdTimestamp" : 1592586858577,
-    "username" : "teacher",
+    "username" :  "{{ .users.teacher.username }}",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "teacher",
     "lastName" : "Teacher",
-    "email" : "teacher@external.test",
+    "email" :  "{{ .users.teacher.username }}@{{ .clients.simva.externalDomain }}",
     "credentials" : [ {
       "id" : "da4a2a9b-d321-4ef5-be04-6f3050f5f470",
       "type" : "password",
@@ -129,13 +129,13 @@
   }, {
     "id" : "34c47206-d4b1-4d7b-859f-c5ce260ade75",
     "createdTimestamp" : 1592588057292,
-    "username" : "teaching-assistant",
+    "username" :  "{{ .users.teaching_assistant.username }}",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "Teaching",
     "lastName" : "Assistant",
-    "email" : "teaching-assistant@external.test",
+    "email" :  "{{ .users.teaching_assistant.username }}@{{ .clients.simva.externalDomain }}",
     "credentials" : [ {
       "id" : "68a63b77-5b73-45ed-9dd6-f7f346d65643",
       "type" : "password",
