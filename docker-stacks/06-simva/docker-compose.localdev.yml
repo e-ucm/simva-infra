@@ -135,7 +135,7 @@ services:
       SSO_ENABLED: "true"
       SSO_HOST: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       SSO_ADMIN_USER: ${SIMVA_ADMINISTRATOR_USER:-administrator}
-      SSO_ADMIN_PASSWORD: ${SIMVA_SSO_ADMIN_PASSWORD:-administrator}
+      SSO_ADMIN_PASSWORD: ${SIMVA_ADMINISTRATOR_PASSWORD:-administrator}
     volumes:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
 #      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api:/app

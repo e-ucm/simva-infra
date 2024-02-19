@@ -91,7 +91,7 @@ services:
       SSO_PORT: "443"
       SSO_AUTH_PATH: "/auth"
       SSO_ADMIN_USER: "${SIMVA_ADMINISTRATOR_USER:-administrator}"
-      SSO_ADMIN_PASSWORD: "${SIMVA_SSO_ADMIN_PASSWORD:-administrator}"
+      SSO_ADMIN_PASSWORD: "${SIMVA_ADMINISTRATOR_PASSWORD:-administrator}"
       #A2
       A2_HOST: "${SIMAV_A2_HOST:-a2}"
       A2_PROTOCOL: "http"
