@@ -1,6 +1,6 @@
 {
-  "id" : "{{ .client.simva.realmId }}",
-  "realm" : "{{ .client.simva.realmId }}",
+  "id" : "{{ .clients.simva.realmId }}",
+  "realm" : "{{ .clients.simva.realmId }}",
   "notBefore" : 0,
   "revokeRefreshToken" : false,
   "refreshTokenMaxReuse" : 0,
@@ -44,7 +44,7 @@
       "name" : "student",
       "composite" : false,
       "clientRole" : false,
-      "containerId" : "{{ .client.simva.realmId }}",
+      "containerId" : "{{ .clients.simva.realmId }}",
       "attributes" : { }
     }, {
       "id" : "240ee9db-710f-4c0e-a85c-00373de51eed",
@@ -52,7 +52,7 @@
       "description" : "${role_uma_authorization}",
       "composite" : false,
       "clientRole" : false,
-      "containerId" : "{{ .client.simva.realmId }}",
+      "containerId" : "{{ .clients.simva.realmId }}",
       "attributes" : { }
     }, {
       "id" : "41b71acb-3157-4d88-a0c7-40463783bbcc",
@@ -62,7 +62,7 @@
         "realm" : [ "teaching-assistant" ]
       },
       "clientRole" : false,
-      "containerId" : "{{ .client.simva.realmId }}",
+      "containerId" : "{{ .clients.simva.realmId }}",
       "attributes" : {
         "policy" : [ "readonly-user-folder-jwt" ]
       }
@@ -74,7 +74,7 @@
         "realm" : [ "researcher" ]
       },
       "clientRole" : false,
-      "containerId" : "{{ .client.simva.realmId }}",
+      "containerId" : "{{ .clients.simva.realmId }}",
       "attributes" : { }
     }, {
       "id" : "9fee483e-4a26-4686-9abe-30ccae18e4bd",
@@ -84,7 +84,7 @@
         "realm" : [ "student" ]
       },
       "clientRole" : false,
-      "containerId" : "{{ .client.simva.realmId }}",
+      "containerId" : "{{ .clients.simva.realmId }}",
       "attributes" : { }
     }, {
       "id" : "bb848d70-8926-4e91-bee9-0932338d0da4",
@@ -92,7 +92,7 @@
       "description" : "${role_offline-access}",
       "composite" : false,
       "clientRole" : false,
-      "containerId" : "{{ .client.simva.realmId }}",
+      "containerId" : "{{ .clients.simva.realmId }}",
       "attributes" : { }
     }, {
       "id" : "c92eba8b-0518-4cec-92e6-ceea5361e537",
@@ -102,11 +102,11 @@
         "realm" : [ "teacher" ]
       },
       "clientRole" : false,
-      "containerId" : "{{ .client.simva.realmId }}",
+      "containerId" : "{{ .clients.simva.realmId }}",
       "attributes" : { }
     } ],
     "client" : {
-      "{{ .client.limesurvey.clientId }}" : [ ],
+      "{{ .clients.limesurvey.clientId }}" : [ ],
       "realm-management" : [ {
         "id" : "33c9b791-8ab1-4875-aab6-2ba98d2e19a3",
         "name" : "view-clients",
@@ -287,7 +287,7 @@
         "containerId" : "075bbc66-a6d8-4a8e-96bb-72dcfe427662",
         "attributes" : { }
       } ],
-      "{{ .client.minio.clientId }}" : [ ],
+      "{{ .clients.minio.clientId }}" : [ ],
       "account" : [ {
         "id" : "a08e7db7-b6fe-4e81-b772-7dc717328307",
         "name" : "manage-account-links",
@@ -396,14 +396,14 @@
     "clientId" : "account",
     "name" : "${client_account}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/{{ .client.simva.realmId }}/account/",
+    "baseUrl" : "/realms/{{ .clients.simva.realmId }}/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "**********",
     "defaultRoles" : [ "view-profile", "manage-account" ],
-    "redirectUris" : [ "/realms/{{ .client.simva.realmId }}/account/*" ],
+    "redirectUris" : [ "/realms/{{ .clients.simva.realmId }}/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -426,13 +426,13 @@
     "clientId" : "account-console",
     "name" : "${client_account-console}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/{{ .client.simva.realmId }}/account/",
+    "baseUrl" : "/realms/{{ .clients.simva.realmId }}/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "**********",
-    "redirectUris" : [ "/realms/{{ .client.simva.realmId }}/account/*" ],
+    "redirectUris" : [ "/realms/{{ .clients.simva.realmId }}/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -516,7 +516,7 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "11c9bde7-5875-4fc7-88b7-02425ed57543",
-    "clientId" : "{{ .client.limesurvey.clientId }}",
+    "clientId" : "{{ .clients.limesurvey.clientId }}",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
@@ -544,7 +544,7 @@
       "saml_single_logout_service_url_redirect" : "{{ .clients.limesurvey.sspBaseUrl }}/saml2-logout.php/limesurvey",
       "saml.signature.algorithm" : "RSA_SHA256",
       "saml_force_name_id_format" : "false",
-      "saml.client.signature" : "true",
+      "saml.clients.signature" : "true",
       "saml.encryption.certificate" : "{{ .clients.limesurvey.certificate }}",
       "saml.authnstatement" : "true",
       "saml_name_id_format" : "username",
@@ -557,7 +557,7 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "99f4b767-b158-4d61-b418-b6d3e988c91d",
-    "clientId" : "{{ .client.minio.clientId }}",
+    "clientId" : "{{ .clients.minio.clientId }}",
     "rootUrl" : "{{ .clients.minio.baseUrl }}",
     "adminUrl" : "{{ .clients.minio.baseUrl }}",
     "surrogateAuthRequired" : false,
@@ -587,8 +587,8 @@
       "saml.server.signature.keyinfo.ext" : "false",
       "exclude.session.state.from.auth.response" : "false",
       "saml_force_name_id_format" : "false",
-      "saml.client.signature" : "false",
-      "tls.client.certificate.bound.access.tokens" : "false",
+      "saml.clients.signature" : "false",
+      "tls.clients.certificate.bound.access.tokens" : "false",
       "saml.authnstatement" : "false",
       "display.on.consent.screen" : "false",
       "saml.onetimeuse.condition" : "false"
@@ -673,7 +673,7 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "caa0515a-884a-4cd5-8821-6b56a44d9683",
-    "clientId" : "{{ .client.simva.clientId }}",
+    "clientId" : "{{ .clients.simva.clientId }}",
     "rootUrl" : "{{ .clients.simva.baseUrl }}",
     "adminUrl" : "{{ .clients.simva.baseUrl }}",
     "surrogateAuthRequired" : false,
@@ -702,8 +702,8 @@
       "saml.server.signature.keyinfo.ext" : "false",
       "exclude.session.state.from.auth.response" : "false",
       "saml_force_name_id_format" : "false",
-      "saml.client.signature" : "false",
-      "tls.client.certificate.bound.access.tokens" : "false",
+      "saml.clients.signature" : "false",
+      "tls.clients.certificate.bound.access.tokens" : "false",
       "saml.authnstatement" : "false",
       "display.on.consent.screen" : "false",
       "saml.onetimeuse.condition" : "false"
@@ -746,8 +746,8 @@
       "exclude.session.state.from.auth.response": "false",
       "jwks.url": "{{ .clients.simva.baseUrl }}/lti/keys",
       "saml_force_name_id_format": "false",
-      "saml.client.signature": "false",
-      "tls.client.certificate.bound.access.tokens": "false",
+      "saml.clients.signature": "false",
+      "tls.clients.certificate.bound.access.tokens": "false",
       "saml.authnstatement": "false",
       "display.on.consent.screen": "false",
       "saml.onetimeuse.condition": "false"
@@ -810,7 +810,7 @@
         "config": {
           "lti3_platform.auth.id": "SIMVA_CLIENT_ID",
           "lti3_platform.url": "{{ .clients.simva.baseUrl }}/lti/claims",
-          "lti3_platform.auth.url": "{{ .clients.simva.ssoUrl }}/auth/realms/{{ .client.simva.realmId }}/protocol/openid-connect/token",
+          "lti3_platform.auth.url": "{{ .clients.simva.ssoUrl }}/auth/realms/{{ .clients.simva.realmId }}/protocol/openid-connect/token",
           "lti3_platform.headers.bearer.token": "false",
           "access.token.claim": "true",
           "lti3_platform.auth.pass": "SIMVA_CLIENT_PASSWORD",
@@ -872,8 +872,8 @@
       "saml.server.signature.keyinfo.ext": "false",
       "exclude.session.state.from.auth.response": "false",
       "saml_force_name_id_format": "false",
-      "saml.client.signature": "false",
-      "tls.client.certificate.bound.access.tokens": "false",
+      "saml.clients.signature": "false",
+      "tls.clients.certificate.bound.access.tokens": "false",
       "saml.authnstatement": "false",
       "display.on.consent.screen": "false",
       "saml.onetimeuse.condition": "false"
@@ -928,8 +928,8 @@
       "saml.server.signature.keyinfo.ext": "false",
       "exclude.session.state.from.auth.response": "false",
       "saml_force_name_id_format": "false",
-      "saml.client.signature": "false",
-      "tls.client.certificate.bound.access.tokens": "false",
+      "saml.clients.signature": "false",
+      "tls.clients.certificate.bound.access.tokens": "false",
       "saml.authnstatement": "false",
       "display.on.consent.screen": "false",
       "client.session.max.lifespan": "604800",

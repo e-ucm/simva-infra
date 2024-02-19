@@ -1,5 +1,5 @@
 {
-  "realm" : "{{ .client.simva.realmId }}",
+  "realm" : "{{ .clients.simva.realmId }}",
   "users" : [ {
     "id" : "747393fa-ddb2-4b9a-bbd7-e54d0aa4fdac",
     "createdTimestamp" : 1592588127442,
