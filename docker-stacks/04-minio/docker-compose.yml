@@ -67,8 +67,8 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
-      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
-      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_USER:-minio}"
+      MINIO_SECRET_KEY: "${SIMVA_MINIO_PASSWORD:-secret}"
       MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_OPENID_CLIENT_ID:-minio}"
       MINIO_IDENTITY_OPENID_CONFIG_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration"
       MINIO_IDENTITY_OPENID_SCOPES: "${SIMVA_MINIO_IDENTITY_OPENID_SCOPES:-openid,policy_role_attribute}"
@@ -192,8 +192,8 @@ services:
       MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       MINIO_HOST: "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
-      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
-      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-password}"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_USER:-minio}"
+      MINIO_SECRET_KEY: "${SIMVA_MINIO_PASSWORD:-secret}"
       MINIO_MCS_USER: "${SIMVA_MINIO_MCS_USER:-mcs}"
       MINIO_MCS_SECRET: "${SIMVA_MINIO_MCS_SECRET:-password}"
       SIMVA_SINK_USER: "${SIMVA_KAFKA_CONNECT_SINK_USER:-simva-sink}"

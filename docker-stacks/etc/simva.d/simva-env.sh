@@ -83,10 +83,14 @@ export SIMVA_LOAD_BALANCER_IPS="172.30.0.80"
 ########################
 # Domain and subdomain #
 ########################
+
+
 # Domain used for docker containers hostnames
 export SIMVA_INTERNAL_DOMAIN="internal.test"
 # Domain used for registering public-faced docker container hostnames
 export SIMVA_EXTERNAL_DOMAIN="external.test"
+# External protocol
+export SIMVA_EXTERNAL_PROTOCOL="https"
 # Traefik Host
 export SIMVA_TRAEFIK_HOST_SUBDOMAIN="traefik"
 #Keyclock Simva SSO Host
@@ -103,6 +107,7 @@ export SIMVA_ANALYTICS_HOST_SUBDOMAIN="analytics"
 export SIMVA_MONGO_HOST_SUBDOMAIN="simva-mongo"
 #SIMVA API
 export SIMVA_SIMVA_API_HOST_SUBDOMAIN="simva-api"
+export SIMVA_SIMVA_API_PORT="443"
 #Jupyter Notebook
 export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
 #Portainer
@@ -148,10 +153,19 @@ export SIMVA_MAX_RETRIES="20"
 # Keycloak info #
 #################
 export SIMVA_SSO_REALM="simva"
+export SIMVA_KEYCLOAK_MYSQL_DATABASE="keycloak"
 
 ###################
 # Limesurvey info #
 ###################
+export SIMVA_LIMESURVEY_MYSQL_DATABASE="limesurvey"
+export SIMVA_LIMESURVEY_ADMIN_NAME="Simva Administrator"
+export SIMVA_LIMESURVEY_ADMIN_EMAIL_USERNAME="lime-dev"
+export SIMVA_LIMESURVEY_DEBUG_ENTRYPOINT="false"
+
+###################################
+# Limesurvey SIMPLE SAML PHP info #
+###################################
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH="/simplesamlphp"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL="INFO"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_NAME="limesurvey"
@@ -216,9 +230,8 @@ export SIMVA_TRAEFIK_DASHBOARD_USER="admin"
 # XXX Better use the approach of _FILE variables to read the variable from a file (check file_env)
 export SIMVA_TRAEFIK_DASHBOARD_PASSWORD="\\\$apr1\\\$97xk9Kkr\\\$gavbmzhrI6uOVYNOfYByQ/"
 
-# Keycloak mariadb database configuration
+# Keycloak mariadb MySQL database root and keycloak user
 export SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD="root"
-export SIMVA_KEYCLOAK_MYSQL_DATABASE="keycloak"
 export SIMVA_KEYCLOAK_MYSQL_USER="keycloak"
 export SIMVA_KEYCLOAK_MYSQL_PASSWORD="password"
 
@@ -226,23 +239,13 @@ export SIMVA_KEYCLOAK_MYSQL_PASSWORD="password"
 export SIMVA_KEYCLOAK_ADMIN_USER="admin"
 export SIMVA_KEYCLOAK_ADMIN_PASSWORD="password"
 
-#Limesurvey MySQL default user
+#Limesurvey MySQL default root user and limesurvey user
 export SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD="root"
-export SIMVA_LIMESURVEY_MYSQL_DATABASE="limesurvey"
 export SIMVA_LIMESURVEY_MYSQL_USER="limesurvey"
 export SIMVA_LIMESURVEY_MYSQL_PASSWORD="password"
 
 #Limesurvey default administrator
-export SIMVA_LIMESURVEY_ADMIN_USER="admin"
-export SIMVA_LIMESURVEY_ADMIN_PASSWORD="password2"
-export SIMVA_LIMESURVEY_ADMIN_NAME="Simva Administrator"
-export SIMVA_LIMESURVEY_ADMIN_EMAIL="lime-dev@limesurvey.${SIMVA_EXTERNAL_DOMAIN}"
-export SIMVA_LIMESURVEY_DEBUG_ENTRYPOINT="false"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="password"
-
-#Minio default administrator
-export SIMVA_MINIO_ACCESS_KEY="minio"
-export SIMVA_MINIO_SECRET_KEY="password"
 
 #Minio MC default user
 export SIMVA_MINIO_MCS_USER="mcs"
@@ -261,20 +264,11 @@ export SIMVA_KAFKA_CONNECT_SINK_SECRET="password"
 export SIMVA_API_ADMIN_USERNAME="admin"
 export SIMVA_API_ADMIN_PASSWORD="password"
 
-# SIMVA front client
-export SIMVA_FRONT_SSO_CLIENT_ID="simva"
-export SIMVA_FRONT_SSO_CLIENT_KEY="secret"
-
-# SIMVA SSO Administrator password
-export SIMVA_SSO_ADMIN_USER="administrator"
-export SIMVA_SSO_ADMIN_PASSWORD="administrator"
-
 #A2 Password
 export SIMVA_A2_ADMIN_USER="root"
 export SIMVA_A2_ADMIN_PASSWORD="password"
 
-#SIMVA LTI plateform
-export SIMVA_LTI_PLATFORM_SIGNING_KEY="LTISIGNINGKEY"
+#SIMVA LTI plateform DB
 export SIMVA_LTI_PLATFORM_DB_USER="root"
 export SIMVA_LTI_PLATFORM_DB_PASSWORD="password"
 
@@ -289,19 +283,55 @@ export SIMVA_JUPYTER_PASSWORD="password"
 # XXX Better use the approach of _FILE variables to read the variable from a file (check file_env)
 export SIMVA_PORTAINER_ADMIN_PASSWORD="\$\$2y\$\$05\$\$bpeBlWUW7tEdwMUn2KcRZeF7WMZnPAHbZZb17elunirVSX8ieIXvy"
 
-########################################################
-# ################### KEYCLOAK USERS ###################
-# AUX VARIABLES FOR KEYCLOAK prepare_realm_config SCRIPT
-########################################################
-export SIMVA_LIMESURVEY_USER="${SIMVA_LIMESURVEY_ADMIN_USER}"
-export SIMVA_LIMESURVEY_PASSWORD="${SIMVA_LIMESURVEY_ADMIN_PASSWORD}"
+####################################################################
+# ######################### KEYCLOAK USERS #########################
+# ACCESS_KEY AND SECRET_KEY VARIABLES FOR KEYCLOAK CLIENTS CREATION
+####################################################################
+# LIMESURVEY ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_LIMESURVEY_ADMIN_USER="admin"
+export SIMVA_LIMESURVEY_ADMIN_PASSWORD="secret"
 
-export SIMVA_ADMINISTRATOR_USER="${SIMVA_SSO_ADMIN_USER}"
-export SIMVA_ADMINISTRATOR_PASSWORD="${SIMVA_SSO_ADMIN_PASSWORD}"
+# MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_MINIO_USER="minio"
+export SIMVA_MINIO_PASSWORD="secret"
 
-export SIMVA_MINIO_USER="${SIMVA_MINIO_ACCESS_KEY}"
-export SIMVA_MINIO_PASSWORD="${SIMVA_MINIO_SECRET_KEY}"
+# SIMVA ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_SIMVA_USER="simva"
+export SIMVA_SIMVA_PASSWORD="secret"
 
-export SIMVA_SIMVA_USER="${SIMVA_FRONT_SSO_CLIENT_ID}"
-export SIMVA_SIMVA_PASSWORD="${SIMVA_FRONT_SSO_CLIENT_KEY}"
+# LTI PLATFORM ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_LTI_PLATFORM_USER="lti_platform"
+export SIMVA_LTI_PLATFORM_PASSWORD="secret"
+
+# LTI TOOL ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_LTI_TOOL_USER="lti_tool"
+export SIMVA_LTI_TOOL_PASSWORD="secret"
+
+####################################################################
+# USERNAME AND PASSWORD VARIABLES FOR KEYCLOAK USER CREATION 
+####################################################################
+# Administrator Username and password FOR KEYCLOAK
+export SIMVA_ADMINISTRATOR_USER="administrator"
+export SIMVA_ADMINISTRATOR_PASSWORD="administrator"
+
 ########################################################
+# Uncomment password if you want to set up for those template users
+# else it is generated automatically by script
+########################################################
+# Template Student Username and password FOR KEYCLOAK
+export SIMVA_STUDENT_USER="student"
+#export SIMVA_STUDENT_PASSWORD="password"
+
+# Template teaching-assistant Username and password FOR KEYCLOAK
+export SIMVA_TEACHING-ASSISTANT_USER="teaching-assistant" 
+#export SIMVA_TEACHING-ASSISTANT_PASSWORD="password" 
+
+# Template teacher Username and password FOR KEYCLOAK
+export SIMVA_TEACHER_USER="teacher"
+#export SIMVA_TEACHER_PASSWORD="password"
+
+# Template researcher Username and password FOR KEYCLOAK
+export SIMVA_RESEARCHER_USER="researcher"
+#export SIMVA_RESEARCHER_PASSWORD="password"
+########################################################
+

@@ -124,7 +124,7 @@ services:
       LIMESURVEY_PORT: 443
       LIMESURVEY_EXTERNAL: https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/
       LIMESURVEY_ADMIN_USER: ${SIMVA_LIMESURVEY_ADMIN_USER:-admin}
-      LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-password2}
+      LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-secret}
       A2_HOST: "${SIMAV_A2_HOST:-a2}"
       A2_PORT: "3000"
       A2_PROTOCOL: "http"
@@ -134,7 +134,7 @@ services:
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
       SSO_ENABLED: "true"
       SSO_HOST: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-      SSO_ADMIN_USER: ${SIMVA_SSO_ADMIN_USER:-administrator}
+      SSO_ADMIN_USER: ${SIMVA_ADMINISTRATOR_USER:-administrator}
       SSO_ADMIN_PASSWORD: ${SIMVA_SSO_ADMIN_PASSWORD:-administrator}
     volumes:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
@@ -177,8 +177,8 @@ services:
       SIMVA_API_PORT: "3000"
       SIMVA_API_PROTOCOL: "http"
       SSO_HOST: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-      SSO_CLIENT_ID: "${SIMVA_FRONT_SSO_CLIENT_ID:-simva}"
-      SSO_CLIENT_SECRET: "${SIMVA_FRONT_SSO_CLIENT_KEY:-secret}"
+      SSO_CLIENT_ID: "${SIMVA_SIMVA_USER:-simva}"
+      SSO_CLIENT_SECRET: "${SIMVA_SIMVA_PASSWORD:-secret}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
