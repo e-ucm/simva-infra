@@ -715,12 +715,12 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id": "bb87edf1-7ef9-4fbb-a8ec-eef0a5a48ddf",
-    "clientId": "{{ .clients.lti-tool.clientId }}",
+    "clientId": "{{ .clients.lti_tool.clientId }}",
     "surrogateAuthRequired": false,
     "enabled": true,
     "alwaysDisplayInConsole": false,
     "clientAuthenticatorType": "client-jwt",
-    "secret": "{{ .clients.lti-tool.secret }}",
+    "secret": "{{ .clients.lti_tool.secret }}",
     "redirectUris": [
       "{{ .clients.simva.baseUrl }}/lti/"
     ],

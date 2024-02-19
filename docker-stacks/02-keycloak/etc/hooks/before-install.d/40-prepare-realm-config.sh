@@ -135,14 +135,14 @@ function generate_realm_data() {
     client_id=$(get_or_generate_username "lti_platform" "${STACK_CONF}/simva-env.sh")
     client_secret=$(get_or_generate_password "lti_platform" "${STACK_CONF}/simva-env.sh")
 
-    echo "  lti-platform:" >> ${conf_file}
+    echo "  lti_platform:" >> ${conf_file}
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
 
     client_id=$(get_or_generate_username "lti_tool" "${STACK_CONF}/simva-env.sh")
     client_secret=$(get_or_generate_password "lti_tool" "${STACK_CONF}/simva-env.sh")
 
-    echo "  lti-tool:" >> ${conf_file}
+    echo "  lti_tool:" >> ${conf_file}
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
 
