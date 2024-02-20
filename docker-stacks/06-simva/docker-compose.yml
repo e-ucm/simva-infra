@@ -40,6 +40,10 @@ services:
     entrypoint: >
       /bin/sh -c '
       /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${SSO_HOST};
+        if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
+          cp /var/lib/simva/ca/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
+          cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
+        fi;
         wait_time=$${MC_WAIT_TIME};
         count=$${MC_MAX_RETRIES};
         done="ko";
