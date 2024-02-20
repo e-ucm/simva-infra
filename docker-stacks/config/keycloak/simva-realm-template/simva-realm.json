@@ -964,7 +964,7 @@
     "enabled": true,
     "alwaysDisplayInConsole": false,
     "clientAuthenticatorType": "client-secret",
-    "secret": "{{ .clients.jupyter.clientSecret }}",
+    "secret": "{{ .clients.jupyter.secret }}",
     "redirectUris": [
       "http://localhost:8888/*"
     ],
