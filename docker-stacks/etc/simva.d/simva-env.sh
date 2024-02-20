@@ -251,10 +251,6 @@ export SIMVA_LIMESURVEY_MYSQL_PASSWORD="password"
 #Limesurvey default administrator
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="password"
 
-#Minio default administrator
-export SIMVA_MINIO_ACCESS_KEY="minio"
-export SIMVA_MINIO_SECRET_KEY="password"
-
 #Minio MC default user
 export SIMVA_MINIO_MCS_USER="mcs"
 export SIMVA_MINIO_MCS_SECRET="password"
@@ -299,7 +295,7 @@ export SIMVA_PORTAINER_ADMIN_PASSWORD="\$\$2y\$\$05\$\$bpeBlWUW7tEdwMUn2KcRZeF7W
 export SIMVA_LIMESURVEY_CLIENT_ID="limesurvey"
 export SIMVA_LIMESURVEY_CLIENT_SECRET="secret"
 
-# MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+# MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK and Minio default administrator
 export SIMVA_MINIO_CLIENT_ID="minio"
 export SIMVA_MINIO_CLIENT_SECRET="secret"
 

@@ -38,5 +38,5 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.logs.loadbalancer.server.port=8080"
-      - "traefik.http.routers.logs.rule=Host(`logs.simva.e-ucm.es`)"
+      - "traefik.http.routers.logs.rule=Host(`logs.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.logs.middlewares=dashboardAuth@file"

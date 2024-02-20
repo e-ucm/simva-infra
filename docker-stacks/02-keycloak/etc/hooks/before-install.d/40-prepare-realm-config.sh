@@ -35,10 +35,10 @@ __file_env() {
 # ### DISABLED DUPLICATED CODE  ###
 # #################################
 # if [[ ! -e "${SIMVA_TLS_HOME}/limesurvey.pem" ]]; then
-#     openssl genrsa -out ${SIMVA_TLS_HOME}/limesurvey-key.pem 2048
+#     openssl genrsa -out ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-limesurvey-key.pem} 2048
 #     openssl req \
 #         -subj "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ}" \
-#         -new -key ${SIMVA_TLS_HOME}/limesurvey-key.pem \
+#         -new -key ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-limesurvey-key.pem} \
 #         -out ${SIMVA_TLS_HOME}/limesurvey.csr
 # 
 #     export CAROOT=${SIMVA_TLS_HOME}
@@ -46,14 +46,14 @@ __file_env() {
 #         -cert-file ${SIMVA_TLS_HOME}/limesurvey.pem \
 #         -csr ${SIMVA_TLS_HOME}/limesurvey.csr
 # 
-#     cp ${SIMVA_TLS_HOME}/limesurvey.pem ${SIMVA_TLS_HOME}/limesurvey-fullchain.pem
-#     cat ${SIMVA_TLS_HOME}/rootCA.pem >> ${SIMVA_TLS_HOME}/limesurvey-fullchain.pem
+#     cp ${SIMVA_TLS_HOME}/limesurvey.pem ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-limesurvey-fullchain.pem}
+#     cat ${SIMVA_TLS_HOME}/rootCA.pem >> ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-limesurvey-fullchain.pem}
 # fi
 # #################################
 
 # Oneline certificate
 limesurvey_cert=$(cat "${SIMVA_TLS_HOME}/limesurvey.pem" | tail -n +2 | head -n -1 | sed ':a;N;$!ba;s/\n//g')
-limesurvey_privatekey=$(cat "${SIMVA_TLS_HOME}/limesurvey-key.pem" | tail -n +2 | head -n -1 | sed ':a;N;$!ba;s/\n//g')
+limesurvey_privatekey=$(cat "${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-limesurvey-key.pem}" | tail -n +2 | head -n -1 | sed ':a;N;$!ba;s/\n//g')
 
 function configure_realm_production() {
     generate_realm_data "${STACK_CONF}/realm-data.prod.yml"

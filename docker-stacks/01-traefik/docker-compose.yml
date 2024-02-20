@@ -76,7 +76,7 @@ services:
             #// accessControlAllowMethods = ["GET", "POST", "DELETE", "OPTIONS", "PUT"]
             #// accessControlAllowOrigin = "*"
             contentTypeNosniff = true
-            #customFrameOptionsValue = "ALLOW-FROM https://simva.e-ucm.es"
+            #customFrameOptionsValue = "ALLOW-FROM https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
             #contentSecurityPolicy = "frame-src 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none'; ${SIMVA_TRAEFIK_EXTRA_CSP_POLICY}"
         EOF
         exec /entrypoint.sh "$$@"
