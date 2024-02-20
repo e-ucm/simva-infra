@@ -239,10 +239,6 @@ export SIMVA_KEYCLOAK_MYSQL_PASSWORD="password"
 export SIMVA_KEYCLOAK_ADMIN_USER="admin"
 export SIMVA_KEYCLOAK_ADMIN_PASSWORD="password"
 
-#Limesurvey default admin user
-export SIMVA_LIMESURVEY_ADMIN_USER="admin"
-export SIMVA_LIMESURVEY_ADMIN_PASSWORD="password2"
-
 #Limesurvey MySQL default root user and limesurvey user
 export SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD="root"
 export SIMVA_LIMESURVEY_MYSQL_USER="limesurvey"
@@ -250,10 +246,6 @@ export SIMVA_LIMESURVEY_MYSQL_PASSWORD="password"
 
 #Limesurvey default administrator
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="password"
-
-#Minio default administrator
-export SIMVA_MINIO_ACCESS_KEY="minio"
-export SIMVA_MINIO_SECRET_KEY="password"
 
 #Minio MC default user
 export SIMVA_MINIO_MCS_USER="mcs"
@@ -295,11 +287,11 @@ export SIMVA_PORTAINER_ADMIN_PASSWORD="\$\$2y\$\$05\$\$bpeBlWUW7tEdwMUn2KcRZeF7W
 # ######################### KEYCLOAK USERS #########################
 # ACCESS_KEY AND SECRET_KEY VARIABLES FOR KEYCLOAK CLIENTS CREATION
 ####################################################################
-# LIMESURVEY ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+# LIMESURVEY ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK and LIMESURVEY default administrator
 export SIMVA_LIMESURVEY_CLIENT_ID="limesurvey"
 export SIMVA_LIMESURVEY_CLIENT_SECRET="secret"
 
-# MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+# MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK and MINIO default administrator
 export SIMVA_MINIO_CLIENT_ID="minio"
 export SIMVA_MINIO_CLIENT_SECRET="secret"
 
