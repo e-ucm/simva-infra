@@ -31,32 +31,39 @@ function main() {
     case "$command" in
         "install")
             check_docker_launched
+            setExecutable $command $@
             install "1" $@
             exit 0
         ;;
         "uninstall")
             check_docker_launched
+            setExecutable $command $@
             uninstall "1" $@
             exit 0
         ;;
         "purge")
             check_docker_launched
+            setExecutable $command $@
             purge ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
         "start")
             check_docker_launched
+            setExecutable $command $@
             start ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
         "stop")
             check_docker_launched
+            setExecutable $command $@
             stop ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
         "restart")
             check_docker_launched
+            setExecutable "stop" $@
             stop ${DEFAULT_WAIT_TIME} $@
+            setExecutable "start" $@
             start ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
@@ -71,8 +78,11 @@ function main() {
             exit 0
         ;;
         "setExecutable")
-            check_docker_launched
-            setExecutable ${DEFAULT_WAIT_TIME} $@
+            setExecutable "install" $@
+            setExecutable "uninstall" $@
+            setExecutable "purge" $@
+            setExecutable "start" $@
+            setExecutable "stop" $@
             exit 0
         ;;
         "help")
@@ -531,10 +541,10 @@ function stop() {
 # Set executable 
 function setExecutable() {
     if [[ $# -lt 1 ]]; then
-        echo >&2 "missing wait_time";
+        echo >&2 "missing command";
         exit 1;
     fi
-    local wait_time=${1}
+    local command=${1}
     shift
 
     local stacks=${SIMVA_STACKS}
@@ -543,48 +553,74 @@ function setExecutable() {
     fi
     for stack in ${stacks}; do
         HooksFolder="${SIMVA_HOME}/${stack}/etc/hooks"
-        folder="${HooksFolder}/after-install.d"
-        setExecutable_scripts_from_folder ${folder}
-        folder="${HooksFolder}/after-uninstall.d"
-        setExecutable_scripts_from_folder ${folder}
-        folder="${HooksFolder}/purge.d"
-        setExecutable_scripts_from_folder ${folder}
-        folder="${HooksFolder}/after-start.d"
-        setExecutable_scripts_from_folder ${folder}
-        folder="${HooksFolder}/after-stop.d"
-        setExecutable_scripts_from_folder ${folder}
-        folder="${HooksFolder}/before-install.d"
-        setExecutable_scripts_from_folder ${folder}
-        folder="${HooksFolder}/before-purge.d"
-        setExecutable_scripts_from_folder ${folder}
-        folder="${HooksFolder}/before-uninstall.d"
-        setExecutable_scripts_from_folder ${folder}
-        folder="${HooksFolder}/before-start.d"
-        setExecutable_scripts_from_folder ${folder}
-        folder="${HooksFolder}/before-stop.d"
-        setExecutable_scripts_from_folder ${folder}
+        case "${phase}" in
+            "install")
+                folder="${HooksFolder}/before-install.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/after-install.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
+            "uninstall")
+                folder="${HooksFolder}/before-uninstall.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/after-uninstall.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
+            "purge")
+                folder="${HooksFolder}/before-purge.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/purge.d"
+                setExecutable_scripts_from_folder ${folder}
+
+            ;;
+            "start")
+                folder="${HooksFolder}/before-start.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/after-start.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
+            "stop")
+                folder="${HooksFolder}/before-stop.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/after-stop.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
+        esac
     done;
     HooksFolder="${SIMVA_HOME}/etc/hooks"
-    folder="${HooksFolder}/after-install.d"
-    setExecutable_scripts_from_folder ${folder}
-    folder="${HooksFolder}/after-uninstall.d"
-    setExecutable_scripts_from_folder ${folder}
-    folder="${HooksFolder}/purge.d"
-    setExecutable_scripts_from_folder ${folder}
-    folder="${HooksFolder}/after-start.d"
-    setExecutable_scripts_from_folder ${folder}
-    folder="${HooksFolder}/after-stop.d"
-    setExecutable_scripts_from_folder ${folder}
-    folder="${HooksFolder}/before-install.d"
-    setExecutable_scripts_from_folder ${folder}
-    folder="${HooksFolder}/before-uninstall.d"
-    setExecutable_scripts_from_folder ${folder}
-    folder="${HooksFolder}/before-purge.d"
-    setExecutable_scripts_from_folder ${folder}
-    folder="${HooksFolder}/before-start.d"
-    setExecutable_scripts_from_folder ${folder}
-    folder="${HooksFolder}/before-stop.d"
-    setExecutable_scripts_from_folder ${folder}
+    case "${phase}" in
+        "install")
+            folder="${HooksFolder}/before-install.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/after-install.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+        "uninstall")
+            folder="${HooksFolder}/before-uninstall.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/after-uninstall.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+        "purge")
+            folder="${HooksFolder}/before-purge.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/purge.d"
+            setExecutable_scripts_from_folder ${folder}
+
+        ;;
+        "start")
+            folder="${HooksFolder}/before-start.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/after-start.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+        "stop")
+            folder="${HooksFolder}/before-stop.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/after-stop.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+    esac
 }
 
 # log stack
