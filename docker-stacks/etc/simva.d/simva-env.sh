@@ -315,7 +315,7 @@ export SIMVA_LTI_PLATFORM_CLIENT_SECRET="secret"
 export SIMVA_LTI_TOOL_CLIENT_ID="lti_tool"
 export SIMVA_LTI_TOOL_CLIENT_SECRET="secret"
 
-# LTI TOOL ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+# Jupyter ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_JUPYTER_CLIENT_ID="jupyter"
 export SIMVA_JUPYTER_CLIENT_SECRET="secret"
 
@@ -336,7 +336,7 @@ export SIMVA_STUDENT_USER="student"
 
 # Template teaching-assistant Username and password FOR KEYCLOAK
 export SIMVA_TEACHING_ASSISTANT_USER="teaching-assistant" 
-#export SIMVA_TEACHING-ASSISTANT_PASSWORD="password" 
+#export SIMVA_TEACHING_ASSISTANT_PASSWORD="password" 
 
 # Template teacher Username and password FOR KEYCLOAK
 export SIMVA_TEACHER_USER="teacher"
