@@ -541,10 +541,10 @@ function stop() {
 # Set executable 
 function setExecutable() {
     if [[ $# -lt 1 ]]; then
-        echo >&2 "missing command";
+        echo >&2 "missing phase";
         exit 1;
     fi
-    local command=${1}
+    local phase=${1}
     shift
 
     local stacks=${SIMVA_STACKS}
