@@ -150,6 +150,7 @@ services:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api:/app
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/storage:/storage
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     depends_on:
       - mongodb
     hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
