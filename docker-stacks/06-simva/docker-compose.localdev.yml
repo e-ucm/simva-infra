@@ -177,8 +177,8 @@ services:
       SIMVA_API_PORT: "3000"
       SIMVA_API_PROTOCOL: "http"
       SSO_HOST: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-      SSO_CLIENT_ID: "${SIMVA_SIMVA_USER:-simva}"
-      SSO_CLIENT_SECRET: "${SIMVA_SIMVA_PASSWORD:-secret}"
+      SSO_CLIENT_ID: "${SIMVA_SIMVA_CLIENT_ID:-simva}"
+      SSO_CLIENT_SECRET: "${SIMVA_SIMVA_CLIENT_SECRET:-secret}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca

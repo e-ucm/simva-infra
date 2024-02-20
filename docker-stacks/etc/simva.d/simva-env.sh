@@ -239,6 +239,10 @@ export SIMVA_KEYCLOAK_MYSQL_PASSWORD="password"
 export SIMVA_KEYCLOAK_ADMIN_USER="admin"
 export SIMVA_KEYCLOAK_ADMIN_PASSWORD="password"
 
+#Limesurvey default admin user
+export SIMVA_LIMESURVEY_ADMIN_USER="admin"
+export SIMVA_LIMESURVEY_ADMIN_PASSWORD="password2"
+
 #Limesurvey MySQL default root user and limesurvey user
 export SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD="root"
 export SIMVA_LIMESURVEY_MYSQL_USER="limesurvey"
@@ -246,6 +250,10 @@ export SIMVA_LIMESURVEY_MYSQL_PASSWORD="password"
 
 #Limesurvey default administrator
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="password"
+
+#Minio default administrator
+export SIMVA_MINIO_ACCESS_KEY="minio"
+export SIMVA_MINIO_SECRET_KEY="password"
 
 #Minio MC default user
 export SIMVA_MINIO_MCS_USER="mcs"
@@ -288,24 +296,28 @@ export SIMVA_PORTAINER_ADMIN_PASSWORD="\$\$2y\$\$05\$\$bpeBlWUW7tEdwMUn2KcRZeF7W
 # ACCESS_KEY AND SECRET_KEY VARIABLES FOR KEYCLOAK CLIENTS CREATION
 ####################################################################
 # LIMESURVEY ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_LIMESURVEY_ADMIN_USER="admin"
-export SIMVA_LIMESURVEY_ADMIN_PASSWORD="secret"
+export SIMVA_LIMESURVEY_CLIENT_ID="limesurvey"
+export SIMVA_LIMESURVEY_CLIENT_SECRET="secret"
 
 # MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_MINIO_USER="minio"
-export SIMVA_MINIO_PASSWORD="secret"
+export SIMVA_MINIO_CLIENT_ID="minio"
+export SIMVA_MINIO_CLIENT_SECRET="secret"
 
 # SIMVA ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_SIMVA_USER="simva"
-export SIMVA_SIMVA_PASSWORD="secret"
+export SIMVA_SIMVA_CLIENT_ID="simva"
+export SIMVA_SIMVA_CLIENT_SECRET="secret"
 
 # LTI PLATFORM ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_LTI_PLATFORM_USER="lti_platform"
-export SIMVA_LTI_PLATFORM_PASSWORD="secret"
+export SIMVA_LTI_PLATFORM_CLIENT_ID="lti_platform"
+export SIMVA_LTI_PLATFORM_CLIENT_SECRET="secret"
 
 # LTI TOOL ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_LTI_TOOL_USER="lti_tool"
-export SIMVA_LTI_TOOL_PASSWORD="secret"
+export SIMVA_LTI_TOOL_CLIENT_ID="lti_tool"
+export SIMVA_LTI_TOOL_CLIENT_SECRET="secret"
+
+# LTI TOOL ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_JUPYTER_CLIENT_ID="jupyter"
+export SIMVA_JUPYTER_CLIENT_SECRET="secret"
 
 ####################################################################
 # USERNAME AND PASSWORD VARIABLES FOR KEYCLOAK USER CREATION 
