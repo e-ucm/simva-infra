@@ -163,7 +163,7 @@ function get_or_generate_password() {
         var="SIMVA_${client^^}_PASSWORD"
     else 
         var="SIMVA_${client^^}_CLIENT_SECRET"
-    end
+    fi
     
     var=$(echo $var | sed -e 's/[^0-9A-Za-z_]/_/g' )
 
@@ -190,7 +190,7 @@ function get_or_generate_username() {
         var="SIMVA_${client^^}_USER"
     else 
         var="SIMVA_${client^^}_CLIENT_ID"
-    end
+    fi
     var=$(echo $var | sed -e 's/[^0-9A-Za-z_]/_/g' )
 
     __file_env $var ''
