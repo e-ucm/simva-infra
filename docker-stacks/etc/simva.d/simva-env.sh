@@ -287,25 +287,29 @@ export SIMVA_PORTAINER_ADMIN_PASSWORD="\$\$2y\$\$05\$\$bpeBlWUW7tEdwMUn2KcRZeF7W
 # ######################### KEYCLOAK USERS #########################
 # ACCESS_KEY AND SECRET_KEY VARIABLES FOR KEYCLOAK CLIENTS CREATION
 ####################################################################
-# LIMESURVEY ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_LIMESURVEY_ADMIN_USER="admin"
-export SIMVA_LIMESURVEY_ADMIN_PASSWORD="secret"
+# LIMESURVEY ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK and LIMESURVEY default administrator
+export SIMVA_LIMESURVEY_CLIENT_ID="limesurvey"
+export SIMVA_LIMESURVEY_CLIENT_SECRET="secret"
 
-# MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_MINIO_USER="minio"
-export SIMVA_MINIO_PASSWORD="secret"
+# MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK and MINIO default administrator
+export SIMVA_MINIO_CLIENT_ID="minio"
+export SIMVA_MINIO_CLIENT_SECRET="secret"
 
 # SIMVA ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_SIMVA_USER="simva"
-export SIMVA_SIMVA_PASSWORD="secret"
+export SIMVA_SIMVA_CLIENT_ID="simva"
+export SIMVA_SIMVA_CLIENT_SECRET="secret"
 
 # LTI PLATFORM ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_LTI_PLATFORM_USER="lti_platform"
-export SIMVA_LTI_PLATFORM_PASSWORD="secret"
+export SIMVA_LTI_PLATFORM_CLIENT_ID="lti_platform"
+export SIMVA_LTI_PLATFORM_CLIENT_SECRET="secret"
 
 # LTI TOOL ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_LTI_TOOL_USER="lti_tool"
-export SIMVA_LTI_TOOL_PASSWORD="secret"
+export SIMVA_LTI_TOOL_CLIENT_ID="lti_tool"
+export SIMVA_LTI_TOOL_CLIENT_SECRET="secret"
+
+# Jupyter ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_JUPYTER_CLIENT_ID="jupyter"
+export SIMVA_JUPYTER_CLIENT_SECRET="secret"
 
 ####################################################################
 # USERNAME AND PASSWORD VARIABLES FOR KEYCLOAK USER CREATION 
@@ -324,7 +328,7 @@ export SIMVA_STUDENT_USER="student"
 
 # Template teaching-assistant Username and password FOR KEYCLOAK
 export SIMVA_TEACHING_ASSISTANT_USER="teaching-assistant" 
-#export SIMVA_TEACHING-ASSISTANT_PASSWORD="password" 
+#export SIMVA_TEACHING_ASSISTANT_PASSWORD="password" 
 
 # Template teacher Username and password FOR KEYCLOAK
 export SIMVA_TEACHER_USER="teacher"

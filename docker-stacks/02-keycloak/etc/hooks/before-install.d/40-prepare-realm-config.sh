@@ -84,8 +84,8 @@ function generate_realm_data() {
     users="student teaching_assistant teacher researcher administrator"
     for user in $users; do
         user=$(echo ${user} | sed -e 's/[^0-9A-Za-z_]/_/g' )
-        user_username=$(get_or_generate_username "${user}" "${STACK_CONF}/simva-env.sh")
-        user_password=$(get_or_generate_password "${user}" "${STACK_CONF}/simva-env.sh")
+        user_username=$(get_or_generate_username "${user}" "${STACK_CONF}/simva-env.sh" "USER")
+        user_password=$(get_or_generate_password "${user}" "${STACK_CONF}/simva-env.sh" "USER")
 
         secretData=""
         while read l; do
@@ -102,8 +102,8 @@ function generate_realm_data() {
     done
 
     echo "clients:" >> ${conf_file}
-    client_id=$(get_or_generate_username "limesurvey_admin" "${STACK_CONF}/simva-env.sh")
-    client_secret=$(get_or_generate_password "limesurvey_admin" "${STACK_CONF}/simva-env.sh")
+    client_id=$(get_or_generate_username "limesurvey" "${STACK_CONF}/simva-env.sh")
+    client_secret=$(get_or_generate_password "limesurvey" "${STACK_CONF}/simva-env.sh")
 
     echo "  limesurvey:" >> ${conf_file}
     echo "    baseUrl: \"https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
@@ -146,13 +146,25 @@ function generate_realm_data() {
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
 
+    client_id=$(get_or_generate_username "jupyter" "${STACK_CONF}/simva-env.sh")
+    client_secret=$(get_or_generate_password "jupyter" "${STACK_CONF}/simva-env.sh")
+
+    echo "  jupyter:" >> ${conf_file}
+    echo "    clientId: \"${client_id}\"" >> ${conf_file}
+    echo "    secret: \"${client_secret}\"" >> ${conf_file}
 }
 
 function get_or_generate_password() {
     local client=${1}
     local conf=${2:-""}
-
-    local var="SIMVA_${client^^}_PASSWORD"
+    local IsUser=${3:-""}
+    local var=""
+    if [[ ${IsUser} == "USER" ]]; then
+        var="SIMVA_${client^^}_PASSWORD"
+    else 
+        var="SIMVA_${client^^}_CLIENT_SECRET"
+    fi
+    
     var=$(echo $var | sed -e 's/[^0-9A-Za-z_]/_/g' )
 
     __file_env $var ''
@@ -172,8 +184,13 @@ function get_or_generate_password() {
 function get_or_generate_username() {
     local client=${1}
     local conf=${2:-""}
-
-    local var="SIMVA_${client^^}_USER"
+    local IsUser=${3:-""}
+    local var=""
+    if [[ ${IsUser} == "USER" ]]; then
+        var="SIMVA_${client^^}_USER"
+    else 
+        var="SIMVA_${client^^}_CLIENT_ID"
+    fi
     var=$(echo $var | sed -e 's/[^0-9A-Za-z_]/_/g' )
 
     __file_env $var ''

@@ -123,8 +123,8 @@ services:
       LIMESURVEY_HOST: ${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       LIMESURVEY_PORT: 443
       LIMESURVEY_EXTERNAL: https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/
-      LIMESURVEY_ADMIN_USER: ${SIMVA_LIMESURVEY_ADMIN_USER:-admin}
-      LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-secret}
+      LIMESURVEY_ADMIN_USER: ${SIMVA_LIMESURVEY_CLIENT_ID:-admin}
+      LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_CLIENT_SECRET:-secret}
       A2_HOST: "${SIMAV_A2_HOST:-a2}"
       A2_PORT: "3000"
       A2_PROTOCOL: "http"
@@ -177,8 +177,8 @@ services:
       SIMVA_API_PORT: "3000"
       SIMVA_API_PROTOCOL: "http"
       SSO_HOST: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-      SSO_CLIENT_ID: "${SIMVA_SIMVA_USER:-simva}"
-      SSO_CLIENT_SECRET: "${SIMVA_SIMVA_PASSWORD:-secret}"
+      SSO_CLIENT_ID: "${SIMVA_SIMVA_CLIENT_ID:-simva}"
+      SSO_CLIENT_SECRET: "${SIMVA_SIMVA_CLIENT_SECRET:-secret}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
