@@ -69,7 +69,7 @@ services:
     environment:
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_CLIENT_ID:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_CLIENT_SECRET:-secret}"
-      MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_OPENID_CLIENT_ID:-minio}"
+      MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_CLIENT_ID:-minio}"
       MINIO_IDENTITY_OPENID_CONFIG_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration"
       MINIO_IDENTITY_OPENID_SCOPES: "${SIMVA_MINIO_IDENTITY_OPENID_SCOPES:-openid,policy_role_attribute}"
       MINIO_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"

@@ -177,7 +177,6 @@ export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ="/C=ES/ST=Madrid/L=Madrid/O=U
 ##############
 # Minio info #
 ##############
-export SIMVA_MINIO_OPENID_CLIENT_ID="minio"
 export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 
 ##############
@@ -291,10 +290,6 @@ export SIMVA_PORTAINER_ADMIN_PASSWORD="\$\$2y\$\$05\$\$bpeBlWUW7tEdwMUn2KcRZeF7W
 # ######################### KEYCLOAK USERS #########################
 # ACCESS_KEY AND SECRET_KEY VARIABLES FOR KEYCLOAK CLIENTS CREATION
 ####################################################################
-# LIMESURVEY ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_LIMESURVEY_CLIENT_ID="limesurvey"
-export SIMVA_LIMESURVEY_CLIENT_SECRET="secret"
-
 # MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK and Minio default administrator
 export SIMVA_MINIO_CLIENT_ID="minio"
 export SIMVA_MINIO_CLIENT_SECRET="secret"
@@ -307,13 +302,21 @@ export SIMVA_SIMVA_CLIENT_SECRET="secret"
 export SIMVA_LTI_PLATFORM_CLIENT_ID="lti_platform"
 export SIMVA_LTI_PLATFORM_CLIENT_SECRET="secret"
 
+########################################################
+# Uncomment client secret if you want to set up for those client
+# else it is generated automatically by script
+########################################################
+# LIMESURVEY ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_LIMESURVEY_CLIENT_ID="limesurvey"
+#export SIMVA_LIMESURVEY_CLIENT_SECRET="secret"
+
 # LTI TOOL ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_LTI_TOOL_CLIENT_ID="lti_tool"
-export SIMVA_LTI_TOOL_CLIENT_SECRET="secret"
+#export SIMVA_LTI_TOOL_CLIENT_SECRET="secret"
 
 # Jupyter ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_JUPYTER_CLIENT_ID="jupyter"
-export SIMVA_JUPYTER_CLIENT_SECRET="secret"
+#export SIMVA_JUPYTER_CLIENT_SECRET="secret"
 
 ####################################################################
 # USERNAME AND PASSWORD VARIABLES FOR KEYCLOAK USER CREATION 
