@@ -24,4 +24,5 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     tmp_dir=$(mktemp -d)
     git clone --depth 1 --branch ${SIMVA_TMON_GIT_REF} ${SIMVA_TMON_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
     rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks/t-mon/ > /dev/null 2>&1
+    sudo chmod -R 777 ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks/t-mon/
 fi
