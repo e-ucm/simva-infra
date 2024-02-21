@@ -538,11 +538,11 @@
     "attributes" : {
       "saml.force.post.binding" : "true",
       "saml.encrypt" : "true",
-      "saml_assertion_consumer_url_post" : "{{ .clients.limesurvey.sspBaseUrl }}/saml2-acs.php/limesurvey",
+      "saml_assertion_consumer_url_post" : "{{ .clients.limesurvey.sspBaseUrl }}/saml2-acs.php/{{ .clients.limesurvey.clientId }}",
       "saml.server.signature" : "true",
       "saml.server.signature.keyinfo.ext" : "false",
       "saml.signing.certificate" : "{{ .clients.limesurvey.certificate }}",
-      "saml_single_logout_service_url_redirect" : "{{ .clients.limesurvey.sspBaseUrl }}/saml2-logout.php/limesurvey",
+      "saml_single_logout_service_url_redirect" : "{{ .clients.limesurvey.sspBaseUrl }}/saml2-logout.php/{{ .clients.limesurvey.clientId }}",
       "saml.signature.algorithm" : "RSA_SHA256",
       "saml_force_name_id_format" : "false",
       "saml.clients.signature" : "true",
