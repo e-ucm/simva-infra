@@ -63,8 +63,8 @@ services:
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/simplesamlphp-data/config:/etc/simplesamlphp
-      - ${SIMVA_TLS_HOME?TLS home folder required}:/etc/simplesamlphp/certs:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}-data/config:/etc${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/etc${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}/certs:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/limesurvey/etc:/etc/limesurvey
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/plugins:/var/www/html/plugins
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/upload:/var/www/html/upload

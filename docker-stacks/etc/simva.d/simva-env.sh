@@ -204,6 +204,11 @@ export SIMVA_API_MONGO_DB="/simva"
 export SIMVA_API_LTI_MONGO_DB="/lti_simva"
 export SIMVA_FRONT_MONGO_DB="/simva-front"
 
+##############
+# SIMVA INFO #
+##############
+export SIMVA_STORAGE_LOCAL_PATH="/storage"
+
 ##############################
 # SIMVA Trace Allocator INFO #
 ##############################
