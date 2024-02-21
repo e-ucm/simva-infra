@@ -523,7 +523,7 @@
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "{{ .clients.limesurvey.secret }}",
-    "redirectUris" : [ "{{ .clients.limesurvey.sspBaseUrl }}/saml2-acs.php/limesurvey" ],
+    "redirectUris" : [ "{{ .clients.limesurvey.sspBaseUrl }}/saml2-acs.php/{{ .clients.limesurvey.clientId }}" ],
     "webOrigins" : [ "{{ .clients.limesurvey.baseUrl }}" ],
     "notBefore" : 0,
     "bearerOnly" : false,
