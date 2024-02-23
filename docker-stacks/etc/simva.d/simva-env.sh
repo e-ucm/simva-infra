@@ -97,6 +97,7 @@ export SIMVA_TRAEFIK_HOST_SUBDOMAIN="traefik"
 export SIMVA_SSO_HOST_SUBDOMAIN="sso"
 #Mail Host
 export SIMVA_MAIL_HOST_SUBDOMAIN="mail"
+export SIMVA_MAIL_PORT="25"
 #Limesurvey host
 export SIMVA_LIMESURVEY_HOST_SUBDOMAIN="limesurvey"
 #Minio host
@@ -154,6 +155,14 @@ export SIMVA_MAX_RETRIES="20"
 #################
 export SIMVA_SSO_REALM="simva"
 export SIMVA_KEYCLOAK_MYSQL_DATABASE="keycloak"
+
+#################
+# Mail SSO info #
+#################
+export SIMVA_MAIL_FROM_USERNAME="noreply"
+export SIMVA_MAIL_REPLYTO_USERNAME="noreply"
+export SIMVA_MAIL_SSL="false"
+export SIMVA_MAIL_STARTTLS="false"
 
 ###################
 # Limesurvey info #
@@ -240,6 +249,11 @@ export SIMVA_KEYCLOAK_MYSQL_PASSWORD="password"
 # Keycloak master realm default user
 export SIMVA_KEYCLOAK_ADMIN_USER="admin"
 export SIMVA_KEYCLOAK_ADMIN_PASSWORD="password"
+
+# Mail Authentification
+export SIMVA_MAIL_AUTH="false"
+export SIMVA_MAIL_USER="user"
+export SIMVA_MAIL_PASSWORD="password"
 
 #Limesurvey default administrator
 export SIMVA_LIMESURVEY_ADMIN_USER="admin"

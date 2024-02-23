@@ -1718,7 +1718,20 @@
     "xXSSProtection" : "1; mode=block",
     "strictTransportSecurity" : "max-age=31536000; includeSubDomains"
   },
-  "smtpServer" : { },
+  "smtpServer" : { 
+    "host": "{{ .smtpServer.host }}",
+    "port": "{{ .smtpServer.port }}",
+    "fromDisplayName": "{{ .smtpServer.fromDisplayName }}",
+    "from": "{{ .smtpServer.from }}",
+    "replyToDisplayName": "{{ .smtpServer.replyToDisplayName }}",
+    "replyTo": "{{ .smtpServer.replyTo }}",
+    "envelopeFrom": "{{ .smtpServer.envelopeFrom }}",
+    "ssl": "{{ .smtpServer.ssl }}",
+    "starttls": "{{ .smtpServer.starttls }}",
+    "auth": "{{ .smtpServer.auth }}",
+    "user": "{{ .smtpServer.user }}",
+    "password": "{{ .smtpServer.password }}"
+  },
   "loginTheme" : "simva",
   "eventsEnabled" : false,
   "eventsListeners" : [ "jboss-logging" ],

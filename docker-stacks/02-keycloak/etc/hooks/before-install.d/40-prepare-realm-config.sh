@@ -101,13 +101,27 @@ function generate_realm_data() {
         echo "    credentialData: \"${credentialData}\"" >> ${conf_file}
     done
 
+    echo "smtpServer:" >> ${conf_file}
+    echo "  host: \"${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}\"" >> ${conf_file}
+    echo "  port: \"${SIMVA_MAIL_PORT:-25}\"" >> ${conf_file}
+    echo "  fromDisplayName: \"${SIMVA_SSO_HOST_SUBDOMAIN:-sso} ${SIMVA_SSO_REALM}\"" >> ${conf_file}
+    echo "  from: \"${SIMVA_MAIL_FROM_USERNAME:-noreply}@${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "  replyToDisplayName: \"${SIMVA_SSO_HOST_SUBDOMAIN:-sso} ${SIMVA_SSO_REALM}\"" >> ${conf_file}
+    echo "  replyTo: \"${SIMVA_MAIL_REPLYTO_USERNAME:-noreply}@${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "  envelopeFrom: \"${SIMVA_MAIL_FROM_USERNAME:-noreply}@${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "  ssl: \"${SIMVA_MAIL_SSL:-false}\"" >> ${conf_file}
+    echo "  starttls: \"${SIMVA_MAIL_STARTTLS:-false}\"" >> ${conf_file}
+    echo "  auth: \"${SIMVA_MAIL_AUTH:-false}\"" >> ${conf_file}
+    echo "  user: \"${SIMVA_MAIL_USER:-user}\"" >> ${conf_file}
+    echo "  password: \"${SIMVA_MAIL_PASSWORD:-password}\"" >> ${conf_file}
+
     echo "clients:" >> ${conf_file}
     client_id=$(get_or_generate_username "limesurvey" "${STACK_CONF}/simva-env.sh")
     client_secret=$(get_or_generate_password "limesurvey" "${STACK_CONF}/simva-env.sh")
 
     echo "  limesurvey:" >> ${conf_file}
-    echo "    baseUrl: \"https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
-    echo "    sspBaseUrl: \"https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN}${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}/module.php/saml/sp\"" >> ${conf_file}
+    echo "    baseUrl: \"https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "    sspBaseUrl: \"https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}/module.php/saml/sp\"" >> ${conf_file}
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
     echo "    certificate: \"${limesurvey_cert}\"" >> ${conf_file}
@@ -116,7 +130,7 @@ function generate_realm_data() {
     client_secret=$(get_or_generate_password "minio" "${STACK_CONF}/simva-env.sh")
 
     echo "  minio:" >> ${conf_file}
-    echo "    baseUrl: \"https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    baseUrl: \"https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
 
@@ -124,10 +138,10 @@ function generate_realm_data() {
     client_secret=$(get_or_generate_password "simva" "${STACK_CONF}/simva-env.sh")
 
     echo "  simva:" >> ${conf_file}
-    echo "    externalDomain: \"${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
-    echo "    baseUrl: \"https://${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
-    echo "    apiUrl: \"https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
-    echo "    ssoUrl: \"https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}    
+    echo "    externalDomain: \"${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "    baseUrl: \"https://${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "    apiUrl: \"https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "    ssoUrl: \"https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}    
     echo "    realmId: \"${SIMVA_SSO_REALM}\"" >> ${conf_file}
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
