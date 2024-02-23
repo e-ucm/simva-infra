@@ -23,9 +23,6 @@
             }
         </script>
     <#elseif section = "form">
-    <div>
-        <img class="logo" src="${url.resourcesPath}/img/simva-logo.png" alt="Simva">
-    </div>
     <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
         <div id="normal-login">
             <script>

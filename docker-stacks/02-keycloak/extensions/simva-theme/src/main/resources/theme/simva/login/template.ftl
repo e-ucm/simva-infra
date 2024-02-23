@@ -101,7 +101,12 @@
         </#if>
       </header>
       <div id="kc-content" class="box">
-        <div id="kc-content-wrapper">
+        <div id="kc-content-wrapper">     
+          <div>
+                <img class="logo" src="${url.resourcesPath}/img/simva-logo.png" alt="Simva">
+          </div>
+
+          <#nested "form">
 
           <#-- App-initiated actions should not see warning messages about the need to complete the action -->
           <#-- during login.                                                                               -->
@@ -114,8 +119,6 @@
                   <span class="kc-feedback-text">${kcSanitize(message.summary)?no_esc}</span>
               </div>
           </#if>
-
-          <#nested "form">
 
           <#if auth?has_content && auth.showTryAnotherWayLink() && showAnotherWayIfPresent>
           <form id="kc-select-try-another-way-form" action="${url.loginAction}" method="post" <#if displayWide>class="${properties.kcContentWrapperClass!}"</#if>>
