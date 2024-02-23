@@ -17,3 +17,5 @@ for extension in $(find ${EXTENSIONS_DIR} -mindepth 1 -maxdepth 1 -type d); do
     cp "${extension}/target${extension_name}.jar" "${SIMVA_DATA_HOME}/keycloak/deployments"
 done
 chmod a+r ${SIMVA_DATA_HOME}/keycloak/deployments
+chmod a+w ${SIMVA_DATA_HOME}/keycloak/deployments
+chmod a+x ${SIMVA_DATA_HOME}/keycloak/deployments
