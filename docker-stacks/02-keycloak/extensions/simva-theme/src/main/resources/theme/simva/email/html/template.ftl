@@ -7,12 +7,10 @@
         <table width="100%" bgcolor="#000000" cellspacing="0" cellpadding="15">
             <tr>
                 <td>
+                    <img class="logo" src="https://raw.githubusercontent.com/e-ucm/simva-infra/master/.github/logo.svg?sanitize=true" alt="Simva" style="width:120px;height:44px;">
                     <font style="font-size:24px;" size="5" color="#FFFFFF">
                         <b>${realmName}</b>
                     </font>
-                </td>
-                <td>
-                    <img class="logo" src="https://raw.githubusercontent.com/e-ucm/simva-infra/master/.github/logo.svg?sanitize=true" alt="Simva" style="width:120px;height:44px;">
                 </td>
             </tr>
         </table>
