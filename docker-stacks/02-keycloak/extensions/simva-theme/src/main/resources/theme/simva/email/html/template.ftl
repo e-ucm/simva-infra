@@ -3,13 +3,19 @@
 <head>
 </head>
 <body text="#000000" bgcolor="#FFFFFF">
-    <img class="logo" src="https://raw.githubusercontent.com/e-ucm/simva-infra/master/.github/logo.svg?sanitize=true" alt="Simva" style="width:120px;height:44px;">
     <#if realmName??>
-        <table width="100%" bgcolor="#000000" cellspacing="0" cellpadding="15"><tr><td>
-            <font style="font-size:24px;" size="5" color="#FFFFFF"><b>
-                ${realmName}
-            </b></font>
-        </td></tr></table>
+        <table width="100%" bgcolor="#000000" cellspacing="0" cellpadding="15">
+            <tr>
+                <td>
+                    <font style="font-size:24px;" size="5" color="#FFFFFF">
+                        <b>${realmName}</b>
+                    </font>
+                </td>
+                <td>
+                    <img class="logo" src="https://raw.githubusercontent.com/e-ucm/simva-infra/master/.github/logo.svg?sanitize=true" alt="Simva" style="width:120px;height:44px;">
+                </td>
+            </tr>
+        </table>
     </#if>
 
     <#nested "text">
