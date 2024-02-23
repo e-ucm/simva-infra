@@ -1,4 +1,9 @@
 <#import "template.ftl" as layout>
-<@layout.emailLayout>
-${kcSanitize(msg("passwordResetBodyHtml",link, linkExpiration, realmName, linkExpirationFormatter(linkExpiration)))?no_esc}
-</@layout.emailLayout>
+<@layout.htmlEmailLayout ; section>
+    <#if section = "text">
+        ${msg("passwordResetBodyHtml", linkExpiration, realmName)?no_esc}
+    </#if>
+    <#if section = "linkText">
+        ${msg("passwordResetLinkTextHtml")?no_esc}
+    </#if>
+</@layout.htmlEmailLayout>
