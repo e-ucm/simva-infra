@@ -46,7 +46,7 @@ export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 ###########################################
 # Images versions
 export SIMVA_KEYCLOAK_IMAGE="jboss/keycloak"
-export SIMVA_KEYCLOAK_VERSION="10.0.2"
+export SIMVA_KEYCLOAK_VERSION="16.1.1"
 
 export SIMVA_MARIADB_IMAGE="mariadb"
 export SIMVA_MARIADB_VERSION="10.4.13"
