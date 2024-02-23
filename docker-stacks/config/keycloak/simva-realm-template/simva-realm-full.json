@@ -353,7 +353,7 @@
     }
   },
   "groups" : [ ],
-  "defaultRoles" : [ "uma_authorization", "offline_access" ],
+  "defaultRoles" : [ "uma_authorization", "teacher", "offline_access" ],
   "requiredCredentials" : [ "password" ],
   "otpPolicyType" : "totp",
   "otpPolicyAlgorithm" : "HmacSHA1",
@@ -2432,7 +2432,6 @@
       "credentialData" : "{{ .users.teacher.credentialData }}"
     } ],
     "attributes" : {
-      "policy" : [ "readonly-user-folder-jwt" ]
     },
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
