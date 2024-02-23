@@ -111,6 +111,7 @@
           <#-- App-initiated actions should not see warning messages about the need to complete the action -->
           <#-- during login.                                                                               -->
           <#if displayMessage && message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
+            <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
               <div class="alert alert-${message.type}">
                   <#if message.type = 'success'><span class="${properties.kcFeedbackSuccessIcon!}"></span></#if>
                   <#if message.type = 'warning'><span class="${properties.kcFeedbackWarningIcon!}"></span></#if>
@@ -118,6 +119,7 @@
                   <#if message.type = 'info'><span class="${properties.kcFeedbackInfoIcon!}"></span></#if>
                   <span class="kc-feedback-text">${kcSanitize(message.summary)?no_esc}</span>
               </div>
+            </div>
           </#if>
 
           <#if auth?has_content && auth.showTryAnotherWayLink() && showAnotherWayIfPresent>
