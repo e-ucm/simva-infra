@@ -1,5 +1,8 @@
 <#import "template.ftl" as layout>
-<@layout.registrationLayout displayInfo=social.displayInfo displayWide=(realm.password && social.providers??); section>
+<@layout.registrationLayout 
+    displayInfo=social.displayInfo
+    displayWide=(realm.password && social.providers??); section
+>
     <#if section = "header">
         <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet"/>
         <link href="${url.resourcesPath}/img/favicon.ico" rel="icon"/>
@@ -36,9 +39,9 @@
                 <form id="kc-form-login" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
                     <div class="${properties.kcFormGroupClass!}">
                         <#if usernameEditDisabled??>
-                            <input tabindex="1" id="username" class="login-field" name="username" value="${(login.username!'')}" type="text" disabled />
+                            <input tabindex="1" id="username" class="login-field" name="username" value="${(login.username!'')}" placeholder="${msg("username")}" type="text" disabled />
                         <#else>
-                            <input tabindex="1" id="username" class="login-field" name="username" value="${(login.username!'')}"  type="text" autofocus autocomplete="off" />
+                            <input tabindex="1" id="username" class="login-field" name="username" value="${(login.username!'')}" placeholder="${msg("username")}" type="text" autofocus autocomplete="off" />
                         </#if>
                     </div>
 
@@ -46,7 +49,7 @@
                         <div>
                             <label class="visibility" id="v" onclick="togglePassword()"><img id="vi" src="${url.resourcesPath}/img/eye-off.png"></label>
                         </div>
-                        <input tabindex="2" id="password" class="login-field" name="password" type="password" autocomplete="off" />
+                        <input tabindex="2" id="password" class="login-field" name="password" placeholder="${msg("password")}" type="password" autocomplete="off" />
                     </div>
 
                     <div class="${properties.kcFormGroupClass!} ${properties.kcFormSettingClass!}">
@@ -102,10 +105,9 @@
             <div id="kc-form-wrapper" <#if realm.password && social.providers??>class="${properties.kcFormSocialAccountContentClass!} ${properties.kcFormSocialAccountClass!}"</#if>>
                 <#if realm.password>
                 <form id="kc-form-login" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
-
                     <div class="${properties.kcFormGroupClass!}">
-                        <input tabindex="1" id="username" class="login-field" name="username" value="${(login.username!'')}"  type="text" autofocus autocomplete="off" />
-                        <input tabindex="2" id="password" class="login-field" name="password" type="hidden" autocomplete="off" />
+                        <input tabindex="1" id="username" class="login-field" name="username" value="${(login.username!'')}" placeholder="${msg("role_read-token")}" type="text" autofocus autocomplete="off" />
+                        <input tabindex="2" id="password" class="login-field" name="password" placeholder="${msg("password")}" type="hidden" autocomplete="off" />
                     </div>
 
                     <div class="${properties.kcFormGroupClass!} ${properties.kcFormSettingClass!}">
