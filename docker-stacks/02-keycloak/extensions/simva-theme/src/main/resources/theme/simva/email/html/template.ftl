@@ -1,9 +1,7 @@
 <#macro emailLayout>
 <html>
 <body>
-    <div>
-          <img class="logo" src="${url.resourcesPath}/img/simva-logo.png" alt="Simva">
-    </div>
+    <img class="logo" src="https://raw.githubusercontent.com/e-ucm/simva-infra/master/.github/logo.svg?sanitize=true" alt="Simva" style="width:120px;height:44px;">
     <#nested>
 </body>
 </html>
