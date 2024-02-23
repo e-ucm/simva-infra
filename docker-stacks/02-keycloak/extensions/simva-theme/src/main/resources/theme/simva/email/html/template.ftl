@@ -1,5 +1,7 @@
-<#macro emailLayout>
+<#macro htmlEmailLayout>
 <html>
+<head>
+</head>
 <body text="#000000" bgcolor="#FFFFFF">
     <img class="logo" src="https://raw.githubusercontent.com/e-ucm/simva-infra/master/.github/logo.svg?sanitize=true" alt="Simva" style="width:120px;height:44px;">
     <#if realmName??>
