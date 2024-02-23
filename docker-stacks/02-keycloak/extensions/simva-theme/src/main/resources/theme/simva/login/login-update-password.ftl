@@ -13,7 +13,7 @@
 
                     <div class="${properties.kcFormGroupClass!}">
                         <div class="${properties.kcInputWrapperClass!}">
-                        <input type="password" id="password-new" name="password-new" class="${properties.kcInputClass!}" pattern=".{8,}" autofocus autocomplete="new-password" required/>
+                        <input type="password" id="password-new" name="password-new" class="${properties.kcInputClass!}" pattern=".{8,}" autofocus autocomplete="new-password" placeholder="${msg("password")}" required/>
                         </div>
                         <div class="${properties.kcLabelWrapperClass!}">
                         <label for="password-new">${msg("passwordNew")}</label>
@@ -22,7 +22,7 @@
 
                     <div class="${properties.kcFormGroupClass!}">
                         <div class="${properties.kcInputWrapperClass!}">
-                            <input type="password" id="password-confirm" name="password-confirm" class="${properties.kcInputClass!}" autocomplete="new-password" required/>
+                            <input type="password" id="password-confirm" name="password-confirm" class="${properties.kcInputClass!}" autocomplete="new-password" placeholder="${msg("passwordConfirm")}" required/>
                         </div>
                         <div class="${properties.kcLabelWrapperClass!}">
                             <label for="password-confirm">${msg("passwordConfirm")}</label>
