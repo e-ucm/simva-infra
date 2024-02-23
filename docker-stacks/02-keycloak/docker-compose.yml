@@ -151,10 +151,3 @@ services:
       default:
         aliases:
           - "${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      traefik_services:
-        aliases:
-          - "${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.mail.loadbalancer.server.port=80"
-      - "traefik.http.routers.mail.rule=Host(`${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"

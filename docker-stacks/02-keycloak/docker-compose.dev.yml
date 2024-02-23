@@ -1,0 +1,28 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    external: true
+
+services:
+  mail:
+    << : *default-opts
+    image: maildev/maildev:1.1.0
+    networks:
+      traefik_services:
+        aliases:
+          - "${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mail.loadbalancer.server.port=80"
+      - "traefik.http.routers.mail.rule=Host(`${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
