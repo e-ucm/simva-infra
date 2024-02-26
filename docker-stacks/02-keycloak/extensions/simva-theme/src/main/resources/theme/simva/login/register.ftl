@@ -37,7 +37,7 @@
             <form id="kc-form-sign-in" class="${properties.kcFormClass!}" action="${url.registrationAction}" method="post">
                 <div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('email',properties.kcFormGroupErrorClass!)}">
                     <div class="${properties.kcInputWrapperClass!}">
-                        <input tabindex="1" type="text" id="email" class="${properties.kcInputClass!}" name="email" placeholder="${msg("email")}" value="${(register.formData.email!'')}" autocomplete="email" required/>
+                        <input tabindex="1" type="email" id="email" class="${properties.kcInputClass!}" name="email" placeholder="${msg("email")}" value="${(register.formData.email!'')}" autocomplete="email" required/>
                     </div>
                     <div class="${properties.kcLabelWrapperClass!}">
                         <label for="email" class="${properties.kcLabelClass!}">${msg("email")}</label>
@@ -47,7 +47,7 @@
                 <#if !realm.registrationEmailAsUsername>
                     <div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('username',properties.kcFormGroupErrorClass!)}">
                         <div class="${properties.kcInputWrapperClass!}">
-                            <input tabindex="2" type="text" id="username" class="${properties.kcInputClass!}" name="username" placeholder="${msg("username")}" value="${(register.formData.username!'')}" autocomplete="username" pattern="[a-zA-Z][a-zA-Z0-9-_.]{1,14}" required/>
+                            <input tabindex="2" type="username" id="username" class="${properties.kcInputClass!}" name="username" placeholder="${msg("username")}" value="${(register.formData.username!'')}" autocomplete="username" pattern="[a-zA-Z][a-zA-Z0-9-_.]{1,14}" required/>
                         </div>
                         <div class="${properties.kcLabelWrapperClass!}">
                             <label for="username" class="${properties.kcLabelClass!}">${msg("username")}</label>
