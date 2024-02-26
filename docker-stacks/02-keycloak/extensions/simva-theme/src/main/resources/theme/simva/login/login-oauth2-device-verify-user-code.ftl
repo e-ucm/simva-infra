@@ -1,8 +1,11 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout; section>
     <#if section = "header">
-        ${msg("oauth2DeviceVerificationTitle")}
+       
     <#elseif section = "form">
+        <h1 id="kc-page-title">
+             ${msg("oauth2DeviceVerificationTitle")}
+        </h1>
         <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
             <form id="kc-user-verify-device-user-code-form" class="${properties.kcFormClass!}" action="${url.oauth2DeviceVerificationAction}" method="post">
                 <div class="${properties.kcFormGroupClass!}">

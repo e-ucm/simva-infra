@@ -1,8 +1,10 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout; section>
     <#if section = "header">
-        ${msg("emailLinkIdpTitle", idpDisplayName)}
     <#elseif section = "form">
+        <h1 id="kc-page-title">
+            ${msg("emailLinkIdpTitle", idpDisplayName)}
+        </h1>
         <p id="instruction1" class="instruction">
             ${msg("emailLinkIdp1", idpDisplayName, brokerContext.username, realm.displayName)}
         </p>

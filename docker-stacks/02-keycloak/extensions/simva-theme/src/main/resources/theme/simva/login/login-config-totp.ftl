@@ -2,8 +2,10 @@
 <@layout.registrationLayout displayRequiredFields=false displayMessage=!messagesPerField.existsError('totp','userLabel'); section>
 
     <#if section = "header">
-        ${msg("loginTotpTitle")}
     <#elseif section = "form">
+        <h1 id="kc-page-title">
+            ${msg("loginTotpTitle")}
+        </h1>
         <ol id="kc-totp-settings">
             <li>
                 <p>${msg("loginTotpStep1")}</p>

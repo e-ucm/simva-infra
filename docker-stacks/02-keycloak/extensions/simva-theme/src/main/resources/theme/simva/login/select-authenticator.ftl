@@ -8,9 +8,11 @@
             }
         </script>
         <#if section = "header">
-            ${msg("loginChooseAuthenticator")}
         </#if>
     <#elseif section = "form">
+        <h1 id="kc-page-title">
+            ${msg("loginChooseAuthenticator")}
+        </h1>
         <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
             <form id="kc-select-credential-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
                 <div class="${properties.kcSelectAuthListClass!}">

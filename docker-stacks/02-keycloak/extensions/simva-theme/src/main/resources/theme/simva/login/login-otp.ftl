@@ -1,8 +1,11 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('totp'); section>
     <#if section="header">
-        ${msg("doLogIn")}
+       
     <#elseif section="form">
+        <h1 id="kc-page-title">
+            ${msg("doLogIn")}
+        </h1>
         <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
             <form id="kc-otp-login-form" class="${properties.kcFormClass!}" action="${url.loginAction}"
                 method="post">

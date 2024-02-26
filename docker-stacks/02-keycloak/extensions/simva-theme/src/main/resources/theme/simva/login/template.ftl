@@ -101,14 +101,13 @@
         </#if>
       </header>
       <div id="kc-content" class="box">
-        <div id="kc-content-wrapper">     
-          <div>
-                <img class="logo" src="${url.resourcesPath}/img/simva-logo.png" alt="Simva">
-          </div>
+        <div>
+            <img class="logo" src="${url.resourcesPath}/img/simva-logo.png" alt="Simva">
+        </div>
 
-          <#-- App-initiated actions should not see warning messages about the need to complete the action -->
-          <#-- during login.                                                                               -->
-          <#if displayMessage && message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
+        <#-- App-initiated actions should not see warning messages about the need to complete the action -->
+        <#-- during login.                                                                               -->
+        <#if displayMessage && message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
             <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
               <div class="alert alert-${message.type}">
                   <#if message.type = 'success'><span class="${properties.kcFeedbackSuccessIcon!}"></span></#if>
@@ -118,21 +117,20 @@
                   <span class="kc-feedback-text">${kcSanitize(message.summary)?no_esc}</span>
               </div>
             </div>
-          </#if>
+        </#if>
+        <div id="kc-content-wrapper">
+            <#nested "form">
 
-          <#nested "form">
-
-          <#if auth?has_content && auth.showTryAnotherWayLink() && showAnotherWayIfPresent>
-          <form id="kc-select-try-another-way-form" action="${url.loginAction}" method="post" <#if displayWide>class="${properties.kcContentWrapperClass!}"</#if>>
-              <div <#if displayWide>class="${properties.kcFormSocialAccountContentClass!} ${properties.kcFormSocialAccountClass!}"</#if>>
-                  <div class="${properties.kcFormGroupClass!}">
-                    <input type="hidden" name="tryAnotherWay" value="on" />
-                    <a href="#" id="try-another-way" onclick="document.forms['kc-select-try-another-way-form'].submit();return false;">${msg("doTryAnotherWay")}</a>
-                  </div>
-              </div>
-          </form>
-          </#if>
-
+            <#if auth?has_content && auth.showTryAnotherWayLink() && showAnotherWayIfPresent>
+                <form id="kc-select-try-another-way-form" action="${url.loginAction}" method="post" <#if displayWide>class="${properties.kcContentWrapperClass!}"</#if>>
+                    <div <#if displayWide>class="${properties.kcFormSocialAccountContentClass!} ${properties.kcFormSocialAccountClass!}"</#if>>
+                        <div class="${properties.kcFormGroupClass!}">
+                            <input type="hidden" name="tryAnotherWay" value="on" />
+                            <a href="#" id="try-another-way" onclick="document.forms['kc-select-try-another-way-form'].submit();return false;">${msg("doTryAnotherWay")}</a>
+                        </div>
+                    </div>
+                </form>
+            </#if>
         </div>
       </div>
 
