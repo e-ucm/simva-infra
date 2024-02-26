@@ -82,9 +82,7 @@
                         <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
                             <#if isAppInitiatedAction??>
                                 <input class="submit ${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("passwordConfirm")}" />
-                                <#if client?? && client.baseUrl?has_content>
-                                    <p><a id="backToApplication" href="${client.baseUrl}">${kcSanitize(msg("backToApplication"))?no_esc}</a></p>
-                                </#if>
+                                <button class="submit ${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}" type="submit" name="cancel-aia" value="true" />${msg("doCancel")}</button>
                             <#else>
                                 <input class="submit ${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("passwordConfirm")}" />
                             </#if>

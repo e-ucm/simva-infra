@@ -2,10 +2,11 @@
 <@layout.registrationLayout displayInfo=true; section>
 <#if section = "header">
 <#elseif section = "form">
+  <h1 id="kc-page-title">
+    ${msg("emailForgotTitle")}
+  </h1>
+  ${msg("emailInstruction")}
   <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
-    <h1 id="kc-page-title">
-      ${msg("emailForgotTitle")}
-    </h1>
     <div id="sign-in-section">
         <form id="kc-form-sign-in" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
           <div class="${properties.kcInputWrapperClass!}">
