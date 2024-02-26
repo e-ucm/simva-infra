@@ -4,7 +4,7 @@ set -euo pipefail
 
 EXTENSIONS_DIR="${STACK_HOME}/extensions"
 simvaURL="${SIMVA_EXTERNAL_PROTOCOL}://${SIMVA_EXTERNAL_DOMAIN}/"
-cat "${EXTENSIONS_DIR}/simva-theme/src/main/resources/theme/simva/account/theme.properties.template"
+cat "${EXTENSIONS_DIR}/simva-theme/src/main/resources/theme/simva/account/theme.properties.template" \
      | sed  "s/<<SIMVA_SIMVA_URL>>/${simva-url}/g" \
 > "${EXTENSIONS_DIR}/simva-theme/src/main/resources/theme/simva/account/theme.properties"
 
