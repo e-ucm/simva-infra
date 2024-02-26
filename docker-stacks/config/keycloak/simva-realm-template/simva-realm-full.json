@@ -1016,7 +1016,6 @@
   {
     "id": "2e52267c-a0d1-410f-b8b2-ee33119e9ab9",
     "clientId": "{{ .clients.jupyter.clientId }}",
-    "rootUrl": "http://localhost:8888",
     "adminUrl": "http://localhost:8888",
     "baseUrl" : "{{ .clients.jupyter.baseUrl }}",
     "surrogateAuthRequired": false,
