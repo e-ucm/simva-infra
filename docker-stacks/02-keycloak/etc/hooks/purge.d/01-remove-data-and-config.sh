@@ -21,6 +21,12 @@ rm -rf ./*
 cd "${SIMVA_DATA_HOME}/maven/m2"
 rm -rf ./*
 
+# Removing Simva Theme properties Account page 
+if [[ -e "${STACK_HOME}/extensions\simva-theme\src\main\resources\theme\simva\account\theme.properties" ]]; then
+    rm "${STACK_HOME}/extensions\simva-theme\src\main\resources\theme\simva\account\theme.properties"
+fi
+
+
 ###############################
 # REMOVE KEYCLOAK CONFIGURATION
 ###############################
