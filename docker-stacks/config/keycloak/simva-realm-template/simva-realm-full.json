@@ -1738,6 +1738,8 @@
     "password": "{{ .smtpServer.password }}"
   },
   "loginTheme" : "simva",
+  "accountTheme": "simva",
+  "emailTheme": "simva",
   "eventsEnabled" : false,
   "eventsListeners" : [ "jboss-logging" ],
   "enabledEventTypes" : [ ],

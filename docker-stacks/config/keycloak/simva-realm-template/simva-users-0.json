@@ -116,7 +116,6 @@
       "credentialData" : "{{ .users.teacher.credentialData }}"
     } ],
     "attributes" : {
-      "policy" : [ "readonly-user-folder-jwt" ]
     },
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
