@@ -15,7 +15,7 @@ fi
 export PATH=$PATH:${SIMVA_PROJECT_DIR}/bin
 
 DEPENDENCIES="find mkcert jq"
-DEFAULT_WAIT_TIME="10"
+DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME:-10}"
 
 # main entrypoint, called after defining all functions (see last line)
 function main() {

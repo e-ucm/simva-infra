@@ -214,7 +214,9 @@ export SIMVA_FRONT_MONGO_DB="/simva-front"
 ##############
 # SIMVA INFO #
 ##############
+export SIMVA_SCRIPT_WAIT_TIME="10"
 export SIMVA_STORAGE_LOCAL_PATH="/storage"
+export SIMVA_SSO_USER_CAN_EDIT_ROLE="true"
 
 ##############################
 # SIMVA Trace Allocator INFO #

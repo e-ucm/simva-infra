@@ -195,6 +195,7 @@ services:
       SSO_PORT: "443"
       SSO_AUTH_PATH: "/auth"
       SSO_ACCOUNT_PATH: "/account"
+      SSO_USER_CAN_SELECT_ROLE: "${SIMVA_SSO_USER_CAN_EDIT_ROLE:-true}"
       SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       SSO_CLIENT_ID: "${SIMVA_SIMVA_CLIENT_ID:-simva}"
       SSO_CLIENT_SECRET: "${SIMVA_SIMVA_CLIENT_SECRET:-secret}"
