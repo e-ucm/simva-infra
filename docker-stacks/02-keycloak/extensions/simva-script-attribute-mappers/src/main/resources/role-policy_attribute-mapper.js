@@ -1,10 +1,14 @@
-var roles = Java.from(new java.util.ArrayList(user.roleMappings));
+// Fetch the effective role mappings
+var roleMappings = Java.from(new java.util.ArrayList(user.getRoleMappings()));
+
+// Initialize variables
 var attValues = new java.util.ArrayList();
 var ATTRIBUTE_NAME = 'policy';
 var FLATTEN_IF_ONLY_ONE_VALUE = true;
 
-for (var r in roles) {
-    var attrs = roles[r].attributes;
+// Iterate over effective roles and extract attributes
+for (var r in roleMappings) {
+    var attrs = roleMappings[r].attributes;
     if (attrs[ATTRIBUTE_NAME] != null) {
         var value = attrs[ATTRIBUTE_NAME];
         if (FLATTEN_IF_ONLY_ONE_VALUE) {
@@ -17,4 +21,6 @@ for (var r in roles) {
         }
     }
 }
+
+// Return attribute values
 attValues;
