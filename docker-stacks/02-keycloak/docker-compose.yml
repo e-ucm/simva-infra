@@ -117,7 +117,7 @@ services:
       - KC_FILE=/opt/keycloak/data/import/simva-realm-full.json
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/keycloak/standalone/deployments
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/keycloak/providers
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/themes:/opt/keycloak/themes
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm/:/opt/keycloak/data/import/:ro
