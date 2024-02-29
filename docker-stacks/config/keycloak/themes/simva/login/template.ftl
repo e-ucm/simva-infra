@@ -119,7 +119,9 @@
             </div>
         </#if>
         <div id="kc-content-wrapper">
-            <#nested "form">
+            <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
+                <#nested "form">
+            </div>
 
             <#if auth?has_content && auth.showTryAnotherWayLink() && showAnotherWayIfPresent>
                 <form id="kc-select-try-another-way-form" action="${url.loginAction}" method="post" <#if displayWide>class="${properties.kcContentWrapperClass!}"</#if>>

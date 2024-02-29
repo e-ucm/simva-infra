@@ -35,7 +35,7 @@
     <h1 id="kc-page-title">
         ${msg("doRegister")}
     </h1>
-    <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
+    <div id="kc-form">
         <div id="sign-in-section">
             <form id="kc-form-sign-in" class="${properties.kcFormClass!}" action="${url.registrationAction}" method="post">
                 <div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('email',properties.kcFormGroupErrorClass!)}">

@@ -6,7 +6,7 @@
     ${msg("emailForgotTitle")}
   </h1>
   ${msg("emailInstruction")}
-  <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
+  <div id="kc-form">
     <div id="sign-in-section">
         <form id="kc-form-sign-in" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
           <div class="${properties.kcInputWrapperClass!}">

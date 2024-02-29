@@ -1,45 +1,36 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayInfo=false; section>
     <#if section = "header" || section = "show-username">
-        <script type="text/javascript">
-            function fillAndSubmit(authExecId) {
-                document.getElementById('authexec-hidden-input').value = authExecId;
-                document.getElementById('kc-select-credential-form').submit();
-            }
-        </script>
         <#if section = "header">
-        </#if>
+                    </#if>
     <#elseif section = "form">
         <h1 id="kc-page-title">
             ${msg("loginChooseAuthenticator")}
         </h1>
-        <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
-            <form id="kc-select-credential-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
-                <div class="${properties.kcSelectAuthListClass!}">
-                    <#list auth.authenticationSelections as authenticationSelection>
-                        <div class="${properties.kcSelectAuthListItemClass!}" onclick="fillAndSubmit('${authenticationSelection.authExecId}')">
+        <form id="kc-select-credential-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
+            <div class="${properties.kcSelectAuthListClass!}">
+                <#list auth.authenticationSelections as authenticationSelection>
+                    <button class="${properties.kcSelectAuthListItemClass!}" type="submit" name="authenticationExecution" value="${authenticationSelection.authExecId}">
 
-                            <div class="${properties.kcSelectAuthListItemIconClass!}">
-                                <i class="${properties['${authenticationSelection.iconCssClass}']!authenticationSelection.iconCssClass} fa-2x"></i>
+                        <div class="${properties.kcSelectAuthListItemIconClass!}">
+                            <i class="${properties['${authenticationSelection.iconCssClass}']!authenticationSelection.iconCssClass} ${properties.kcSelectAuthListItemIconPropertyClass!}"></i>
+                        </div>
+                        <div class="${properties.kcSelectAuthListItemBodyClass!}">
+                            <div class="${properties.kcSelectAuthListItemHeadingClass!}">
+                                ${msg('${authenticationSelection.displayName}')}
                             </div>
-                            <div class="${properties.kcSelectAuthListItemBodyClass!}">
-                                <div class="${properties.kcSelectAuthListItemHeadingClass!}">
-                                    ${msg('${authenticationSelection.displayName}')}
-                                </div>
-                                <div class="${properties.kcSelectAuthListItemDescriptionClass!}">
-                                    ${msg('${authenticationSelection.helpText}')}
-                                </div>
-                            </div>
-                            <div class="${properties.kcSelectAuthListItemFillClass!}"></div>
-                            <div class="${properties.kcSelectAuthListItemArrowClass!}">
-                                <i class="${properties.kcSelectAuthListItemArrowIconClass!}"></i>
+                            <div class="${properties.kcSelectAuthListItemDescriptionClass!}">
+                                ${msg('${authenticationSelection.helpText}')}
                             </div>
                         </div>
-                    </#list>
-                    <input type="hidden" id="authexec-hidden-input" name="authenticationExecution" />
-                </div>
-            </form>
-        </div>
+                        <div class="${properties.kcSelectAuthListItemFillClass!}"></div>
+                        <div class="${properties.kcSelectAuthListItemArrowClass!}">
+                            <i class="${properties.kcSelectAuthListItemArrowIconClass!}"></i>
+                        </div>
+                    </button>
+                </#list>
+            </div>
+        </form>
+
     </#if>
 </@layout.registrationLayout>
-

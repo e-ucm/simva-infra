@@ -27,7 +27,7 @@
             }
         </script>
     <#elseif section = "form">
-        <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
+        <div id="kc-form">
             <h1 id="kc-page-title">
                 ${msg("updatePasswordTitle")}
             </h1>
