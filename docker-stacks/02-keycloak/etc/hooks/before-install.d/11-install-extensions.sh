@@ -2,12 +2,6 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-EXTENSIONS_DIR="${STACK_HOME}/extensions"
-simvaURL="${SIMVA_EXTERNAL_PROTOCOL}://${SIMVA_EXTERNAL_DOMAIN}/"
-cat "${EXTENSIONS_DIR}/simva-theme/src/main/resources/theme/simva/account/theme.properties.template" \
-     | sed  "s|logoUrl=<<SIMVA_SIMVA_URL>>|logoUrl=${simvaURL}|" \
-> "${EXTENSIONS_DIR}/simva-theme/src/main/resources/theme/simva/account/theme.properties"
-
 for extension in $(find ${EXTENSIONS_DIR} -mindepth 1 -maxdepth 1 -type d); do
     extension_name=${extension#"$EXTENSIONS_DIR"}
     if [[ ! -e "${extension}/target${extension_name}.jar" ]]; then

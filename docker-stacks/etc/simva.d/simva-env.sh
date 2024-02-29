@@ -45,8 +45,8 @@ export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 # Images versions and SIMVA Git reference #
 ###########################################
 # Images versions
-export SIMVA_KEYCLOAK_IMAGE="jboss/keycloak"
-export SIMVA_KEYCLOAK_VERSION="16.1.1"
+export SIMVA_KEYCLOAK_IMAGE="quax.io/keycloak/keycloak"
+export SIMVA_KEYCLOAK_VERSION="23.0.7"
 
 export SIMVA_MARIADB_IMAGE="mariadb"
 export SIMVA_MARIADB_VERSION="10.4.13"
@@ -155,6 +155,7 @@ export SIMVA_MAX_RETRIES="20"
 #################
 export SIMVA_SSO_REALM="simva"
 export SIMVA_KEYCLOAK_MYSQL_DATABASE="keycloak"
+export SIMVA_SSO_LOG_LEVEL="info"
 
 #################
 # Mail SSO info #

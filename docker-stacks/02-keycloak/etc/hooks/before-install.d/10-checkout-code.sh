@@ -13,4 +13,4 @@ SIMVA_KEYCLOAK_EVENT_GIT_REF=${SIMVA_KEYCLOAK_EVENT_GIT_REF:-v0.3}
 #git clone --depth 1 --branch ${SIMVA_KEYCLOAK_EVENT_GIT_REF} ${SIMVA_KEYCLOAK_EVENT_GIT_REPO_URL} ${tmp_dir#} > /dev/null 2>&1;
 #rsync -avh --delete --itemize-changes ${tmp_dir}/ ${STACK_HOME}/extensions/keycloak-events > /dev/null 2>&1
 
-cp "${STACK_HOME}/extensions/keycloak-events-0.3.jar" "${SIMVA_DATA_HOME}/keycloak/deployments"
+#cp "${STACK_HOME}/extensions/keycloak-events-0.3.jar" "${SIMVA_DATA_HOME}/keycloak/deployments"

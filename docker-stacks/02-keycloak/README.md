@@ -153,7 +153,7 @@ Then perform the following steps:
 5. Within **SAML 2.0 SP Metadata**, section click on [Show Metadata](https://simplesamlphp.external.test/simplesamlphp/module.php/saml/sp/metadata.php/https___sso_external_test_auth_realms_simva?output=xhtml) of the subsection *https___sso_external_test_auth_realms_simva*
 6. Click on [get the metadata xml on a dedicated URL](https://simplesamlphp.external.test/simplesamlphp/module.php/saml/sp/metadata.php/default-sp)
 7. Save the *https___sso_external_test_auth_realms_simva* file.
-8. Go to [SIMVA's KeyCloak realm clients configuration](https://sso.external.test/auth/admin/master/console/#/realms/simva/clients)
+8. Go to [SIMVA's KeyCloak realm clients configuration](https://sso.external.test/admin/master/console/#/realms/simva/clients)
 9. Click *CREATE* button
 10. Click *Select file* button of the Import option. Select the *https___sso_external_test_auth_realms_simva* file previously downloaded.
 11. Click *Save* button.

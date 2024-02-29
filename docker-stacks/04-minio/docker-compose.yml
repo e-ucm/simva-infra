@@ -35,7 +35,7 @@ services:
         done="ko";
         while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
           echo 1>&2 "Checking Keycloak availability for minio: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
-          wget "https://$${MINIO_SSO_HOST}/auth/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
+          wget "https://$${MINIO_SSO_HOST}/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
           ret=$$?;
           if [ $$ret -eq 0 ]; then
             done="ok";
@@ -70,7 +70,7 @@ services:
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
       MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_CLIENT_ID:-minio}"
-      MINIO_IDENTITY_OPENID_CONFIG_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration"
+      MINIO_IDENTITY_OPENID_CONFIG_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration"
       MINIO_IDENTITY_OPENID_SCOPES: "${SIMVA_MINIO_IDENTITY_OPENID_SCOPES:-openid,policy_role_attribute}"
       MINIO_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
@@ -103,7 +103,7 @@ services:
 # https://github.com/minio/minio/issues/8345 -> write-user-folder-jwt.json
 #
 # Not required (already configured using env variables but useful:
-#   /usr/bin/mc --debug --insecure admin config set simva-minio identity_openid config_url="https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/simva/.well-known/openid-configuration" client_id="https://minio.external.test";
+#   /usr/bin/mc --debug --insecure admin config set simva-minio identity_openid config_url="https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/simva/.well-known/openid-configuration" client_id="https://minio.external.test";
 #   /usr/bin/mc --debug --insecure admin service restart simva-minio;
 
 # XXX remove mcs password
@@ -122,7 +122,7 @@ services:
         done="ko";
         while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
           echo 1>&2 "Checking Keycloak availability for minio: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
-          wget "https://$${MINIO_SSO_HOST}/auth/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
+          wget "https://$${MINIO_SSO_HOST}/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
           ret=$$?;
           if [ $$ret -eq 0 ]; then
             done="ok";

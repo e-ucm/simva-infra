@@ -9,7 +9,7 @@ done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   echo 1>&2 "Checking Keycloak availability for kafka: $((${mc_max_retries}-$count+1)) pass";
   set +e
-  wget "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration" -O - >/dev/null;
+  wget "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration" -O - >/dev/null;
   ret=$?;
   set -e
   if [ $ret -eq 0 ]; then

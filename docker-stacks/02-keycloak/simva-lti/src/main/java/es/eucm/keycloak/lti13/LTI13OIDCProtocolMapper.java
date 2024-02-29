@@ -172,7 +172,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         .name(CLIENT_AUTH_URL)
         .label("AS token endpoint URL")
         .type(ProviderConfigProperty.STRING_TYPE)
-        .helpText("Absolute URL of the token endpoint (e.g. http://example.com/auth/realms/my-realm/protocol/openid-connect/token).")
+        .helpText("Absolute URL of the token endpoint (e.g. http://example.com/realms/my-realm/protocol/openid-connect/token).")
         .defaultValue("")
         .add()
         // Client id

@@ -49,7 +49,7 @@ services:
 #        done="ko";
 #        while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
 #          echo 1>&2 "Checking Keycloak availability for Simva API: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
-#          wget "$${SSO_PROTOCOL}://$${SSO_HOST}/auth/realms/$${SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
+#          wget "$${SSO_PROTOCOL}://$${SSO_HOST}/realms/$${SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
 #          ret=$$?;
 #          if [ $$ret -eq 0 ]; then
 #            done="ok";
@@ -123,7 +123,6 @@ services:
       SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
       SSO_PORT: "443"
-      SSO_AUTH_PATH: "/auth"
       SSO_ADMIN_USER: "${SIMVA_ADMINISTRATOR_USER:-administrator}"
       SSO_ADMIN_PASSWORD: "${SIMVA_ADMINISTRATOR_PASSWORD:-administrator}"
       #A2
@@ -193,7 +192,6 @@ services:
       SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
       SSO_PORT: "443"
-      SSO_AUTH_PATH: "/auth"
       SSO_ACCOUNT_PATH: "/account"
       SSO_USER_CAN_SELECT_ROLE: "${SIMVA_SSO_USER_CAN_EDIT_ROLE:-true}"
       SSO_REALM: "${SIMVA_SSO_REALM:-simva}"

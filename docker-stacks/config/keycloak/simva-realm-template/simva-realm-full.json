@@ -870,7 +870,7 @@
         "config": {
           "lti3_platform.auth.id": "SIMVA_CLIENT_ID",
           "lti3_platform.url": "{{ .clients.simva.baseUrl }}/lti/claims",
-          "lti3_platform.auth.url": "{{ .clients.simva.ssoUrl }}/auth/realms/{{ .clients.simva.realmId }}/protocol/openid-connect/token",
+          "lti3_platform.auth.url": "{{ .clients.simva.ssoUrl }}/realms/{{ .clients.simva.realmId }}/protocol/openid-connect/token",
           "lti3_platform.headers.bearer.token": "false",
           "access.token.claim": "true",
           "lti3_platform.auth.pass": "SIMVA_CLIENT_PASSWORD",
