@@ -115,6 +115,7 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       #SIMVA Realm file
       - KC_FILE=/opt/keycloak/data/import/simva-realm-full.json
+      - KC_SPI_THEME_DEFAULT=simva
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/keycloak/providers
