@@ -119,7 +119,7 @@
             </div>
         </#if>
         <div id="kc-content-wrapper">
-            <div id="kc-form" class="box-container para <#if realm.password && social.providers??>${properties.kcContentWrapperClass!}</#if>">
+            <div id="kc-form" class="box-container para <#if (realm.password && social.providers)??>${properties.kcContentWrapperClass!}</#if>">
                 <#nested "form">
             </div>
 
