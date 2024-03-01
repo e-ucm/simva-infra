@@ -104,7 +104,16 @@
       "clientRole" : false,
       "containerId" : "{{ .clients.simva.realmId }}",
       "attributes" : { }
-    } ],
+    },
+    {
+      "id": "61d16051-1807-4d3a-ab11-c209e1ee398f",
+      "name": "norole",
+      "description": "",
+      "composite": false,
+      "clientRole": false,
+      "containerId": "{{ .clients.simva.realmId }}",
+      "attributes": {}
+    }],
     "client" : {
       "{{ .clients.limesurvey.clientId }}" : [ ],
       "realm-management" : [ {
@@ -353,7 +362,7 @@
     }
   },
   "groups" : [ ],
-  "defaultRoles" : [ "uma_authorization", "offline_access" ],
+  "defaultRoles" : [ "uma_authorization", "offline_access", "norole" ],
   "requiredCredentials" : [ "password" ],
   "otpPolicyType" : "totp",
   "otpPolicyAlgorithm" : "HmacSHA1",
