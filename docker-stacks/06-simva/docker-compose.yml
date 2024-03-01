@@ -37,36 +37,6 @@ services:
   simva-api:
     << : *default-opts
     image: node:14
-#    entrypoint: >
-#      /bin/sh -c '
-#      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${SSO_HOST};
-#        if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
-#          cp /var/lib/simva/ca/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
-#          cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
-#        fi;
-#        wait_time=$${MC_WAIT_TIME};
-#        count=$${MC_MAX_RETRIES};
-#        done="ko";
-#        while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
-#          echo 1>&2 "Checking Keycloak availability for Simva API: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
-#          wget "$${SSO_PROTOCOL}://$${SSO_HOST}/realms/$${SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
-#          ret=$$?;
-#          if [ $$ret -eq 0 ]; then
-#            done="ok";
-#          else
-#            echo 1>&2 "Keycloak not available, waiting $${wait_time}s";
-#            sleep $${wait_time};
-#          fi;
-#          count=$$((count-1));
-#        done;
-#        if [ $$count -eq 0 ] && [ "$$done" != "ok" ]; then
-#          echo 1>&2 "Keycloak not available !";
-#          exit 1
-#        fi;
-#        if [ "$$done" == "ok" ]; then
-#          echo 1>&2 "Keycloak available !";
-#        fi;
-#      '
     command: bash -c "mkdir -p ${SIMVA_STORAGE_PATH:-/storage} && cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
@@ -118,6 +88,7 @@ services:
       SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       SSO_CLIENT_ID: "${SIMVA_SIMVA_CLIENT_ID:-simva}"
       SSO_CLIENT_SECRET: "${SIMVA_SIMVA_CLIENT_SECRET:-secret}"
+      SSO_ALLOWED_ROLES: "${SIMVA_SSO_ALLOWED_ROLES:-teacher,teaching-assistant,researcher,student}"
       SSO_SSL_REQUIRED: "external"
       SSO_PUBLIC_CLIENT: "false"
       SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
@@ -194,6 +165,7 @@ services:
       SSO_PORT: "443"
       SSO_ACCOUNT_PATH: "/account"
       SSO_USER_CAN_SELECT_ROLE: "${SIMVA_SSO_USER_CAN_EDIT_ROLE:-true}"
+      SSO_ALLOWED_ROLES: "${SIMVA_SSO_ALLOWED_ROLES:-teacher,teaching-assistant,researcher,student}"
       SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       SSO_CLIENT_ID: "${SIMVA_SIMVA_CLIENT_ID:-simva}"
       SSO_CLIENT_SECRET: "${SIMVA_SIMVA_CLIENT_SECRET:-secret}"
