@@ -155,9 +155,11 @@ export SIMVA_MAX_RETRIES="20"
 #################
 export SIMVA_SSO_REALM="simva"
 export SIMVA_KEYCLOAK_MYSQL_DATABASE="keycloak"
-export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
-export SIMVA_SSO_ALLOWED_ROLES="teacher,teaching-assistant,researcher,student"
 export SIMVA_SSO_LOG_LEVEL="info"
+
+export SIMVA_SSO_ALLOWED_ROLES="teacher,teaching-assistant,researcher,student"
+export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
+export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
 
 #################
 # Mail SSO info #

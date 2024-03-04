@@ -165,6 +165,7 @@ services:
       SSO_PORT: "443"
       SSO_ACCOUNT_PATH: "/account"
       SSO_USER_CAN_SELECT_ROLE: "${SIMVA_SSO_USER_CAN_SELECT_ROLE:-true}"
+      SSO_ADMINISTRATOR_CONTACT: "${SIMVA_SSO_ADMINISTRATOR_CONTACT:-contact@administrator.com}"
       SSO_ALLOWED_ROLES: "${SIMVA_SSO_ALLOWED_ROLES:-teacher,teaching-assistant,researcher,student}"
       SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       SSO_CLIENT_ID: "${SIMVA_SIMVA_CLIENT_ID:-simva}"
