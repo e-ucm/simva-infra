@@ -95,7 +95,8 @@ if [[ $ret -ne 0 ]]; then
         | .config["s3.bucket.name"]=$bucketName
           | .config["topics.dir"]=$topicsDir
             | .config["topics"]=$topics
-              | .
+              | .config["flush.size"]=$flushSize
+                | .
 JQ_SCRIPT
 )
   cat ${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json | jq \
@@ -105,6 +106,7 @@ JQ_SCRIPT
   --arg bucketName "${SIMVA_TRACES_BUCKET_NAME}" \
   --arg topicsDir "${SIMVA_SINK_TOPICS_DIR}" \
   --arg topics "${SIMVA_TRACES_TOPIC}" \
+  --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
 
   connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
