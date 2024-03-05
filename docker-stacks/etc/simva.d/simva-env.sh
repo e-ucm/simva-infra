@@ -157,10 +157,6 @@ export SIMVA_SSO_REALM="simva"
 export SIMVA_KEYCLOAK_MYSQL_DATABASE="keycloak"
 export SIMVA_SSO_LOG_LEVEL="info"
 
-export SIMVA_SSO_ALLOWED_ROLES="teacher,teaching-assistant,researcher,student"
-export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
-export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
-
 #################
 # Mail SSO info #
 #################
@@ -222,7 +218,10 @@ export SIMVA_FRONT_MONGO_DB="/simva-front"
 ##############
 export SIMVA_SCRIPT_WAIT_TIME="10"
 export SIMVA_STORAGE_LOCAL_PATH="/storage"
-export SIMVA_SSO_USER_CAN_EDIT_ROLE="true"
+
+export SIMVA_SSO_ALLOWED_ROLES="teacher,teaching-assistant,researcher,student"
+export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
+export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
 
 ##############################
 # SIMVA Trace Allocator INFO #
