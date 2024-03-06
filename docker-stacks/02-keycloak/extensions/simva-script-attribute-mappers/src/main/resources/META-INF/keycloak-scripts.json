@@ -1,9 +1,0 @@
-{
-    "mappers": [
-        {
-            "name": "Policy Role attribute mapper",
-            "fileName": "role-policy_attribute-mapper.js",
-            "description": "Maps the 'policy' role attribute to a token claim 'policy'"
-        }
-    ]
-}

@@ -1635,13 +1635,13 @@
       "id" : "4a93092f-8ee5-40cb-8db6-57b15c8a998f",
       "name" : "policy_role_attribute",
       "protocol" : "openid-connect",
-      "protocolMapper" : "script-role-policy_attribute-mapper.js",
+      "protocolMapper" : "policy-role-attribute-mapper",
       "consentRequired" : false,
       "config" : {
+        "user.attribute": " policy",
         "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "policy",
-        "jsonType.label" : "String",
         "userinfo.token.claim" : "true"
       }
     } ]

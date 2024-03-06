@@ -51,11 +51,18 @@
       </plugin>
     </plugins>
   </build>
+  <properties>
+    <jboss-jaxrs-api_3.5_spec>3.5.1.Final</jboss-jaxrs-api_3.5_spec>
+    <keycloak.version>KEYCLOAKVERSION</keycloak.version>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-core</artifactId>
-      <version>10.0.2</version>
+      <version>${keycloak.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -83,13 +90,13 @@
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-server-spi</artifactId>
-      <version>10.0.2</version>
+      <version>${keycloak.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-server-spi-private</artifactId>
-      <version>10.0.2</version>
+      <version>${keycloak.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -101,7 +108,7 @@
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-services</artifactId>
-      <version>10.0.2</version>
+      <version>${keycloak.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -177,7 +184,7 @@
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-saml-core</artifactId>
-      <version>10.0.2</version>
+      <version>${keycloak.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -197,19 +204,19 @@
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-saml-adapter-core</artifactId>
-      <version>10.0.2</version>
+      <version>${keycloak.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-saml-adapter-api-public</artifactId>
-      <version>10.0.2</version>
+      <version>${keycloak.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-saml-core-public</artifactId>
-      <version>10.0.2</version>
+      <version>${keycloak.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -227,11 +234,4 @@
       </exclusions>
     </dependency>
   </dependencies>
-  <properties>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <jboss-jaxrs-api_2.1_spec>2.0.1.Final</jboss-jaxrs-api_2.1_spec>
-    <keycloak.version>10.0.2</keycloak.version>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
 </project>
