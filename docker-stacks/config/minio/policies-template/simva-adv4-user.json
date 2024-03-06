@@ -1,5 +1,5 @@
 {
-    "Version": "2012-10-17",
+    "Version": "2024-03-06",
     "Statement": [
         {
             "Sid": "AllowListAccessToSpecificStudyFolders",
@@ -17,6 +17,74 @@
             "Effect": "Allow",
             "Action": "s3:GetObject",
             "Resource": "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>/<<SIMVA_SINK_TOPICS_DIR>>/<<SIMVA_TRACES_TOPIC>>/_id=*/*"
+        }, 
+        {
+           "Sid":"AllowGroupToSeeBucketListInTheConsole",
+           "Effect":"Allow",
+           "Action":[
+              "s3:GetBucketLocation",
+              "s3:ListAllMyBuckets"
+           ],
+           "Resource":[
+              "arn:aws:s3:::*"
+           ]
+        },
+        {
+           "Sid":"AllowRootAndUserListingInBucket",
+           "Effect":"Allow",
+           "Action":[
+              "s3:ListBucket"
+           ],
+           "Resource":[
+              "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>"
+           ],
+           "Condition":{
+              "StringEquals":{
+                 "s3:prefix":[
+                    "",
+                    "<<SIMVA_SINK_USERS_DIR>>/"
+                 ]
+              }
+           }
+        },
+        {
+           "Sid":"AllowListingOfUserFolder",
+           "Effect":"Allow",
+           "Action":[
+              "s3:ListBucket"
+           ],
+           "Resource":[
+              "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>"
+           ],
+           "Condition":{
+              "StringLike":{
+                 "s3:prefix":[
+                    "<<SIMVA_SINK_USERS_DIR>>/${jwt:preferred_username}",
+                    "<<SIMVA_SINK_USERS_DIR>>/${jwt:preferred_username}/*"
+                 ]
+              }
+           }
+        },
+        {
+           "Sid":"AllowAllS3ActionsInUserFolderAndSubfolders",
+           "Effect":"Allow",
+           "Action":[
+              "s3:GetObject",
+              "s3:ListBucket"
+           ],
+           "Resource":[
+              "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>/<<SIMVA_SINK_USERS_DIR>>/${jwt:preferred_username}/*"
+           ]
+        },
+        {
+           "Sid":"AllowAllS3ActionsInUserSubfolders",
+           "Effect":"Allow",
+           "Action":[
+              "s3:GetObject"
+           ],
+           "Resource":[
+              "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>/<<SIMVA_SINK_USERS_DIR>>/${jwt:preferred_username}/*/*"
+           ]
         }
     ]
 }
