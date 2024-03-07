@@ -69,7 +69,18 @@
             <artifactId>keycloak-saml-core-public</artifactId>
             <version>${keycloak.version}</version>
             <scope>provided</scope>
-        </dependency>       
+        </dependency>
+        <dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>2.1</version>
+			<!-- <scope>provided</scope> compile time dependency -->
+		</dependency>
+        <dependency>
+            <groupId>fr.sii.keycloak</groupId>
+            <artifactId>json-remote-claim</artifactId>
+            <version>1.0.0</version>
+        </dependency>      
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
