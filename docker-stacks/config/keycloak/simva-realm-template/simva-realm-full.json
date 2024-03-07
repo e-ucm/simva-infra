@@ -64,7 +64,7 @@
       "clientRole" : false,
       "containerId" : "{{ .clients.simva.realmId }}",
       "attributes" : {
-        "policy" : [ "readonly-user-folder-jwt" ]
+        "policy" : [ "simva-adv4-user" ]
       }
     }, {
       "id" : "17c646a4-68eb-4231-abb7-bb8abb830304",
