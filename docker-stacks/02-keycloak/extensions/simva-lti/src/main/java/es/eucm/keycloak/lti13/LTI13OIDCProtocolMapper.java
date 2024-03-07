@@ -22,7 +22,7 @@ import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.provider.ProviderConfigurationBuilder;
 import org.keycloak.representations.IDToken;
 
-import fr.sii.keycloak.JsonRemoteClaimException;
+import es.eucm.keycloak.lti13.JsonRemoteClaimException;
 
 import java.net.MalformedURLException;
 import java.net.URI;
