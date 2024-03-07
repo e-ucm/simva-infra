@@ -4,13 +4,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>es.e-ucm.keycloak</groupId>
-    <artifactId>remote-claims</artifactId>
+    <artifactId>simva-lti</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>simva-lti</name>
+    <name>SIMVA LTI</name>
     <description>OIDC protocol mapper for Keycloak to support IMS LTI 1.3</description>
 
     <properties>
