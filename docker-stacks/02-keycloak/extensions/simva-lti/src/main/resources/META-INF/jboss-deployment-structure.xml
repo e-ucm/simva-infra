@@ -8,6 +8,7 @@
             <module name="org.jboss.logging"/>
             <module name="jakarta.ws.rs.api"/>
             <module name="jersey-client"/>
+            <module name="jersey-hk2"/>
             <module name="com.fasterxml.jackson.core.jackson-databind"/>
         </dependencies>
     </deployment>
