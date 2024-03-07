@@ -24,7 +24,7 @@ for extension in $(find ${EXTENSIONS_DIR} -mindepth 1 -maxdepth 1 -type d); do
             -e MAVEN_CONFIG=/usr/src/mymaven/.m2 \
             maven:3.8.7-openjdk-18-slim sh -c "apt update && apt install -y git && mvn -Duser.home=/usr/src/mymaven clean package"
     fi
-    cp "${extension}/target${extension_name}*.jar" "${SIMVA_DATA_HOME}/keycloak/deployments"
+    cp "${extension}/target${extension_name}.jar" "${SIMVA_DATA_HOME}/keycloak/deployments"
 done
 chmod a+r ${SIMVA_DATA_HOME}/keycloak/deployments
 chmod a+w ${SIMVA_DATA_HOME}/keycloak/deployments
