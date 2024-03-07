@@ -1408,12 +1408,11 @@
       "id" : "6c364893-5d3a-4489-bde6-7942837de38a",
       "name" : "fullname",
       "protocol" : "saml",
-      "protocolMapper" : "saml-javascript-mapper",
+      "protocolMapper" : "saml-user-property-mapper",
       "consentRequired" : false,
       "config" : {
-        "single" : "true",
         "attribute.nameformat" : "Basic",
-        "Script" : "/**\n* Available variables: \n* user - the current user\n* realm - the current realm\n* clientSession - the current clientSession\n* userSession - the current userSession\n* keycloakSession - the current userSession\n*/\nvar firstName = user.getFirstName();\nvar lastName = user.getLastName();\nfirstName + ' ' + lastName;",
+        "user.attribute" : "username",
         "friendly.name" : "User's Full name",
         "attribute.name" : "fullname"
       }
