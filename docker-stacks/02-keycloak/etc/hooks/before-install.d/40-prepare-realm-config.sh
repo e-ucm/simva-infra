@@ -57,7 +57,6 @@ limesurvey_privatekey=$(cat "${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_
 
 function configure_realm_production() {
     generate_realm_data "${STACK_CONF}/realm-data.prod.yml"
-    configure_realm_dir "prod"
     configure_realm_file "prod"
 }
 
@@ -223,25 +222,6 @@ function get_or_generate_username() {
     echo ${client_user}
 }
 
-
-function configure_realm_dir() {
-    if [[  $# -lt 1 ]]; then
-        echo >&2 "missing environment";
-        exit 1;
-    fi
-
-    local environment="${1}"
-
-    gomplate -c ".=file://${STACK_CONF}/realm-data.${environment}.yml" \
-        -f "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-template/simva-realm.json" \
-        -o "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/simva-realm.json"
-
-    gomplate -c ".=file://${STACK_CONF}/realm-data.${environment}.yml" \
-        -f "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-template/simva-users-0.json" \
-        -o "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/simva-users-0.json"
-
-}
-
 function configure_realm_file() {
     if [[  $# -lt 1 ]]; then
         echo >&2 "missing environment";
@@ -258,7 +238,6 @@ function configure_realm_file() {
 
 function configure_realm_development() {
     generate_realm_data "${STACK_CONF}/realm-data.dev.yml"
-    configure_realm_dir "dev"
     configure_realm_file "dev"
 }
 
