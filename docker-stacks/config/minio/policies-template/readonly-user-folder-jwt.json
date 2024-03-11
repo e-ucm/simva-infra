@@ -42,8 +42,8 @@
           "Condition":{
              "StringLike":{
                 "s3:prefix":[
-                   "<<SIMVA_SINK_USERS_DIR>>/${jwt:sub}",
-                   "<<SIMVA_SINK_USERS_DIR>>/${jwt:sub}/*"
+                   "<<SIMVA_SINK_USERS_DIR>>/${jwt:preferred_username}",
+                   "<<SIMVA_SINK_USERS_DIR>>/${jwt:preferred_username}/*"
                 ]
              }
           }
