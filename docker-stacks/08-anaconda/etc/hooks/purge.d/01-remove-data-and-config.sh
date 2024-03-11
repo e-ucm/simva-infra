@@ -12,3 +12,7 @@ rm -rf ./*
 # Removing Anaconda packages data
 cd "${SIMVA_DATA_HOME}/anaconda/packages"
 rm -rf ./*
+
+# Removing Anaconda simva-env data
+cd "${SIMVA_DATA_HOME}/anaconda/simva-env"
+rm -rf ./*

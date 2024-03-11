@@ -18,89 +18,110 @@ networks:
 services:
   anaconda:
     << : *default-opts
-    image: continuumio/anaconda3:2021.05
+    image: continuumio/anaconda3:2024.02-1
     entrypoint: >
       /bin/bash -c '
         set -euo pipefail;
+        # Install gosu
+        apt-get update;
+        apt-get install -y gosu;
+        rm -rf /var/lib/apt/lists/*;
+
+        # Install tini
+        TINI_VERSION="v0.19.0";
+        TINI_DOWNLOAD_URL="https://github.com/krallin/tini/releases/download/$${TINI_VERSION}/tini-amd64";
+        TINI_DOWNLOAD_SHA256SUM_URL="$${TINI_DOWNLOAD_URL}.sha256sum";
+        curl -sSL "$${TINI_DOWNLOAD_URL}" > /tmp/tini-amd64;
+        curl -sSL "$${TINI_DOWNLOAD_SHA256SUM_URL}" > /tmp/sha256sum;
+        pushd /tmp;
+        sha256sum -c sha256sum;
+        popd;
+        mv /tmp/tini-amd64 /usr/local/bin/tini
+        chmod +x /usr/local/bin/tini
+
+        # Anaconda Jupyter install
+        # Check if the group 'anaconda' exists
+        if ! getent group anaconda > /dev/null; then
+            groupadd -r anaconda
+        fi;
+        # Check if the user 'anaconda' exists
+        if ! getent passwd anaconda > /dev/null; then
+            useradd -r -g anaconda -s /bin/bash anaconda
+        fi;
+        if [[ ! -d /home/anaconda ]]; then
+          mkdir /home/anaconda;
+        fi;
+        chown anaconda: -R /home/anaconda;
+        if [[ ! -d /opt/notebooks ]]; then
+          mkdir /opt/notebooks;
+        fi;
+        chown anaconda: -R /opt/notebooks;
 
         # Check if Anaconda has been initialized
         if [[ ! -e /home/anaconda/.jupyter/anaconda-initialized ]]; then
-          # Install gosu
-          apt-get update;
-          apt-get install -y gosu;
-          rm -rf /var/lib/apt/lists/*;
+            # Create and activate simva-env
+            python3 -m venv simva-env
+            source /simva-env/bin/activate
 
-          # Install tini
-          TINI_VERSION="v0.19.0";
-          TINI_DOWNLOAD_URL="https://github.com/krallin/tini/releases/download/$${TINI_VERSION}/tini-amd64";
-          TINI_DOWNLOAD_SHA256SUM_URL="$${TINI_DOWNLOAD_URL}.sha256sum";
-          curl -sSL "$${TINI_DOWNLOAD_URL}" > /tmp/tini-amd64;
-          curl -sSL "$${TINI_DOWNLOAD_SHA256SUM_URL}" > /tmp/sha256sum;
-          pushd /tmp;
-          sha256sum -c sha256sum;
-          popd;
-          mv /tmp/tini-amd64 /usr/local/bin/tini
-          chmod +x /usr/local/bin/tini
-          
-          # Anaconda Jupyter install
-          # Check if the group 'anaconda' exists
-          if ! getent group anaconda > /dev/null; then
-              groupadd -r anaconda
-          fi;
-          # Check if the user 'anaconda' exists
-          if ! getent passwd anaconda > /dev/null; then
-              useradd -r -g anaconda -s /bin/bash anaconda
-          fi;
-          if [[ ! -d /home/anaconda ]]; then
-            mkdir /home/anaconda;
-          fi;
-          chown anaconda: -R /home/anaconda;
-          if [[ ! -d /opt/notebooks ]]; then
-            mkdir /opt/notebooks;
-          fi;
-          chown anaconda: -R /opt/notebooks;
-          # Jupyter ipauth (OAuth2 install)
-          # XXX: Merge request that includes modifications for ipyauth to support keycloak pending for approval from the maintainer.
-          # workaround install local package
-          # pip install ipyauth;
-          pip install /opt/packages/ipyauth.tar.gz
-          /opt/conda/bin/jupyter nbextension enable --py --sys-prefix ipyauth.ipyauth_widget;
-          /opt/conda/bin/jupyter serverextension enable --py --sys-prefix ipyauth.ipyauth_callback;
+            # Anaconda Jupyter install
+            # Upgrade PIP
+            python3 -m pip install --upgrade pip
+            # install notebook
+            python3 -m pip install notebook
+            # install Jupyter server
+            python3 -m pip install jupyter_server
 
-          # Install other dependencies required by the Demo Notebook
-          pip install boto3 jwt;
+            # Jupyter ipauth (OAuth2 install)
+            # XXX: Merge request that includes modifications for ipyauth to support keycloak pending for approval from the maintainer.
+            # workaround install local package
+            # pip install ipyauth;
+            #python3 -m pip install /opt/packages/ipyauth.tar.gz
+            # Install other dependencies required by the Demo Notebook
+            python3 -m pip install boto3 jwt;
 
-          # Paquete a instalar
-          pip install ipympl
-          jupyter nbextension enable ipympl --py --sys-prefix
+            # Install ipympl
+            python3 -m pip install ipympl
 
-          chown -R anaconda: /opt/conda
-          date > /home/anaconda/.jupyter/anaconda-initialized;
-          echo "SIMVA: Anaconda Jupyter installed and initialized"
+            # Install ipyparallel
+            python3 -m pip install ipyparallel
+
+            date > /home/anaconda/.jupyter/anaconda-initialized;
+            echo "SIMVA: Anaconda Jupyter installed and initialized"
         fi;
+
+        chown -R anaconda: /simva-env/bin/;
+        chmod -R u=rxw /simva-env/bin/;
+        
+        /simva-env/bin/jupyter labextension enable ipympl
+        #/simva-env/bin/jupyter labextension enable ipyauth.ipyauth_widget;
+        #/simva-env/bin/jupyter labextension enable ipyauth.ipyauth_callback;
+        ####  Before :
+        ####/opt/conda/bin/jupyter nbextension enable --py --sys-prefix ipyauth.ipyauth_widget;
+        ####/opt/conda/bin/jupyter serverextension enable --py --sys-prefix ipyauth.ipyauth_callback;
 
         # Generate user config folder / file
         if [[ ! -e "/home/anaconda/.jupyter/jupyter_notebook_config.py" ]]; then
-            gosu anaconda /opt/conda/bin/jupyter notebook --generate-config
+            gosu anaconda /simva-env/bin/jupyter notebook --generate-config
         fi;
 
         # Setup password
         export JUPYTER_PASSWORD=$${JUPYTER_PASSWORD:-jupyter};
-        password=$$(python3 -c "from notebook.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
+        password=$$(python3 -c "from jupyter_server.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
         unset JUPYTER_PASSWORD;
         ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
-        sed -r -i -e "s/^#?\s*c.NotebookApp.password\s+=.*/c.NotebookApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
-        
+        sed -r -i -e "s/^#?\s*c.ServerApp.password\s+=.*/c.ServerApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
+
         # Run the Jupyter Notebook
         /usr/local/bin/tini -- $$@
       '
     command:
      - '--'
-     - 'gosu anaconda /opt/conda/bin/jupyter notebook --notebook-dir=/opt/notebooks --ip="0.0.0.0" --port=8888 --no-browser'
+     - 'gosu anaconda /simva-env/bin/jupyter notebook --notebook-dir=/opt/notebooks --ip="0.0.0.0" --port=8888 --no-browser'
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/packages:/opt/packages/
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks:/opt/notebooks/
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/jupyter-config:/home/anaconda/.jupyter/
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/simva-env:/simva-env
 # be advised if minio is launched as a non-root user you need to change this setting
 # Note too that this setting it is only needed if using a non-recognized CA
 # (https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html#install-certificates-from-third-party-cas)
