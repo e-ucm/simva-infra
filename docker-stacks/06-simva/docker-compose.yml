@@ -36,7 +36,7 @@ services:
 
   simva-api:
     << : *default-opts
-    image: node:14
+    image: node:20.9.0-bullseye
     command: bash -c "mkdir -p ${SIMVA_STORAGE_PATH:-/storage} && cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
