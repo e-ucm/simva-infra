@@ -93,7 +93,7 @@ services:
       - KC_HTTP_HOST=0.0.0.0
       - HTTP_ADDRESS_FORWARDING=true
       # PROXY
-      - KC_PROXY=edge
+      - KC_PROXY_HEADERS=xforwarded
       - PROXY_ADDRESS_FORWARDING=true
       # Health and metrics
       - KC_HEALTH_ENABLED=false
