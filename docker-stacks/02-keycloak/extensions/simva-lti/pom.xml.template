@@ -78,6 +78,7 @@
             <version>${keycloak.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
@@ -103,6 +104,7 @@
             <artifactId>resteasy-jaxb-provider</artifactId>
             <version>${jboss-resteasy.version}</version>
         </dependency>
+        -->
         <!--
         <dependency>
             <groupId>io.quarkus</groupId>

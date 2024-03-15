@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/*
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Entity;
@@ -54,7 +55,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
-
+*/
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -317,6 +318,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
 
         return post(url, headers, parameters);
     }
+    */
     
     private Map<String, String> getRequestsParameters(ProtocolMapperModel mappingModel, UserSessionModel userSession,
             ClientSessionContext clientSessionCtx) {
@@ -372,6 +374,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         return headers;
     }
     
+    /*
     private JsonNode get(String url, Map<String, String> headers, Map<String, String> parameters) {
         try {
             URIBuilder uriBuilder = new URIBuilder(url);
@@ -456,6 +459,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             response.close();
         }
     }
+    */
 
     private void logRequest(URI uri, Map<String, String> formParameters) {
         URIBuilder builder = new URIBuilder(uri);
@@ -499,7 +503,6 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         }
         return jsonNode.findValue("access_token").asText();
     }
-    */
 
     private Map<String, String> buildMapFromConfigString(String value) {
         final Map<String, String> map = new HashMap<>();
