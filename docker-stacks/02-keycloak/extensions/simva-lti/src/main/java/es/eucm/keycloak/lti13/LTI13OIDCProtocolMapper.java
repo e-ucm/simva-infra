@@ -488,6 +488,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         }).collect(Collectors.toList());
         LOGGER.debugf("Request: url=%s ; params=%s", debugUrl, debugFormParams.toString());
     }
+    */
 
     private String getClientToken(ProtocolMapperModel mappingModel) {
         // Get headers
@@ -609,5 +610,4 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             return true;
         }
     }
-     */
 }
