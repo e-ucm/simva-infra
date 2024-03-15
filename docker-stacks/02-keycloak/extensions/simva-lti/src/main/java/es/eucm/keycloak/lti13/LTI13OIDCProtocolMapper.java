@@ -36,12 +36,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.ResponseProcessingException;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+
 /*
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -112,7 +116,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
      */
     private final static String LTI13_CLAIMS_ATTR = "lti13-claims";
     
-    //private static ResteasyClient CLIENT;
+    private static Client CLIENT;
 
     static {
         // @formatter:off
@@ -205,7 +209,8 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         .build();
         // @formatter:on
         OIDCAttributeMapperHelper.addAttributeConfig(configProperties, LTI13OIDCProtocolMapper.class);
-
+        
+        //CLIENT = ClientBuilder.newClient();
         //CLIENT = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).build();
         MAPPER = new ObjectMapper();
     }
@@ -424,10 +429,12 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         if (LOGGER.isDebugEnabled()) {
             logRequest(uri, formParameters);
         }
-
+        
+        //WebTarget target = CLIENT.target(url);
         ResteasyWebTarget target = CLIENT.target(url);
         Response response;
         try {
+            Invocation.Builder builder = target.request(MediaType.APPLICATION_JSON);
             ClientInvocation.Builder builder = target.request(MediaType.APPLICATION_JSON);
             // Build headers
             for (Map.Entry<String, String> header : headers.entrySet()) {
