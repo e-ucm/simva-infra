@@ -364,7 +364,8 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
 
         return parameters;
     }
-  
+   
+    /*
     private Map<String, String> getHeaders(ProtocolMapperModel mappingModel, UserSessionModel userSession,
             ClientSessionContext clientSessionCtx) {
         final String configuredHeaders = mappingModel.getConfig().get(PLATFORM_HEADERS);
@@ -379,7 +380,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         return headers;
     }
   
-    /*
+   
     private JsonNode get(String url, Map<String, String> headers, Map<String, String> parameters) {
         try {
             URIBuilder uriBuilder = new URIBuilder(url);
