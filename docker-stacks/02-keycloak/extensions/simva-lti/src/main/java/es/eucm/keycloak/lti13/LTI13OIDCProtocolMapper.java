@@ -38,22 +38,25 @@ import java.util.stream.Collectors;
 
 
 import jakarta.ws.rs.HttpMethod;
-/*
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.ResponseProcessingException;
+/*
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+*/
+
 import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
+/*
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 */
@@ -361,7 +364,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
 
         return parameters;
     }
-    /*
+  
     private Map<String, String> getHeaders(ProtocolMapperModel mappingModel, UserSessionModel userSession,
             ClientSessionContext clientSessionCtx) {
         final String configuredHeaders = mappingModel.getConfig().get(PLATFORM_HEADERS);
@@ -375,7 +378,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         }
         return headers;
     }
-    */
+  
     /*
     private JsonNode get(String url, Map<String, String> headers, Map<String, String> parameters) {
         try {
