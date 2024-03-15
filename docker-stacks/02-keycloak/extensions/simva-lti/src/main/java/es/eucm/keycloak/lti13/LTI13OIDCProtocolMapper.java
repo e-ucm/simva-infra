@@ -289,12 +289,8 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             //HttpRequest req = context.getHttpRequest();
             //org.jboss.resteasy.spi.HttpRequest req = ctx.getContextObject(org.jboss.resteasy.spi.HttpRequest.class);
             HttpServletRequest req = ctx.getContextObject(HttpServletRequest.class);
-            MultivaluedMap<String, String> params;
-            if(HttpMethod.GET.equals(req.getHttpMethod())) {
-                params = req.getUri().getQueryParameters();
-            } else {
-                params = req.getFormParameters();
-            }
+            MultivaluedMap<String, String[]> params;
+            params = req.getParameterMap();
             //claims = getClaims(params, mappingModel, userSession, clientSessionCtx);
             clientSessionCtx.setAttribute(LTI13_CLAIMS_ATTR, claims);
         }
