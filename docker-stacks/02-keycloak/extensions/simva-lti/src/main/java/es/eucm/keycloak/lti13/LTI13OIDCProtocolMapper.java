@@ -283,22 +283,22 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession,
             KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx) {
         JsonNode claims = clientSessionCtx.getAttribute(LTI13_CLAIMS_ATTR, JsonNode.class);
-        /*
+        
         if (claims == null) {
             KeycloakContext ctx = keycloakSession.getContext();
             //HttpRequest req = context.getHttpRequest();
             //org.jboss.resteasy.spi.HttpRequest req = ctx.getContextObject(org.jboss.resteasy.spi.HttpRequest.class);
-            HttpRequest req = ctx.getContextObject(BaseHttpRequest.class);
+            HttpServletRequest req = ctx.getContextObject(HttpServletRequest.class);
             MultivaluedMap<String, String> params;
             if(HttpMethod.GET.equals(req.getHttpMethod())) {
                 params = req.getUri().getQueryParameters();
             } else {
                 params = req.getFormParameters();
             }
-            claims = getClaims(params, mappingModel, userSession, clientSessionCtx);
+            //claims = getClaims(params, mappingModel, userSession, clientSessionCtx);
             clientSessionCtx.setAttribute(LTI13_CLAIMS_ATTR, claims);
         }
-
+        /*
         String protocolClaim = mappingModel.getConfig().get(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME);
         if (protocolClaim != null && ! protocolClaim.isEmpty()) {
             OIDCAttributeMapperHelper.mapClaim(token, mappingModel, claims);
