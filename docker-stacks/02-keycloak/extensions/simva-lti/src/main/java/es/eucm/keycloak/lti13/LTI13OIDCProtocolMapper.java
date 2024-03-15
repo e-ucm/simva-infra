@@ -23,6 +23,7 @@ import org.keycloak.provider.ProviderConfigurationBuilder;
 import org.keycloak.representations.IDToken;
 
 import es.eucm.keycloak.lti13.JsonRemoteClaimException;
+import es.eucm.keycloak.lti13.ConfigParameterParseException;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -265,11 +266,12 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
     public String getHelpText() {
         return "Add required claims for a LTI 1.3";
     }
-    /*
+
+
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession,
             KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx) {
-
+        /*
         JsonNode claims = clientSessionCtx.getAttribute(LTI13_CLAIMS_ATTR, JsonNode.class);
         if (claims == null) {
             KeycloakContext ctx = keycloakSession.getContext();
@@ -293,8 +295,10 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             Map<String, Object> mapClaims = MAPPER.convertValue(claims, new TypeReference<Map<String, Object>>() {});
             token.getOtherClaims().putAll(mapClaims);
         }
+        */
     }
-
+    
+    /*
     private JsonNode getClaims(MultivaluedMap<String, String> reqParameters, ProtocolMapperModel mappingModel,
             UserSessionModel userSession, ClientSessionContext clientSessionCtx) {
         // Get parameters
@@ -427,14 +431,12 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             }
             
         } catch(ResponseProcessingException e) {
-            /* In case processing of a received HTTP response fails (e.g. in a
-             * filter or during conversion of the response entity data to an 
-             * instance of a particular Java type).
-             */
+            //In case processing of a received HTTP response fails (e.g. in a
+            //filter or during conversion of the response entity data to an 
+            //instance of a particular Java type).
             throw new JsonRemoteClaimException("Error when accessing remote claim", url, e);
         } catch(ProcessingException e) {
-            /* In case the request processing or subsequent I/O operation fails.
-             */
+            //In case the request processing or subsequent I/O operation fails.
             throw new JsonRemoteClaimException("Error when accessing remote claim", url, e);
         }
 
@@ -498,6 +500,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         return jsonNode.findValue("access_token").asText();
     }
     */
+
     private Map<String, String> buildMapFromConfigString(String value) {
         final Map<String, String> map = new HashMap<>();
 
