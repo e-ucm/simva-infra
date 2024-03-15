@@ -60,6 +60,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 
+import jakarta.servlet.http.HttpServletRequest;
 /*
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
