@@ -116,12 +116,12 @@
             <artifactId>quarkus-rest-client-reactive</artifactId>
             <version>${quarkus-keycloak.version}</version>
         </dependency>
-        -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive</artifactId>
             <version>${quarkus-keycloak.version}</version>
         </dependency>
+        -->
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
