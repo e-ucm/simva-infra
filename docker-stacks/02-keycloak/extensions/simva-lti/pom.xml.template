@@ -78,14 +78,11 @@
             <version>${keycloak.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
             <version>${jakarta-api.version}</version>
         </dependency>
-        -->
-        <!--
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
@@ -96,7 +93,17 @@
             <artifactId>resteasy-client</artifactId>
             <version>${jboss-resteasy.version}</version>
         </dependency> 
-        -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-html</artifactId>
+            <version>${jboss-resteasy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
+            <version>${jboss-resteasy.version}</version>
+        </dependency>
+        <!--
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-keycloak-admin-client</artifactId>
@@ -111,17 +118,6 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive</artifactId>
             <version>${quarkus-keycloak.version}</version>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-html</artifactId>
-            <version>${jboss-resteasy.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>${jboss-resteasy.version}</version>
         </dependency>
         -->
     </dependencies>
@@ -172,18 +168,6 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

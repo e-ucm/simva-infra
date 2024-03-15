@@ -265,7 +265,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
     public String getHelpText() {
         return "Add required claims for a LTI 1.3";
     }
-
+    /*
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession,
             KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx) {
@@ -275,7 +275,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             KeycloakContext ctx = keycloakSession.getContext();
             //HttpRequest req = context.getHttpRequest();
             //org.jboss.resteasy.spi.HttpRequest req = ctx.getContextObject(org.jboss.resteasy.spi.HttpRequest.class);
-            HttpRequest req = ctx.getContextObject(org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest.class);
+            HttpRequest req = ctx.getContextObject(BaseHttpRequest.class);
             MultivaluedMap<String, String> params;
             if(HttpMethod.GET.equals(req.getHttpMethod())) {
                 params = req.getUri().getQueryParameters();
@@ -497,7 +497,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         }
         return jsonNode.findValue("access_token").asText();
     }
-    
+    */
     private Map<String, String> buildMapFromConfigString(String value) {
         final Map<String, String> map = new HashMap<>();
 
