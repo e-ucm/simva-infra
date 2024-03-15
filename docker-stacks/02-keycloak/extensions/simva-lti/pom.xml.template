@@ -83,7 +83,7 @@
             <artifactId>jakarta.ws.rs-api</artifactId>
             <version>${jakarta-api.version}</version>
         </dependency>
-       
+         <!--       
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
@@ -94,19 +94,17 @@
             <artifactId>resteasy-client</artifactId>
             <version>${jboss-resteasy.version}</version>
         </dependency> 
-         <!--
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-html</artifactId>
             <version>${jboss-resteasy.version}</version>
         </dependency>
-        -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
             <version>${jboss-resteasy.version}</version>
         </dependency>
-        
+         -->       
         <!--
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -118,12 +116,12 @@
             <artifactId>quarkus-rest-client-reactive</artifactId>
             <version>${quarkus-keycloak.version}</version>
         </dependency>
+        -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive</artifactId>
             <version>${quarkus-keycloak.version}</version>
         </dependency>
-        -->
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
