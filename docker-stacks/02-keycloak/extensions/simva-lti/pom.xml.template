@@ -78,12 +78,12 @@
             <version>${keycloak.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
             <version>${jakarta-api.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
