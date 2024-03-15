@@ -100,12 +100,13 @@
             <artifactId>resteasy-html</artifactId>
             <version>${jboss-resteasy.version}</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
             <version>${jboss-resteasy.version}</version>
         </dependency>
-        -->
+        
         <!--
         <dependency>
             <groupId>io.quarkus</groupId>
