@@ -46,25 +46,25 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 
+import jakarta.inject.Inject;
+
 /*
+import org.glassfish.jersey.client.JerseyClientBuilder;
+import org.glassfish.jersey.client.JerseyClient;
+*/
+
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
- */
 
 import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.Response;
 
 import jakarta.servlet.http.HttpServletRequest;
-/*
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.plugins.server.BaseHttpRequest;
-*/
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -117,6 +117,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
      */
     private final static String LTI13_CLAIMS_ATTR = "lti13-claims";
     
+    //@Inject
     private static Client CLIENT;
 
     static {
@@ -210,9 +211,11 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         .build();
         // @formatter:on
         OIDCAttributeMapperHelper.addAttributeConfig(configProperties, LTI13OIDCProtocolMapper.class);
-        
         //CLIENT = ClientBuilder.newClient();
-        //CLIENT = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).build();
+        //JerseyClientBuilder builder = new JerseyClientBuilder();
+        //CLIENT = builder.createClient();
+        //ResteasyClientBuilderImpl builder = new ResteasyClientBuilderImpl();
+        //CLIENT = builder.build();
         MAPPER = new ObjectMapper();
     }
 
@@ -286,15 +289,21 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         
         if (claims == null) {
             KeycloakContext ctx = keycloakSession.getContext();
-            //HttpRequest req = context.getHttpRequest();
-            //org.jboss.resteasy.spi.HttpRequest req = ctx.getContextObject(org.jboss.resteasy.spi.HttpRequest.class);
             HttpServletRequest req = ctx.getContextObject(HttpServletRequest.class);
-            MultivaluedMap<String, String> params;
-            params = req.getParameterMap();
-            //claims = getClaims(params, mappingModel, userSession, clientSessionCtx);
+            MultivaluedMap<String, String> params = new MultivaluedHashMap<>();
+            Map<String, String[]> map = req.getParameterMap();
+            // Iterate over the entries of the map
+            for(String key : map.keySet()) {
+                String[] valuesArray = map.get(key);
+                // Iterate over the values array and add each value to the MultivaluedMap
+                for(String value : valuesArray) {
+                    params.add(key, value);
+                }
+            }
+            claims = getClaims(params, mappingModel, userSession, clientSessionCtx);
             clientSessionCtx.setAttribute(LTI13_CLAIMS_ATTR, claims);
         }
-        /*
+        
         String protocolClaim = mappingModel.getConfig().get(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME);
         if (protocolClaim != null && ! protocolClaim.isEmpty()) {
             OIDCAttributeMapperHelper.mapClaim(token, mappingModel, claims);
@@ -302,11 +311,9 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             Map<String, Object> mapClaims = MAPPER.convertValue(claims, new TypeReference<Map<String, Object>>() {});
             token.getOtherClaims().putAll(mapClaims);
         }
-        */
         OIDCAttributeMapperHelper.mapClaim(token, mappingModel, claims);
     }
     
-    /*
     private JsonNode getClaims(MultivaluedMap<String, String> reqParameters, ProtocolMapperModel mappingModel,
             UserSessionModel userSession, ClientSessionContext clientSessionCtx) {
         // Get parameters
@@ -325,7 +332,6 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
 
         return post(url, headers, parameters);
     }
-    */
     
     private Map<String, String> getRequestsParameters(ProtocolMapperModel mappingModel, UserSessionModel userSession,
             ClientSessionContext clientSessionCtx) {
@@ -366,8 +372,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
 
         return parameters;
     }
-   
-    /*
+
     private Map<String, String> getHeaders(ProtocolMapperModel mappingModel, UserSessionModel userSession,
             ClientSessionContext clientSessionCtx) {
         final String configuredHeaders = mappingModel.getConfig().get(PLATFORM_HEADERS);
@@ -381,8 +386,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         }
         return headers;
     }
-  
-   
+    
     private JsonNode get(String url, Map<String, String> headers, Map<String, String> parameters) {
         try {
             URIBuilder uriBuilder = new URIBuilder(url);
@@ -427,12 +431,10 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             logRequest(uri, formParameters);
         }
         
-        //WebTarget target = CLIENT.target(url);
-        ResteasyWebTarget target = CLIENT.target(url);
+        WebTarget target = CLIENT.target(url);
         Response response;
         try {
             Invocation.Builder builder = target.request(MediaType.APPLICATION_JSON);
-            ClientInvocation.Builder builder = target.request(MediaType.APPLICATION_JSON);
             // Build headers
             for (Map.Entry<String, String> header : headers.entrySet()) {
                 builder.header(header.getKey(), header.getValue());
@@ -469,8 +471,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             response.close();
         }
     }
-    */
-    /*
+    
     private void logRequest(URI uri, Map<String, String> formParameters) {
         URIBuilder builder = new URIBuilder(uri);
         List<NameValuePair> queryParams = builder.getQueryParams().stream().map((nvp) -> {
@@ -513,7 +514,6 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         }
         return jsonNode.findValue("access_token").asText();
     }
-    */
     
     private Map<String, String> buildMapFromConfigString(String value) {
         final Map<String, String> map = new HashMap<>();

@@ -15,10 +15,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <keycloak.version>KEYCLOAKVERSION</keycloak.version>
-        <jboss-resteasy.version>6.2.7.Final</jboss-resteasy.version>
-        <quarkus-keycloak.version>3.8.1</quarkus-keycloak.version>
-        <!-- <quarkus-keycloak.version>3.2.0.Final</quarkus-keycloak.version> -->
-        <jakarta-api.version>3.1.0</jakarta-api.version>
+        <!--<jersey.version>3.1.5</jersey.version>-->
+        <jakarta-servlet.version>6.1.0-M2</jakarta-servlet.version>
+        <!--<jakarta.version>3.1.0</jakarta.version>-->
+        <quarkus-keycloak.version>3.2.0.Final</quarkus-keycloak.version>
+        <!--<jboss-resteasy.version>6.2.7.Final</jboss-resteasy.version>-->
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
@@ -78,56 +79,82 @@
             <version>${keycloak.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- provided jakarta dependencies -->
+        <!--
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>${jakarta-api.version}</version>
+            <version>${jakarta.version}</version>
+            <scope>provided</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.1.0-M2</version>
+            <version>${jakarta-servlet.version}</version>
+            <!-- <scope>provided</scope>-->
+        </dependency>
+        <!-- provided jersey dependencies -->
+        <!--
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.version}</version>
             <scope>provided</scope>
         </dependency>
-         <!--       
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-core</artifactId>
-            <version>${jboss-resteasy.version}</version>
-        </dependency> 
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${jersey.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-binding</artifactId>
+            <version>${jersey.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
+        <!-- provided resteasy dependencies -->
+        <!--
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
             <version>${jboss-resteasy.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-core</artifactId>
+            <version>${jboss-resteasy.version}</version>
+            <scope>provided</scope>
         </dependency> 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-html</artifactId>
             <version>${jboss-resteasy.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
             <version>${jboss-resteasy.version}</version>
+            <scope>provided</scope>
         </dependency>
-         -->       
-        <!--
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-keycloak-admin-client</artifactId>
-            <version>${quarkus-keycloak.version}</version>
-        </dependency>
+        -->
+        <!-- provided quarkus dependencies -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-client-reactive</artifactId>
             <version>${quarkus-keycloak.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive</artifactId>
             <version>${quarkus-keycloak.version}</version>
+            <scope>provided</scope>
         </dependency>
-        -->
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -136,17 +163,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.12.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.5.2</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -161,7 +188,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Dependencies>org.keycloak.keycloak-core,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,org.keycloak.keycloak-services</Dependencies>
+                            <Dependencies>org.keycloak.keycloak-core,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,org.keycloak.keycloak-services,io.quarkus.quarkus-rest-client-reactive,io.quarkus.quarkus-resteasy-reactive</Dependencies>
                         </manifestEntries>
                     </archive>
                 </configuration>
