@@ -94,12 +94,12 @@ services:
             echo "SIMVA: Anaconda Jupyter installed and initialized"
         fi;
 
-        chown -R anaconda: /simva-env/bin/;
-        chmod -R u=rxw /simva-env/bin/;
+        chown -R anaconda: /simva-env/;
+        chmod -R u=rxw /simva-env/
         
-        /simva-env/bin/jupyter labextension enable ipympl
-        #/simva-env/bin/jupyter labextension enable ipyauth.ipyauth_widget;
-        #/simva-env/bin/jupyter labextension enable ipyauth.ipyauth_callback;
+        /simva-env/bin/jupyter server extension enable --py ipympl
+        #/simva-env/bin/jupyter server extension enable --py ipyauth.ipyauth_widget;
+        #/simva-env/bin/jupyter server extension enable --py ipyauth.ipyauth_callback;
 
         ####  Before :
         #/simva-env/bin/jupyter nbextension enable ipympl --py --sys-prefix
