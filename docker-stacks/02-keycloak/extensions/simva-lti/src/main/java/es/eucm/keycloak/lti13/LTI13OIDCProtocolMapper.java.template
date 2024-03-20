@@ -514,8 +514,8 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         parameters.put("client_id", mappingModel.getConfig().get(CLIENT_AUTH_ID));
         parameters.put("client_secret", mappingModel.getConfig().get(CLIENT_AUTH_PASS));
         keycloak = KeycloakBuilder.builder()
-            .serverUrl("https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}")
-            .realm("${SIMVA_SSO_REALM}")
+            .serverUrl("https://<<SIMVA_SSO_HOST_SUBDOMAIN>>.<<SIMVA_EXTERNAL_DOMAIN>>")
+            .realm("<<SIMVA_SSO_REALM>>")
             .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
             .clientId(mappingModel.getConfig().get(CLIENT_AUTH_ID))
             .clientSecret(mappingModel.getConfig().get(CLIENT_AUTH_PASS))
