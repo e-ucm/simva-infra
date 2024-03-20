@@ -65,39 +65,47 @@ services:
 
             # Anaconda Jupyter install
             # Upgrade PIP
-            python3 -m pip install --upgrade pip
+            /simva-env/bin/python3 -m pip install --upgrade pip
             # install notebook
-            python3 -m pip install notebook
+            /simva-env/bin/python3 -m pip install notebook
             # install Jupyter server
-            python3 -m pip install jupyter_server
+            /simva-env/bin/python3 -m pip install jupyter_server
 
             # Jupyter ipauth (OAuth2 install)
             # XXX: Merge request that includes modifications for ipyauth to support keycloak pending for approval from the maintainer.
             # workaround install local package
             # pip install ipyauth;
-            #python3 -m pip install /opt/packages/ipyauth.tar.gz
+            # /simva-env/bin/python3 -m pip install /opt/packages/ipyauth.tar.gz
             # Install other dependencies required by the Demo Notebook
-            python3 -m pip install boto3 jwt;
+            /simva-env/bin/python3 -m pip install boto3 jwt;
 
             # Install ipympl
-            python3 -m pip install ipympl
+            /simva-env/bin/python3 -m pip install ipympl
 
             # Install ipyparallel
-            python3 -m pip install ipyparallel
+            /simva-env/bin/python3 -m pip install ipyparallel
+            
+            # Install requirements for tmon
+            if [[ -e /opt/notebooks/t-mon/requirements.txt ]]; then
+              /simva-env/bin/python3 -m pip install -r /opt/notebooks/t-mon/requirements.txt
+            fi;
 
             date > /home/anaconda/.jupyter/anaconda-initialized;
             echo "SIMVA: Anaconda Jupyter installed and initialized"
         fi;
 
-        chown -R anaconda: /simva-env/bin/;
-        chmod -R u=rxw /simva-env/bin/;
+        chown -R anaconda: /simva-env/;
+        chmod -R u=rxw /simva-env/
         
-        /simva-env/bin/jupyter labextension enable ipympl
-        #/simva-env/bin/jupyter labextension enable ipyauth.ipyauth_widget;
-        #/simva-env/bin/jupyter labextension enable ipyauth.ipyauth_callback;
+        /simva-env/bin/jupyter server extension enable --py --sys-prefix ipympl;
+        /simva-env/bin/jupyter server extension enable --py --sys-prefix widgetsnbextension;
+        #/simva-env/bin/jupyter server extension enable --py ipyauth.ipyauth_widget;
+        #/simva-env/bin/jupyter server extension enable --py ipyauth.ipyauth_callback;
+        
         ####  Before :
-        ####/opt/conda/bin/jupyter nbextension enable --py --sys-prefix ipyauth.ipyauth_widget;
-        ####/opt/conda/bin/jupyter serverextension enable --py --sys-prefix ipyauth.ipyauth_callback;
+        #/simva-env/bin/jupyter nbextension enable ipympl --py --sys-prefix
+        #/simva-env/bin/jupyter nbextension enable --py --sys-prefix ipyauth.ipyauth_widget;
+        #/simva-env/bin/jupyter serverextension enable --py --sys-prefix ipyauth.ipyauth_callback;
 
         # Generate user config folder / file
         if [[ ! -e "/home/anaconda/.jupyter/jupyter_notebook_config.py" ]]; then
@@ -106,17 +114,23 @@ services:
 
         # Setup password
         export JUPYTER_PASSWORD=$${JUPYTER_PASSWORD:-jupyter};
-        password=$$(python3 -c "from jupyter_server.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
+        password=$$(/simva-env/bin/python3 -c "from jupyter_server.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
         unset JUPYTER_PASSWORD;
         ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
         sed -r -i -e "s/^#?\s*c.ServerApp.password\s+=.*/c.ServerApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
+        
+        #BEFORE 
+        #password=$$(/simva-env/bin/python3 -c "from notebook.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
+        #unset JUPYTER_PASSWORD;
+        #ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
+        #sed -r -i -e "s/^#?\s*c.NotebookApp.password\s+=.*/c.NotebookApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
 
         # Run the Jupyter Notebook
         /usr/local/bin/tini -- $$@
       '
     command:
      - '--'
-     - 'gosu anaconda /simva-env/bin/jupyter notebook --notebook-dir=/opt/notebooks --ip="0.0.0.0" --port=8888 --no-browser'
+     - 'gosu anaconda /simva-env/bin/jupyter server --notebook-dir=/opt/notebooks --ip="0.0.0.0" --port=8888 --no-browser'
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/packages:/opt/packages/
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks:/opt/notebooks/
