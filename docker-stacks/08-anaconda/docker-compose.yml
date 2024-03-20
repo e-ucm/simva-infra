@@ -18,7 +18,7 @@ networks:
 services:
   anaconda:
     << : *default-opts
-    image: continuumio/anaconda3:2021.05
+    image: continuumio/anaconda3:2024.02-1
     entrypoint: >
       /bin/bash -c '
         set -euo pipefail;
@@ -97,12 +97,12 @@ services:
         chown -R anaconda: /simva-env/bin/;
         chmod -R u=rxw /simva-env/bin/;
         
-        #/simva-env/bin/jupyter labextension enable ipympl
+        /simva-env/bin/jupyter labextension enable ipympl
         #/simva-env/bin/jupyter labextension enable ipyauth.ipyauth_widget;
         #/simva-env/bin/jupyter labextension enable ipyauth.ipyauth_callback;
 
         ####  Before :
-        /simva-env/bin/jupyter nbextension enable ipympl --py --sys-prefix
+        #/simva-env/bin/jupyter nbextension enable ipympl --py --sys-prefix
         #/simva-env/bin/jupyter nbextension enable --py --sys-prefix ipyauth.ipyauth_widget;
         #/simva-env/bin/jupyter serverextension enable --py --sys-prefix ipyauth.ipyauth_callback;
 
@@ -113,23 +113,23 @@ services:
 
         # Setup password
         export JUPYTER_PASSWORD=$${JUPYTER_PASSWORD:-jupyter};
-        #password=$$(/simva-env/bin/python3 -c "from jupyter_server.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
-        #unset JUPYTER_PASSWORD;
-        #ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
-        #sed -r -i -e "s/^#?\s*c.ServerApp.password\s+=.*/c.ServerApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
-        
-        #BEFORE 
-        password=$$(/simva-env/bin/python3 -c "from notebook.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
+        password=$$(/simva-env/bin/python3 -c "from jupyter_server.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
         unset JUPYTER_PASSWORD;
         ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
-        sed -r -i -e "s/^#?\s*c.NotebookApp.password\s+=.*/c.NotebookApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
+        sed -r -i -e "s/^#?\s*c.ServerApp.password\s+=.*/c.ServerApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
+        
+        #BEFORE 
+        #password=$$(/simva-env/bin/python3 -c "from notebook.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
+        #unset JUPYTER_PASSWORD;
+        #ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
+        #sed -r -i -e "s/^#?\s*c.NotebookApp.password\s+=.*/c.NotebookApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
 
         # Run the Jupyter Notebook
         /usr/local/bin/tini -- $$@
       '
     command:
      - '--'
-     - 'gosu anaconda /simva-env/bin/jupyter notebook --notebook-dir=/opt/notebooks --ip="0.0.0.0" --port=8888 --no-browser'
+     - 'gosu anaconda /simva-env/bin/jupyter server --notebook-dir=/opt/notebooks --ip="0.0.0.0" --port=8888 --no-browser'
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/packages:/opt/packages/
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks:/opt/notebooks/
