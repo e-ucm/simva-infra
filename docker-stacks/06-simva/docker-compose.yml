@@ -183,6 +183,8 @@ services:
       LIMESURVEY_PORT: "443"
       LIMESURVEY_ADMIN_USER: "${SIMVA_LIMESURVEY_ADMIN_USER:-admin}"
       LIMESURVEY_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-secret}"
+      #LTI 
+      LTI_ENABLED: "${SIMVA_LTI_ENABLED:-false}"
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro

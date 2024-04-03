@@ -223,6 +223,8 @@ export SIMVA_SSO_ALLOWED_ROLES="teacher,teaching-assistant,researcher,student"
 export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
 export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
 
+export SIMVA_LTI_ENABLED="false"
+
 ##############################
 # SIMVA Trace Allocator INFO #
 ##############################
@@ -337,10 +339,6 @@ export SIMVA_LIMESURVEY_CLIENT_ID="limesurvey"
 # MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_MINIO_CLIENT_ID="minio"
 #export SIMVA_MINIO_CLIENT_SECRET="secret"
-
-# LTI TOOL ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_LTI_TOOL_CLIENT_ID="lti_tool"
-#export SIMVA_LTI_TOOL_CLIENT_SECRET="secret"
 
 # Jupyter ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_JUPYTER_CLIENT_ID="jupyter"
