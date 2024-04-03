@@ -529,7 +529,7 @@
     "clientId" : "{{ .clients.limesurvey.clientId }}",
     "surrogateAuthRequired" : false,
     "enabled" : true,
-    "alwaysDisplayInConsole" : false,
+    "alwaysDisplayInConsole" : true,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "{{ .clients.limesurvey.secret }}",
     "baseUrl": "{{ .clients.limesurvey.baseUrl }}/admin",
@@ -574,7 +574,7 @@
     "adminUrl" : "{{ .clients.minio.baseUrl }}",
     "surrogateAuthRequired" : false,
     "enabled" : true,
-    "alwaysDisplayInConsole" : false,
+    "alwaysDisplayInConsole" : true,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "{{ .clients.minio.secret }}",
     "redirectUris" : [ "{{ .clients.minio.baseUrl }}/*" ],
@@ -691,7 +691,7 @@
     "baseUrl" : "{{ .clients.simva.baseUrl }}",
     "surrogateAuthRequired" : false,
     "enabled" : true,
-    "alwaysDisplayInConsole" : false,
+    "alwaysDisplayInConsole" : true,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "{{ .clients.simva.secret }}",
     "redirectUris" : [ "{{ .clients.simva.baseUrl }}/*" ],
@@ -782,140 +782,11 @@
       "microprofile-jwt"
     ]
   }, {
-    "id": "bb87edf1-7ef9-4fbb-a8ec-eef0a5a48ddf",
-    "clientId": "{{ .clients.lti_tool.clientId }}",
-    "surrogateAuthRequired": false,
-    "enabled": true,
-    "alwaysDisplayInConsole": false,
-    "clientAuthenticatorType": "client-jwt",
-    "secret": "{{ .clients.lti_tool.secret }}",
-    "baseUrl" : "{{ .clients.simva.baseUrl }}/lti/",
-    "redirectUris": [
-      "{{ .clients.simva.baseUrl }}/lti/"
-    ],
-    "webOrigins": [],
-    "notBefore": 0,
-    "bearerOnly": false,
-    "consentRequired": false,
-    "standardFlowEnabled": true,
-    "implicitFlowEnabled": true,
-    "directAccessGrantsEnabled": false,
-    "serviceAccountsEnabled": true,
-    "publicClient": false,
-    "frontchannelLogout": false,
-    "protocol": "openid-connect",
-    "attributes": {
-      "saml.assertion.signature": "false",
-      "saml.force.post.binding": "false",
-      "saml.multivalued.roles": "false",
-      "saml.encrypt": "false",
-      "use.jwks.url": "true",
-      "saml.server.signature": "false",
-      "saml.server.signature.keyinfo.ext": "false",
-      "exclude.session.state.from.auth.response": "false",
-      "jwks.url": "{{ .clients.simva.baseUrl }}/lti/keys",
-      "saml_force_name_id_format": "false",
-      "saml.clients.signature": "false",
-      "tls.clients.certificate.bound.access.tokens": "false",
-      "saml.authnstatement": "false",
-      "display.on.consent.screen": "false",
-      "saml.onetimeuse.condition": "false"
-    },
-    "authenticationFlowBindingOverrides": {},
-    "fullScopeAllowed": true,
-    "nodeReRegistrationTimeout": -1,
-    "protocolMappers": [
-      {
-        "id": "5bf650a1-094a-45dc-9258-a4ef666ee667",
-        "name": "Client Host",
-        "protocol": "openid-connect",
-        "protocolMapper": "oidc-usersessionmodel-note-mapper",
-        "consentRequired": false,
-        "config": {
-          "user.session.note": "clientHost",
-          "userinfo.token.claim": "true",
-          "id.token.claim": "true",
-          "access.token.claim": "true",
-          "claim.name": "clientHost",
-          "jsonType.label": "String"
-        }
-      },
-      {
-        "id": "b0a20132-f352-4cd2-ade9-64fb2e1659ae",
-        "name": "Client IP Address",
-        "protocol": "openid-connect",
-        "protocolMapper": "oidc-usersessionmodel-note-mapper",
-        "consentRequired": false,
-        "config": {
-          "user.session.note": "clientAddress",
-          "userinfo.token.claim": "true",
-          "id.token.claim": "true",
-          "access.token.claim": "true",
-          "claim.name": "clientAddress",
-          "jsonType.label": "String"
-        }
-      },
-      {
-        "id": "3c9f6667-3904-49e1-a324-e8051d4f1799",
-        "name": "Client ID",
-        "protocol": "openid-connect",
-        "protocolMapper": "oidc-usersessionmodel-note-mapper",
-        "consentRequired": false,
-        "config": {
-          "user.session.note": "clientId",
-          "userinfo.token.claim": "true",
-          "id.token.claim": "true",
-          "access.token.claim": "true",
-          "claim.name": "clientId",
-          "jsonType.label": "String"
-        }
-      },
-      {
-        "id": "38d30c7f-94b8-4581-8c08-0f8aedde8c11",
-        "name": "lti-mapper",
-        "protocol": "openid-connect",
-        "protocolMapper": "oidc-lti13-mapper",
-        "consentRequired": false,
-        "config": {
-          "lti3_platform.auth.id": "SIMVA_CLIENT_ID",
-          "lti3_platform.url": "{{ .clients.simva.baseUrl }}/lti/claims",
-          "lti3_platform.auth.url": "{{ .clients.simva.ssoUrl }}/realms/{{ .clients.simva.realmId }}/protocol/openid-connect/token",
-          "lti3_platform.headers.bearer.token": "false",
-          "access.token.claim": "true",
-          "lti3_platform.auth.pass": "SIMVA_CLIENT_PASSWORD",
-          "jsonType.label": "JSON",
-          "lti3_platform.parameters.method": "GET",
-          "lti3_platform.parameters.clientid": "true",
-          "userinfo.token.claim": "true",
-          "id.token.claim": "true",
-          "lti3_platform.parameters.username": "true"
-        }
-      }
-    ],
-    "defaultClientScopes": [
-      "web-origins",
-      "role_list",
-      "profile",
-      "roles",
-      "email"
-    ],
-    "optionalClientScopes": [
-      "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
-      "address",
-      "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
-      "https://purl.imsglobal.org/spec/lti-ags/scope/score",
-      "phone",
-      "offline_access",
-      "microprofile-jwt",
-      "https://purl.imsglobal.org/spec/lti-ap/scope/control.all",
-      "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly"
-    ]
-  }, {
     "id": "4bd25272-f8a5-41be-af2a-d60021980ee1",
     "clientId": "simva-plugin",
     "surrogateAuthRequired": false,
     "enabled": true,
-    "alwaysDisplayInConsole": false,
+    "alwaysDisplayInConsole": true,
     "clientAuthenticatorType": "client-secret",
     "secret": "**********",
     "redirectUris": [
@@ -968,7 +839,7 @@
     "clientId": "uadventure",
     "surrogateAuthRequired": false,
     "enabled": true,
-    "alwaysDisplayInConsole": false,
+    "alwaysDisplayInConsole": true,
     "clientAuthenticatorType": "client-secret",
     "secret": "**********",
     "redirectUris": [
@@ -1029,7 +900,7 @@
     "baseUrl" : "{{ .clients.jupyter.baseUrl }}",
     "surrogateAuthRequired": false,
     "enabled": true,
-    "alwaysDisplayInConsole": false,
+    "alwaysDisplayInConsole": true,
     "clientAuthenticatorType": "client-secret",
     "secret": "{{ .clients.jupyter.secret }}",
     "redirectUris": [
