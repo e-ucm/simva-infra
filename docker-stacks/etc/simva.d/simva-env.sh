@@ -203,7 +203,7 @@ export SIMVA_TRACES_FLUSH_SIZE=500
 #####################
 # Analytics A2 info #
 #####################
-export SIMAV_A2_HOST="a2"
+export SIMVA_A2_HOST="a2"
 export SIMVA_A2_ANALYTICSBACKEND_API="/api/proxy/gleaner"
 
 #######################
