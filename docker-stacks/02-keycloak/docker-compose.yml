@@ -86,13 +86,14 @@ services:
     environment:
       # Hostname
       - KC_HOSTNAME=${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HOSTNAME_STRICT_HTTPS=true
       - KC_HOSTNAME_STRICT=false
       # HTTP
       - KC_HTTP_ENABLED=true
       - KC_HTTP_HOST=0.0.0.0
       - HTTP_ADDRESS_FORWARDING=true
       # PROXY
+      - KC_PROXY=edge
       - KC_PROXY_HEADERS=xforwarded
       - PROXY_ADDRESS_FORWARDING=true
       # Health and metrics
