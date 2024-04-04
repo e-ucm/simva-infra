@@ -46,7 +46,7 @@ export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 ###########################################
 # Images versions
 export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"
-export SIMVA_KEYCLOAK_VERSION="23.0.7"
+export SIMVA_KEYCLOAK_VERSION="24.0.2"
 
 export SIMVA_MARIADB_IMAGE="mariadb"
 export SIMVA_MARIADB_VERSION="10.4.13"
