@@ -2005,7 +2005,7 @@
           }
         }
       ]
-    },
+    }
   ],
   "defaultDefaultClientScopes": [
     "role_list",
