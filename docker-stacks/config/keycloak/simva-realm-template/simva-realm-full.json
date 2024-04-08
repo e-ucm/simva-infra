@@ -2121,7 +2121,7 @@
             "oidc-full-name-mapper",
             "saml-user-property-mapper",         
             "oidc-usermodel-property-mapper",
-            "oidc-usermodel-attribute-mapper",
+            "oidc-usermodel-attribute-mapper"
           ]
         }
       },
