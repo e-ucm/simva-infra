@@ -1,4 +1,6 @@
 <#import "template.ftl" as layout>
+<#import "register-commons.ftl" as registerCommons>
+<#import "user-profile-commons.ftl" as userProfileCommons>
 <@layout.registrationLayout 
     displayMessage=messagesPerField.exists('global')
     displayRequiredFields=true
@@ -49,16 +51,13 @@
                             </div>
                             <div class="${properties.kcInputWrapperClass!}">
                                 <div class="${properties.kcInputGroup!}">
-                                    <input type="password" id="password" class="${properties.kcInputClass!}" name="password"
-                                           autocomplete="new-password"
-                                           aria-invalid="<#if messagesPerField.existsError('password','password-confirm')>true</#if>"
+                                    <div>
+                                        <label class="visibility" id="v" onclick="toggleNewPassword()"><img id="vi" src="${url.resourcesPath}/img/eye-off.png"></label>
+                                    </div>
+                                    <input id="password" class="login-field" name="password" 
+                                                    placeholder="${msg("password")}" type="password" autocomplete="new-password"
+                                                    aria-invalid="<#if messagesPerField.existsError('password','password-confirm')>true</#if>" 
                                     />
-                                    <button class="${properties.kcFormPasswordVisibilityButtonClass!}" type="button" aria-label="${msg('showPassword')}"
-                                            aria-controls="password"  data-password-toggle
-                                            data-icon-show="${properties.kcFormPasswordVisibilityIconShow!}" data-icon-hide="${properties.kcFormPasswordVisibilityIconHide!}"
-                                            data-label-show="${msg('showPassword')}" data-label-hide="${msg('hidePassword')}">
-                                        <i class="${properties.kcFormPasswordVisibilityIconShow!}" aria-hidden="true"></i>
-                                    </button>
                                 </div>
 
                                 <#if messagesPerField.existsError('password')>
@@ -76,16 +75,13 @@
                             </div>
                             <div class="${properties.kcInputWrapperClass!}">
                                 <div class="${properties.kcInputGroup!}">
-                                    <input type="password" id="password-confirm" class="${properties.kcInputClass!}"
-                                           name="password-confirm"
-                                           aria-invalid="<#if messagesPerField.existsError('password-confirm')>true</#if>"
+                                    <div>
+                                        <label class="visibility" id="vConfirm" onclick="toggleConfirmNewPassword()"><img id="confirmVi" src="${url.resourcesPath}/img/eye-off.png"></label>
+                                    </div>
+                                    <input id="password-confirm" class="login-field" name="password-confirm" 
+                                                placeholder="${msg("passwordConfirm")}" type="password" autocomplete="password-confirm"
+                                            aria-invalid="<#if messagesPerField.existsError('password-confirm')>true</#if>"
                                     />
-                                    <button class="${properties.kcFormPasswordVisibilityButtonClass!}" type="button" aria-label="${msg('showPassword')}"
-                                            aria-controls="password-confirm"  data-password-toggle
-                                            data-icon-show="${properties.kcFormPasswordVisibilityIconShow!}" data-icon-hide="${properties.kcFormPasswordVisibilityIconHide!}"
-                                            data-label-show="${msg('showPassword')}" data-label-hide="${msg('hidePassword')}">
-                                        <i class="${properties.kcFormPasswordVisibilityIconShow!}" aria-hidden="true"></i>
-                                    </button>
                                 </div>
 
                                 <#if messagesPerField.existsError('password-confirm')>
