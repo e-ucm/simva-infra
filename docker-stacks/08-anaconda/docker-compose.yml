@@ -77,7 +77,7 @@ services:
             # pip install ipyauth;
             #python3 -m pip install /opt/packages/ipyauth.tar.gz
             # Install other dependencies required by the Demo Notebook
-            python3 -m pip install boto3 jwt;
+            python3 -m pip install boto3 jwt
 
             # Install ipympl
             python3 -m pip install ipympl
@@ -85,8 +85,10 @@ services:
             # Install ipyparallel
             python3 -m pip install ipyparallel
 
-            date > /home/anaconda/.jupyter/anaconda-initialized;
+            date > /home/anaconda/.jupyter/anaconda-initialized
             echo "SIMVA: Anaconda Jupyter installed and initialized"
+        else 
+          source /simva-env/bin/activate
         fi;
 
         chown -R anaconda: /simva-env/bin/;
