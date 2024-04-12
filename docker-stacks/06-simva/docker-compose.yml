@@ -97,7 +97,7 @@ services:
       SSO_ADMIN_USER: "${SIMVA_ADMINISTRATOR_USER:-administrator}"
       SSO_ADMIN_PASSWORD: "${SIMVA_ADMINISTRATOR_PASSWORD:-administrator}"
       #A2
-      A2_HOST: "${SIMAV_A2_HOST:-a2}"
+      A2_HOST: "${SIMVA_A2_HOST:-a2}"
       A2_PROTOCOL: "http"
       A2_PORT: "3000"
       A2_ADMIN_USER: "${SIMVA_A2_ADMIN_USER:-root}"
@@ -121,6 +121,7 @@ services:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva${SIMVA_STORAGE_LOCAL_PATH:-/storage}:${SIMVA_STORAGE_LOCAL_PATH:-/storage}
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/puppeteer:/root/.cache/puppeteer
     depends_on:
       - mongodb
     hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
@@ -182,6 +183,8 @@ services:
       LIMESURVEY_PORT: "443"
       LIMESURVEY_ADMIN_USER: "${SIMVA_LIMESURVEY_ADMIN_USER:-admin}"
       LIMESURVEY_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-secret}"
+      #LTI 
+      LTI_ENABLED: "${SIMVA_LTI_ENABLED:-false}"
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro

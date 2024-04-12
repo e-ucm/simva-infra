@@ -15,10 +15,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <keycloak.version>KEYCLOAKVERSION</keycloak.version>
+        <jakarta.version>3.1.0</jakarta.version>
+        <jakarta-servlet.version>6.1.0-M2</jakarta-servlet.version>
+        <quarkus-keycloak.version>3.8.3</quarkus-keycloak.version>
         <jboss-resteasy.version>6.2.7.Final</jboss-resteasy.version>
-        <quarkus-keycloak.version>3.8.1</quarkus-keycloak.version>
-        <!-- <quarkus-keycloak.version>3.2.0.Final</quarkus-keycloak.version> -->
-        <jakarta-api.version>3.1.0</jakarta-api.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
@@ -29,6 +29,12 @@
             <artifactId>keycloak-admin-client</artifactId>
             <version>${keycloak.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-jaxb-provider</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
@@ -78,52 +84,61 @@
             <version>${keycloak.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--
+        <!-- Jakarta dependencies -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>${jakarta-servlet.version}</version>
+            <!-- <scope>provided</scope> -->
+        </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>${jakarta-api.version}</version>
+            <version>${jakarta.version}</version>
+            <!-- <scope>provided</scope> -->
         </dependency>
-        -->
-        <!--
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-core</artifactId>
-            <version>${jboss-resteasy.version}</version>
-        </dependency> 
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-properties-migrator</artifactId>
+            <version>3.0.3</version>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client</artifactId>
-            <version>${jboss-resteasy.version}</version>
-        </dependency> 
-        -->
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <!-- provided quarkus dependencies -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-keycloak-admin-client</artifactId>
+            <artifactId>quarkus-rest-client</artifactId>
             <version>${quarkus-keycloak.version}</version>
+            <!-- <scope>provided</scope> -->
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-client-reactive</artifactId>
             <version>${quarkus-keycloak.version}</version>
+             <!-- <scope>provided</scope> -->
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive</artifactId>
             <version>${quarkus-keycloak.version}</version>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-html</artifactId>
-            <version>${jboss-resteasy.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>${jboss-resteasy.version}</version>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jaxrs-client-reactive</artifactId>
+            <version>${quarkus-keycloak.version}</version>
+            <!-- <scope>provided</scope> -->
         </dependency>
-        -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+            <version>${quarkus-keycloak.version}</version>
+            <!-- <scope>provided</scope> -->
+        </dependency>
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -132,17 +147,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.12.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.5.2</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -157,36 +172,25 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Dependencies>org.keycloak.keycloak-core,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,org.keycloak.keycloak-services</Dependencies>
+                            <Dependencies>org.keycloak.keycloak-core,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,org.keycloak.keycloak-services,io.quarkus.quarkus-rest-client-reactive,io.quarkus.quarkus-resteasy-reactive</Dependencies>
                         </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
-                    <!-- Run shade goal on package phase -->
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-        </plugins>        
+            -->
+        </plugins>
     </build>
 </project>

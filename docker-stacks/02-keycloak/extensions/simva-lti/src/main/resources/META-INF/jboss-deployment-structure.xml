@@ -6,9 +6,9 @@
             <module name="org.keycloak.keycloak-server-spi-private" />
             <module name="org.keycloak.keycloak-services" />
             <module name="org.jboss.logging"/>
-            <module name="jakarta.ws.rs.api"/>
-            <module name="jersey-client"/>
-            <module name="jersey-hk2"/>
+            <module name="jakarta.ws.rs.jakarta.ws.rs-api"/>
+            <module name="io.quarkus.quarkus-rest-client-reactive"/>
+            <module name="io.quarkus.quarkus-resteasy-reactive"/>
             <module name="com.fasterxml.jackson.core.jackson-databind"/>
         </dependencies>
     </deployment>

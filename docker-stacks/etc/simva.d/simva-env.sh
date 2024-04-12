@@ -46,7 +46,7 @@ export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 ###########################################
 # Images versions
 export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"
-export SIMVA_KEYCLOAK_VERSION="23.0.7"
+export SIMVA_KEYCLOAK_VERSION="24.0.2"
 
 export SIMVA_MARIADB_IMAGE="mariadb"
 export SIMVA_MARIADB_VERSION="10.4.13"
@@ -203,7 +203,7 @@ export SIMVA_TRACES_FLUSH_SIZE=500
 #####################
 # Analytics A2 info #
 #####################
-export SIMAV_A2_HOST="a2"
+export SIMVA_A2_HOST="a2"
 export SIMVA_A2_ANALYTICSBACKEND_API="/api/proxy/gleaner"
 
 #######################
@@ -222,6 +222,8 @@ export SIMVA_STORAGE_LOCAL_PATH="/storage"
 export SIMVA_SSO_ALLOWED_ROLES="teacher,teaching-assistant,researcher,student"
 export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
 export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
+
+export SIMVA_LTI_ENABLED="false"
 
 ##############################
 # SIMVA Trace Allocator INFO #
@@ -337,10 +339,6 @@ export SIMVA_LIMESURVEY_CLIENT_ID="limesurvey"
 # MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_MINIO_CLIENT_ID="minio"
 #export SIMVA_MINIO_CLIENT_SECRET="secret"
-
-# LTI TOOL ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_LTI_TOOL_CLIENT_ID="lti_tool"
-#export SIMVA_LTI_TOOL_CLIENT_SECRET="secret"
 
 # Jupyter ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_JUPYTER_CLIENT_ID="jupyter"

@@ -153,20 +153,13 @@ function generate_realm_data() {
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
 
-    client_id=$(get_or_generate_username "lti_tool" "${STACK_CONF}/simva-env.sh")
-    client_secret=$(get_or_generate_password "lti_tool" "${STACK_CONF}/simva-env.sh")
-
-    echo "  lti_tool:" >> ${conf_file}
-    echo "    clientId: \"${client_id}\"" >> ${conf_file}
-    echo "    secret: \"${client_secret}\"" >> ${conf_file}
-
     client_id=$(get_or_generate_username "jupyter" "${STACK_CONF}/simva-env.sh")
     client_secret=$(get_or_generate_password "jupyter" "${STACK_CONF}/simva-env.sh")
 
     echo "  jupyter:" >> ${conf_file}
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
-    echo "    baseUrl: \"https://${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "    baseUrl: \"https://${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/tree\"" >> ${conf_file}
 }
 
 function get_or_generate_password() {

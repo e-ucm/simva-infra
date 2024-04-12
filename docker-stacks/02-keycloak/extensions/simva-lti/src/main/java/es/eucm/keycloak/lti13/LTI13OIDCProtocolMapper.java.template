@@ -23,6 +23,7 @@ import org.keycloak.provider.ProviderConfigurationBuilder;
 import org.keycloak.representations.IDToken;
 
 import es.eucm.keycloak.lti13.JsonRemoteClaimException;
+import es.eucm.keycloak.lti13.ConfigParameterParseException;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -39,20 +40,33 @@ import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.ClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import jakarta.ws.rs.client.ResponseProcessingException;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+
+import jakarta.inject.Inject;
+/*
+import io.quarkus.rest.client.reactive.QuarkusRestClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl;
+import org.jboss.resteasy.plugins.providers.StringTextStar;
+import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider;
+*/
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.OAuth2Constants;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+
 import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.Response;
 
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.plugins.server.BaseHttpRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -104,10 +118,17 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
      * Inner configuration to cache retrieved authorization for multiple tokens
      */
     private final static String LTI13_CLAIMS_ATTR = "lti13-claims";
-    
-    private static ResteasyClient CLIENT;
 
+    private static Client CLIENT;
+    private static Keycloak keycloak;
+    
     static {
+        // The following line is only necessary for this example because of our configuration in
+        // resources/META-INF/services/javax.ws.rs.client.ClientBuilder
+        // which enables Jersey by default. If you are using Resteasy by default, this line is not necessary
+        System.setProperty(ClientBuilder.JAXRS_DEFAULT_CLIENT_BUILDER_PROPERTY,
+                    "org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder");
+        
         // @formatter:off
         configProperties = ProviderConfigurationBuilder.create()
         .property()
@@ -157,7 +178,6 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         .helpText("Send the client_id as request parameter (param: client_id).")
         .defaultValue("false")
         .add()
-
         // User attributes
         .property()
         .name(REMOTE_PARAMETERS_USER_ATTRIBUTES)
@@ -199,8 +219,6 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         .build();
         // @formatter:on
         OIDCAttributeMapperHelper.addAttributeConfig(configProperties, LTI13OIDCProtocolMapper.class);
-
-        CLIENT = ((ResteasyClientBuilder) ClientBuilder.newBuilder()).build();
         MAPPER = new ObjectMapper();
     }
 
@@ -266,26 +284,31 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         return "Add required claims for a LTI 1.3";
     }
 
+
     @Override
     protected void setClaim(IDToken token, ProtocolMapperModel mappingModel, UserSessionModel userSession,
             KeycloakSession keycloakSession, ClientSessionContext clientSessionCtx) {
-
         JsonNode claims = clientSessionCtx.getAttribute(LTI13_CLAIMS_ATTR, JsonNode.class);
+        
         if (claims == null) {
             KeycloakContext ctx = keycloakSession.getContext();
-            //HttpRequest req = context.getHttpRequest();
-            //org.jboss.resteasy.spi.HttpRequest req = ctx.getContextObject(org.jboss.resteasy.spi.HttpRequest.class);
-            HttpRequest req = ctx.getContextObject(org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest.class);
-            MultivaluedMap<String, String> params;
-            if(HttpMethod.GET.equals(req.getHttpMethod())) {
-                params = req.getUri().getQueryParameters();
-            } else {
-                params = req.getFormParameters();
+            /*
+            MultivaluedMap<String, String> params = new MultivaluedHashMap<>();
+            HttpServletRequest req = ctx.getContextObject(HttpServletRequest.class);
+            Map<String, String[]> map = req.getParameterMap();
+            // Iterate over the entries of the map
+            for(String key : map.keySet()) {
+                String[] valuesArray = map.get(key);
+                // Iterate over the values array and add each value to the MultivaluedMap
+                for(String value : valuesArray) {
+                    params.add(key, value);
+                }
             }
             claims = getClaims(params, mappingModel, userSession, clientSessionCtx);
+             */
             clientSessionCtx.setAttribute(LTI13_CLAIMS_ATTR, claims);
         }
-
+        
         String protocolClaim = mappingModel.getConfig().get(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME);
         if (protocolClaim != null && ! protocolClaim.isEmpty()) {
             OIDCAttributeMapperHelper.mapClaim(token, mappingModel, claims);
@@ -293,8 +316,9 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             Map<String, Object> mapClaims = MAPPER.convertValue(claims, new TypeReference<Map<String, Object>>() {});
             token.getOtherClaims().putAll(mapClaims);
         }
+        OIDCAttributeMapperHelper.mapClaim(token, mappingModel, claims);
     }
-
+    
     private JsonNode getClaims(MultivaluedMap<String, String> reqParameters, ProtocolMapperModel mappingModel,
             UserSessionModel userSession, ClientSessionContext clientSessionCtx) {
         // Get parameters
@@ -353,7 +377,7 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
 
         return parameters;
     }
-    
+
     private Map<String, String> getHeaders(ProtocolMapperModel mappingModel, UserSessionModel userSession,
             ClientSessionContext clientSessionCtx) {
         final String configuredHeaders = mappingModel.getConfig().get(PLATFORM_HEADERS);
@@ -411,11 +435,12 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         if (LOGGER.isDebugEnabled()) {
             logRequest(uri, formParameters);
         }
-
-        ResteasyWebTarget target = CLIENT.target(url);
+        /*
+        CLIENT = keycloak.getClientProvider().newRestEasyClient();
+        WebTarget target = CLIENT.target(url);
         Response response;
         try {
-            ClientInvocation.Builder builder = target.request(MediaType.APPLICATION_JSON);
+            Invocation.Builder builder = target.request(MediaType.APPLICATION_JSON);
             // Build headers
             for (Map.Entry<String, String> header : headers.entrySet()) {
                 builder.header(header.getKey(), header.getValue());
@@ -427,14 +452,12 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
             }
             
         } catch(ResponseProcessingException e) {
-            /* In case processing of a received HTTP response fails (e.g. in a
-             * filter or during conversion of the response entity data to an 
-             * instance of a particular Java type).
-             */
+            //In case processing of a received HTTP response fails (e.g. in a
+            //filter or during conversion of the response entity data to an 
+            //instance of a particular Java type).
             throw new JsonRemoteClaimException("Error when accessing remote claim", url, e);
         } catch(ProcessingException e) {
-            /* In case the request processing or subsequent I/O operation fails.
-             */
+            //In case the request processing or subsequent I/O operation fails.
             throw new JsonRemoteClaimException("Error when accessing remote claim", url, e);
         }
 
@@ -453,8 +476,10 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         } finally {
             response.close();
         }
+        */
+       return null;
     }
-
+    
     private void logRequest(URI uri, Map<String, String> formParameters) {
         URIBuilder builder = new URIBuilder(uri);
         List<NameValuePair> queryParams = builder.getQueryParams().stream().map((nvp) -> {
@@ -488,7 +513,13 @@ public class LTI13OIDCProtocolMapper extends AbstractOIDCProtocolMapper
         parameters.put("grant_type", "client_credentials");
         parameters.put("client_id", mappingModel.getConfig().get(CLIENT_AUTH_ID));
         parameters.put("client_secret", mappingModel.getConfig().get(CLIENT_AUTH_PASS));
-
+        keycloak = KeycloakBuilder.builder()
+            .serverUrl("https://<<SIMVA_SSO_HOST_SUBDOMAIN>>.<<SIMVA_EXTERNAL_DOMAIN>>")
+            .realm("<<SIMVA_SSO_REALM>>")
+            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+            .clientId(mappingModel.getConfig().get(CLIENT_AUTH_ID))
+            .clientSecret(mappingModel.getConfig().get(CLIENT_AUTH_PASS))
+            .build();
         // Call remote service
         String baseUrl = mappingModel.getConfig().get(CLIENT_AUTH_URL);
         JsonNode jsonNode = post(baseUrl, headers, parameters);
