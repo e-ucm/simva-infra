@@ -36,3 +36,4 @@ allNewClients=$(jq --argjson new_clients "$newClients" '
 rm -f $previousClientsFile
 echo $(jq --argjson clients "$allNewClients" '.clients = $clients' $TEMP_JSON_FILE) > "$NEW_FULL_EXPORTED_JSON_FILE"
 rm -f $TEMP_JSON_FILE
+touch "${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/.migrationinprogress"

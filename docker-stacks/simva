@@ -41,10 +41,10 @@ function main() {
             uninstall "1" $@
             exit 0
         ;;
-        "migrate")
+        "migrateUpgrade")
             check_docker_launched
             setExecutable $command $@
-            migrate "1" $@
+            migrateUpgrade "1" $@
             exit 0
         ;;
         "migrateDomain")
@@ -223,12 +223,16 @@ function execute_before_hooks() {
             folder="${folder}/before-uninstall.d"
             run_scripts_from_folder ${folder}
         ;;
-        "migrate")
-            folder="${folder}/before-migrate.d"
+        "migrateUpgrade")
+            folder="${folder}/after-migrate.d"
+            run_scripts_from_folder ${folder}
+            folder="${folder}/after-migrateUpgrade.d"
             run_scripts_from_folder ${folder}
         ;;
         "migrateDomain")
-            folder="${folder}/before-migrateDomain.d"
+            folder="${folder}/after-migrate.d"
+            run_scripts_from_folder ${folder}
+            folder="${folder}/after-migrateDomain.d"
             run_scripts_from_folder ${folder}
         ;;
         "purge")
@@ -265,12 +269,16 @@ function execute_before_hooks() {
                 folder="${folder}/before-uninstall.d"
                 run_scripts_from_folder ${folder}
             ;;
-            "migrate")
-                folder="${folder}/before-migrate.d"
+            "migrateUpgrade")
+                folder="${folder}/after-migrate.d"
+                run_scripts_from_folder ${folder}
+                folder="${folder}/after-migrateUpgrade.d"
                 run_scripts_from_folder ${folder}
             ;;
             "migrateDomain")
-                folder="${folder}/before-migrateDomain.d"
+                folder="${folder}/after-migrate.d"
+                run_scripts_from_folder ${folder}
+                folder="${folder}/after-migrateDomain.d"
                 run_scripts_from_folder ${folder}
             ;;
             "purge")
@@ -324,11 +332,15 @@ function execute_after_hooks() {
                 folder="${folder}/after-uninstall.d"
                 run_scripts_from_folder ${folder}
             ;;
-            "migrate")
+            "migrateUpgrade")
                 folder="${folder}/after-migrate.d"
+                run_scripts_from_folder ${folder}
+                folder="${folder}/after-migrateUpgrade.d"
                 run_scripts_from_folder ${folder}
             ;;
             "migrateDomain")
+                folder="${folder}/after-migrate.d"
+                run_scripts_from_folder ${folder}
                 folder="${folder}/after-migrateDomain.d"
                 run_scripts_from_folder ${folder}
             ;;
@@ -363,11 +375,15 @@ function execute_after_hooks() {
             folder="${folder}/after-uninstall.d"
             run_scripts_from_folder ${folder}
         ;;
-        "migrate")
+        "migrateUpgrade")
             folder="${folder}/after-migrate.d"
+            run_scripts_from_folder ${folder}
+            folder="${folder}/after-migrateUpgrade.d"
             run_scripts_from_folder ${folder}
         ;;
         "migrateDomain")
+            folder="${folder}/after-migrate.d"
+            run_scripts_from_folder ${folder}
             folder="${folder}/after-migrateDomain.d"
             run_scripts_from_folder ${folder}
         ;;
@@ -457,8 +473,8 @@ OPERATION one of the following:
         Install SIMVA locally (download docker images, build required tools, etc.)
     uninstall:
         Stop and remove containers, also remove docker volumes too.
-    migrate:
-        Migrate config of each stack
+    migrateUpgrade:
+        Migrate config before using a new version of each stack
     migrateDomain:
         migrate to a new External Domain for each stack
     purge:
