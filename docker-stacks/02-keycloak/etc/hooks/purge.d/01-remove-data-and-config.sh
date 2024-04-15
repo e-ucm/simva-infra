@@ -21,17 +21,20 @@ rm -rf ./*
 cd "${SIMVA_DATA_HOME}/maven/m2"
 rm -rf ./*
 
-# Removing Simva Theme properties Account page 
-if [[ -e "${STACK_HOME}/extensions\simva-theme\src\main\resources\theme\simva\account\theme.properties" ]]; then
-    rm "${STACK_HOME}/extensions\simva-theme\src\main\resources\theme\simva\account\theme.properties"
-fi
-
-
 ###############################
 # REMOVE KEYCLOAK CONFIGURATION
 ###############################
+# Removing Simva Theme properties Account page 
+if [[ -e "${SIMVA_CONFIG_HOME}/keycloak/themes/simva/account/theme.properties" ]]; then
+    rm "${SIMVA_CONFIG_HOME}/keycloak/themes/simva/account/theme.properties"
+fi
+
 # Removing Keycloak Simva Realm Configuration
 cd "${SIMVA_CONFIG_HOME}/keycloak/simva-realm"
+rm -rf ./*
+
+# Removing Keycloak Simva Realm backups Configuration
+cd "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export"
 rm -rf ./*
 
 # Removing Keycloak simva-env.sh configuration file
