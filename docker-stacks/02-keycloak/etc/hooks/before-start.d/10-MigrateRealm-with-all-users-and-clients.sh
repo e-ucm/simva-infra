@@ -11,7 +11,7 @@ newUsers=$(jq '.users' "$EXPORTED_USERS_JSON_FILE")
 previousUsersFile="/tmp/previousUsers.json"
 echo $previousUsers > $previousUsersFile
 
-# Check if each new client's clientId is not present in the table and add if absent
+# Check if each new users's username is not present in the table and add if absent
 allNewUsers=$(jq --argjson new_users "$newUsers" '
   . |= (map(.username) as $existingIds |
     $new_users | map(select(.username | IN($existingIds[]) | not)) + .
