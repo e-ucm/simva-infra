@@ -1,0 +1,1 @@
+rm -f "${SIMVA_CONFIG_HOME}/limesurvey/etc/config.php"

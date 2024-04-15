@@ -41,10 +41,22 @@ function main() {
             uninstall "1" $@
             exit 0
         ;;
+        "migrate")
+            check_docker_launched
+            setExecutable $command $@
+            migrate "1" $@
+            exit 0
+        ;;
+        "migrateDomain")
+            check_docker_launched
+            setExecutable $command $@
+            migrateDomain "1" $@
+            exit 0
+        ;;
         "purge")
             check_docker_launched
             setExecutable $command $@
-            purge ${DEFAULT_WAIT_TIME} $@
+            purge "1" $@
             exit 0
         ;;
         "start")
@@ -211,6 +223,14 @@ function execute_before_hooks() {
             folder="${folder}/before-uninstall.d"
             run_scripts_from_folder ${folder}
         ;;
+        "migrate")
+            folder="${folder}/before-migrate.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "migrateDomain")
+            folder="${folder}/before-migrateDomain.d"
+            run_scripts_from_folder ${folder}
+        ;;
         "purge")
             folder="${folder}/before-purge.d"
             run_scripts_from_folder ${folder}
@@ -243,6 +263,14 @@ function execute_before_hooks() {
             ;;
             "uninstall")
                 folder="${folder}/before-uninstall.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "migrate")
+                folder="${folder}/before-migrate.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "migrateDomain")
+                folder="${folder}/before-migrateDomain.d"
                 run_scripts_from_folder ${folder}
             ;;
             "purge")
@@ -296,6 +324,14 @@ function execute_after_hooks() {
                 folder="${folder}/after-uninstall.d"
                 run_scripts_from_folder ${folder}
             ;;
+            "migrate")
+                folder="${folder}/after-migrate.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "migrateDomain")
+                folder="${folder}/after-migrateDomain.d"
+                run_scripts_from_folder ${folder}
+            ;;
             "purge")
                 folder="${folder}/purge.d"
                 run_scripts_from_folder ${folder}
@@ -325,6 +361,14 @@ function execute_after_hooks() {
         ;;
         "uninstall")
             folder="${folder}/after-uninstall.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "migrate")
+            folder="${folder}/after-migrate.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "migrateDomain")
+            folder="${folder}/after-migrateDomain.d"
             run_scripts_from_folder ${folder}
         ;;
         "purge")
@@ -413,6 +457,10 @@ OPERATION one of the following:
         Install SIMVA locally (download docker images, build required tools, etc.)
     uninstall:
         Stop and remove containers, also remove docker volumes too.
+    migrate:
+        Migrate config of each stack
+    migrateDomain:
+        migrate to a new External Domain for each stack
     purge:
         Remove data from each stack
     start:
@@ -471,6 +519,46 @@ function uninstall() {
     execute_before_hooks ${phase} ${reverse_stacks}
     docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
     execute_after_hooks ${phase} ${reverse_stacks}
+}
+
+# migrate config for each stack
+function migrate() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+
+    local phase="migrate"
+    execute_before_hooks ${phase} ${stacks}
+    install ${wait_time} "${stacks}"
+    execute_after_hooks ${phase} ${stacks}
+}
+
+# migrate to a new External Domain for each stack
+function migrateDomain() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+
+    local phase="migrateDomain"
+    execute_before_hooks ${phase} ${stacks}
+    install ${wait_time} "${stacks}"
+    execute_after_hooks ${phase} ${stacks}
 }
 
 # purge data

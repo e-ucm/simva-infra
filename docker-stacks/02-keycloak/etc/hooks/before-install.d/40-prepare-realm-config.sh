@@ -53,7 +53,6 @@ __file_env() {
 
 # Oneline certificate
 limesurvey_cert=$(cat "${SIMVA_TLS_HOME}/limesurvey.pem" | tail -n +2 | head -n -1 | sed ':a;N;$!ba;s/\n//g')
-limesurvey_privatekey=$(cat "${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-limesurvey-key.pem}" | tail -n +2 | head -n -1 | sed ':a;N;$!ba;s/\n//g')
 
 function configure_realm_production() {
     generate_realm_data "${STACK_CONF}/realm-data.prod.yml"
