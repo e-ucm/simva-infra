@@ -88,7 +88,7 @@
 </#macro>
 
 <#macro inputTag attribute value>
-	<input type="<@inputTagType attribute=attribute/>" id="${attribute.name}" name="${attribute.name}" placeholder="${attribute.name}" autocomplete="${attribute.name}" value="${(value!'')}" class="${properties.kcInputClass!}"
+	<input type="<@inputTagType attribute=attribute/>" id="${attribute.name}" name="${attribute.name}" autocomplete="${attribute.name}" value="${(value!'')}" class="${properties.kcInputClass!}"
 		aria-invalid="<#if messagesPerField.existsError('${attribute.name}')>true</#if>"
 		<#if attribute.readOnly>disabled</#if>
 		<#if attribute.autocomplete??>autocomplete="${attribute.autocomplete}"</#if>
@@ -180,7 +180,7 @@
 
 	<#list options as option>
 		<div class="${classDiv}">
-			<input type="${inputType}" id="${attribute.name}-${option}" name="${attribute.name}" placeholder="${attribute.name}" autocomplete="${attribute.name}" value="${option}" class="${classInput}"
+			<input type="${inputType}" id="${attribute.name}-${option}" name="${attribute.name}" autocomplete="${attribute.name}" value="${option}" class="${classInput}"
 				aria-invalid="<#if messagesPerField.existsError('${attribute.name}')>true</#if>"
 				<#if attribute.readOnly>disabled</#if>
 				<#if attribute.values?seq_contains(option)>checked</#if>
