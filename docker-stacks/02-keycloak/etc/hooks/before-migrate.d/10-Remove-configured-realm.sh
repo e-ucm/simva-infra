@@ -1,11 +1,6 @@
 ###############################
 # REMOVE KEYCLOAK CONFIGURATION
 ###############################
-# Removing Simva Theme properties Account page 
-if [[ -e "${SIMVA_CONFIG_HOME}/keycloak/themes/simva/account/theme.properties" ]]; then
-    rm "${SIMVA_CONFIG_HOME}/keycloak/themes/simva/account/theme.properties"
-fi
-
 # Removing Keycloak Simva Realm Configuration
 cd "${SIMVA_CONFIG_HOME}/keycloak/simva-realm"
 rm -rf ./*

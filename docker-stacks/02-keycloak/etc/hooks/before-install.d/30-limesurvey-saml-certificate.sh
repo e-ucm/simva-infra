@@ -9,12 +9,13 @@ if [[ ! -e "${SIMVA_TLS_HOME}/limesurvey.pem" ]]; then
         -new -key ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-limesurvey-key.pem} \
         -out ${SIMVA_TLS_HOME}/limesurvey.csr
 
-    export CAROOT="${SIMVA_TLS_HOME}/ca"
     mkcert \
         -cert-file ${SIMVA_TLS_HOME}/limesurvey.pem \
         -csr ${SIMVA_TLS_HOME}/limesurvey.csr
-
+fi;
+if  [[ ! -e "${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-limesurvey-fullchain.pem}" ]]; then
+    export CAROOT="${SIMVA_TLS_HOME}/ca"
     cp ${SIMVA_TLS_HOME}/limesurvey.pem ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-limesurvey-fullchain.pem}
-    cat ${SIMVA_TLS_HOME}/ca/rootCA.pem >> ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-limesurvey-fullchain.pem}
+    cat ${CAROOT}/rootCA.pem >> ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-limesurvey-fullchain.pem}
     chmod a+r ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-limesurvey-key.pem}
 fi

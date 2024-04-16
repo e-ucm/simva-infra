@@ -43,13 +43,17 @@ function main() {
         ;;
         "migrateUpgrade")
             check_docker_launched
+            setExecutable "migrate" $@
             setExecutable $command $@
+            setExecutable "install" $@
             migrateUpgrade "1" $@
             exit 0
         ;;
         "migrateDomain")
             check_docker_launched
+            setExecutable "migrate" $@
             setExecutable $command $@
+            setExecutable "install" $@
             migrateDomain "1" $@
             exit 0
         ;;
@@ -223,16 +227,16 @@ function execute_before_hooks() {
             folder="${folder}/before-uninstall.d"
             run_scripts_from_folder ${folder}
         ;;
-        "migrateUpgrade")
-            folder="${folder}/after-migrate.d"
+        "migrate")
+            folder="${folder}/before-migrate.d"
             run_scripts_from_folder ${folder}
-            folder="${folder}/after-migrateUpgrade.d"
+        ;;
+        "migrateUpgrade")
+            folder="${folder}/before-migrateUpgrade.d"
             run_scripts_from_folder ${folder}
         ;;
         "migrateDomain")
-            folder="${folder}/after-migrate.d"
-            run_scripts_from_folder ${folder}
-            folder="${folder}/after-migrateDomain.d"
+            folder="${folder}/before-migrateDomain.d"
             run_scripts_from_folder ${folder}
         ;;
         "purge")
@@ -269,16 +273,16 @@ function execute_before_hooks() {
                 folder="${folder}/before-uninstall.d"
                 run_scripts_from_folder ${folder}
             ;;
-            "migrateUpgrade")
-                folder="${folder}/after-migrate.d"
+            "migrate")
+                folder="${folder}/before-migrate.d"
                 run_scripts_from_folder ${folder}
-                folder="${folder}/after-migrateUpgrade.d"
+            ;;
+            "migrateUpgrade")
+                folder="${folder}/before-migrateUpgrade.d"
                 run_scripts_from_folder ${folder}
             ;;
             "migrateDomain")
-                folder="${folder}/after-migrate.d"
-                run_scripts_from_folder ${folder}
-                folder="${folder}/after-migrateDomain.d"
+                folder="${folder}/before-migrateDomain.d"
                 run_scripts_from_folder ${folder}
             ;;
             "purge")
@@ -332,15 +336,15 @@ function execute_after_hooks() {
                 folder="${folder}/after-uninstall.d"
                 run_scripts_from_folder ${folder}
             ;;
-            "migrateUpgrade")
+            "migrate")
                 folder="${folder}/after-migrate.d"
                 run_scripts_from_folder ${folder}
+            ;;
+            "migrateUpgrade")
                 folder="${folder}/after-migrateUpgrade.d"
                 run_scripts_from_folder ${folder}
             ;;
             "migrateDomain")
-                folder="${folder}/after-migrate.d"
-                run_scripts_from_folder ${folder}
                 folder="${folder}/after-migrateDomain.d"
                 run_scripts_from_folder ${folder}
             ;;
@@ -375,15 +379,15 @@ function execute_after_hooks() {
             folder="${folder}/after-uninstall.d"
             run_scripts_from_folder ${folder}
         ;;
-        "migrateUpgrade")
+        "migrate")
             folder="${folder}/after-migrate.d"
             run_scripts_from_folder ${folder}
+        ;;
+        "migrateUpgrade")
             folder="${folder}/after-migrateUpgrade.d"
             run_scripts_from_folder ${folder}
         ;;
         "migrateDomain")
-            folder="${folder}/after-migrate.d"
-            run_scripts_from_folder ${folder}
             folder="${folder}/after-migrateDomain.d"
             run_scripts_from_folder ${folder}
         ;;
@@ -538,7 +542,7 @@ function uninstall() {
 }
 
 # migrate config for each stack
-function migrate() {
+function migrateUpgrade() {
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
@@ -551,10 +555,11 @@ function migrate() {
         stacks=$@
     fi
 
-    local phase="migrate"
-    execute_before_hooks ${phase} ${stacks}
+    execute_before_hooks "migrate" ${stacks}
+    execute_before_hooks "migrateUpgrade" ${stacks}
     install ${wait_time} "${stacks}"
-    execute_after_hooks ${phase} ${stacks}
+    execute_after_hooks "migrate" ${stacks}
+    execute_after_hooks "migrateUpgrade" ${stacks}
 }
 
 # migrate to a new External Domain for each stack
@@ -571,10 +576,11 @@ function migrateDomain() {
         stacks=$@
     fi
 
-    local phase="migrateDomain"
-    execute_before_hooks ${phase} ${stacks}
+    execute_before_hooks "migrate" ${stacks}
+    execute_before_hooks "migrateDomain" ${stacks}
     install ${wait_time} "${stacks}"
-    execute_after_hooks ${phase} ${stacks}
+    execute_after_hooks "migrate" ${stacks}
+    execute_after_hooks "migrateDomain" ${stacks}
 }
 
 # purge data
@@ -670,12 +676,29 @@ function setExecutable() {
                 folder="${HooksFolder}/after-uninstall.d"
                 setExecutable_scripts_from_folder ${folder}
             ;;
+            "migrateUpgrade")
+                folder="${HooksFolder}/before-migrateUpgrade.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/after-migrateUpgrade.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
+            "migrateDomain")
+                folder="${HooksFolder}/before-migrateDomain.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/after-migrateDomain.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
+            "migrate")
+                folder="${HooksFolder}/before-migrate.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/after-migrate.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
             "purge")
                 folder="${HooksFolder}/before-purge.d"
                 setExecutable_scripts_from_folder ${folder}
                 folder="${HooksFolder}/purge.d"
                 setExecutable_scripts_from_folder ${folder}
-
             ;;
             "start")
                 folder="${HooksFolder}/before-start.d"
@@ -703,6 +726,24 @@ function setExecutable() {
             folder="${HooksFolder}/before-uninstall.d"
             setExecutable_scripts_from_folder ${folder}
             folder="${HooksFolder}/after-uninstall.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+        "migrateUpgrade")
+            folder="${HooksFolder}/before-migrateUpgrade.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/after-migrateUpgrade.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+        "migrateDomain")
+            folder="${HooksFolder}/before-migrateDomain.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/after-migrateDomain.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+        "migrate")
+            folder="${HooksFolder}/before-migrate.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/after-migrate.d"
             setExecutable_scripts_from_folder ${folder}
         ;;
         "purge")
