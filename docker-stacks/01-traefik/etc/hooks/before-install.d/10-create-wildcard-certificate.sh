@@ -6,9 +6,6 @@ if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED:-false}" != "true" ]]; then
   exit 0
 fi
 
-TRUSTSTORE_PASSWORD='changeit'
-TRUSTSTORE_CA_ALIAS='simvaCA'
-
 export CAROOT="${SIMVA_TLS_HOME}/ca"
 
 if [[ ! -e "${CAROOT}/rootCA.pem" ]]; then
@@ -28,7 +25,7 @@ if [[ ! -e "${SIMVA_TLS_HOME}/traefik.pem" ]]; then
             "${SIMVA_HOST_EXTERNAL_IP}"
     cp ${SIMVA_TLS_HOME}/traefik.pem ${SIMVA_TLS_HOME}/traefik-fullchain.pem
     cat ${SIMVA_TLS_HOME}/ca/rootCA.pem >> ${SIMVA_TLS_HOME}/traefik-fullchain.pem
-    keytool -importcert -trustcacerts -noprompt -storepass ${TRUSTSTORE_PASSWORD} -keystore ${SIMVA_TLS_HOME}/truststore.jks -alias ${TRUSTSTORE_CA_ALIAS} -file ${SIMVA_TLS_HOME}/ca/rootCA.pem 
+    keytool -importcert -trustcacerts -noprompt -storepass ${SIMVA_TRUSTSTORE_PASSWORD} -keystore ${SIMVA_TLS_HOME}/truststore.jks -alias ${SIMVA_TRUSTSTORE_CA_ALIAS} -file ${SIMVA_TLS_HOME}/ca/rootCA.pem 
 fi
 
 if [[ ! -e "${SIMVA_TLS_HOME}/dhparam.pem" ]]; then

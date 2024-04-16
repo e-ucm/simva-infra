@@ -83,8 +83,6 @@ export SIMVA_LOAD_BALANCER_IPS="172.30.0.80"
 ########################
 # Domain and subdomain #
 ########################
-
-
 # Domain used for docker containers hostnames
 export SIMVA_INTERNAL_DOMAIN="internal.test"
 # Domain used for registering public-faced docker container hostnames
@@ -141,6 +139,9 @@ export SIMVA_TRAEFIK_EXTRA_CSP_POLICY=""
 #
 # example: foo.crt,bar.crt
 export SIMVA_SSL_ROOT_CAS="${SIMVA_DATA_HOME}/tls/ca/isrgrootx1.pem"
+
+#Truststore CA Alias
+export SIMVA_TRUSTSTORE_CA_ALIAS='simvaCA'
 
 ###################################################################
 # Checking time for KeyCloak, Minio,Kafka and Anaconda availabled #
@@ -245,10 +246,14 @@ export SIMVA_TRACE_ALLOCATOR_TRY_RECOVERY="true"
 export SIMVA_TRAEFIK_DASHBOARD_USER="admin"
 # Traefik: passwords must be hashed using MD5, SHA1, or BCrypt.
 # Note: Use htpasswd to generate the passwords.
+# docker run --rm httpd:2.4-alpine htpasswd -nbB admin 'password' | cut -d ":" -f 21
 #
 # Default: password
 # XXX Better use the approach of _FILE variables to read the variable from a file (check file_env)
 export SIMVA_TRAEFIK_DASHBOARD_PASSWORD="\\\$apr1\\\$97xk9Kkr\\\$gavbmzhrI6uOVYNOfYByQ/"
+
+# TRUSTSTORE PASSWORD
+export SIMVA_TRUSTSTORE_PASSWORD='changeit'
 
 # Keycloak mariadb MySQL database root and keycloak user
 export SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD="root"
