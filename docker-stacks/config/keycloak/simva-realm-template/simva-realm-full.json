@@ -1224,7 +1224,7 @@
       "baseUrl" : "{{ .clients.jupyter.baseUrl }}",
       "surrogateAuthRequired": false,
       "enabled": true,
-      "alwaysDisplayInConsole": true,
+      "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "{{ .clients.jupyter.secret }}",
       "redirectUris": [
