@@ -20,3 +20,6 @@ fi
 if [[ -e "${SIMVA_PROJECT_DIR}/.vagrant" ]]; then
     rm "${SIMVA_PROJECT_DIR}/.vagrant"
 fi
+
+# Removing simva-env.sh.backup file
+rm -rf "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/*"

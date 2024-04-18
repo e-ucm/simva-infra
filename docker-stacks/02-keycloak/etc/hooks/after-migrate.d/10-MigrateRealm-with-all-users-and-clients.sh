@@ -5,37 +5,52 @@ EXPORTED_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-r
 EXPORTED_USERS_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-users-0.json"
 NEW_FULL_EXPORTED_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-realm-full.json"
 if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then 
-    #Adding all new clients to generated file
-    previousUsers=$(jq '.users' "$GENERATED_JSON_FILE")
-    newUsers=$(jq '.users' "$EXPORTED_USERS_JSON_FILE")
+    cat $GENERATED_JSON_FILE > $TEMP_JSON_FILE
 
-    previousUsersFile="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/previousUsers.json"
-    echo $previousUsers > $previousUsersFile
+    # Set the realm name or default to "simva" if SIMVA_SSO_REALM is not set
+    realm="${SIMVA_SSO_REALM:-simva}"
+    
+    # Counter for file number
+    file_number=0
+    # Iterate over files matching the format ${realm}-users-X.json
+    for userfile in "${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${realm}-users-"*.json; do
+        # Increment the file number
+        ((file_number++))
+        # Process the file here (replace echo with actual processing)
+        echo "Processing file: $userfile"
+        echo "File number: $file_number"
+        #Adding all new clients to generated file
+        previousUsers=$(jq '.users' "$TEMP_JSON_FILE")
+        newUsers=$(jq '.users' "$userfile")
 
-    # Check if each new users's id is not present in the table and add if absent
-    allNewUsers=$(jq --argjson new_users "$newUsers" '
-      . |= (map(.id) as $existingIds |
-        $new_users | map(select(.id | IN($existingIds[]) | not))
-      )
-    ' "$previousUsersFile")
-    rm -f $previousUsersFile
-    echo $(jq --argjson users "$allNewUsers" '.users = $users + .users' $GENERATED_JSON_FILE) > $TEMP_JSON_FILE
+        previousUsersFile="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/previousUsers.json"
+        echo $previousUsers > $previousUsersFile
 
-    #Adding all new clients to generated file
-    previousClients=$(jq '.clients' "$GENERATED_JSON_FILE")
-    newClients=$(jq '.clients' "$EXPORTED_JSON_FILE")
+        # Check if each new users's id is not present in the table and add if absent
+        allNewUsers=$(jq --argjson new_users "$newUsers" '
+          . |= (map(.id) as $existingIds |
+            $new_users | map(select(.id | IN($existingIds[]) | not))
+          )
+        ' "$previousUsersFile")
+        rm -f $previousUsersFile
+        echo $(jq --argjson users "$allNewUsers" '.users = $users + .users' $GENERATED_JSON_FILE) > $TEMP_JSON_FILE
 
-    previousClientsFile="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/previousClients.json"
-    echo $previousClients > $previousClientsFile
+        #Adding all new clients to generated file
+        previousClients=$(jq '.clients' "$GENERATED_JSON_FILE")
+        newClients=$(jq '.clients' "$EXPORTED_JSON_FILE")
 
-    # Check if each new client's Id is not present in the table and add if absent
-    allNewClients=$(jq --argjson new_clients "$newClients" '
-       . |= (map(.id) as $existingIds |
-        $new_clients | map(select(.id | IN($existingIds[]) | not))
-        )' "$previousClientsFile")
-    allClients=$(jq --argjson clients "$allNewClients" '$clients + .' "$previousClientsFile")
-    rm -f $previousClientsFile 
-    echo $(jq --argjson clients "$allClients" '.clients = $clients' $TEMP_JSON_FILE) > $TEMP_JSON_FILE
+        previousClientsFile="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/previousClients.json"
+        echo $previousClients > $previousClientsFile
+
+        # Check if each new client's Id is not present in the table and add if absent
+        allNewClients=$(jq --argjson new_clients "$newClients" '
+           . |= (map(.id) as $existingIds |
+            $new_clients | map(select(.id | IN($existingIds[]) | not))
+            )' "$previousClientsFile")
+        allClients=$(jq --argjson clients "$allNewClients" '$clients + .' "$previousClientsFile")
+        rm -f $previousClientsFile 
+        echo $(jq --argjson clients "$allClients" '.clients = $clients' $TEMP_JSON_FILE) > $TEMP_JSON_FILE
+    done
 
     #Adding all new clients role to generated file
     clientsIdAdded=$(echo $allNewClients | jq -r '[.[].clientId]')

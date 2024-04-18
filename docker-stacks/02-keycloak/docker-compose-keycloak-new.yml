@@ -1,0 +1,92 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    external: true
+
+services:
+# XXX: Explore options to protect /admin
+# see: https://www.keycloak.org/docs/latest/server_admin/#admin-endpoints-and-console
+# XXX Improve healthcheck
+# see: https://issues.redhat.com/browse/KEYCLOAK-1578, https://github.com/thomasdarimont/keycloak-health-checks/
+  keycloak:
+    << : *default-opts
+    image: ${SIMVA_KEYCLOAK_IMAGE:-quay.io/keycloak/keycloak}:${SIMVA_KEYCLOAK_VERSION:-24.0.2}
+    entrypoint:
+      - '/bin/bash'
+      - '-c'
+#      - '/container-tools/wait-for-it.sh -h $${KC_DB_URL_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- /opt/keycloak/bin/kc.sh start-dev --import-realm''
+      - '/container-tools/wait-for-it.sh -h $${KC_DB_URL_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- /opt/keycloak/bin/kc.sh build && /opt/keycloak/bin/kc.sh start --optimized'
+    environment:
+      # Hostname
+      - KC_HOSTNAME=${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      - KC_HOSTNAME_STRICT_HTTPS=true
+      - KC_HOSTNAME_STRICT=false
+      # HTTP
+      - KC_HTTP_ENABLED=true
+      - KC_HTTP_HOST=0.0.0.0
+      - HTTP_ADDRESS_FORWARDING=true
+      # PROXY
+      - KC_PROXY=edge
+      - KC_PROXY_HEADERS=xforwarded
+      - PROXY_ADDRESS_FORWARDING=true
+      # Health and metrics
+      - KC_HEALTH_ENABLED=false
+      - KC_METRICS_ENABLED=false
+      # Log level
+      - KC_LOG_LEVEL=${SIMVA_SSO_LOG_LEVEL:-info}
+      # Database
+      - KC_DB=mariadb
+      - KC_DB_URL_HOST=mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      - KC_DB_URL_DATABASE=${SIMVA_KEYCLOAK_MYSQL_DATABASE:-keycloak}
+      - KC_DB_USER=${SIMVA_KEYCLOAK_MYSQL_USER:-keycloak}
+      - KC_DB_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_PASSWORD:-password}
+      # Wait Timeout for DB
+      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-240}
+      # Master Realm + Admin user
+      - KC_REALM_NAME=master
+      - KEYCLOAK_ADMIN=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
+      - KEYCLOAK_ADMIN_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
+      #SIMVA Realm file
+      #- KC_FILE=/opt/keycloak/data/import/simva-realm-full.json
+      #- KC_SPI_IMPORT_DIR_DIR =/opt/keycloak/data/import/
+      #- KC_SPI_IMPORT_DIR_REALM_NAME=${SIMVA_SSO_REALM:-simva}
+      #- KC_SPI_IMPORT_DIR_STRATEGY="OVERWRITE_EXISTING"
+      - KC_SPI_THEME_DEFAULT=simva
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/keycloak/providers
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/themes:/opt/keycloak/themes
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm/:/opt/keycloak/data/import/:ro
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/:/opt/keycloak/data/export/:rw
+      - ${SIMVA_DATA_HOME}/keycloak/kcadm/:/opt/keycloak/bin/client/
+    restart: unless-stopped
+#    healthcheck:
+#     test: "wget http://0.0.0.0/health/ready:8080 || exit 1"
+#     interval: 60s
+#      timeout: 20s
+#      retries: 3
+    hostname: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      - "traefik.http.routers.keycloak.rule=Host(`${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.keycloak.middlewares=secHeaders@file"

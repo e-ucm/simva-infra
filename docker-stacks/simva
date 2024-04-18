@@ -17,6 +17,36 @@ export PATH=$PATH:${SIMVA_PROJECT_DIR}/bin
 DEPENDENCIES="find mkcert jq"
 DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME:-10}"
 
+# check backup version file
+function getValueFromBackupFile() {
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing var_name";
+        exit 1;
+    fi
+    var_name=${1}
+    if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" ]]; then
+        source "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh"
+    fi
+    value=${!var_name}
+    if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
+        source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
+    fi
+    echo ${value}
+}
+
+removeTrailingSlach() {
+    if [[ $# -gt 0 ]]; then
+        list=$@
+    fi
+    # Replace '\' with '/' to unify the path separator
+    list=${list//\\/\/}
+    # Remove trailing '/'
+    list_without_slash=$(echo "$list" | sed 's#/$##g')
+
+    # Print the modified list
+    echo "${list_without_slash}"
+}
+
 # main entrypoint, called after defining all functions (see last line)
 function main() {
 
@@ -31,56 +61,43 @@ function main() {
     case "$command" in
         "install")
             check_docker_launched
-            setExecutable $command $@
-            install "1" $@
+            install "1" "true" $@
             exit 0
         ;;
         "uninstall")
             check_docker_launched
-            setExecutable $command $@
             uninstall "1" $@
             exit 0
         ;;
-        "migrateUpgrade")
+        "upgrade")
             check_docker_launched
-            setExecutable "migrate" $@
-            setExecutable $command $@
-            setExecutable "install" $@
-            migrateUpgrade "1" $@
+            upgrade "1" $@
             exit 0
         ;;
         "migrateDomain")
             check_docker_launched
-            setExecutable "migrate" $@
-            setExecutable $command $@
-            setExecutable "install" $@
             migrateDomain "1" $@
             exit 0
         ;;
         "purge")
             check_docker_launched
-            setExecutable $command $@
             purge "1" $@
             exit 0
         ;;
         "start")
             check_docker_launched
-            setExecutable $command $@
-            start ${DEFAULT_WAIT_TIME} $@
+            start ${DEFAULT_WAIT_TIME} "true" $@
             exit 0
         ;;
         "stop")
             check_docker_launched
-            setExecutable $command $@
             stop ${DEFAULT_WAIT_TIME} $@
             exit 0
         ;;
         "restart")
             check_docker_launched
-            setExecutable "stop" $@
             stop ${DEFAULT_WAIT_TIME} $@
-            setExecutable "start" $@
-            start ${DEFAULT_WAIT_TIME} $@
+            start ${DEFAULT_WAIT_TIME} "true" $@
             exit 0
         ;;
         "log")
@@ -215,7 +232,7 @@ function execute_before_hooks() {
     local folder="${SIMVA_HOME}/etc/hooks"
     local stacks="${SIMVA_STACKS}"
     if [[ $# -gt 0 ]]; then
-        stacks=$@
+        stacks=$(removeTrailingSlach $@)
     fi
 
     case "${phase}" in
@@ -231,8 +248,12 @@ function execute_before_hooks() {
             folder="${folder}/before-migrate.d"
             run_scripts_from_folder ${folder}
         ;;
-        "migrateUpgrade")
-            folder="${folder}/before-migrateUpgrade.d"
+        "changeConfig")
+            folder="${folder}/before-changeConfig.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "upgrade")
+            folder="${folder}/before-upgrade.d"
             run_scripts_from_folder ${folder}
         ;;
         "migrateDomain")
@@ -277,8 +298,12 @@ function execute_before_hooks() {
                 folder="${folder}/before-migrate.d"
                 run_scripts_from_folder ${folder}
             ;;
-            "migrateUpgrade")
-                folder="${folder}/before-migrateUpgrade.d"
+            "changeConfig")
+                folder="${folder}/before-changeConfig.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "upgrade")
+                folder="${folder}/before-upgrade.d"
                 run_scripts_from_folder ${folder}
             ;;
             "migrateDomain")
@@ -313,7 +338,7 @@ function execute_after_hooks() {
     local folder="${SIMVA_HOME}/etc/hooks"
     local stacks="${SIMVA_STACKS}"
     if [[ $# -gt 0 ]]; then
-        stacks=$@
+        stacks=$(removeTrailingSlach $@)
     fi
 
     for stack in ${stacks}; do
@@ -340,8 +365,12 @@ function execute_after_hooks() {
                 folder="${folder}/after-migrate.d"
                 run_scripts_from_folder ${folder}
             ;;
-            "migrateUpgrade")
-                folder="${folder}/after-migrateUpgrade.d"
+            "changeConfig")
+                folder="${folder}/after-changeConfig.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "upgrade")
+                folder="${folder}/after-upgrade.d"
                 run_scripts_from_folder ${folder}
             ;;
             "migrateDomain")
@@ -383,8 +412,12 @@ function execute_after_hooks() {
             folder="${folder}/after-migrate.d"
             run_scripts_from_folder ${folder}
         ;;
-        "migrateUpgrade")
-            folder="${folder}/after-migrateUpgrade.d"
+        "changeConfig")
+            folder="${folder}/after-changeConfig.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "upgrade")
+            folder="${folder}/after-upgrade.d"
             run_scripts_from_folder ${folder}
         ;;
         "migrateDomain")
@@ -477,8 +510,8 @@ OPERATION one of the following:
         Install SIMVA locally (download docker images, build required tools, etc.)
     uninstall:
         Stop and remove containers, also remove docker volumes too.
-    migrateUpgrade:
-        Migrate config before using a new version of each stack
+    changeConfig:
+        Migrate config of each stack
     migrateDomain:
         migrate to a new External Domain for each stack
     purge:
@@ -508,14 +541,28 @@ function install() {
         exit 1;
     fi
     local wait_time=${1}
-    shift
+
+    if [[ $# -lt 2 ]]; then
+        echo >&2 "missing backup variable";
+        exit 1;
+    fi
+    local backup=${2}
 
     local stacks=${SIMVA_STACKS}
-    if [[ $# -gt 0 ]]; then
-        stacks=$@
+    if [[ $# -gt 2 ]]; then
+        stacks=$(removeTrailingSlach "${@:3}")  # Get the stack arguments starting from the third argument
+    fi
+    shift
+    if [[ $backup == "true" ]]; then 
+        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" ]]; then
+            current_datetime=$(date +"%Y%m%d-%H%M%S")
+            cp "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env-$current_datetime.sh"
+        fi 
+        cp "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh"
     fi
 
     local phase="install"
+    setExecutable ${phase} ${stacks}
     execute_before_hooks ${phase} ${stacks}
     docker_compose_stacks "${stacks}" ${wait_time} "pull"
     execute_after_hooks ${phase} ${stacks}
@@ -533,33 +580,106 @@ function uninstall() {
     local phase="uninstall"
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$@
+        stacks=$(removeTrailingSlach $@)
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+    setExecutable ${phase} ${reverse_stacks}
     execute_before_hooks ${phase} ${reverse_stacks}
     docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
     execute_after_hooks ${phase} ${reverse_stacks}
 }
 
-# migrate config for each stack
-function migrateUpgrade() {
+# Function to compare two version strings
+# Returns:
+#   0 if version1 == version2
+#   1 if version1 > version2
+#   2 if version1 < version2
+compare_versions() {
+    local version1=$1
+    local version2=$2
+
+    # Split version strings into parts
+    IFS='.' read -r -a v1_parts <<< "$version1"
+    IFS='.' read -r -a v2_parts <<< "$version2"
+
+    # Compare each part
+    for i in {0..2}; do
+        if [ "${v1_parts[$i]}" -gt "${v2_parts[$i]}" ]; then
+            echo 1
+            exit
+        elif [ "${v1_parts[$i]}" -lt "${v2_parts[$i]}" ]; then
+            echo 2
+            exit
+        fi
+    done
+
+    # Versions are equal
+    echo 0
+    exit
+}
+
+# upgrade stack
+function upgrade() {
     if [[ $# -lt 1 ]]; then
-        echo >&2 "missing wait_time";
-        exit 1;
+        echo >&2 "missing wait_time"
+        exit 1
     fi
     local wait_time=${1}
     shift
 
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$@
+        stacks=$(removeTrailingSlach $@)
     fi
-
+    echo "Upgrade stated"
+    local phase="upgrade"
+    setExecutable "migrate" ${stacks}
+    setExecutable ${phase} ${stacks}
     execute_before_hooks "migrate" ${stacks}
-    execute_before_hooks "migrateUpgrade" ${stacks}
-    install ${wait_time} "${stacks}"
+    execute_before_hooks ${phase} ${stacks}
+
+    for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        local version_file="${STACK_HOME}/etc/upgrade/versions.txt"
+        local stack_name="${stack##*-}"
+        echo "Processing $stack_name versions..."
+        if [[ -e "$version_file" ]]; then 
+            stack_name=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
+            local var_name="SIMVA_${stack_name}_VERSION"
+            echo "var_name: $var_name"
+            local new_version=${!var_name}
+            echo "new_version: $new_version"
+            local previous_version=$(getValueFromBackupFile $var_name)
+            echo "previous_version: $previous_version"
+            while IFS= read -r version || [[ -n $version ]];do
+                echo "version: $version"
+                comparison_prev_result=$(compare_versions $version $previous_version)
+                echo "compare_versions $version $previous_version : $comparison_prev_result"
+                comparison_new_result=$(compare_versions $version $new_version)
+                echo "compare_versions $version $new_version : $comparison_new_result"
+                if [[ ! $comparison_prev_result == 2 ]] && [[ ! $comparison_new_result == 1 ]]; then
+                    echo "Processing version: $version" 
+                    declare -g "$var_name=$version"
+                    install ${wait_time} "false" ${stack}
+                    start 30 "false" ${stack}
+                    stop ${wait_time} ${stack}
+                    echo "Processing version: $version done " 
+                else 
+                    echo "No need to migrate to this version $version" 
+                fi
+            done < "$version_file"
+        fi
+        echo "Source original simva-env file"
+        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
+            source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
+        fi
+        echo "Installing the selected version"
+        install ${wait_time} "true" ${stack}
+        echo "Processing versions done"
+    done
     execute_after_hooks "migrate" ${stacks}
-    execute_after_hooks "migrateUpgrade" ${stacks}
+    execute_after_hooks ${phase} ${stacks}
+    echo "Upgrade done!"
 }
 
 # migrate to a new External Domain for each stack
@@ -573,14 +693,16 @@ function migrateDomain() {
 
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$@
+        stacks=$(removeTrailingSlach $@)
     fi
-
+    local phase="migrateDomain"
+    setExecutable "migrate" ${stacks}
+    setExecutable ${phase} ${stacks}
     execute_before_hooks "migrate" ${stacks}
-    execute_before_hooks "migrateDomain" ${stacks}
-    install ${wait_time} "${stacks}"
+    execute_before_hooks ${phase} ${stacks}
+    install "true" ${wait_time} "${stacks}"
     execute_after_hooks "migrate" ${stacks}
-    execute_after_hooks "migrateDomain" ${stacks}
+    execute_after_hooks ${phase} ${stacks}
 }
 
 # purge data
@@ -595,9 +717,10 @@ function purge() {
     local phase="purge"
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$@
+        stacks=$(removeTrailingSlach $@)
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+    setExecutable ${phase} ${reverse_stacks}
     execute_before_hooks ${phase} ${reverse_stacks}
     docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
     execute_after_hooks ${phase} ${reverse_stacks}
@@ -605,25 +728,56 @@ function purge() {
 
 # start stacks
 function start() {
+    echo "$@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
     fi
     local wait_time=${1}
-    shift
+
+    if [[ $# -lt 2 ]]; then
+        echo >&2 "missing check Upgrade";
+        exit 1;
+    fi
+    local check_upgrade=${2}
 
     local stacks=${SIMVA_STACKS}
-    if [[ $# -gt 0 ]]; then
-        stacks=$@
+    if [[ $# -gt 2 ]]; then
+        stacks=$(removeTrailingSlach "${@:3}")  # Get the stack arguments starting from the third argument
     fi
+    shift
+    
     if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
         wait_time=20;
         recho "SIMVA it is not initialized, this launch will take longer than normal."
     fi
     local phase="start"
-    execute_before_hooks ${phase} ${stacks}
-    docker_compose_stacks "${stacks}" ${wait_time} "up -d"
-    execute_after_hooks ${phase} ${stacks}
+    setExecutable ${phase} ${stacks}
+    for stack in ${stacks}; do
+        if [[ $check_upgrade == "true" ]]; then
+            local stack_name="${stack##*-}"
+            stack_name=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
+            local var_name="SIMVA_${stack_name}_VERSION"
+            if [[ -v $var_name ]]; then
+                echo "Variable $var_name is set"
+                echo "var_name: $var_name"
+                local new_version=${!var_name}
+                echo "new_version: $new_version"
+                local previous_version=$(getValueFromBackupFile $var_name)
+                echo "previous_version: $previous_version"
+                compare_result=$(compare_versions $new_version $previous_version)
+                if [[ ! $compare_result == 0 ]]; then
+                    echo "Upgrading $stack_name version..."
+                    upgrade $wait_time $stack
+                fi;
+            else
+                echo "Variable $var_name is not set."
+            fi;
+        fi; 
+        execute_before_hooks ${phase} ${stack}
+        docker_compose_stacks "${stack}" ${wait_time} "up -d"
+        execute_after_hooks ${phase} ${stack}
+    done;
     touch "${SIMVA_PROJECT_DIR}/.simva-initialized"
 }
 
@@ -639,9 +793,10 @@ function stop() {
     local phase="stop"
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$@
+        stacks=$(removeTrailingSlach $@)
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+    setExecutable ${phase} ${reverse_stacks}
     execute_before_hooks ${phase} ${reverse_stacks}
     docker_compose_stacks "${reverse_stacks}" ${wait_time} ${phase}
     execute_after_hooks ${phase} ${reverse_stacks}
@@ -659,7 +814,7 @@ function setExecutable() {
 
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$@
+        stacks=$(removeTrailingSlach $@)
     fi
     for stack in ${stacks}; do
         HooksFolder="${SIMVA_HOME}/${stack}/etc/hooks"
@@ -676,10 +831,16 @@ function setExecutable() {
                 folder="${HooksFolder}/after-uninstall.d"
                 setExecutable_scripts_from_folder ${folder}
             ;;
-            "migrateUpgrade")
-                folder="${HooksFolder}/before-migrateUpgrade.d"
+            "upgrade")
+                folder="${HooksFolder}/before-upgrade.d"
                 setExecutable_scripts_from_folder ${folder}
-                folder="${HooksFolder}/after-migrateUpgrade.d"
+                folder="${HooksFolder}/after-upgrade.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
+            "changeConfig")
+                folder="${HooksFolder}/before-changeConfig.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/after-changeConfig.d"
                 setExecutable_scripts_from_folder ${folder}
             ;;
             "migrateDomain")
@@ -728,10 +889,16 @@ function setExecutable() {
             folder="${HooksFolder}/after-uninstall.d"
             setExecutable_scripts_from_folder ${folder}
         ;;
-        "migrateUpgrade")
-            folder="${HooksFolder}/before-migrateUpgrade.d"
+        "upgrade")
+            folder="${HooksFolder}/before-upgrade.d"
             setExecutable_scripts_from_folder ${folder}
-            folder="${HooksFolder}/after-migrateUpgrade.d"
+            folder="${HooksFolder}/after-upgrade.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+        "changeConfig")
+            folder="${HooksFolder}/before-changeConfig.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/after-changeConfig.d"
             setExecutable_scripts_from_folder ${folder}
         ;;
         "migrateDomain")
