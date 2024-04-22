@@ -8,19 +8,13 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
         docker exec 02-keycloak-keycloak-1 /opt/keycloak/bin/kc.sh import --file "/opt/keycloak/data/import/simva-realm-full.json" --override true --optimized
     else
         echo "SIMVA is initialized." 
-        if [[ -e "${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/${SIMVA_SSO_REALM:-simva}-realm-full.json" ]]; then    
-            #previousVersion=0
-            #if [[ -e "${keycloakVersionFile}" ]]; then 
-            #    previousVersion=$(cat $keycloakVersionFile)    
-            #fi;
-            #if [[ ! $SIMVA_KEYCLOAK_VERSION == $previousVersion ]]; then
-            migrationinProgressFile="${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/.migrationinprogress"
-            if [[ -e "$migrationinProgressFile" ]]; then
-                echo "Migration in progress. Importing realm..."
+        migrationinProgressFile="${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/.migrationinprogress"
+        if [[ -e "$migrationinProgressFile" ]]; then
+            echo "Migration in progress. Importing realm..."
+            if [[ -e "${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/${SIMVA_SSO_REALM:-simva}-realm.json" ]]; then    
                 docker exec 02-keycloak-keycloak-1 /opt/keycloak/bin/kc.sh import --dir "/opt/keycloak/data/export/" --override true --optimized
-                #echo $SIMVA_KEYCLOAK_VERSION > $keycloakVersionFile
-                rm -f $migrationinProgressFile
-            fi;
+            fi
+            rm -f $migrationinProgressFile
         fi;
     fi;
 else
