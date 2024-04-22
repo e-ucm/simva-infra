@@ -18,7 +18,7 @@ if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then
         echo "Processing file: $userfile"
         echo "File number: $file_number"
         #Adding all new clients to generated file
-        newUsers=$(jq '.users' "$userfile"
+        newUsers=$(jq '.users' "$userfile")
 
         # Check if each new users's id is not present in the table and add if absent
         allNewUsers=$(jq --argjson new_users "$newUsers" '
