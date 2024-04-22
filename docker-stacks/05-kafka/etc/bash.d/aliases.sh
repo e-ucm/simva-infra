@@ -46,4 +46,4 @@ function __docker_alias_network_entrypoint() {
     docker start -a -i ${container_id}
 }
 
-alias kafkacat="__docker_network_alias ${SIMVA_KAFKA_NETWORK} $PWD confluentinc/cp-kafkacat:${SIMVA_CONFLUENT_PLATFORM_VERSION}"
+alias kafkacat="__docker_network_alias ${SIMVA_KAFKA_NETWORK} $PWD confluentinc/cp-kafkacat:${SIMVA_KAFKA_VERSION}"

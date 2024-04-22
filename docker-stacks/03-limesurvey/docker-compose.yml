@@ -19,7 +19,7 @@ services:
 
   limesurvey:
     << : *default-opts
-    image: eucm/limesurvey:4.3.15-4
+    image: ${SIMVA_LIMESURVEY_IMAGE:-eucm/limesurvey}:${SIMVA_LIMESURVEY_VERSION:-4.3.15-4}
     entrypoint:
       - '/bin/bash'
       - '-c'

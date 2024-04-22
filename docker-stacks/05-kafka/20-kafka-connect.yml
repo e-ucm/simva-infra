@@ -17,7 +17,7 @@ networks:
 services:
   connect:
     << : *default-opts
-    image: confluentinc/cp-kafka-connect:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    image: ${SIMVA_KAFKA_CONNECT_IMAGE:-confluentinc/cp-kafka-connect}:${SIMVA_KAFKA_VERSION:-5.5.0}
     command: >
       bash -c '
         # Add extra jar files to all storage plugins
@@ -87,7 +87,7 @@ services:
 
       # Reduce Connect memory utilization
       KAFKA_HEAP_OPTS: "-Xms256M -Xmx512M"
-      # https://github.com/confluentinc/cp-demo/blob/${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}-post/docker-compose.yml
+      # https://github.com/confluentinc/cp-demo/blob/${SIMVA_KAFKA_VERSION:-5.5.0}-post/docker-compose.yml
       KAFKA_JVM_PERFORMANCE_OPTS: -server -XX:+UseG1GC -XX:GCTimeRatio=1
                   -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20
                   -XX:MaxGCPauseMillis=10000 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent

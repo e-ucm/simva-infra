@@ -13,11 +13,7 @@ x-default-opts:
 services:
   ksqldb-cli:
     << : *default-opts
-    image: confluentinc/cp-ksqldb-cli:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
-    depends_on:
-      - kafka-broker1
-      - kafka-connect
-      - ksqldb-server
+    image: confluentinc/cp-ksqldb-cli:${SIMVA_KAFKA_VERSION:-5.5.0}
     entrypoint: /bin/sh
     tty: true
     depends_on:

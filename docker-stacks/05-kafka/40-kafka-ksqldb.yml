@@ -13,7 +13,7 @@ x-default-opts:
 services:
   ksqldb-server:
     << : *default-opts
-    image: confluentinc/cp-ksqldb-server:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    image: confluentinc/cp-ksqldb-server:${SIMVA_KAFKA_VERSION:-5.5.0}
     environment:
       KSQL_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092
       KSQL_LISTENERS: http://0.0.0.0:8088/

@@ -43,7 +43,7 @@ services:
 
   traefik:
     << : *default-opts
-    image: traefik:2.2.11
+    image: ${SIMVA_TRAEFIK_IMAGE:-traefik}:${SIMVA_TRAEFIK_VERSION:-2.2.11}
     entrypoint:
       - '/bin/sh'
       - '-c'

@@ -17,7 +17,7 @@ networks:
 
 services:
   portainer:
-    image: portainer/portainer-ce:latest
+    image: ${SIMVA_PORTAINER_IMAGE:-portainer/portainer-ce}:${SIMVA_PORTAINER_VERSION:-latest}
     ports:
       - 9443:9443
     volumes:

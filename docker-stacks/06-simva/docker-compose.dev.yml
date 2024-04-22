@@ -13,7 +13,7 @@ x-default-opts:
 services:
   mongodb:
     << : *default-opts
-    image: mongo:4.2.8
+    image: ${SIMVA_MONGODB_IMAGE:-mongo}:${SIMVA_MONGODB_VERSION:-4.2.8}
     networks:
       traefik_services:
         aliases:

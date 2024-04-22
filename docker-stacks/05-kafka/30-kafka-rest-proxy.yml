@@ -13,7 +13,7 @@ x-default-opts:
 services:
   kafka-rest-proxy:
     << : *default-opts
-    image: confluentinc/cp-kafka-rest:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    image: confluentinc/cp-kafka-rest:${SIMVA_KAFKA_VERSION:-5.5.0}
     environment:
       KAFKA_REST_LISTENERS: http://0.0.0.0:8086/
       KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085/

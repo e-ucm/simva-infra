@@ -22,7 +22,7 @@ networks:
 services:
   mongodb:
     << : *default-opts
-    image: mongo:4.2.8
+    image: ${SIMVA_MONGODB_IMAGE:-mongo}:${SIMVA_MONGODB_VERSION:-4.2.8}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/mongo:/data/db
@@ -36,7 +36,7 @@ services:
 
   simva-api:
     << : *default-opts
-    image: node:20.9.0-bullseye
+    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_VERSION:-20.9.0-bullseye}
     command: bash -c "mkdir -p ${SIMVA_STORAGE_PATH:-/storage} && cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
@@ -142,7 +142,7 @@ services:
 
   simva-front:
     << : *default-opts
-    image: node:12.18.2
+    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_FRONT_VERSION:-12.18.2}
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
@@ -207,7 +207,7 @@ services:
 
   simva-trace-allocator:
     << : *default-opts
-    image: node:20.9.0-bullseye
+    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_VERSION:-20.9.0-bullseye}
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true

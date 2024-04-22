@@ -13,7 +13,7 @@ x-default-opts:
 services:
   schema-registry:
     << : *default-opts
-    image: confluentinc/cp-schema-registry:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    image: confluentinc/cp-schema-registry:${SIMVA_KAFKA_VERSION:-5.5.0}
     environment:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092
       SCHEMA_REGISTRY_HOST_NAME: schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}

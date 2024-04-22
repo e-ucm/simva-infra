@@ -45,11 +45,41 @@ export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 # Images versions and SIMVA Git reference #
 ###########################################
 # Images versions
+export SIMVA_TRAEFIK_IMAGE="traefik"
+export SIMVA_TRAEFIK_VERSION="2.2.11"
+
 export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"
 export SIMVA_KEYCLOAK_VERSION="24.0.2"
 
 export SIMVA_MARIADB_IMAGE="mariadb"
 export SIMVA_MARIADB_VERSION="10.4.13"
+
+export SIMVA_LIMESURVEY_IMAGE="eucm/limesurvey"
+export SIMVA_LIMESURVEY_VERSION="4.3.15-4"
+
+export SIMVA_MINIO_IMAGE="minio/minio"
+export SIMVA_MINIO_VERSION="RELEASE.2020-09-26T03-44-56Z"
+export SIMVA_MINIO_MC_IMAGE="minio/mc"
+export SIMVA_MINIO_MC_VERSION="RELEASE.2020-09-03T00-08-28Z"
+
+export SIMVA_KAFKA_IMAGE="confluentinc/cp-kafka"
+export SIMVA_KAFKA_CONNECT_IMAGE="confluentinc/cp-kafka-connect"
+export SIMVA_KAFKA_VERSION="5.5.0"
+export SIMVA_ZOOKEEPER_IMAGE="zookeeper"
+export SIMVA_ZOOKEEPER_VERSION="3.4.9"
+
+export SIMVA_SIMVA_IMAGE="node"
+export SIMVA_SIMVA_VERSION="20.9.0-bullseye"
+export SIMVA__FRONT_VERSION="12.18.2"
+
+export SIMVA_MONGODB_IMAGE="mongo"
+export SIMVA_MONGODB_VERSION="4.2.8"
+
+export SIMVA_ANACONDA_IMAGE="continuumio/anaconda3"
+export SIMVA_ANACONDA_VERSION="2024.02-1"
+
+export SIMVA_PORTAINER_IMAGE="portainer/portainer-ce"
+export SIMVA_PORTAINER_VERSION="latest"
 
 #Git reference branch
 export CSP_REPORTER_GIT_REF="master"
@@ -191,7 +221,6 @@ export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 ##############
 # Kafka info #
 ##############
-export SIMVA_CONFLUENT_PLATFORM_VERSION="5.5.0"
 export SIMVA_KAFKA_NETWORK="kafka_services"
 export SIMVA_KAFKA_DNS_IP="127.0.0.11"
 export SIMVA_TRACES_BUCKET_NAME="traces"
