@@ -22,9 +22,7 @@ function sourceEnvFile() {
     fi
 }
 
-sourceEnvFile();
-
-
+sourceEnvFile
 DEPENDENCIES="find mkcert jq"
 DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME:-10}"
 
@@ -34,9 +32,9 @@ function getValueFromBackupFile() {
         exit 1;
     fi
     var_name=${1}
-    sourceBackupEnvFile()
+    sourceBackupEnvFile
     value=${!var_name}
-    sourceEnvFile()
+    sourceEnvFile
     echo ${value}
 }
 
@@ -676,7 +674,7 @@ function upgrade() {
             done < "$version_file"
         fi
         echo "Source original simva-env file"
-        sourceEnvFile()
+        sourceEnvFile
         echo "Installing the selected version"
         install ${wait_time} "true" ${stack}
         echo "Processing versions done"
