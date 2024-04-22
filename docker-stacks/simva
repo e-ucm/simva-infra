@@ -647,7 +647,6 @@ function upgrade() {
         if [[ -e "$version_file" ]]; then 
             stack_name=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
             local var_name="SIMVA_${stack_name}_VERSION"
-            echo "var_name: $var_name"
             local new_version=${!var_name}
             echo "new_version: $new_version"
             local previous_version=$(getValueFromBackupFile $var_name)
@@ -761,7 +760,6 @@ function start() {
             local var_name="SIMVA_${stack_name}_VERSION"
             if [[ -v $var_name ]]; then
                 echo "Variable $var_name is set"
-                echo "var_name: $var_name"
                 local new_version=${!var_name}
                 echo "new_version: $new_version"
                 local previous_version=$(getValueFromBackupFile $var_name)
@@ -798,9 +796,27 @@ function stop() {
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     setExecutable ${phase} ${reverse_stacks}
-    execute_before_hooks ${phase} ${reverse_stacks}
-    docker_compose_stacks "${reverse_stacks}" ${wait_time} ${phase}
-    execute_after_hooks ${phase} ${reverse_stacks}
+    for stack in ${reverse_stacks}; do
+            local stack_name="${stack##*-}"
+            stack_name=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
+            local var_name="SIMVA_${stack_name}_VERSION"
+            if [[ -v $var_name ]]; then
+                echo "Variable $var_name is set"
+                local new_version=${!var_name}
+                echo "new_version: $new_version"
+                local previous_version=$(getValueFromBackupFile $var_name)
+                echo "previous_version: $previous_version"
+                compare_result=$(compare_versions $new_version $previous_version)
+                if [[ ! $compare_result == 0 ]]; then
+                    declare -g "$var_name=$previous_version"
+                fi;
+            else
+                echo "Variable $var_name is not set."
+            fi;
+        execute_before_hooks ${phase} ${stack}
+        docker_compose_stacks "${stack}" ${wait_time} ${phase}
+        execute_after_hooks ${phase} ${stack}
+    done;
 }
 
 
