@@ -8,29 +8,35 @@ export SIMVA_PROJECT_URL='https://github.com/e-ucm/simva-infra'
 export SIMVA_PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 OLD_PATH=$PATH
 
-if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
-    source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
-fi
+# check backup version file
+function sourceBackupEnvFile() {
+    if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" ]]; then
+        source "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh"
+    fi
+}
+
+function sourceEnvFile() {
+    if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
+        source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
+    fi
+}
+
+sourceEnvFile()
 
 export PATH=$PATH:${SIMVA_PROJECT_DIR}/bin
 
 DEPENDENCIES="find mkcert jq"
 DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME:-10}"
 
-# check backup version file
 function getValueFromBackupFile() {
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing var_name";
         exit 1;
     fi
     var_name=${1}
-    if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" ]]; then
-        source "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh"
-    fi
+    sourceBackupEnvFile()
     value=${!var_name}
-    if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
-        source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
-    fi
+    sourceEnvFile()
     echo ${value}
 }
 
@@ -670,9 +676,7 @@ function upgrade() {
             done < "$version_file"
         fi
         echo "Source original simva-env file"
-        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
-            source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
-        fi
+        sourceEnvFile()
         echo "Installing the selected version"
         install ${wait_time} "true" ${stack}
         echo "Processing versions done"
@@ -797,25 +801,29 @@ function stop() {
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     setExecutable ${phase} ${reverse_stacks}
     for stack in ${reverse_stacks}; do
-            local stack_name="${stack##*-}"
-            stack_name=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
-            local var_name="SIMVA_${stack_name}_VERSION"
-            if [[ -v $var_name ]]; then
-                echo "Variable $var_name is set"
-                local new_version=${!var_name}
-                echo "new_version: $new_version"
-                local previous_version=$(getValueFromBackupFile $var_name)
-                echo "previous_version: $previous_version"
-                compare_result=$(compare_versions $new_version $previous_version)
-                if [[ ! $compare_result == 0 ]]; then
-                    declare -g "$var_name=$previous_version"
-                fi;
-            else
-                echo "Variable $var_name is not set."
+        local stack_name="${stack##*-}"
+        stack_name=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
+        local var_name="SIMVA_${stack_name}_VERSION"
+        if [[ -v $var_name ]]; then
+            echo "Variable $var_name is set"
+            local new_version=${!var_name}
+            echo "new_version: $new_version"
+            local previous_version=$(getValueFromBackupFile $var_name)
+            echo "previous_version: $previous_version"
+            compare_result=$(compare_versions $new_version $previous_version)
+            if [[ ! $compare_result == 0 ]]; then
+                declare -g "$var_name=$previous_version"
+                execute_before_hooks ${phase} ${stack}
+                docker_compose_stacks "${stack}" ${wait_time} ${phase}
+                execute_after_hooks ${phase} ${stack}
+                declare -g "$var_name=$new_version"
             fi;
-        execute_before_hooks ${phase} ${stack}
-        docker_compose_stacks "${stack}" ${wait_time} ${phase}
-        execute_after_hooks ${phase} ${stack}
+        else
+            echo "Variable $var_name is not set."
+            execute_before_hooks ${phase} ${stack}
+            docker_compose_stacks "${stack}" ${wait_time} ${phase}
+            execute_after_hooks ${phase} ${stack}
+        fi;
     done;
 }
 
