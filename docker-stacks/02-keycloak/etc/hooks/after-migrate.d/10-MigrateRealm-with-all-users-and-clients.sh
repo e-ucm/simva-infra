@@ -5,8 +5,6 @@ EXPORTED_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-r
 EXPORTED_USERS_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-users-0.json"
 NEW_FULL_EXPORTED_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-realm-full.json"
 if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then 
-    cat $GENERATED_JSON_FILE > $TEMP_JSON_FILE
-
     # Set the realm name or default to "simva" if SIMVA_SSO_REALM is not set
     realm="${SIMVA_SSO_REALM:-simva}"
     
@@ -35,10 +33,11 @@ if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then
         rm -f $previousUsersFile
         echo $(jq --argjson users "$allNewUsers" '.users = $users' $userfile) > $userfile
     done
+    cat $GENERATED_JSON_FILE > $TEMP_JSON_FILE
 
     #Adding all new clients to generated file
     previousClients=$(jq '.clients' "$GENERATED_JSON_FILE")
-    newClients=$(jq '.clients' "$EXPORTED_JSON_FILE")
+    newClients=$(jq '.clients' "$TEMP_JSON_FILE")
 
     previousClientsFile="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/previousClients.json"
     echo $previousClients > $previousClientsFile
