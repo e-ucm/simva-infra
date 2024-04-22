@@ -11,9 +11,10 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
         migrationinProgressFile="${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/.migrationinprogress"
         if [[ -e "$migrationinProgressFile" ]]; then
             echo "Migration in progress. Importing realm..."
-            if [[ -e "${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/${SIMVA_SSO_REALM:-simva}-realm.json" ]]; then    
+            realmFile="${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/${SIMVA_SSO_REALM:-simva}-realm.json" 
+            if [[ -e "$realmFile" ]]; then
                 docker exec 02-keycloak-keycloak-1 /opt/keycloak/bin/kc.sh import --dir "/opt/keycloak/data/export/" --override true --optimized
-            fi
+            fi;
             rm -f $migrationinProgressFile
         fi;
     fi;
