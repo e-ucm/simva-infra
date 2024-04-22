@@ -33,7 +33,7 @@ if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then
           )
         ' "$previousUsersFile")
         rm -f $previousUsersFile
-        echo $(jq --argjson users "$allNewUsers" '.users = $users + .users' $GENERATED_JSON_FILE) > $TEMP_JSON_FILE
+        echo $(jq --argjson users "$allNewUsers" '.users = $users + .users' $TEMP_JSON_FILE) > $TEMP_JSON_FILE
 
         #Adding all new clients to generated file
         previousClients=$(jq '.clients' "$GENERATED_JSON_FILE")
