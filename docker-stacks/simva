@@ -611,16 +611,17 @@ compare_versions() {
     v2=${#v2_parts[@]}
     nbparts=$(($(($v1>$v2 ? $v2 : $v1))-1))
     # Compare each part
-    for i in {0..$nbparts}; do
-        if [ "${v1_parts[$i]}" -gt "${v2_parts[$i]}" ]; then
-            echo 1
-            exit
-        elif [ "${v1_parts[$i]}" -lt "${v2_parts[$i]}" ]; then
-            echo 2
-            exit
-        fi
-    done
-
+    if [[ nbparts -gt 0 ]]; then
+        for i in {0..$nbparts}; do
+            if [ "${v1_parts[$i]}" -gt "${v2_parts[$i]}" ]; then
+                echo 1
+                exit
+            elif [ "${v1_parts[$i]}" -lt "${v2_parts[$i]}" ]; then
+                echo 2
+                exit
+            fi
+        done
+    fi
     # Versions are equal
     echo 0
     exit
