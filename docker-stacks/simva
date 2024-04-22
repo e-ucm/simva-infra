@@ -547,12 +547,13 @@ function install() {
         exit 1;
     fi
     local backup=${2}
+    shift
 
     local stacks=${SIMVA_STACKS}
-    if [[ $# -gt 2 ]]; then
-        stacks=$(removeTrailingSlach "${@:3}")  # Get the stack arguments starting from the third argument
+    if [[ $# -gt 0 ]]; then
+        stacks=$(removeTrailingSlach $@)  # Get the stack arguments starting from the third argument
     fi
-    shift
+
     if [[ $backup == "true" ]]; then 
         if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" ]]; then
             current_datetime=$(date +"%Y%m%d-%H%M%S")
@@ -740,12 +741,12 @@ function start() {
         exit 1;
     fi
     local check_upgrade=${2}
+    shift
 
     local stacks=${SIMVA_STACKS}
-    if [[ $# -gt 2 ]]; then
-        stacks=$(removeTrailingSlach "${@:3}")  # Get the stack arguments starting from the third argument
+    if [[ $# -gt 0 ]]; then
+        stacks=$(removeTrailingSlach $@)  # Get the stack arguments starting from the third argument
     fi
-    shift
     
     if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
         wait_time=20;
