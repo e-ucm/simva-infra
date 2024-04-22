@@ -33,7 +33,7 @@ if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then
 
     #Adding all new clients to generated file
     previousClients=$(jq '.clients' "$GENERATED_JSON_FILE")
-    newClients=$(jq '.clients' "$TEMP_JSON_FILE")
+    newClients=$(jq '.clients' "$EXPORTED_JSON_FILE")
 
     previousClientsFile="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/previousClients.json"
     echo $previousClients > $previousClientsFile
@@ -57,7 +57,6 @@ if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then
           map(select(.key | IN($clients[]))) | from_entries
           ' $newClientsRoleFile)
     rm -f $newClientsRoleFile
-    rm -f $EXPORTED_JSON_FILE
     echo $(jq --argjson selected_roles "$selected_roles" '.roles.client=.roles.client + $selected_roles' $TEMP_JSON_FILE)  > "$EXPORTED_JSON_FILE"
     rm -f $TEMP_JSON_FILE
     touch "${KEYCLOAK_CONFIG_EXPORT_FOLDER}/.migrationinprogress"
