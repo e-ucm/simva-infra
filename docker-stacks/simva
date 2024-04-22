@@ -732,7 +732,6 @@ function purge() {
 
 # start stacks
 function start() {
-    echo "$@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
