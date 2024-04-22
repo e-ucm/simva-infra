@@ -677,6 +677,8 @@ function upgrade() {
         sourceEnvFile
         echo "Installing the selected version"
         install ${wait_time} "true" ${stack}
+        start 30 "false" ${stack}
+        stop ${wait_time} ${stack}
         echo "Processing versions done"
     done
     execute_after_hooks "migrate" ${stacks}
