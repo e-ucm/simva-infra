@@ -3,7 +3,6 @@ KEYCLOAK_CONFIG_EXPORT_FOLDER="${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/
 TEMP_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-realm-temp.json"
 EXPORTED_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-realm.json"
 EXPORTED_USERS_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-users-0.json"
-NEW_FULL_EXPORTED_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-realm-full.json"
 if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then 
     # Set the realm name or default to "simva" if SIMVA_SSO_REALM is not set
     realm="${SIMVA_SSO_REALM:-simva}"
@@ -61,8 +60,7 @@ if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then
           map(select(.key | IN($clients[]))) | from_entries
           ' $newClientsRoleFile)
     rm -f $newClientsRoleFile
-    echo $(jq --argjson selected_roles "$selected_roles" '.roles.client=.roles.client + $selected_roles' $TEMP_JSON_FILE)  > "$NEW_FULL_EXPORTED_JSON_FILE"
+    echo $(jq --argjson selected_roles "$selected_roles" '.roles.client=.roles.client + $selected_roles' $TEMP_JSON_FILE)  > "$EXPORTED_JSON_FILE"
     rm -f $TEMP_JSON_FILE
-    rm -f $EXPORTED_JSON_FILE
     touch "${KEYCLOAK_CONFIG_EXPORT_FOLDER}/.migrationinprogress"
 fi;
