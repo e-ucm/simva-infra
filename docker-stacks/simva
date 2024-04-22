@@ -7,6 +7,7 @@ export SIMVA_PROJECT_URL='https://github.com/e-ucm/simva-infra'
 # https://stackoverflow.com/a/246128
 export SIMVA_PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 OLD_PATH=$PATH
+export PATH=$PATH:${SIMVA_PROJECT_DIR}/bin
 
 # check backup version file
 function sourceBackupEnvFile() {
@@ -21,9 +22,8 @@ function sourceEnvFile() {
     fi
 }
 
-sourceEnvFile()
+sourceEnvFile();
 
-export PATH=$PATH:${SIMVA_PROJECT_DIR}/bin
 
 DEPENDENCIES="find mkcert jq"
 DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME:-10}"
