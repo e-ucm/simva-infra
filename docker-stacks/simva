@@ -813,9 +813,11 @@ function stop() {
             compare_result=$(compare_versions $new_version $previous_version)
             if [[ ! $compare_result == 0 ]]; then
                 declare -g "$var_name=$previous_version"
-                execute_before_hooks ${phase} ${stack}
-                docker_compose_stacks "${stack}" ${wait_time} ${phase}
-                execute_after_hooks ${phase} ${stack}
+            fi
+            execute_before_hooks ${phase} ${stack}
+            docker_compose_stacks "${stack}" ${wait_time} ${phase}
+            execute_after_hooks ${phase} ${stack}
+            if [[ ! $compare_result == 0 ]]; then
                 declare -g "$var_name=$new_version"
             fi;
         else
