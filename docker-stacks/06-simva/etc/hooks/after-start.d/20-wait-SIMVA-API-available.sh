@@ -12,9 +12,7 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   echo 1>&2 "Checking Simva availability: $((${mc_max_retries}-$count+1)) pass";
   set +e
   res=$(curl -s -X POST -H "Content-Type: application/json" "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/");
-  echo $res
   msg=$(echo $res | jq ".message")
-  echo $msg
   set -e
   if [[ $msg = "\"Not found\"" ]]; then
     done="ok";
