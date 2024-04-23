@@ -12,7 +12,7 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   res=$(curl -s -X POST -H "Content-Type: application/json" "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/");
   msg=$(echo $res | jq ".message")
   set -e
-  if [ $msg = "Not found" ]; then
+  if [[ $msg == "Not found" ]]; then
     done="ok";
   else
     echo 1>&2 "Simva API not available, waiting ${wait_time}s";
