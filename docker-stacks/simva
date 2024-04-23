@@ -777,14 +777,14 @@ function start() {
                 compare_result=$(compare_versions $new_version $previous_version)
                 if [[ ! $compare_result == 0 ]]; then
                     echo "Upgrading $stack_name version..."
-                    upgrade $wait_time $stack
+                    upgrade 20 $stack
                 fi;
             else
                 echo "Variable $var_name is not set."
             fi;
             if [[ ! $COMPARE_DOMAIN == 0 ]]; then
                 echo "Migrate domain of $stack_name..."
-                migrateDomain $wait_time $stack
+                migrateDomain 20 $stack
             fi;
         fi;
         execute_before_hooks ${phase} ${stack}
