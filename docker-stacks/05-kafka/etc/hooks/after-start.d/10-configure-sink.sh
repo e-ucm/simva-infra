@@ -79,6 +79,7 @@ fi;
 connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json" -r)
 
 set +e
+###NOT WORKING --- TO FIX###
 stack exec connect curl -f -sS \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json' \
@@ -112,6 +113,7 @@ JQ_SCRIPT
   connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
 
   set +e
+  ###NOT WORKING --- TO FIX###
   docker compose exec connect curl -f -sS \
     --header 'Content-Type: application/json' \
     --header 'Accept: application/json' \
