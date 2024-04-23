@@ -600,31 +600,26 @@ function uninstall() {
 #   1 if version1 > version2
 #   2 if version1 < version2
 compare_versions() {
-    local version1=$(echo $1| cut -d- -f1)
-    local version2=$(echo $2| cut -d- -f1)
-
-    # Split version strings into parts
-    IFS='.' read -r -a v1_parts <<< "$version1"
-    IFS='.' read -r -a v2_parts <<< "$version2"
-
-    v1=${#v1_parts[@]}
-    v2=${#v2_parts[@]}
-    nbparts=$(($(($v1>$v2 ? $v2 : $v1))-1))
-    # Compare each part
-    if [[ nbparts -gt 0 ]]; then
-        for i in {0..$nbparts}; do
-            if [ "${v1_parts[$i]}" -gt "${v2_parts[$i]}" ]; then
-                echo 1
-                exit
-            elif [ "${v1_parts[$i]}" -lt "${v2_parts[$i]}" ]; then
-                echo 2
-                exit
-            fi
-        done
+    local version1=$1
+    local version2=$2
+    versions=($version1 $version2)
+    # Sort versions
+    sorted_versions=($(printf "%s\n" "${versions[@]}" | sort -V))
+    # Get the highest version
+    highest_version=${sorted_versions[-1]}
+    if [ $version1 = $version2 ]; then
+        # Versions are equal
+        echo 0
+        exit
+    elif [ $highest_version = $version1 ]; then
+        # Versions 1 is the highest
+        echo 1
+        exit
+    elif [ $highest_version = $version2 ]; then
+        # Versions 2 is the highest
+        echo 2
+        exit
     fi
-    # Versions are equal
-    echo 0
-    exit
 }
 
 # upgrade stack
