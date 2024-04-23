@@ -16,7 +16,7 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   msg=$(echo $res | jq ".message")
   echo $msg
   set -e
-  if [[ $msg == "Not found" ]]; then
+  if [[ $msg = "Not found" ]]; then
     done="ok";
   else
     echo 1>&2 "Simva API not available, waiting ${wait_time}s";
