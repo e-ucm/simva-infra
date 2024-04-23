@@ -73,14 +73,9 @@ function main() {
             uninstall "1" $@
             exit 0
         ;;
-        "upgrade")
+        "changeConfig")
             check_docker_launched
-            upgrade "1" $@
-            exit 0
-        ;;
-        "migrateDomain")
-            check_docker_launched
-            migrateDomain "1" $@
+            changeConfig "1" $@
             exit 0
         ;;
         "purge")
@@ -516,8 +511,6 @@ OPERATION one of the following:
         Stop and remove containers, also remove docker volumes too.
     changeConfig:
         Migrate config of each stack
-    migrateDomain:
-        migrate to a new External Domain for each stack
     purge:
         Remove data from each stack
     start:
@@ -686,6 +679,33 @@ function upgrade() {
     execute_after_hooks "migrate" ${stacks}
     execute_after_hooks ${phase} ${stacks}
     echo "Upgrade done!"
+}
+
+
+# Update to the new config 
+function changeConfig() {
+    echo "Change Config : $@"
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$(removeTrailingSlach $@)
+    fi
+    local phase="changeConfig"
+    setExecutable "migrate" ${stacks}
+    setExecutable ${phase} ${stacks}
+    execute_before_hooks "migrate" ${stacks}
+    execute_before_hooks ${phase} ${stacks}
+    install "${wait_time}" "true" "${stacks}"
+    start "${wait_time}" "false" ${stack}
+    stop "${wait_time}" ${stack}
+    execute_after_hooks "migrate" ${stacks}
+    execute_after_hooks ${phase} ${stacks}
 }
 
 # migrate to a new External Domain for each stack
