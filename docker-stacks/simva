@@ -540,6 +540,7 @@ EOF
 
 # download images
 function install() {
+    echo "Install : $@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
@@ -575,6 +576,7 @@ function install() {
 
 # remove containers
 function uninstall() {
+    echo "Uninstall : $@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
@@ -624,6 +626,7 @@ compare_versions() {
 
 # upgrade stack
 function upgrade() {
+    echo "Upgrade : $@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time"
         exit 1
@@ -687,6 +690,7 @@ function upgrade() {
 
 # migrate to a new External Domain for each stack
 function migrateDomain() {
+    echo "MigrateDomain : $@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
@@ -712,6 +716,7 @@ function migrateDomain() {
 
 # purge data
 function purge() {
+    echo "purge $@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
@@ -733,6 +738,7 @@ function purge() {
 
 # start stacks
 function start() {
+    echo "Start $@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
