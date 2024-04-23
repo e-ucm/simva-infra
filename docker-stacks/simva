@@ -716,7 +716,7 @@ function migrateDomain() {
 
 # purge data
 function purge() {
-    echo "purge $@"
+    echo "Purge : $@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
@@ -738,7 +738,7 @@ function purge() {
 
 # start stacks
 function start() {
-    echo "Start $@"
+    echo "Start : $@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
@@ -802,6 +802,7 @@ function start() {
 
 # stop stacks
 function stop() {
+    echo "Stop : $@"
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time";
         exit 1;
