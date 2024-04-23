@@ -569,7 +569,7 @@ function install() {
     local phase="install"
     setExecutable ${phase} ${stacks}
     execute_before_hooks ${phase} ${stacks}
-    docker_compose_stacks "${stacks}" ${wait_time} "pull"
+    docker_compose_stacks "${stacks}" "${wait_time}" "pull"
     execute_after_hooks ${phase} ${stacks}
 }
 
@@ -590,7 +590,7 @@ function uninstall() {
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     setExecutable ${phase} ${reverse_stacks}
     execute_before_hooks ${phase} ${reverse_stacks}
-    docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
+    docker_compose_stacks "${reverse_stacks}" "${wait_time}" "down -v"
     execute_after_hooks ${phase} ${reverse_stacks}
 }
 
@@ -663,9 +663,9 @@ function upgrade() {
                 if [[ ! $comparison_prev_result == 2 ]] && [[ ! $comparison_new_result == 1 ]]; then
                     echo "Processing version: $version" 
                     declare -g "$var_name=$version"
-                    install ${wait_time} "false" ${stack}
+                    install "${wait_time}" "false" ${stack}
                     start 30 "false" ${stack}
-                    stop ${wait_time} ${stack}
+                    stop "${wait_time}" ${stack}
                     echo "Processing version: $version done " 
                 else 
                     echo "No need to migrate to this version $version" 
@@ -675,9 +675,9 @@ function upgrade() {
         echo "Source original simva-env file"
         sourceEnvFile
         echo "Installing the selected version"
-        install ${wait_time} "true" ${stack}
+        install "${wait_time}" "true" ${stack}
         start 30 "false" ${stack}
-        stop ${wait_time} ${stack}
+        stop "${wait_time}" ${stack}
         echo "Processing versions done"
     done
     execute_after_hooks "migrate" ${stacks}
@@ -703,9 +703,9 @@ function migrateDomain() {
     setExecutable ${phase} ${stacks}
     execute_before_hooks "migrate" ${stacks}
     execute_before_hooks ${phase} ${stacks}
-    install "true" ${wait_time} "${stacks}"
+    install "true" "${wait_time}" "${stacks}"
     start 30 "false" ${stack}
-    stop ${wait_time} ${stack}
+    stop "${wait_time}" ${stack}
     execute_after_hooks "migrate" ${stacks}
     execute_after_hooks ${phase} ${stacks}
 }
@@ -727,7 +727,7 @@ function purge() {
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     setExecutable ${phase} ${reverse_stacks}
     execute_before_hooks ${phase} ${reverse_stacks}
-    docker_compose_stacks "${reverse_stacks}" ${wait_time} "down -v"
+    docker_compose_stacks "${reverse_stacks}" "${wait_time}" "down -v"
     execute_after_hooks ${phase} ${reverse_stacks}
 }
 
@@ -777,18 +777,18 @@ function start() {
                 compare_result=$(compare_versions $new_version $previous_version)
                 if [[ ! $compare_result == 0 ]]; then
                     echo "Upgrading $stack_name version..."
-                    upgrade 20 $stack
+                    upgrade "${wait_time}" $stack
                 fi;
             else
                 echo "Variable $var_name is not set."
             fi;
             if [[ ! $COMPARE_DOMAIN == 0 ]]; then
                 echo "Migrate domain of $stack_name..."
-                migrateDomain 20 $stack
+                migrateDomain "${wait_time}" $stack
             fi;
         fi;
         execute_before_hooks ${phase} ${stack}
-        docker_compose_stacks "${stack}" ${wait_time} "up -d"
+        docker_compose_stacks "${stack}" "${wait_time}" "up -d"
         execute_after_hooks ${phase} ${stack}
     done;
     touch "${SIMVA_PROJECT_DIR}/.simva-initialized"
@@ -825,7 +825,7 @@ function stop() {
                 declare -g "$var_name=$previous_version"
             fi
             execute_before_hooks ${phase} ${stack}
-            docker_compose_stacks "${stack}" ${wait_time} ${phase}
+            docker_compose_stacks "${stack}" "${wait_time}" ${phase}
             execute_after_hooks ${phase} ${stack}
             if [[ ! $compare_result == 0 ]]; then
                 declare -g "$var_name=$new_version"
@@ -833,7 +833,7 @@ function stop() {
         else
             echo "Variable $var_name is not set."
             execute_before_hooks ${phase} ${stack}
-            docker_compose_stacks "${stack}" ${wait_time} ${phase}
+            docker_compose_stacks "${stack}" "${wait_time}" ${phase}
             execute_after_hooks ${phase} ${stack}
         fi;
     done;
@@ -982,7 +982,7 @@ function log() {
     local stack=${1}
     shift
 
-    docker_compose_stacks "${stack}" ${wait_time} logs $@
+    docker_compose_stacks "${stack}" "${wait_time}" logs $@
 }
 
 # build stack
@@ -995,7 +995,7 @@ function build() {
     local stack=${1}
     shift
 
-    docker_compose_stacks "${stack}" ${wait_time} build $@
+    docker_compose_stacks "${stack}" "${wait_time}" build $@
 }
 
 # entrypoint
