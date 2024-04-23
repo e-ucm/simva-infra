@@ -761,14 +761,14 @@ function start() {
         wait_time=20;
         recho "SIMVA it is not initialized, this launch will take longer than normal."
     fi
+    local new_external_domain=$SIMVA_EXTERNAL_DOMAIN
+    echo "new_external_domain: $new_external_domain"
+    local previous_external_domain=$(getValueFromBackupFile "SIMVA_EXTERNAL_DOMAIN")
+    echo "previous_external_domain: $previous_external_domain"
     local phase="start"
     setExecutable ${phase} ${stacks}
     for stack in ${stacks}; do
         if [[ $check_upgrade == "true" ]]; then
-            local new_external_domain=$SIMVA_EXTERNAL_DOMAIN
-            echo "new_external_domain: $new_external_domain"
-            local previous_external_domain=$(getValueFromBackupFile "SIMVA_EXTERNAL_DOMAIN")
-            echo "previous_external_domain: $previous_external_domain"
             local compare_result_domain=$(compare_versions $new_external_domain $previous_external_domain)
             declare -g "COMPARE_DOMAIN=$compare_result_domain"
             local stack_name="${stack##*-}"
