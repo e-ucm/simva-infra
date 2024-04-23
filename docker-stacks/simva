@@ -707,7 +707,7 @@ function migrateDomain() {
     setExecutable ${phase} ${stacks}
     execute_before_hooks "migrate" ${stacks}
     execute_before_hooks ${phase} ${stacks}
-    install "true" "${wait_time}" "${stacks}"
+    install "${wait_time}" "true" "${stacks}"
     start 30 "false" ${stack}
     stop "${wait_time}" ${stack}
     execute_after_hooks "migrate" ${stacks}
