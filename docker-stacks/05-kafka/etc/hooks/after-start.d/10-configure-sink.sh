@@ -111,10 +111,12 @@ JQ_SCRIPT
 
   connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
 
+  set +e
   docker compose exec connect curl -f -sS \
     --header 'Content-Type: application/json' \
     --header 'Accept: application/json' \
     --request POST \
-    --data '@/usr/share/simva/simva-sink.json' \
+    --data '@/usr/share/simva/simva-sink.json' \ 
     http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
+  set -e
 fi
