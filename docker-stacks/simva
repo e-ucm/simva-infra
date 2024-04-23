@@ -704,6 +704,8 @@ function migrateDomain() {
     execute_before_hooks "migrate" ${stacks}
     execute_before_hooks ${phase} ${stacks}
     install "true" ${wait_time} "${stacks}"
+    start 30 "false" ${stack}
+    stop ${wait_time} ${stack}
     execute_after_hooks "migrate" ${stacks}
     execute_after_hooks ${phase} ${stacks}
 }
@@ -757,6 +759,10 @@ function start() {
     setExecutable ${phase} ${stacks}
     for stack in ${stacks}; do
         if [[ $check_upgrade == "true" ]]; then
+            local new_external_domain=$SIMVA_EXTERNAL_DOMAIN
+            echo "new_external_domain: $new_external_domain"
+            local previous_external_domain=$(getValueFromBackupFile "SIMVA_EXTERNAL_DOMAIN")
+            echo "previous_external_domain: $previous_external_domain"
             local stack_name="${stack##*-}"
             stack_name=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
             local var_name="SIMVA_${stack_name}_VERSION"
@@ -774,7 +780,12 @@ function start() {
             else
                 echo "Variable $var_name is not set."
             fi;
-        fi; 
+            compare_result=$(compare_versions $new_external_domain $previous_external_domain)
+            if [[ ! $compare_result == 0 ]]; then
+                echo "Migrate domain of $stack_name..."
+                migrateDomain $wait_time $stack
+            fi;
+        fi;
         execute_before_hooks ${phase} ${stack}
         docker_compose_stacks "${stack}" ${wait_time} "up -d"
         execute_after_hooks ${phase} ${stack}
