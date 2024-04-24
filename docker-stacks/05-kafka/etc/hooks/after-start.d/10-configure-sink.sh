@@ -79,7 +79,6 @@ fi;
 connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json" -r)
 
 set +e
-###NOT WORKING --- TO FIX###
 docker compose exec connect curl -f -sS \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json' \
@@ -89,7 +88,6 @@ echo $ret
 set -e
 
 if [[ $ret -ne 0 ]]; then
-  echo "JQ Script starting"
   jq_script=$(cat <<'JQ_SCRIPT'
   .config["store.url"]=$minioUrl
     | .config["aws.access.key.id"]=$minioUser
@@ -112,17 +110,15 @@ JQ_SCRIPT
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
 
   connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
-  
-  echo "JQ Script finished"
+
   set +e
-  ###NOT WORKING --- TO FIX###
   docker compose exec connect curl -f -sS \
     --header 'Content-Type: application/json' \
     --header 'Accept: application/json' \
     --request POST \
-    --data '/usr/share/simva/simva-sink.json' \ 
+    --data '/usr/share/simva/simva-sink.json' \
     http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
-    ret=$?
-    echo $ret
+  ret=$?
+  echo $ret
   set -e
 fi
