@@ -1,5 +1,5 @@
 # Check if the container is running
-if docker ps --format '{{.Names}}' | grep "-keycloak-1"; then
+if $(docker ps --format '{{.Names}}' | grep "keycloak-1"); then
     echo "Keycloak container is running. Launching export of users..."
     if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
         rm -rf ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/*
