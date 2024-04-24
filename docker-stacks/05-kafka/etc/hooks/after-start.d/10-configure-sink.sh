@@ -80,7 +80,7 @@ connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-templ
 
 set +e
 ###NOT WORKING --- TO FIX###
-stack exec connect curl -f -sS \
+docker compose exec connect curl -f -sS \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json' \
   http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} >/dev/null 2>&1
@@ -118,7 +118,7 @@ JQ_SCRIPT
     --header 'Content-Type: application/json' \
     --header 'Accept: application/json' \
     --request POST \
-    --data '@/usr/share/simva/simva-sink.json' \ 
+    --data '/usr/share/simva/simva-sink.json' \ 
     http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
   set -e
 fi
