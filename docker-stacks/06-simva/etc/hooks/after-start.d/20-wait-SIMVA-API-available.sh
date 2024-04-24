@@ -11,12 +11,17 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   msg=""
   echo 1>&2 "Checking Simva API availability: $((${mc_max_retries}-$count+1)) pass";
   set +e
-  res=$(curl -s -X POST -H "Content-Type: application/json" "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/");
-  msg=$(echo $res | jq ".message")
-  set -e
-  if [[ $msg = "\"Not found\"" ]]; then
+  # Create JSON payload
+  local payload="{\"username\":\"$(echo $SIMVA_API_ADMIN_USERNAME | tr '[:upper:]' '[:lower:]')\",\"password\":\"$SIMVA_API_ADMIN_PASSWORD\"}"
+  # Make POST request to API and get token
+  local token=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload" "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/users/login" | jq -r '.token');
+   set -e
+   if [ -n "$token" ]; then
+    local bearer="Bearer $token"
+    echo "$bearer"
     done="ok";
   else
+    echo "Failed to get token"
     echo 1>&2 "Simva API not available, waiting ${wait_time}s";
     sleep ${wait_time};
   fi;
