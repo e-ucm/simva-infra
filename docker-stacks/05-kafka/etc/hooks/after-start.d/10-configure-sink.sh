@@ -83,8 +83,8 @@ set +e
 docker compose exec connect curl -f -sS \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json' \
-  http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} >/dev/null 2>&1
-ret=$?
+  http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} #>/dev/null 2>&1
+#ret=$?
 set -e
 
 if [[ $ret -ne 0 ]]; then
@@ -119,6 +119,6 @@ JQ_SCRIPT
     --header 'Accept: application/json' \
     --request POST \
     --data '/usr/share/simva/simva-sink.json' \ 
-    http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
+    http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors #>/dev/null 2>&1
   set -e
 fi
