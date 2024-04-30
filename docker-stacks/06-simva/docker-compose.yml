@@ -142,7 +142,7 @@ services:
 
   simva-front:
     << : *default-opts
-    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_FRONT_VERSION:-12.18.2}
+    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_VERSION:-20.9.0-bullseye}
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
