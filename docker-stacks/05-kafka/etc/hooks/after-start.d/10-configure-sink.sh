@@ -120,30 +120,25 @@ JQ_SCRIPT
 fi
 
 set +e
-if [[ $ret -ne 0 ]]; then 
-  echo "POST"
-  docker compose exec connect curl -f -sS \
-    --header 'Content-Type: application/json' \
-    --header 'Accept: application/json' \
-    --request POST \
-    --data '/usr/share/simva/simva-sink.json' \
-    http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
-    ret=$?
-    echo $ret
-else
-  connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
-  config=$(jq '.config' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
-  echo "$config" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-config.json"
-  echo "PUT"
+if [[ $ret -eq 0 ]]; then 
+  echo "DELETE"
   docker compose exec connect curl \
-    --header 'Content-Type: application/json' \
-    --header 'Accept: application/json' \
-    --request PUT \
-    --data '/usr/share/simva/simva-sink-config.json' \
-      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name}/config #>/dev/null 2>&1
-    ret=$?
-   echo $ret
-   rm "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-config.json"
+      --header 'Content-Type: application/json' \
+      --header 'Accept: application/json' \
+      --request DELETE \
+      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} >/dev/null 2>&1
+    retDelete=$?
+    echo $retDelete
 fi 
+
+echo "POST"
+docker compose exec connect curl -f -sS \
+  --header 'Content-Type: application/json' \
+  --header 'Accept: application/json' \
+  --request POST \
+  --data '/usr/share/simva/simva-sink.json' \
+  http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
+  retPost=$?
+  echo $retPost
 set -e
 
