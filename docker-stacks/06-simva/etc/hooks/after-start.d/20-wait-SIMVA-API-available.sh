@@ -12,12 +12,12 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   echo 1>&2 "Checking Simva API availability: $((${mc_max_retries}-$count+1)) pass";
   set +e
   # Create JSON payload
-  local payload="{\"username\":\"$(echo $SIMVA_API_ADMIN_USERNAME | tr '[:upper:]' '[:lower:]')\",\"password\":\"$SIMVA_API_ADMIN_PASSWORD\"}"
+  payload="{\"username\":\"$(echo $SIMVA_API_ADMIN_USERNAME | tr '[:upper:]' '[:lower:]')\",\"password\":\"$SIMVA_API_ADMIN_PASSWORD\"}"
   # Make POST request to API and get token
-  local token=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload" "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/users/login" | jq -r '.token');
-   set -e
-   if [ -n "$token" ]; then
-    local bearer="Bearer $token"
+  token=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload" "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/users/login" | jq -r '.token');
+  set -e
+  if [ -n "$token" ]; then
+    bearer="Bearer $token"
     echo "$bearer"
     done="ok";
   else
