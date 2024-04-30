@@ -91,12 +91,10 @@ updateSink=0
 if [[ $ret -ne 0 ]]; then
   updateSink=1
 fi
-
 if [[ -e "${SIMVA_CONFIG_HOME}/kafka/connect/migrationinprogress" ]]; then 
   rm "${SIMVA_CONFIG_HOME}/kafka/connect/migrationinprogress"
   updateSink=1
 fi
-
 if [[ $updateSink -ne 0 ]]; then
   jq_script=$(cat <<'JQ_SCRIPT'
   .config["store.url"]=$minioUrl
@@ -109,6 +107,7 @@ if [[ $updateSink -ne 0 ]]; then
                 | .
 JQ_SCRIPT
 )
+
   cat ${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json | jq \
   --arg minioUrl "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
@@ -118,31 +117,32 @@ JQ_SCRIPT
   --arg topics "${SIMVA_TRACES_TOPIC}" \
   --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
-
-  connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
-
-  set +e
-  if [[ $ret -ne 0 ]]; then 
-    echo "POST"
-    docker compose exec connect curl -f -sS \
-      --header 'Content-Type: application/json' \
-      --header 'Accept: application/json' \
-      --request POST \
-      --data '/usr/share/simva/simva-sink.json' \
-      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
-      ret=$?
-      echo $ret
-  else
-    echo "PUT"
-    docker compose exec connect curl -f -sS \
-      --header 'Content-Type: application/json' \
-      --header 'Accept: application/json' \
-      --request PUT \
-      --data '/usr/share/simva/simva-sink.json' \
-      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
-      ret=$?
-     echo $ret
-  fi 
-  
-  set -e
 fi
+
+set +e
+if [[ $ret -ne 0 ]]; then 
+  echo "POST"
+  docker compose exec connect curl -f -sS \
+    --header 'Content-Type: application/json' \
+    --header 'Accept: application/json' \
+    --request POST \
+    --data '/usr/share/simva/simva-sink.json' \
+    http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
+    ret=$?
+    echo $ret
+else
+  connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
+  config=$(jq '.config' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
+  echo "$config" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-config.json"
+  echo "PUT"
+  docker compose exec connect curl \
+    --header 'Content-Type: application/json' \
+    --header 'Accept: application/json' \
+    --request PUT \
+    --data '/usr/share/simva/simva-sink-config.json' \
+      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name}/config #>/dev/null 2>&1
+    ret=$?
+   echo $ret
+fi 
+set -e
+
