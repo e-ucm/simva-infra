@@ -87,6 +87,10 @@ ret=$?
 echo $ret
 set -e
 
+if [[ -e "${SIMVA_CONFIG_HOME}/kafka/connect/migrationinprogress" ]]; then 
+  rm "${SIMVA_CONFIG_HOME}/kafka/connect/migrationinprogress"
+  $ret=1
+fi
 if [[ $ret -ne 0 ]]; then
   jq_script=$(cat <<'JQ_SCRIPT'
   .config["store.url"]=$minioUrl
