@@ -87,15 +87,7 @@ ret=$?
 echo $ret
 set -e
 
-updateSink=0
-if [[ $ret -ne 0 ]]; then
-  updateSink=1
-fi
-if [[ -e "${SIMVA_CONFIG_HOME}/kafka/connect/migrationinprogress" ]]; then 
-  rm "${SIMVA_CONFIG_HOME}/kafka/connect/migrationinprogress"
-  updateSink=1
-fi
-if [[ $updateSink -ne 0 ]]; then
+if [[ -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
   jq_script=$(cat <<'JQ_SCRIPT'
   .config["store.url"]=$minioUrl
     | .config["aws.access.key.id"]=$minioUser
@@ -117,7 +109,7 @@ JQ_SCRIPT
   --arg topics "${SIMVA_TRACES_TOPIC}" \
   --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
-fi
+fi 
 
 set +e
 if [[ $ret -eq 0 ]]; then 
@@ -131,12 +123,11 @@ if [[ $ret -eq 0 ]]; then
 fi 
 
 echo "POST"
-echo $(jq -c . "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json") > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-oneline.json"
 docker compose exec connect curl -f -sS \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json' \
   --request POST \
-  --data "$(cat ${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-oneline.json)" \
+  --data "$(echo $(jq -c . "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"))" \
   http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors #>/dev/null 2>&1
   retPost=$?
 
