@@ -1,1 +1,0 @@
-touch "${SIMVA_CONFIG_HOME}/kafka/connect/migrationinprogress"

@@ -87,11 +87,17 @@ ret=$?
 echo $ret
 set -e
 
+updateSink=0
+if [[ $ret -ne 0 ]]; then
+  updateSink=1
+fi
+
 if [[ -e "${SIMVA_CONFIG_HOME}/kafka/connect/migrationinprogress" ]]; then 
   rm "${SIMVA_CONFIG_HOME}/kafka/connect/migrationinprogress"
-  $ret=1
+  updateSink=1
 fi
-if [[ $ret -ne 0 ]]; then
+
+if [[ $updateSink -ne 0 ]]; then
   jq_script=$(cat <<'JQ_SCRIPT'
   .config["store.url"]=$minioUrl
     | .config["aws.access.key.id"]=$minioUser
@@ -116,13 +122,27 @@ JQ_SCRIPT
   connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
 
   set +e
-  docker compose exec connect curl -f -sS \
-    --header 'Content-Type: application/json' \
-    --header 'Accept: application/json' \
-    --request POST \
-    --data '/usr/share/simva/simva-sink.json' \
-    http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
-  ret=$?
-  echo $ret
+  if [[$ret -ne 0 ]]; then 
+    echo "PUT"
+    docker compose exec connect curl -f -sS \
+      --header 'Content-Type: application/json' \
+      --header 'Accept: application/json' \
+      --request PUT \
+      --data '/usr/share/simva/simva-sink.json' \
+      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
+      ret=$?
+      echo $ret
+  else
+    echo "POST"
+    docker compose exec connect curl -f -sS \
+      --header 'Content-Type: application/json' \
+      --header 'Accept: application/json' \
+      --request POST \
+      --data '/usr/share/simva/simva-sink.json' \
+      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
+      ret=$?
+     echo $ret
+  fi 
+  
   set -e
 fi
