@@ -126,7 +126,7 @@ if [[ $ret -eq 0 ]]; then
       --header 'Content-Type: application/json' \
       --header 'Accept: application/json' \
       --request DELETE \
-      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} >/dev/null 2>&1
+      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} #>/dev/null 2>&1
     retDelete=$?
     echo $retDelete
 fi 
@@ -137,7 +137,7 @@ docker compose exec connect curl -f -sS \
   --header 'Accept: application/json' \
   --request POST \
   --data '/usr/share/simva/simva-sink.json' \
-  http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
+  http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors #>/dev/null 2>&1
   retPost=$?
   echo $retPost
 set -e
