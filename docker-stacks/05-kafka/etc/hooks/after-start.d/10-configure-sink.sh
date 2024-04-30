@@ -122,7 +122,7 @@ JQ_SCRIPT
   connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
 
   set +e
-  if [[$ret -ne 0 ]]; then 
+  if [[ $ret -ne 0 ]]; then 
     echo "PUT"
     docker compose exec connect curl -f -sS \
       --header 'Content-Type: application/json' \
