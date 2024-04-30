@@ -143,6 +143,7 @@ else
       http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name}/config #>/dev/null 2>&1
     ret=$?
    echo $ret
+   rm "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-config.json"
 fi 
 set -e
 
