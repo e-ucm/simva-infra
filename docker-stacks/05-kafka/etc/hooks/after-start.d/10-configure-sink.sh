@@ -121,10 +121,9 @@ fi
 
 set +e
 if [[ $ret -eq 0 ]]; then 
+  connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
   echo "DELETE"
   docker compose exec connect curl \
-      --header 'Content-Type: application/json' \
-      --header 'Accept: application/json' \
       --request DELETE \
       http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} #>/dev/null 2>&1
     retDelete=$?
@@ -132,13 +131,14 @@ if [[ $ret -eq 0 ]]; then
 fi 
 
 echo "POST"
+echo $(jq -c . "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json") > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-oneline.json"
 docker compose exec connect curl -f -sS \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json' \
   --request POST \
-  --data '/usr/share/simva/simva-sink.json' \
-  http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/ #>/dev/null 2>&1
+  --data "$(cat ${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-oneline.json)" \
+  http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors #>/dev/null 2>&1
   retPost=$?
+
   echo $retPost
 set -e
-
