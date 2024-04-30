@@ -123,21 +123,21 @@ JQ_SCRIPT
 
   set +e
   if [[ $ret -ne 0 ]]; then 
-    echo "PUT"
-    docker compose exec connect curl -f -sS \
-      --header 'Content-Type: application/json' \
-      --header 'Accept: application/json' \
-      --request PUT \
-      --data '/usr/share/simva/simva-sink.json' \
-      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
-      ret=$?
-      echo $ret
-  else
     echo "POST"
     docker compose exec connect curl -f -sS \
       --header 'Content-Type: application/json' \
       --header 'Accept: application/json' \
       --request POST \
+      --data '/usr/share/simva/simva-sink.json' \
+      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
+      ret=$?
+      echo $ret
+  else
+    echo "PUT"
+    docker compose exec connect curl -f -sS \
+      --header 'Content-Type: application/json' \
+      --header 'Accept: application/json' \
+      --request PUT \
       --data '/usr/share/simva/simva-sink.json' \
       http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
       ret=$?
