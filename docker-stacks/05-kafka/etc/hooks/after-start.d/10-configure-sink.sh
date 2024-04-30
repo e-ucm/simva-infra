@@ -87,7 +87,7 @@ ret=$?
 echo $ret
 set -e
 
-if [[ -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
+if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
   jq_script=$(cat <<'JQ_SCRIPT'
   .config["store.url"]=$minioUrl
     | .config["aws.access.key.id"]=$minioUser
