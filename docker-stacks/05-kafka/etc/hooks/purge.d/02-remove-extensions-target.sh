@@ -1,5 +1,5 @@
 # Removing Extension data
-EXTENSIONS_DIR="${STACK_HOME}/extensions"
+EXTENSIONS_DIR="${STACK_HOME}/extensions/kafka-connect-storage-common"
 for extension in $(find ${EXTENSIONS_DIR} -mindepth 1 -maxdepth 1 -type d); do
     if [[ -e "${extension}/target" ]]; then
         cd "${extension}/target"
