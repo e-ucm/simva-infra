@@ -177,7 +177,7 @@ function get_or_generate_password() {
     __file_env $var ''
 
     if [[ -z "${!var}" ]]; then
-        client_secret=$((cat /dev/urandom || true) | (tr -c -d '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' || true ) | dd bs=32 count=1 2>/dev/null)
+        client_secret=$((cat /dev/urandom || true) | (LC_ALL=C tr -c -d '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' || true ) | dd bs=32 count=1 2>/dev/null)
         if [[ -e ${conf} ]]; then
             echo "export ${var}=\"${client_secret}\"" >> "${conf}"
         fi
