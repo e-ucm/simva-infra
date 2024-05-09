@@ -549,10 +549,24 @@ function install() {
     fi
 
     local phase="install"
-    setExecutable ${phase} ${stacks}
-    execute_before_hooks ${phase} ${stacks}
-    docker_compose_stacks "${stacks}" "${wait_time}" "pull"
-    execute_after_hooks ${phase} ${stacks}
+    for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        setExecutable ${phase} ${stack}
+        execute_before_hooks ${phase} ${stack}
+        docker_compose_stacks "${stack}" "${wait_time}" "pull"
+        execute_after_hooks ${phase} ${stack}
+        local stack_name="${stack##*-}"
+        stack_name=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
+        local var_name="SIMVA_${stack_name}_VERSION"
+        if [[ -v $var_name ]]; then
+            echo "Variable $var_name is set"
+            local version=${!var_name}
+            echo $version > "${STACK_HOME}/.version"
+        else
+            echo "Variable $var_name is not set."
+        fi
+    done
+
 }
 
 # remove containers
@@ -571,10 +585,12 @@ function uninstall() {
         stacks=$@
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
-    setExecutable ${phase} ${reverse_stacks}
-    execute_before_hooks ${phase} ${reverse_stacks}
-    docker_compose_stacks "${reverse_stacks}" "${wait_time}" "down -v"
-    execute_after_hooks ${phase} ${reverse_stacks}
+    for stack in ${reverse_stacks}; do
+        setExecutable ${phase} ${stack}
+        execute_before_hooks ${phase} ${stack}
+        docker_compose_stacks "${stack}" "${wait_time}" "down -v"
+        execute_after_hooks ${phase} ${stack}
+    done
 }
 
 # Function to compare two version strings
@@ -623,10 +639,11 @@ function upgrade() {
     local phase="upgrade"
     setExecutable "migrate" ${stacks}
     setExecutable ${phase} ${stacks}
-    execute_before_hooks "migrate" ${stacks}
-    execute_before_hooks ${phase} ${stacks}
 
     for stack in ${stacks}; do
+        echo "Upgrade ${stack} started"
+        execute_before_hooks "migrate" ${stack}
+        execute_before_hooks ${phase} ${stack}
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         local version_file="${STACK_HOME}/etc/upgrade/versions.txt"
         local stack_name="${stack##*-}"
@@ -636,7 +653,12 @@ function upgrade() {
             local var_name="SIMVA_${stack_name}_VERSION"
             local new_version=${!var_name}
             echo "new_version: $new_version"
-            local previous_version=$(getValueFromBackupFile $var_name)
+            local previous_version
+            if [[ -e "${STACK_HOME}/.version" ]]; then 
+                previous_version=$(cat "${STACK_HOME}/.version")
+            else 
+                previous_version=$(getValueFromBackupFile $var_name)
+            fi 
             echo "previous_version: $previous_version"
             while IFS= read -r version || [[ -n $version ]];do
                 echo "version: $version"
@@ -651,6 +673,7 @@ function upgrade() {
                     start 30 "false" ${stack}
                     stop "${wait_time}" ${stack}
                     echo "Processing version: $version done " 
+                    echo $version > "${STACK_HOME}/.version"
                 else 
                     echo "No need to migrate to this version $version" 
                 fi
@@ -663,9 +686,11 @@ function upgrade() {
         start 30 "false" ${stack}
         stop "${wait_time}" ${stack}
         echo "Processing versions done"
+        echo $new_version > "${STACK_HOME}/.version"
+        execute_after_hooks "migrate" ${stack}
+        execute_after_hooks ${phase} ${stack}
+        echo "Upgrade ${stack} done!"
     done
-    execute_after_hooks "migrate" ${stacks}
-    execute_after_hooks ${phase} ${stacks}
     echo "Upgrade done!"
 }
 
@@ -687,13 +712,15 @@ function changeConfig() {
     local phase="changeConfig"
     setExecutable "migrate" ${stacks}
     setExecutable ${phase} ${stacks}
-    execute_before_hooks "migrate" ${stacks}
-    execute_before_hooks ${phase} ${stacks}
-    install "${wait_time}" "true" "${stacks}"
-    start "${wait_time}" "false" ${stack}
-    stop "${wait_time}" ${stack}
-    execute_after_hooks "migrate" ${stacks}
-    execute_after_hooks ${phase} ${stacks}
+    for stack in ${stacks}; do
+        execute_before_hooks "migrate" ${stack}
+        execute_before_hooks ${phase} ${stack}
+        install "${wait_time}" "true" "${stack}"
+        start "${wait_time}" "false" ${stack}
+        stop "${wait_time}" ${stack}
+        execute_after_hooks "migrate" ${stack}
+        execute_after_hooks ${phase} ${stack}
+    done
 }
 
 # migrate to a new External Domain for each stack
@@ -711,15 +738,17 @@ function migrateDomain() {
         stacks=$@
     fi
     local phase="migrateDomain"
-    setExecutable "migrate" ${stacks}
-    setExecutable ${phase} ${stacks}
-    execute_before_hooks "migrate" ${stacks}
-    execute_before_hooks ${phase} ${stacks}
-    install "${wait_time}" "true" "${stacks}"
-    start "${wait_time}" "false" ${stack}
-    stop "${wait_time}" ${stack}
-    execute_after_hooks "migrate" ${stacks}
-    execute_after_hooks ${phase} ${stacks}
+    for stack in ${stacks}; do
+        setExecutable "migrate" ${stack}
+        setExecutable ${phase} ${stack}
+        execute_before_hooks "migrate" ${stack}
+        execute_before_hooks ${phase} ${stack}
+        install "${wait_time}" "true" "${stack}"
+        start "${wait_time}" "false" ${stack}
+        stop "${wait_time}" ${stack}
+        execute_after_hooks "migrate" ${stack}
+        execute_after_hooks ${phase} ${stack}
+    done 
 }
 
 # purge data
@@ -738,10 +767,12 @@ function purge() {
         stacks=$@
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
-    setExecutable ${phase} ${reverse_stacks}
-    execute_before_hooks ${phase} ${reverse_stacks}
-    docker_compose_stacks "${reverse_stacks}" "${wait_time}" "down -v"
-    execute_after_hooks ${phase} ${reverse_stacks}
+    for stack in ${reverse_stacks}; do
+        setExecutable ${phase} ${stack}
+        execute_before_hooks ${phase} ${stack}
+        docker_compose_stacks "${stack}" "${wait_time}" "down -v"
+        execute_after_hooks ${phase} ${stack}
+    done
 }
 
 # start stacks
@@ -999,8 +1030,8 @@ function setExecutable() {
 # log stack
 function log() {
     local wait_time=0
-    if [[ $# -lt 1 ]]; then
-        echo >&2 "missing stack";
+    if [[ ! $# -eq 1 ]]; then
+        echo >&2 "missing stack. Select Only one stack to have logs.";
         exit 1;
     fi
     local stack=${1}
@@ -1012,8 +1043,8 @@ function log() {
 # build stack
 function build() {
     local wait_time=0
-    if [[ $# -lt 1 ]]; then
-        echo >&2 "missing stack";
+    if [[ ! $# -eq 1 ]]; then
+        echo >&2 "missing stack. Select Only one stack to build.";
         exit 1;
     fi
     local stack=${1}
