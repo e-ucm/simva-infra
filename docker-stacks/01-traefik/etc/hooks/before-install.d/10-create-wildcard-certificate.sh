@@ -10,6 +10,8 @@ export CAROOT="${SIMVA_TLS_HOME}/ca"
 
 if [[ ! -e "${CAROOT}/rootCA.pem" ]]; then
     mkcert -install
+    chmod a+r ${SIMVA_TLS_HOME}/rootCA-key.pem
+    chmod a+r ${SIMVA_TLS_HOME}/rootCA.pem
 fi
 
 if [[ ! -e "${SIMVA_TLS_HOME}/traefik.pem" ]]; then
@@ -23,8 +25,11 @@ if [[ ! -e "${SIMVA_TLS_HOME}/traefik.pem" ]]; then
             "localhost" \
             "127.0.0.1" \
             "${SIMVA_HOST_EXTERNAL_IP}"
+    chmod a+r ${SIMVA_TLS_HOME}/traefik-key.pem
+    chmod a+r ${SIMVA_TLS_HOME}/traefik.pem
     cp ${SIMVA_TLS_HOME}/traefik.pem ${SIMVA_TLS_HOME}/traefik-fullchain.pem
     cat ${SIMVA_TLS_HOME}/ca/rootCA.pem >> ${SIMVA_TLS_HOME}/traefik-fullchain.pem
+    chmod a+r ${SIMVA_TLS_HOME}/traefik-fullchain.pem
     keytool -importcert -trustcacerts -noprompt -storepass ${SIMVA_TRUSTSTORE_PASSWORD} -keystore ${SIMVA_TLS_HOME}/truststore.jks -alias ${SIMVA_TRUSTSTORE_CA_ALIAS} -file ${SIMVA_TLS_HOME}/ca/rootCA.pem 
 fi
 
