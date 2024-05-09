@@ -549,6 +549,8 @@ function install() {
     fi
 
     local phase="install"
+    local external_domain=$SIMVA_EXTERNAL_DOMAIN
+    echo "external_domain: $external_domain"
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         setExecutable ${phase} ${stack}
@@ -562,6 +564,7 @@ function install() {
             echo "Variable $var_name is set"
             local version=${!var_name}
             echo $version > "${STACK_HOME}/.version"
+            echo $external_domain > "${STACK_HOME}/.externaldomain"
         else
             echo "Variable $var_name is not set."
         fi
@@ -801,12 +804,19 @@ function start() {
         recho "SIMVA it is not initialized, this launch will take longer than normal."
     fi
     local new_external_domain=$SIMVA_EXTERNAL_DOMAIN
-    echo "new_external_domain: $new_external_domain"
     local previous_external_domain=$(getValueFromBackupFile "SIMVA_EXTERNAL_DOMAIN")
-    echo "previous_external_domain: $previous_external_domain"
+    prev=$previous_external_domain
     local phase="start"
     setExecutable ${phase} ${stacks}
     for stack in ${stacks}; do
+        local previous_external_domain
+        if [[ -e "${STACK_HOME}/.externaldomain" ]]; then 
+            previous_external_domain=$(cat "${STACK_HOME}/.externaldomain")
+        else 
+            previous_external_domain=$prev
+        fi
+        echo "new_external_domain: $new_external_domain"
+        echo "previous_external_domain: $previous_external_domain"
         STACK_HOME="${SIMVA_HOME}/${stack}"
         if [[ ! -e "${SIMVA_PROJECT_DIR}/${stack}/.initialized" ]]; then
             previous_wait_time=$wait_time;
@@ -841,6 +851,7 @@ function start() {
             if [[ ! $COMPARE_DOMAIN == 0 ]]; then
                 echo "Migrate domain of $stack_name..."
                 migrateDomain "${wait_time}" $stack
+                echo $new_external_domain > "${STACK_HOME}/.externaldomain"
             fi;
         fi;
         execute_before_hooks ${phase} ${stack}
