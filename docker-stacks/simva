@@ -809,6 +809,7 @@ function start() {
     local phase="start"
     setExecutable ${phase} ${stacks}
     for stack in ${stacks}; do
+        STACK_HOME="${SIMVA_HOME}/${stack}"
         local previous_external_domain
         if [[ -e "${STACK_HOME}/.externaldomain" ]]; then 
             previous_external_domain=$(cat "${STACK_HOME}/.externaldomain")
@@ -817,7 +818,6 @@ function start() {
         fi
         echo "new_external_domain: $new_external_domain"
         echo "previous_external_domain: $previous_external_domain"
-        STACK_HOME="${SIMVA_HOME}/${stack}"
         if [[ ! -e "${SIMVA_PROJECT_DIR}/${stack}/.initialized" ]]; then
             previous_wait_time=$wait_time;
             wait_time=20;
