@@ -644,7 +644,7 @@ function upgrade() {
         echo "Upgrade ${stack} started"
         execute_before_hooks "migrate" ${stack}
         execute_before_hooks ${phase} ${stack}
-        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        STACK_HOME="${SIMVA_HOME}/${stack}"
         local version_file="${STACK_HOME}/etc/upgrade/versions.txt"
         local stack_name="${stack##*-}"
         echo "Processing $stack_name versions..."
@@ -807,6 +807,7 @@ function start() {
     local phase="start"
     setExecutable ${phase} ${stacks}
     for stack in ${stacks}; do
+        STACK_HOME="${SIMVA_HOME}/${stack}"
         if [[ ! -e "${SIMVA_PROJECT_DIR}/${stack}/.initialized" ]]; then
             previous_wait_time=$wait_time;
             wait_time=20;
@@ -822,7 +823,12 @@ function start() {
                 echo "Variable $var_name is set"
                 local new_version=${!var_name}
                 echo "new_version: $new_version"
-                local previous_version=$(getValueFromBackupFile $var_name)
+                local previous_version
+                if [[ -e "${STACK_HOME}/.version" ]]; then 
+                    previous_version=$(cat "${STACK_HOME}/.version")
+                else 
+                    previous_version=$(getValueFromBackupFile $var_name)
+                fi 
                 echo "previous_version: $previous_version"
                 compare_result=$(compare_versions $new_version $previous_version)
                 if [[ ! $compare_result == 0 ]]; then
@@ -866,6 +872,7 @@ function stop() {
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     setExecutable ${phase} ${reverse_stacks}
     for stack in ${reverse_stacks}; do
+        STACK_HOME="${SIMVA_HOME}/${stack}"
         local stack_name="${stack##*-}"
         stack_name=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
         local var_name="SIMVA_${stack_name}_VERSION"
@@ -873,7 +880,12 @@ function stop() {
             echo "Variable $var_name is set"
             local new_version=${!var_name}
             echo "new_version: $new_version"
-            local previous_version=$(getValueFromBackupFile $var_name)
+            local previous_version
+            if [[ -e "${STACK_HOME}/.version" ]]; then 
+                previous_version=$(cat "${STACK_HOME}/.version")
+            else 
+                previous_version=$(getValueFromBackupFile $var_name)
+            fi 
             echo "previous_version: $previous_version"
             compare_result=$(compare_versions $new_version $previous_version)
             if [[ ! $compare_result == 0 ]]; then
