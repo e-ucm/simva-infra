@@ -1,4 +1,4 @@
-if [[ -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then 
+if [[ -e "${STACK_HOME}/.initialized" ]]; then 
     echo "SIMVA is initialized." 
     exportinProgressFile="${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/.exportinprogress"
     if [[ -e "$exportinProgressFile" ]]; then

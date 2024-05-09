@@ -21,3 +21,5 @@ rm -rf ./*
 if [[ -e "${SIMVA_PROJECT_DIR}/trace-allocator.log" ]]; then
     rm "${SIMVA_PROJECT_DIR}/trace-allocator.log"
 fi
+
+rm "${STACK_HOME}/.initialized"

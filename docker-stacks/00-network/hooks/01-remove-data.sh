@@ -1,0 +1,1 @@
+rm "${STACK_HOME}/.initialized"

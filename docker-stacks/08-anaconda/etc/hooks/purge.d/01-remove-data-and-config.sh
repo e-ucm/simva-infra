@@ -16,3 +16,5 @@ rm -rf ./*
 # Removing Anaconda simva-env data
 cd "${SIMVA_DATA_HOME}/anaconda/simva-env"
 rm -rf ./*
+
+rm "${STACK_HOME}/.initialized"

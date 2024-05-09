@@ -15,3 +15,5 @@ rm -rf ./*
 # Removing Traefik CSP Reporter data
 cd "${SIMVA_DATA_HOME}/traefik/csp-reporter"
 rm -rf ./*
+
+rm "${STACK_HOME}/.initialized"

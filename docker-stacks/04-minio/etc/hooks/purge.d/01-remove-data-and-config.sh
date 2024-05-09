@@ -11,3 +11,5 @@ rm -rf ./*
 # Removing Minio policies configuration
 cd "${SIMVA_CONFIG_HOME}/minio/policies"
 rm -rf ./*
+
+rm "${STACK_HOME}/.initialized"

@@ -35,3 +35,5 @@ rm -rf ./*
 # Removing Kafka Zoo data
 cd "${SIMVA_DATA_HOME}/kafka/data/zoo1"
 rm -rf ./*
+
+rm "${STACK_HOME}/.initialized"

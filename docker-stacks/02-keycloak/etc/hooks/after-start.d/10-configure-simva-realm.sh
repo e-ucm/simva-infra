@@ -3,7 +3,7 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
-    if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then 
+    if [[ ! -e "${STACK_HOME}/.initialized" ]]; then 
         echo "SIMVA is not initialized. Importing realm..." 
         docker compose exec keycloak /opt/keycloak/bin/kc.sh import --file "/opt/keycloak/data/import/simva-realm-full.json" --override true --optimized
     else

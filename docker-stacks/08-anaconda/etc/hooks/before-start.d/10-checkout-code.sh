@@ -8,7 +8,7 @@ SIMVA_TMON_GIT_REPO_URL=https://github.com/e-ucm/t-mon.git
 SIMVA_TMON_GIT_REF=${SIMVA_TMON_GIT_REF:-master}
 
 RUNCHECKOUTCODE=false
-if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
+if [[ ! -e "${STACK_HOME}/.initialized" ]]; then
     echo "SIMVA it is not initialized, initializing checkout code."
     RUNCHECKOUTCODE=true
 fi

@@ -51,3 +51,5 @@ fi
 if [[ -e "${SIMVA_CONFIG_HOME}/keycloak/realm-data.prod.yml" ]]; then
     rm "${SIMVA_CONFIG_HOME}/keycloak/realm-data.prod.yml"
 fi
+
+rm "${STACK_HOME}/.initialized"
