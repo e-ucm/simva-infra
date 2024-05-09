@@ -38,18 +38,6 @@ function getValueFromBackupFile() {
     echo ${value}
 }
 
-removeTrailingSlach() {
-    if [[ $# -gt 0 ]]; then
-        list=$@
-    fi
-    # Replace '\' with '/' to unify the path separator
-    list=${list//\\/\/}
-    # Remove trailing '/'
-    list_without_slash=$(echo "$list" | sed 's#/$##g')
-
-    # Print the modified list
-    echo "${list_without_slash}"
-}
 
 # main entrypoint, called after defining all functions (see last line)
 function main() {
@@ -231,7 +219,7 @@ function execute_before_hooks() {
     local folder="${SIMVA_HOME}/etc/hooks"
     local stacks="${SIMVA_STACKS}"
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)
+        stacks=$@
     fi
 
     case "${phase}" in
@@ -337,7 +325,7 @@ function execute_after_hooks() {
     local folder="${SIMVA_HOME}/etc/hooks"
     local stacks="${SIMVA_STACKS}"
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)
+        stacks=$@
     fi
 
     for stack in ${stacks}; do
@@ -549,7 +537,7 @@ function install() {
 
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)  # Get the stack arguments starting from the third argument
+        stacks=$@
     fi
 
     if [[ $backup == "true" ]]; then 
@@ -580,7 +568,7 @@ function uninstall() {
     local phase="uninstall"
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)
+        stacks=$@
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     setExecutable ${phase} ${reverse_stacks}
@@ -629,7 +617,7 @@ function upgrade() {
 
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)
+        stacks=$@
     fi
     echo "Upgrade stated"
     local phase="upgrade"
@@ -694,7 +682,7 @@ function changeConfig() {
 
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)
+        stacks=$@
     fi
     local phase="changeConfig"
     setExecutable "migrate" ${stacks}
@@ -720,7 +708,7 @@ function migrateDomain() {
 
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)
+        stacks=$@
     fi
     local phase="migrateDomain"
     setExecutable "migrate" ${stacks}
@@ -747,7 +735,7 @@ function purge() {
     local phase="purge"
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)
+        stacks=$@
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     setExecutable ${phase} ${reverse_stacks}
@@ -774,7 +762,7 @@ function start() {
 
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)  # Get the stack arguments starting from the third argument
+        stacks=$@
     fi
     
     if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
@@ -842,7 +830,7 @@ function stop() {
     local phase="stop"
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)
+        stacks=$@
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     setExecutable ${phase} ${reverse_stacks}
@@ -887,7 +875,7 @@ function setExecutable() {
 
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
-        stacks=$(removeTrailingSlach $@)
+        stacks=$@
     fi
     for stack in ${stacks}; do
         HooksFolder="${SIMVA_HOME}/${stack}/etc/hooks"
