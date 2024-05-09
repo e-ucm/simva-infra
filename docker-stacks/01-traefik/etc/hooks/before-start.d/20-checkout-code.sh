@@ -40,4 +40,5 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
     fi
     echo $rsync_opts
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/ > /dev/null 2>&1
+    chmod -R 777 ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/
 fi
