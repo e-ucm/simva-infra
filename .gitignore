@@ -7,3 +7,4 @@ docker-stacks/config/kafka/connect-ui/resolv.conf
 docker-stacks/config/kafka/schema-registry-ui/resolv.conf
 docker-stacks/bin/gomplate
 docker-stacks/config/container-tools/wait-for
+**/.DS_Store
