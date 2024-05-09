@@ -14,3 +14,5 @@ fi
 if [[ -e "${SIMVA_CONFIG_HOME}/keycloak/realm-data.prod.yml" ]]; then
     rm "${SIMVA_CONFIG_HOME}/keycloak/realm-data.prod.yml"
 fi
+
+touch "${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/.exportinprogress"
