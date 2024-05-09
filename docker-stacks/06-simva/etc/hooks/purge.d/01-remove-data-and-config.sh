@@ -23,3 +23,5 @@ if [[ -e "${SIMVA_PROJECT_DIR}/trace-allocator.log" ]]; then
 fi
 
 rm "${STACK_HOME}/.initialized"
+rm "${STACK_HOME}/.version"
+rm "${STACK_HOME}/.externaldomain"

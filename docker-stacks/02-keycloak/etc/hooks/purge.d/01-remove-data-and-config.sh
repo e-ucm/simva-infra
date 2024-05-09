@@ -53,3 +53,5 @@ if [[ -e "${SIMVA_CONFIG_HOME}/keycloak/realm-data.prod.yml" ]]; then
 fi
 
 rm "${STACK_HOME}/.initialized"
+rm "${STACK_HOME}/.version"
+rm "${STACK_HOME}/.externaldomain"

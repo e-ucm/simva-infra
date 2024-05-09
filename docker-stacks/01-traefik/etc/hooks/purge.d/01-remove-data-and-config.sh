@@ -17,3 +17,5 @@ cd "${SIMVA_DATA_HOME}/traefik/csp-reporter"
 rm -rf ./*
 
 rm "${STACK_HOME}/.initialized"
+rm "${STACK_HOME}/.externaldomain"
+rm "${STACK_HOME}/.version"

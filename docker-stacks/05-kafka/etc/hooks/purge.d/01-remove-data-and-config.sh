@@ -37,3 +37,5 @@ cd "${SIMVA_DATA_HOME}/kafka/data/zoo1"
 rm -rf ./*
 
 rm "${STACK_HOME}/.initialized"
+rm "${STACK_HOME}/.version"
+rm "${STACK_HOME}/.externaldomain"
