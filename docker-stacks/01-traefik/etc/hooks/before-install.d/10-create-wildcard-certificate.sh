@@ -10,8 +10,8 @@ export CAROOT="${SIMVA_TLS_HOME}/ca"
 
 if [[ ! -e "${CAROOT}/rootCA.pem" ]]; then
     mkcert -install
-    chmod a+r ${SIMVA_TLS_HOME}/rootCA-key.pem
-    chmod a+r ${SIMVA_TLS_HOME}/rootCA.pem
+    chmod a+r ${CAROOT}/rootCA-key.pem
+    chmod a+r ${CAROOT}/rootCA.pem
 fi
 
 if [[ ! -e "${SIMVA_TLS_HOME}/traefik.pem" ]]; then
