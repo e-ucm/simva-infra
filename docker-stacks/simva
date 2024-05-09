@@ -65,56 +65,56 @@ function main() {
     case "$command" in
         "install")
             check_docker_launched
-            install "1" "true" $@
+            install "1" "true" ${@%/}
             exit 0
         ;;
         "uninstall")
             check_docker_launched
-            uninstall "1" $@
+            uninstall "1" ${@%/}
             exit 0
         ;;
         "changeConfig")
             check_docker_launched
-            changeConfig "1" $@
+            changeConfig "1" ${@%/}
             exit 0
         ;;
         "purge")
             check_docker_launched
-            purge "1" $@
+            purge "1" ${@%/}
             exit 0
         ;;
         "start")
             check_docker_launched
-            start ${DEFAULT_WAIT_TIME} "true" $@
+            start ${DEFAULT_WAIT_TIME} "true" ${@%/}
             exit 0
         ;;
         "stop")
             check_docker_launched
-            stop ${DEFAULT_WAIT_TIME} $@
+            stop ${DEFAULT_WAIT_TIME} ${@%/}
             exit 0
         ;;
         "restart")
             check_docker_launched
-            stop ${DEFAULT_WAIT_TIME} $@
-            start ${DEFAULT_WAIT_TIME} "true" $@
+            stop ${DEFAULT_WAIT_TIME} ${@%/}
+            start ${DEFAULT_WAIT_TIME} "true" ${@%/}
             exit 0
         ;;
         "log")
             check_docker_launched
-            log $@
+            log ${@%/}
             exit 0
         ;;
         "build")
             check_docker_launched
-            build $@
+            build ${@%/}
             exit 0
         ;;
         "setExecutable")
-            setExecutable "install" $@
-            setExecutable "uninstall" $@
-            setExecutable "purge" $@
-            setExecutable "start" $@
-            setExecutable "stop" $@
+            setExecutable "install" ${@%/}
+            setExecutable "uninstall" ${@%/}
+            setExecutable "purge" ${@%/}
+            setExecutable "start" ${@%/}
+            setExecutable "stop" ${@%/}
             exit 0
         ;;
         "help")
