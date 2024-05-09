@@ -22,12 +22,12 @@ if [[ -e "${SIMVA_PROJECT_DIR}/trace-allocator.log" ]]; then
     rm "${SIMVA_PROJECT_DIR}/trace-allocator.log"
 fi
 
-if [[ -e "${STACK_HOME}/.initialized" ]] then
+if [[ -e "${STACK_HOME}/.initialized" ]]; then
     rm "${STACK_HOME}/.initialized"
 fi
-if [[ -e "${STACK_HOME}/.externaldomain" ]] then
+if [[ -e "${STACK_HOME}/.externaldomain" ]]; then
     rm "${STACK_HOME}/.externaldomain"
 fi 
-if [[ -e "${STACK_HOME}/.version" ]] then
+if [[ -e "${STACK_HOME}/.version" ]]; then
     rm "${STACK_HOME}/.version"
 fi
