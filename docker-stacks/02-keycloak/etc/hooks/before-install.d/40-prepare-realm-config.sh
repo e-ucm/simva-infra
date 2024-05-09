@@ -103,10 +103,10 @@ function generate_realm_data() {
     echo "  host: \"${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}\"" >> ${conf_file}
     echo "  port: \"${SIMVA_MAIL_PORT:-25}\"" >> ${conf_file}
     echo "  fromDisplayName: \"${SIMVA_SSO_HOST_SUBDOMAIN:-sso} ${SIMVA_SSO_REALM}\"" >> ${conf_file}
-    echo "  from: \"${SIMVA_MAIL_FROM_USERNAME:-noreply}@${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "  from: \"${SIMVA_MAIL_FROM_USERNAME:-noreply}@${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
     echo "  replyToDisplayName: \"${SIMVA_SSO_HOST_SUBDOMAIN:-sso} ${SIMVA_SSO_REALM}\"" >> ${conf_file}
-    echo "  replyTo: \"${SIMVA_MAIL_REPLYTO_USERNAME:-noreply}@${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
-    echo "  envelopeFrom: \"${SIMVA_MAIL_FROM_USERNAME:-noreply}@${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "  replyTo: \"${SIMVA_MAIL_REPLYTO_USERNAME:-noreply}@${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
+    echo "  envelopeFrom: \"${SIMVA_MAIL_FROM_USERNAME:-noreply}@${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}\"" >> ${conf_file}
     echo "  ssl: \"${SIMVA_MAIL_SSL:-false}\"" >> ${conf_file}
     echo "  starttls: \"${SIMVA_MAIL_STARTTLS:-false}\"" >> ${conf_file}
     echo "  auth: \"${SIMVA_MAIL_AUTH:-false}\"" >> ${conf_file}

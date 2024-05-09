@@ -16,10 +16,10 @@ if [[ ! -e "${SIMVA_TLS_HOME}/traefik.pem" ]]; then
     mkcert \
         -cert-file ${SIMVA_TLS_HOME}/traefik.pem \
         -key-file ${SIMVA_TLS_HOME}/traefik-key.pem \
-            "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN}" \
-            "*.${SIMVA_EXTERNAL_DOMAIN}" \
-            "*.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN}" \
-            "*.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN}" \
+            "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}" \
+            "*.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}" \
+            "*.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}" \
+            "*.${SIMVA_EXTERNAL_DOMAIN:-external.test}" \
             "localhost" \
             "127.0.0.1" \
             "${SIMVA_HOST_EXTERNAL_IP}"
