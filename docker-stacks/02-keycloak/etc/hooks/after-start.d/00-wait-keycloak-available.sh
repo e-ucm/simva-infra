@@ -12,7 +12,7 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   wget "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}";
   ret=$?;
   set -e
-  if [ $ret -eq 0 ]; then+
+  if [ $ret -eq 0 ]; then
     done="ok";
   else
     echo 1>&2 "Keycloak not available, waiting ${wait_time}s";
