@@ -46,7 +46,7 @@ export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 ###########################################
 # Images versions
 export SIMVA_TRAEFIK_IMAGE="traefik"
-export SIMVA_TRAEFIK_VERSION="2.2.11"
+export SIMVA_TRAEFIK_VERSION="3.0.0"
 
 export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"
 export SIMVA_KEYCLOAK_VERSION="24.0.2"
