@@ -114,6 +114,7 @@ services:
           - "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"  
           - "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_MERCURY_HOST_SUBDOMAIN:-mercury}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"  
       traefik_admin:
         aliases:
           - "socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}"

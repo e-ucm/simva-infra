@@ -84,6 +84,9 @@ services:
 
             # Install ipyparallel
             /simva-env/bin/python3 -m pip install ipyparallel
+
+            # Install voila
+            /simva-env/bin/python3 -m pip install voila
             
             # Install requirements for tmon
             if [[ -e /opt/notebooks/t-mon/requirements.txt ]]; then
@@ -101,6 +104,7 @@ services:
         
         /simva-env/bin/jupyter server extension enable --py --sys-prefix ipympl;
         /simva-env/bin/jupyter server extension enable --py --sys-prefix widgetsnbextension;
+        /simva-env/bin/jupyter server extension enable voila
         #/simva-env/bin/jupyter server extension enable --py ipyauth.ipyauth_widget;
         #/simva-env/bin/jupyter server extension enable --py ipyauth.ipyauth_callback;
         
@@ -131,13 +135,15 @@ services:
         #unset JUPYTER_PASSWORD;
         #ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
         #sed -r -i -e "s/^#?\s*c.NotebookApp.password\s+=.*/c.NotebookApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
-
+        /simva-env/bin/jupyter trust /opt/notebooks/t-mon/T-Mon.ipynb
+        cd /opt/notebooks
         # Run the Jupyter Notebook
         /usr/local/bin/tini -- $$@
-      '
+        '
     command:
-     - '--'
-     - 'gosu anaconda /simva-env/bin/jupyter server --notebook-dir=/opt/notebooks --ip="0.0.0.0" --port=8888 --no-browser'
+       - '--'
+       - '/simva-env/bin/voila --port=8888 --no-browser --Voila.ip=0.0.0.0' # --Voila.tornado_settings={"websocket_max_message_size": 209715200}'
+     # - 'gosu anaconda /simva-env/bin/jupyter server --notebook-dir=/opt/notebooks --ip="0.0.0.0" --port=8888 --no-browser' 
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/packages:/opt/packages/
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks:/opt/notebooks/
@@ -173,5 +179,4 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.jupyter.loadbalancer.server.port=8888"
-      - "traefik.http.routers.jupyter.rule=Host(`${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-    
+      - "traefik.http.routers.jupyter.rule=Host(`${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"    
