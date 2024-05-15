@@ -5,6 +5,10 @@
 cd "${SIMVA_DATA_HOME}/simva/mongo"
 rm -rf ./*
 
+# RemovingSimva Puppeteer data 
+cd "${SIMVA_DATA_HOME}/simva/puppeteer"
+rm -rf ./*
+
 # Removing Simva API data
 cd "${SIMVA_DATA_HOME}/simva/simva-api"
 rm -rf ./*
