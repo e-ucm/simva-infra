@@ -4,7 +4,7 @@
 # SIMVA ENVIRONMENT AND DEBUG #
 ###############################
 # values: development, production
-export SIMVA_ENVIRONMENT="production"
+export SIMVA_ENVIRONMENT="development"
 
 export SIMVA_DEBUG="false"
 [[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_DEBUG="true"
@@ -82,9 +82,11 @@ export SIMVA_PORTAINER_VERSION="latest"
 
 #Git reference branch
 export CSP_REPORTER_GIT_REF="master"
-export SIMVA_API_GIT_REF="master"
-export SIMVA_FRONT_GIT_REF="master"
-export SIMVA_TRACE_ALLOCATOR_GIT_REF="master"
+branch="master"
+[[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]] && branch="dev"
+export SIMVA_API_GIT_REF=$branch
+export SIMVA_FRONT_GIT_REF=$branch
+export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
 
 ###################
 # Service Network #
