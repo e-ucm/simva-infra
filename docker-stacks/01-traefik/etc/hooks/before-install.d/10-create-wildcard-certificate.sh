@@ -22,6 +22,7 @@ if [[ ! -e "${SIMVA_TLS_HOME}/traefik.pem" ]]; then
             "*.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}" \
             "*.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}" \
             "*.${SIMVA_EXTERNAL_DOMAIN:-external.test}" \
+            "${SIMVA_EXTERNAL_DOMAIN:-external.test}" \
             "localhost" \
             "127.0.0.1" \
             "${SIMVA_HOST_EXTERNAL_IP}"
