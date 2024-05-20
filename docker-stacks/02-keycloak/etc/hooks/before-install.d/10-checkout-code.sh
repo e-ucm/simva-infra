@@ -44,3 +44,4 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
         > "${extension}/pom.xml.template"
     fi
 fi
+chmod -R 777 ${extension}

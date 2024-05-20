@@ -125,4 +125,5 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     fi
     echo $rsync_opts
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator/ > /dev/null 2>&1
+    chmod -R 777 ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva
 fi

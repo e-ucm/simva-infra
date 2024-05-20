@@ -20,7 +20,7 @@ services:
     << : *default-opts
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/mariadb:/var/lib/mysql
+      #- ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/mariadb:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
     environment:
       - MYSQL_ROOT_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD:-root}
@@ -46,7 +46,7 @@ services:
     << : *default-opts
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/mariadb-dump:/dump
+      #- ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/mariadb-dump:/dump
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
