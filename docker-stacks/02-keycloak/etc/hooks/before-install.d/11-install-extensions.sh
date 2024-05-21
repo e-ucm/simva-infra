@@ -23,5 +23,5 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -gt 18 ]]; then
         fi
         cp "${extension}/target${extension_name}.jar" $DEPLOYMENT_DIR
     done
-    chmod -R 777 DEPLOYMENT_DIR
+    chmod -R 777 $DEPLOYMENT_DIR
 fi
