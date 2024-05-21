@@ -11,7 +11,7 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   set +e
   res=$(curl "https://${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/");
   set -e
-  if [ $res == "404 page not found" ]; then
+  if [[ $res == "404 page not found" ]]; then
     echo 1>&2 "Jupyter not available, waiting ${wait_time}s";
     sleep ${wait_time};
   else
