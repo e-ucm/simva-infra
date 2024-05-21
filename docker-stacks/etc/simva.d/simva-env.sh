@@ -5,6 +5,7 @@
 ###############################
 # values: development, production
 export SIMVA_ENVIRONMENT="development"
+export SIMVA_DEVELOPMENT_LOCAL=false
 
 export SIMVA_DEBUG="false"
 [[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_DEBUG="true"
@@ -37,7 +38,7 @@ export SIMVA_TLS_HOME="${SIMVA_CONFIG_HOME}/tls"
 
 export SIMVA_TLS_GENERATE_SELF_SIGNED="false"
 
-[[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_TLS_GENERATE_SELF_SIGNED="true"
+[[ $SIMVA_DEVELOPMENT_LOCAL ]] && SIMVA_TLS_GENERATE_SELF_SIGNED="true"
 
 export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 
@@ -87,6 +88,17 @@ branch="master"
 export SIMVA_API_GIT_REF=$branch
 export SIMVA_FRONT_GIT_REF=$branch
 export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
+
+base_for_simva_repos="${SIMVA_DATA_HOME}/simva"
+[[ $SIMVA_DEVELOPMENT_LOCAL ]] && base_for_simva_repos="${SIMVA_HOME}/../../"
+if [[ $SIMVA_DEVELOPMENT_LOCAL ]]; then
+    export SIMVA_API_GIT_REPO="${base_for_simva_repos}/simva"
+else 
+    export SIMVA_API_GIT_REPO="${base_for_simva_repos}/simva-api"
+fi
+export SIMVA_FRONT_GIT_REPO="${base_for_simva_repos}/simva-front"
+export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-allocator"
+
 
 ###################
 # Service Network #

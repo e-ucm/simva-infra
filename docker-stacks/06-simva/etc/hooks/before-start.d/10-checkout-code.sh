@@ -18,7 +18,10 @@ if [[ ! -e "${STACK_HOME}/.initialized" ]]; then
     echo "SIMVA it is not initialized, initializing checkout code."
     RUNCHECKOUTCODE=true
 fi
-if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]] ; then
+if [[ $SIMVA_DEVELOPMENT_LOCAL == true ]]; then
+    echo "SIMVA is in local development environment, no checkout as code is local."
+    RUNCHECKOUTCODE=false
+elif [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
     echo "SIMVA is in development environment, launch checkout code."
     RUNCHECKOUTCODE=true
 fi
