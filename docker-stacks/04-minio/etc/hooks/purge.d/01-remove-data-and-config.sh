@@ -2,13 +2,13 @@
 # REMOVE MINIO DATA
 ###################
 # Removing Minio data
-cd "${SIMVA_DATA_HOME}/minio" && rm-rf ./*
+cd "${SIMVA_DATA_HOME}/minio" && rm -rf ./*
 
 #####################
 # REMOVE MINIO CONFIG
 #####################
 # Removing Minio policies configuration
-cd "${SIMVA_CONFIG_HOME}/minio/policies" && rm-rf ./*
+cd "${SIMVA_CONFIG_HOME}/minio/policies" && rm -rf ./*
 
 if [[ -e "${STACK_HOME}/.initialized" ]]; then
     rm "${STACK_HOME}/.initialized"
