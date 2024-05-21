@@ -191,7 +191,7 @@ export SIMVA_TRUSTSTORE_CA_ALIAS='simvaCA'
 ###################################################################
 #Checking time and max retries for KeyCloak, Minio,Kafka and Anaconda availabled
 export SIMVA_WAIT_TIMEOUT="120"
-export SIMVA_WAIT_TIME="10"
+export SIMVA_WAIT_TIME="15"
 export SIMVA_MAX_RETRIES="20"
 
 #################
