@@ -16,7 +16,7 @@ if [[ ${gomplate_installed} -ne 0 ]]; then
     OS=$(uname -s | tr '[:upper:]' '[:lower:]')
     ARCHITECTURE=$(uname -m)
     case ARCHITECTURE in
-        "x86-64") 
+        "x86_64") 
             ARCH="amd64";;
         "i386") 
             ARCH="386";;
