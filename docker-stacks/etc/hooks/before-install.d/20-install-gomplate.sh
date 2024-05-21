@@ -15,7 +15,7 @@ if [[ ${gomplate_installed} -ne 0 ]]; then
     # Determine the current operating system and architecture
     OS=$(uname -s | tr '[:upper:]' '[:lower:]')
     ARCHITECTURE=$(uname -m)
-    case ARCHITECTURE in
+    case $ARCHITECTURE in
         "x86_64") 
             ARCH="amd64";;
         "i386") 
@@ -35,7 +35,7 @@ if [[ ${gomplate_installed} -ne 0 ]]; then
     curl -sSL "$GOMPLATE_DOWNLOAD_URL" > /tmp/${GOMPLATE_FILE_NAME}
 
     # Verify checksum
-    cat /tmp/gomplate-sha256sums | grep ${GOMPLATE_FILE_NAME} | sed -e 's/bin\//\/tmp\//' | sha256sum -c -
+    cat /tmp/gomplate-sha256sums | grep "${GOMPLATE_FILE_NAME}$" | sed -e 's/bin\//\/tmp\//' | sha256sum -c -
 
     # Move gomplate to the desired location
     mv /tmp/${GOMPLATE_FILE_NAME} "${SIMVA_PROJECT_DIR}/bin/gomplate"
