@@ -9,14 +9,13 @@ done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   echo 1>&2 "Checking Jupyter availability: $((${mc_max_retries}-$count+1)) pass";
   set +e
-  curl "https://${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" >/dev/null;
-  ret=$?;
+  res=$(curl "https://${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/");
   set -e
-  if [ $ret -eq 0 ]; then
-    done="ok";
-  else
+  if [ ! $res == "404 page not found" ]; then
     echo 1>&2 "Jupyter not available, waiting ${wait_time}s";
     sleep ${wait_time};
+  else
+    done="ok";
   fi;
   count=$((count-1));
 done;
