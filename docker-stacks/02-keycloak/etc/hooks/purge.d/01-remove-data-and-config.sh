@@ -2,24 +2,19 @@
 # REMOVE KEYCLOAK DATA
 ######################
 # Removing Keycloak deployments data
-cd "${SIMVA_DATA_HOME}/keycloak/deployments"
-(GLOBIGNORE=README.txt ; rm -rf *)
+rm -rf "${SIMVA_DATA_HOME}/keycloak/deployments"
 
 # Removing Keycloak kcadm data
-cd "${SIMVA_DATA_HOME}/keycloak/kcadm"
-rm -rf ./*
+cd "${SIMVA_DATA_HOME}/keycloak/kcadm" && rm -rf ./*
 
 # Removing Keycloak Mariadb data
-cd "${SIMVA_DATA_HOME}/keycloak/mariadb"
-rm -rf ./*
+cd "${SIMVA_DATA_HOME}/keycloak/mariadb" && rm -rf ./*
 
 # Removing Keycloak Mariadb dump data
-cd "${SIMVA_DATA_HOME}/keycloak/mariadb-dump"
-rm -rf ./*
+cd "${SIMVA_DATA_HOME}/keycloak/mariadb-dump" && rm -rf ./*
 
 # Removing Maven data
-cd "${SIMVA_DATA_HOME}/maven/m2"
-rm -rf ./*
+cd "${SIMVA_DATA_HOME}/maven/m2" && rm -rf ./*
 
 ###############################
 # REMOVE KEYCLOAK CONFIGURATION
@@ -30,12 +25,10 @@ if [[ -e "${SIMVA_CONFIG_HOME}/keycloak/themes/simva/account/theme.properties" ]
 fi
 
 # Removing Keycloak Simva Realm Configuration
-cd "${SIMVA_CONFIG_HOME}/keycloak/simva-realm"
-rm -rf ./*
+cd "${SIMVA_CONFIG_HOME}/keycloak/simva-realm" && rm -rf ./*
 
 # Removing Keycloak Simva Realm backups Configuration
-cd "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export"
-rm -rf ./*
+cd "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export" && rm -rf ./*
 
 # Removing Keycloak simva-env.sh configuration file
 if [[ -e "${SIMVA_CONFIG_HOME}/keycloak/simva-env.sh" ]]; then

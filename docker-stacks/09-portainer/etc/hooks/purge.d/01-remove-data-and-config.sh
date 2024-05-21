@@ -2,8 +2,7 @@
 # REMOVE PORTAINER DATA
 #######################
 # Removing Portainer data
-cd "${SIMVA_DATA_HOME}/portainer"
-rm -rf ./*
+cd "${SIMVA_DATA_HOME}/portainer" && rm-rf ./*
 
 if [[ -e "${STACK_HOME}/.initialized" ]]; then
     rm "${STACK_HOME}/.initialized"
