@@ -9,7 +9,7 @@ done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   echo 1>&2 "Checking minio: $((${mc_max_retries}-$count+1)) pass";
   set +e
-  wget "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/minio/health/live" -O - >/dev/null;
+  curl "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/minio/health/live" >/dev/null;
   ret=$?;
   set -e
   if [ $ret -eq 0 ]; then

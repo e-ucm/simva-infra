@@ -9,7 +9,7 @@ done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   echo 1>&2 "Checking Keycloak availability: $((${mc_max_retries}-$count+1)) pass";
   set +e
-  wget "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}";
+  curl "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}";
   ret=$?;
   set -e
   if [ $ret -eq 0 ]; then

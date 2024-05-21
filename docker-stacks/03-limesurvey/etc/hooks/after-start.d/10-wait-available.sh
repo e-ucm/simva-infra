@@ -9,7 +9,7 @@ done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   echo 1>&2 "Checking Limesurvey availability: $((${mc_max_retries}-$count+1)) pass";
   set +e
-  wget "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" -O - >/dev/null;
+  curl "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" >/dev/null;
   ret=$?;
   set -e
   if [ $ret -eq 0 ]; then

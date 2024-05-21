@@ -23,7 +23,7 @@ function sourceEnvFile() {
 }
 
 sourceEnvFile
-DEPENDENCIES="find mkcert jq docker sha256sum"
+DEPENDENCIES="find mkcert jq docker sha256sum curl"
 DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME:-10}"
 
 function getValueFromBackupFile() {

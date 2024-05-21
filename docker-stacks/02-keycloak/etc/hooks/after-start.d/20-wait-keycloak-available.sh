@@ -10,9 +10,9 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   echo 1>&2 "Checking Keycloak availability: $((${mc_max_retries}-$count+1)) pass";
   set +e
   if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
-    wget "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration" -O - >/dev/null;
+    curl "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration">/dev/null;
   else 
-    wget "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration" -O - >/dev/null;
+    curl "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration">/dev/null;
   fi
   ret=$?;
   set -e
