@@ -14,7 +14,17 @@ if [[ ${gomplate_installed} -ne 0 ]]; then
 
     # Determine the current operating system and architecture
     OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-    ARCH=$(uname -m)
+    ARCHITECTURE=$(uname -m)
+    case ARCHITECTURE in
+        "x86-64") 
+            ARCH="amd64";;
+        "i386") 
+            ARCH="386";;
+        "i686") 
+            ARCH="686";;
+        *) 
+            ARCH=$ARCHITECTURE;;
+        esac
     echo ${OS}-${ARCH}
     # Set the default download URL and SHA256SUMS URL
     GOMPLATE_DOWNLOAD_URL="https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_${OS}-${ARCH}"
