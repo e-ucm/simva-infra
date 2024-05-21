@@ -40,7 +40,8 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
     if [[ -e "${extension}/pom.xml" ]]; then
     #   | sed "s/<keycloak.version>[0-9]\+\.[0-9]\+\.[0-9]\+<\/keycloak.version>/<keycloak.version>KEYCLOAKVERSION<\/keycloak.version>/g" \
         cat "${extension}/pom.xml" \
-        | sed -e '/<build>/ a\    <finalName>${project.artifactId}</finalName>' \
+        | sed -e '/<build>/ a\
+            <finalName>${project.artifactId}</finalName>' \
         > "${extension}/pom.xml.template"
     fi
 fi

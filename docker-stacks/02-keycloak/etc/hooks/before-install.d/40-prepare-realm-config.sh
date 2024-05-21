@@ -52,7 +52,7 @@ __file_env() {
 # #################################
 
 # Oneline certificate
-limesurvey_cert=$(cat "${SIMVA_TLS_HOME}/limesurvey.pem" | tail -n +2 | head -n -1 | sed ':a;N;$!ba;s/\n//g')
+limesurvey_cert=$(sed '1d; $d;:a;N;$!ba;s/\n//g' "${SIMVA_TLS_HOME}/limesurvey.pem")
 
 function configure_realm_production() {
     generate_realm_data "${STACK_CONF}/realm-data.prod.yml"

@@ -131,6 +131,19 @@ function require_root() {
 
 # color setup (for pretty output)
 function prepare_output() {
+    # define first to make sure they are always defined
+    bold=""
+    underline=""
+    standout=""
+    normal=""
+    black=""
+    red=""
+    green=""
+    yellow=""
+    blue=""
+    magenta=""
+    cyan=""
+    white=""
     # modified from http://unix.stackexchange.com/a/10065/69064
     if [ -t 1 ]; then
         ncolors=$(tput colors)
@@ -165,7 +178,7 @@ function check_docker_launched() {
     recho "docker not running; attempting to launch it ..."
     require_root
     docker daemon >docker-log.txt 2>&1 &
-    sleep 2s
+    sleep 2
   fi
 }
 
@@ -174,11 +187,13 @@ function check_dependencies() {
     local ret_value=0
     for binary in ${DEPENDENCIES}; do
         set +e
-        ret_value=$(which ${binary} >/dev/null 2>&1)
+        path=$(which ${binary})
 
-        if [[ ${ret_value} -ne 0 ]]; then
-          echo 1>&2 "not found: ${exec}"
+        if [[ ! ${path} > /dev/null ]]; then
+          echo 1>&2 "not found: ${binary}"
           ret_value=1
+        else 
+          echo 1>&2 "found: ${binary} : ${path}"
         fi
     done
 
@@ -459,7 +474,7 @@ function docker_compose_stacks() {
 function run_scripts_from_folder() {
     local folder=${1}
     if [[ -d "${folder}" ]]; then
-        for FILE in $(find ${folder} -iname \*.sh -type f -executable | sort); do
+        for FILE in $(find ${folder} -iname \*.sh -type f | sort); do
             echo "Running hook script file : ${FILE}"
             ${FILE}
             echo "Running hook script file done : ${FILE}"
