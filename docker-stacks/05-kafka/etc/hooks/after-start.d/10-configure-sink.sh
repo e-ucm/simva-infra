@@ -60,8 +60,8 @@ if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
 JQ_SCRIPT
 )
 
-  cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
-  --arg minioUrl "https://${SIMVA_MINIO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" \
+  cat ${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json | jq \
+  --arg minioUrl "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
   --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \
   --arg bucketName "${SIMVA_TRACES_BUCKET_NAME}" \

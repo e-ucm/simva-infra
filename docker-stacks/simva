@@ -678,22 +678,59 @@ function upgrade() {
                 previous_version=$(getValueFromBackupFile $var_name)
             fi 
             echo "previous_version: $previous_version"
-            while IFS= read -r version || [[ -n $version ]];do
-                echo "version: $version"
-                comparison_prev_result=$(compare_versions $version $previous_version)
-                echo "compare_versions $version $previous_version : $comparison_prev_result"
-                comparison_new_result=$(compare_versions $version $new_version)
-                echo "compare_versions $version $new_version : $comparison_new_result"
-                if [[ ! $comparison_prev_result == 2 ]] && [[ ! $comparison_new_result == 1 ]]; then
-                    echo "Processing version: $version" 
-                    declare -g "$var_name=$version"
-                    install "${wait_time}" "false" ${stack}
-                    start 30 "false" ${stack}
-                    stop "${wait_time}" ${stack}
-                    echo "Processing version: $version done " 
-                    echo $version > "${SIMVA_DATA_HOME}/${stack_name}/.version"
-                else 
-                    echo "No need to migrate to this version $version" 
+            line=0
+            variables=()
+            while IFS= read -r version; do
+                if [[ $line -eq 0 ]]; then
+                    line=$((line + 1))
+                    IFS='|' read -r -a names <<< "$version"
+                    firstvarname=$(tr '[:lower:]' '[:upper:]' <<< "${names[0]}")
+                    if [[ ${firstvarname} == "$stack_name_uppercase" ]]; then
+                        for name in "${names[@]}"; do
+                            name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$name")
+                            variable="SIMVA_${name_uppercase}_VERSION"
+                            if [[ $name == "$stack_name_uppercase"* ]]; then
+                                if declare -p "$variable" &>/dev/null; then
+                                    variables+=("$variable")
+                                else
+                                    echo "Error: Global variable $variable does not exist"
+                                    exit 1
+                                fi
+                            else
+                                echo "Error: The variable name in $version_file has to start with $stack_name"
+                                exit 1
+                            fi
+                        done
+                    else
+                        echo "Error: The first variable name in $version_file has to be $stack_name corresponding to variable SIMVA_${name_uppercase}_VERSION"
+                        exit 1
+                    fi
+                else
+                    IFS='|' read -r -a values <<< "$version"
+                    line=0
+                    for varname in "${variables[@]}"; do
+                        vers="${values[$line]}"
+                        if [[ $line -eq 0 ]]; then
+                            version="$vers"
+                            echo "version: $version"
+                            comparison_prev_result=$(compare_versions "$version" "$previous_version")
+                            echo "compare_versions $version $previous_version: $comparison_prev_result"
+                            comparison_new_result=$(compare_versions "$version" "$new_version")
+                            echo "compare_versions $version $new_version: $comparison_new_result"
+                        fi
+                        echo "Processing version of $varname: $vers"
+                        declare -g "$varname=$vers"
+                        line=$((line + 1))
+                    done
+                    if [[ ! $comparison_prev_result -eq 2 ]] && [[ ! $comparison_new_result -eq 1 ]]; then
+                        install "${wait_time}" "false" "${stack}"
+                        start 30 "false" "${stack}"
+                        stop "${wait_time}" "${stack}"
+                        echo "Processing version: $version done"
+                        echo "$version" > "${STACK_HOME}/.version"
+                    else
+                        echo "No need to migrate to this version $version"
+                    fi
                 fi
             done < "$version_file"
         fi
@@ -871,7 +908,7 @@ function start() {
                 echo $new_external_domain > "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain"
             fi;
         fi;
-        docker_compose_stacks "${stack}" "${wait_time}" "up -d"
+        docker_compose_stacks "${stack}" "${wait_time}" "up -d --remove-orphans"
     done
     for stack in ${stacks}; do
         execute_after_hooks ${phase} ${stack}

@@ -96,89 +96,85 @@ services:
       - "traefik.http.services.minio.loadbalancer.server.port=9000"
       - "traefik.http.routers.minio.rule=Host(`${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
-# mc config host add --insecure simva-minio https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test} minio password
-# mc --debug --insecure mb simva-minio/prueba
-# mc --debug --insecure ls simva-minio
-# https://github.com/minio/minio/issues/7086 -> write-user-folder.json
-# https://github.com/minio/minio/issues/8345 -> write-user-folder-jwt.json
-#
-# Not required (already configured using env variables but useful:
-#   /usr/bin/mc --debug --insecure admin config set simva-minio identity_openid config_url="https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/simva/.well-known/openid-configuration" client_id="https://minio.external.test";
-#   /usr/bin/mc --debug --insecure admin service restart simva-minio;
-
-# XXX remove mcs password
   mc:
     << : *default-opts
     image: ${SIMVA_MINIO_MC_IMAGE:-minio/mc}:${SIMVA_MINIO_MC_VERSION:-RELEASE.2020-09-03T00-08-28Z}
     entrypoint: >
       /bin/sh -c '
-      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/data/minio-initialized" ]; then
-        if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
-          cp /root/.mc/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
-          cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
-        fi;
-        wait_time=$${MC_WAIT_TIME};
-        count=$${MC_MAX_RETRIES};
-        done="ko";
-        while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
-          echo 1>&2 "Checking Keycloak availability for minio: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
-          wget "https://$${MINIO_SSO_HOST}/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
-          ret=$$?;
-          if [ $$ret -eq 0 ]; then
-            done="ok";
-          else
-            echo 1>&2 "Keycloak not available, waiting $${wait_time}s";
-            sleep $${wait_time};
+        /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/data/minio-initialized" ]; then 
+          if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
+            cp /root/.mc/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
+            cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
           fi;
-          count=$$((count-1));
-        done;
-        if [ $$count -eq 0 ] && [ "$$done" != "ok" ]; then
-          echo 1>&2 "Keycloak not available !";
-          exit 1
-        fi;
-        if [ "$$done" == "ok" ]; then
-          echo 1>&2 "Keycloak available !";
-        fi;
-      fi;
-      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/data/minio-initialized" ]; then
-        wait_time=$${MC_WAIT_TIME};
-        count=$${MC_MAX_RETRIES};
-        done="ko";
-        while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
-          echo 1>&2 "Checking minio: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
-          wget "$${MINIO_URL}/minio/health/live" -O - >/dev/null;
-          ret=$$?;
-          if [ $$ret -eq 0 ]; then
-            done="ok";
-          else
-            echo 1>&2 "Minio not available, waiting $${wait_time}s";
-            sleep $${wait_time};
+          wait_time=$${MC_WAIT_TIME};
+          count=$${MC_MAX_RETRIES};
+          done="ko";
+          while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
+            echo 1>&2 "Checking Keycloak availability for minio: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
+            wget "https://$${MINIO_SSO_HOST}/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" -O - >/dev/null;
+            ret=$$?;
+            if [ $$ret -eq 0 ]; then
+              done="ok";
+            else
+              echo 1>&2 "Keycloak not available, waiting $${wait_time}s";
+              sleep $${wait_time};
+            fi;
+            count=$$((count-1));
+          done;
+          if [ $$count -eq 0 ] && [ "$$done" != "ok" ]; then
+            echo 1>&2 "Keycloak not available !";
+            exit 1
           fi;
-          count=$$((count-1));
-        done;
-        if [ $$count -eq 0 ] && [ "$$done" != "ok" ]; then
-          echo 1>&2 "Minio not available !";
-          exit 1
+          if [ "$$done" == "ok" ]; then
+            echo 1>&2 "Keycloak available !";
+          fi;
         fi;
-        if [ "$$done" == "ok" ]; then
-          echo 1>&2 "Minio available !";
-        fi;
-        /usr/bin/mc config host add simva-minio $${MINIO_URL} $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY};
-        /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder /policies/write-user-folder.json;
-        /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder-jwt /policies/write-user-folder-jwt.json;
-        /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder /policies/readonly-user-folder.json;
-        /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder-jwt /policies/readonly-user-folder-jwt.json;
-        /usr/bin/mc --debug admin policy add simva-minio/ simva-adv4-user /policies/simva-adv4-user.json;
-        /usr/bin/mc --debug admin user add simva-minio $${MINIO_MCS_USER} $${MINIO_MCS_SECRET}
-        /usr/bin/mc --debug admin policy add simva-minio/ mcsAdmin /policies/mcsAdmin.json;
-        /usr/bin/mc --debug admin policy add simva-minio/ mcsRestrictedAdmin /policies/mcsRestrictedAdmin.json;
-        /usr/bin/mc --debug admin policy set simva-minio/ mcsAdmin user=$${MINIO_MCS_USER}
-        /usr/bin/mc --debug admin user add simva-minio $${SIMVA_SINK_USER} $${SIMVA_SINK_SECRET}
-        /usr/bin/mc --debug admin policy add simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json;
-        /usr/bin/mc --debug admin policy set simva-minio/ simvaSink user=$${SIMVA_SINK_USER}
-        /usr/bin/mc --debug mb simva-minio/$${MINIO_BUCKET};
-        touch /data/minio-initialized;
-      fi
+        /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/data/minio-initialized" ]; then
+          wait_time=$${MC_WAIT_TIME};
+          count=$${MC_MAX_RETRIES};
+          done="ko";
+          while [ $$count -gt 0 ] && [ "$$done" != "ok" ]; do
+            echo 1>&2 "Checking minio: $$(($${MC_MAX_RETRIES}-$$count+1)) pass";
+            wget "$${MINIO_URL}/minio/health/live" -O - >/dev/null;
+            ret=$$?;
+            if [ $$ret -eq 0 ]; then
+              done="ok";
+            else
+              echo 1>&2 "Minio not available, waiting $${wait_time}s";
+              sleep $${wait_time};
+            fi;
+            count=$$((count-1));
+          done;
+          if [ $$count -eq 0 ] && [ "$$done" != "ok" ]; then
+            echo 1>&2 "Minio not available !";
+            exit 1
+          fi;
+          if [ "$$done" == "ok" ]; then
+            echo 1>&2 "Minio available !";
+          fi;
+          /usr/bin/mc config host add simva-minio $${MINIO_URL} $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY};
+          if [[ $$? -ne 0 ]]; then
+            echo "Error: Unable to initialize connection to MinIO."
+            exit 1
+          fi;
+          /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder /policies/write-user-folder.json;
+          /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder-jwt /policies/write-user-folder-jwt.json;
+          /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder /policies/readonly-user-folder.json;
+          /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder-jwt /policies/readonly-user-folder-jwt.json;
+          /usr/bin/mc --debug admin policy add simva-minio/ simva-adv4-user /policies/simva-adv4-user.json;
+          /usr/bin/mc --debug admin user add simva-minio $${MINIO_MCS_USER} $${MINIO_MCS_SECRET}
+          /usr/bin/mc --debug admin policy add simva-minio/ mcsAdmin /policies/mcsAdmin.json;
+          /usr/bin/mc --debug admin policy add simva-minio/ mcsRestrictedAdmin /policies/mcsRestrictedAdmin.json;
+          /usr/bin/mc --debug admin policy set simva-minio/ mcsAdmin user=$${MINIO_MCS_USER}
+          /usr/bin/mc --debug admin user add simva-minio $${SIMVA_SINK_USER} $${SIMVA_SINK_SECRET}
+          /usr/bin/mc --debug admin policy add simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json;
+          /usr/bin/mc --debug admin policy set simva-minio/ simvaSink user=$${SIMVA_SINK_USER}
+          /usr/bin/mc --debug mb simva-minio/$${MINIO_BUCKET};
+            format=$$(cat /data/.minio.sys/format.json);
+          echo "Format :";
+          echo $$format;
+          touch /data/minio-initialized;
+        fi
       '
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio:/data
@@ -204,6 +200,9 @@ services:
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
     hostname: mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
+      default:
+        aliases:
+          - mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
           - mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
