@@ -3,15 +3,15 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
-  ${SIMVA_HOME}/bin/wait-available.sh "Keycloak SIMVA REALM" "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration" "true" "false";
+  ${SIMVA_HOME}/bin/wait-available.sh "Keycloak SIMVA REALM" "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration" "true" "false";
 else 
-  ${SIMVA_HOME}/bin/wait-available.sh "Keycloak SIMVA REALM" "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration" "true" "false";
+  ${SIMVA_HOME}/bin/wait-available.sh "Keycloak SIMVA REALM" "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/auth/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration" "true" "false";
 fi
 
-${SIMVA_HOME}/bin/wait-available.sh "Minio" "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/minio/health/live" "true" "false";
+${SIMVA_HOME}/bin/wait-available.sh "Minio" "https://${SIMVA_MINIO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/minio/health/live" "true" "false";
 
-mc_max_retries=${SIMVA_MAX_RETRIES:-20}
-wait_time=${SIMVA_WAIT_TIME:-10};
+mc_max_retries=${SIMVA_MAX_RETRIES}
+wait_time=${SIMVA_WAIT_TIME};
 count=${mc_max_retries};
 done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
@@ -61,7 +61,7 @@ JQ_SCRIPT
 )
 
   cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
-  --arg minioUrl "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}" \
+  --arg minioUrl "https://${SIMVA_MINIO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
   --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \
   --arg bucketName "${SIMVA_TRACES_BUCKET_NAME}" \

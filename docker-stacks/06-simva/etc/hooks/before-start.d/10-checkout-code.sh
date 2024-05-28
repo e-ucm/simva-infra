@@ -19,7 +19,7 @@ fi
 if [[ $SIMVA_DEVELOPMENT_LOCAL == true ]]; then
     echo "SIMVA is in local development environment, no checkout as code is local."
     RUNCHECKOUTCODE=false
-elif [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
+elif [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
     echo "SIMVA is in development environment, launch checkout code."
     RUNCHECKOUTCODE=true
 fi
@@ -30,7 +30,7 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     ###########################################################
 
     # Create source folder
-    mkdir -p ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api
+    mkdir -p ${SIMVA_DATA_HOME}/simva/simva-api
     
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
@@ -43,8 +43,8 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
 
     # Verify checksums of current files
     newSha=$(cat ${tmp_dir}/sha256sums)
-    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/sha256sums" ] ; then 
-        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/sha256sums)
+    if [ -e "${SIMVA_DATA_HOME}/simva/simva-api/sha256sums" ] ; then 
+        oldSha=$(cat ${SIMVA_DATA_HOME}/simva/simva-api/sha256sums)
     else 
         oldSha=""
     fi
@@ -57,14 +57,14 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
         rsync_opts=""
     fi
     echo $rsync_opts
-    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/ > /dev/null 2>&1
+    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-api/ > /dev/null 2>&1
 
     ############################################################
     ######################### FRONTEND #########################
     ############################################################
 
     # Create source folder
-    mkdir -p ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front
+    mkdir -p ${SIMVA_DATA_HOME}/simva/simva-front
     
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
@@ -77,8 +77,8 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
 
     # Verify checksums of current files
     newSha=$(cat ${tmp_dir}/sha256sums)
-    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front/sha256sums" ]; then 
-        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front/sha256sums)
+    if [ -e "${SIMVA_DATA_HOME}/simva/simva-front/sha256sums" ]; then 
+        oldSha=$(cat ${SIMVA_DATA_HOME}/simva/simva-front/sha256sums)
     else 
         oldSha=""
     fi
@@ -91,14 +91,14 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
         rsync_opts=""
     fi
     echo $rsync_opts
-    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front/ > /dev/null 2>&1
+    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-front/ > /dev/null 2>&1
 
     ###################################################################
     ######################### TRACE ALLOCATOR #########################
     ###################################################################
 
     # Create source folder
-    mkdir -p ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator
+    mkdir -p ${SIMVA_DATA_HOME}/simva/simva-trace-allocator
     
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
@@ -111,8 +111,8 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
 
     # Verify checksums of current files
     newSha=$(cat ${tmp_dir}/sha256sums)
-    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator/sha256sums" ]; then 
-        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator/sha256sums)
+    if [ -e "${SIMVA_DATA_HOME}/simva/simva-trace-allocator/sha256sums" ]; then 
+        oldSha=$(cat ${SIMVA_DATA_HOME}/simva/simva-trace-allocator/sha256sums)
     else 
         oldSha=""
     fi
@@ -125,6 +125,6 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
         rsync_opts=""
     fi
     echo $rsync_opts
-    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator/ > /dev/null 2>&1
-    chmod -R 777 ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva
+    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-trace-allocator/ > /dev/null 2>&1
+    chmod -R 777 ${SIMVA_DATA_HOME}/simva
 fi

@@ -27,8 +27,8 @@ if [[ $# -lt 4 ]]; then
 fi
 token_variable_name=${4}
 
-mc_max_retries=${SIMVA_MAX_RETRIES:-20}
-wait_time=${SIMVA_WAIT_TIME:-10};
+mc_max_retries=${SIMVA_MAX_RETRIES}
+wait_time=${SIMVA_WAIT_TIME};
 count=${mc_max_retries};
 done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do

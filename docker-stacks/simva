@@ -24,7 +24,7 @@ function sourceEnvFile() {
 
 sourceEnvFile
 DEPENDENCIES="find mkcert jq docker sha256sum curl"
-DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME:-10}"
+DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME}"
 
 function getValueFromBackupFile() {
     if [[ $# -lt 1 ]]; then
@@ -444,7 +444,7 @@ function execute_after_hooks() {
 
 function docker_compose_stacks() {
     local stacks=${1}
-    local waiting_time=${2:-0}
+    local waiting_time=${2}
     shift 2
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"

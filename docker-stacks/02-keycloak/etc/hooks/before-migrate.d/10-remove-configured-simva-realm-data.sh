@@ -9,4 +9,4 @@ ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_CONFIG_HOME}/keycloak/realm-data.dev.yml" \
     "${SIMVA_CONFIG_HOME}/keycloak/realm-data.prod.yml"
 
-touch "${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/.exportinprogress"
+touch "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/.exportinprogress"

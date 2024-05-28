@@ -10,7 +10,7 @@ ${SIMVA_HOME}/bin/purge-folder-contents.sh \
     "${SIMVA_DATA_HOME}/limesurvey/data/upload" \
     "${SIMVA_DATA_HOME}/limesurvey/mariadb" \
     "${SIMVA_DATA_HOME}/limesurvey/mariadb-dump" \
-    "${SIMVA_DATA_HOME}/limesurvey${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}-data/config"
+    "${SIMVA_DATA_HOME}/limesurvey${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}-data/config"
 
 ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/limesurvey/.initialized"\

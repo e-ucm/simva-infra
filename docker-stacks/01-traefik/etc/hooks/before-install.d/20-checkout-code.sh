@@ -5,14 +5,14 @@ set -euo pipefail
 CSP_REPORTER_GIT_REPO_URL=https://github.com/radiovisual/local-csp-reporter/
 CSP_REPORTER_GIT_REF=${CSP_REPORTER_GIT_REF:-master}
 
-if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
+if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
 
     ###########################################################
     ####################### CSP-REPORTER ######################
     ###########################################################
 
     # Create source folder
-    mkdir -p ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter
+    mkdir -p ${SIMVA_DATA_HOME}/traefik/csp-reporter
     
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
@@ -25,8 +25,8 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
 
     # Verify checksums of current files
     newSha=$(cat ${tmp_dir}/sha256sums)
-    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums" ]; then 
-        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/sha256sums)
+    if [ -e "${SIMVA_DATA_HOME}/traefik/csp-reporter/sha256sums" ]; then 
+        oldSha=$(cat ${SIMVA_DATA_HOME}/traefik/csp-reporter/sha256sums)
     else 
         oldSha=""
     fi
@@ -39,7 +39,7 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
         rsync_opts=""
     fi
     echo $rsync_opts
-    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/ > /dev/null 2>&1
-    chmod -R 777 ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter/
+    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME}/traefik/csp-reporter/ > /dev/null 2>&1
+    chmod -R 777 ${SIMVA_DATA_HOME}/traefik/csp-reporter/
 fi
-chmod -R 777 ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter
+chmod -R 777 ${SIMVA_DATA_HOME}/traefik/csp-reporter

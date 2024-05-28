@@ -4,7 +4,7 @@ set -euo pipefail
 
 if [[ -e "${SIMVA_DATA_HOME}/keycloak/.initialized" ]]; then 
     echo "SIMVA is initialized." 
-    exportinProgressFile="${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/.exportinprogress"
+    exportinProgressFile="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/.exportinprogress"
     if [[ -e "$exportinProgressFile" ]]; then
             echo "Migration in progress. Exporting realm..."
             # Check if the container is running
@@ -12,8 +12,8 @@ if [[ -e "${SIMVA_DATA_HOME}/keycloak/.initialized" ]]; then
             if [ ! $keycloakContainer = "" ]; then
                 echo "Keycloak container is running. Launching export of users..."
                 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
-                    rm -rf ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/*
-                    docker compose exec keycloak /opt/keycloak/bin/kc.sh export --dir "/opt/keycloak/data/export/" --users different_files --users-per-file 100 --realm ${SIMVA_SSO_REALM:-simva} --optimized
+                    rm -rf ${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/*
+                    docker compose exec keycloak /opt/keycloak/bin/kc.sh export --dir "/opt/keycloak/data/export/" --users different_files --users-per-file 100 --realm ${SIMVA_SSO_REALM} --optimized
                     rm $exportinProgressFile
                 else 
                     #if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 13 ]]; then
