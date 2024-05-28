@@ -36,7 +36,7 @@ if [ "$done" == "ok" ]; then
   echo 1>&2 "Kafka Connect available !";
 fi;
 
-connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json" -r)
+connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json" -r)
 
 set +e
 docker compose exec connect curl -f -sS \
@@ -60,7 +60,7 @@ if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
 JQ_SCRIPT
 )
 
-  cat ${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json | jq \
+  cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
   --arg minioUrl "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
   --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \

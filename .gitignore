@@ -1,7 +1,5 @@
 .vagrant
-docker-stacks/trace-allocator.log
 docker-stacks/.simva-initialized
-docker-stacks/config/kafka/connect/simva-sink.json
 docker-stacks/config/kafka/topics-ui/resolv.conf
 docker-stacks/config/kafka/connect-ui/resolv.conf
 docker-stacks/config/kafka/schema-registry-ui/resolv.conf
