@@ -26,7 +26,6 @@ services:
 # sol: https://github.com/stefanprodan/dockprom/issues/205#issuecomment-798628548
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/schema-registry-ui/resolv.conf:/etc/resolv.conf:ro
     depends_on:
       - schema-registry
     hostname: schema-registry-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}

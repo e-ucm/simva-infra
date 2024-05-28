@@ -248,7 +248,6 @@ export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 # Kafka info #
 ##############
 export SIMVA_KAFKA_NETWORK="kafka_services"
-export SIMVA_KAFKA_DNS_IP="127.0.0.11"
 export SIMVA_TRACES_BUCKET_NAME="traces"
 export SIMVA_SINK_TOPICS_DIR="kafka-topics"
 export SIMVA_TRACES_TOPIC="traces"
