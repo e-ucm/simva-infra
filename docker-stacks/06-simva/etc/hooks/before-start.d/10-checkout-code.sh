@@ -2,8 +2,6 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-
-
 SIMVA_API_GIT_REPO_URL=https://github.com/e-ucm/simva.git
 SIMVA_API_GIT_REF=${SIMVA_API_GIT_REF:-master}
 

@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
+
 ${SIMVA_HOME}/bin/purge-folder-contents.sh \
     "${SIMVA_DATA_HOME}/logs/portainer" \
     "${SIMVA_CONFIG_HOME}/logs/portainer-config" \

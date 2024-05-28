@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
+
 if [[ -e "${SIMVA_DATA_HOME}/keycloak/.initialized" ]]; then 
     echo "SIMVA is initialized." 
     exportinProgressFile="${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/.exportinprogress"
