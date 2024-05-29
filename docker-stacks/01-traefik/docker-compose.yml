@@ -69,7 +69,7 @@ services:
           [http.middlewares.dashboardAuth.basicAuth]
             # admin:password
             users = [
-              "${SIMVA_TRAEFIK_DASHBOARD_USER:?Traefik dashboard username must be configured}:$(cat "/data/traefik-password-hashed.txt")"
+              "${SIMVA_TRAEFIK_DASHBOARD_USER:?Traefik dashboard username must be configured}:${SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD:?Traefik dashboard password must be configured}"
             ]
           [http.middlewares.secHeaders.headers]
             contentTypeNosniff = true
@@ -84,7 +84,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME:?TLS home folder required}:/etc/traefik/ssl:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/traefik/traefik/static-conf:/etc/traefik
-      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/traefik/traefik-password-hashed.txt:/data/traefik-password-hashed.txt:ro
     depends_on:
       - socket-proxy
     healthcheck:
