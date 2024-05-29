@@ -22,74 +22,6 @@ networks:
         - subnet: "172.29.0.0/24"
 
 services:
-  dns-proxy-server:
-    << : *default-opts
-    image: eucm/dns-proxy-server:2.19.0-dh-2
-    entrypoint:
-      - '/bin/sh'
-      - '-c'
-      - |
-        [ ! -d "/app/conf" ] && mkdir -p /app/conf;
-        [ ! -f "/app/conf/config.json" ] && cat << EOF > /app/conf/config.json
-        {
-          "version": 2,
-          "remoteDnsServers": [
-            "8.8.8.8:53",
-            "8.8.4.4:53"
-          ],
-          "envs": [
-            {
-              "name": "",
-              "hostnames": [
-                {
-                  "id": 1562843575352085033,
-                  "hostname": ".external.test",
-                  "ip": "172.29.0.1",
-                  "ttl": 3600,
-                  "type": "A"
-                },
-                {
-                  "id": 1562843575352085034,
-                  "hostname": ".dev.test",
-                  "ip": "172.29.0.1",
-                  "ttl": 3600,
-                  "type": "A"
-                }
-              ]
-            }
-          ],
-          "activeEnv": "",
-          "webServerPort": 5380,
-          "dnsServerPort": 53,
-          "defaultDns": false,
-          "logLevel": "INFO",
-          "logFile": "console",
-          "dpsNetwork": false,
-          "dpsNetworkAutoConnect": false,
-          "registerContainerNames": true,
-          "hostMachineHostname": "host.docker.test",
-          "domain": "docker.test"
-        }
-        EOF
-        exec /usr/bin/docker-entrypoint "$$@"
-    command:
-      - "--"
-      - "/app/dns-proxy-server"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      MG_LOG_LEVEL: "DEBUG"
-    hostname: "dns.dev.test"
-    networks:
-      default:
-        ipv4_address: "172.29.0.53"
-        aliases:
-          - "dns.dev.test"
-
-#
-#
-#
   mongodb:
     << : *default-opts
     image: ${SIMVA_MONGODB_IMAGE:-mongo}:${SIMVA_MONGODB_VERSION:-4.2.8}
@@ -104,7 +36,7 @@ services:
 
   simva-api:
     << : *default-opts
-    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_FRONT_VERSION:-12.18.2}
+    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_VERSION:-12.18.2}
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
@@ -144,11 +76,11 @@ services:
 
     depends_on:
       - mongodb
-    hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}dev.test
+    hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.dev.test
     networks:
       default:
         aliases:
-          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}dev.test
+          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.dev.test
     ports:
       - target: 3000
         published: 3000
@@ -161,7 +93,7 @@ services:
 
   simva-front:
     << : *default-opts
-    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_FRONT_VERSION:-12.18.2}
+    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_VERSION:-12.18.2}
     command: bash -c "cd /app && chmod +x docker-startup.sh && ./docker-startup.sh"
     stdin_open: true
     tty: true
@@ -173,7 +105,7 @@ services:
       SIMVA_PROTOCOL: "http"
       NODE_EXTRA_CA_CERTS: /var/lib/simva/ca/rootCA.pem
       MONGO_DB: /simva
-      SIMVA_API_HOST: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}dev.test
+      SIMVA_API_HOST: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.dev.test
       SIMVA_API_PORT: "3000"
       SIMVA_API_PROTOCOL: "http"
       SSO_HOST: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
