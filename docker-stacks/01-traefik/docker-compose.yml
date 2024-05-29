@@ -49,7 +49,7 @@ services:
       - '-c'
       - |
         mkdir -p /etc/traefik/dynamic-config;
-        cat << EOF > /etc/traefik/dynamic-config/file-provider.toml
+        cat << 'EOF' > /etc/traefik/dynamic-config/file-provider.toml
         [[tls.certificates]]
           certFile = "/etc/traefik/ssl/traefik-fullchain.pem"
           keyFile = "/etc/traefik/ssl/traefik-key.pem"

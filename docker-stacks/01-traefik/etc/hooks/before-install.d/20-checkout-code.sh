@@ -18,7 +18,7 @@ if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
     tmp_dir=$(mktemp -d)
     git clone --depth 1 --branch ${CSP_REPORTER_GIT_REF} ${CSP_REPORTER_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
 
-    # Calculate checksums of package.json and package-lock.json
+    # Calculate checksums of package.json
     pushd ${tmp_dir} > /dev/null 2>&1
     sha256sum package.json > sha256sums
     popd > /dev/null 2>&1
