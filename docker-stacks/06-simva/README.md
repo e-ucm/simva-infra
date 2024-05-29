@@ -2,7 +2,7 @@
 
 
 ```
-ssh  -L0.0.0.0:9092:localhost:9092 -N vagrant@192.168.253.2
+ssh  -L0.0.0.0:9092:localhost:9092 -o UserKnownHostsFile=/dev/null -N vagrant@192.168.253.2
 
 docker run \
     --name tunnel-kafka1 \
