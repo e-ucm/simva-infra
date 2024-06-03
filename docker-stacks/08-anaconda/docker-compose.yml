@@ -120,7 +120,7 @@ services:
         unset JUPYTER_PASSWORD;
         ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
         sed -r -i -e "s/^#?\s*c.ServerApp.password\s+=.*/c.ServerApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
-        sed -r -i -e "s/^#?\s*c.ServerApp.tornado_settings = \{\}.*/c.ServerApp.tornado_settings = \{\"websocket_max_message_size\": ${WEBSOCKET_MAX_SIZE_IN_MO} * 1024 * 1024\}/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
+        sed -r -i -e "s/^#?\s*c.ServerApp.tornado_settings = \{\}.*/c.ServerApp.tornado_settings = \{\"websocket_max_message_size\": 500 * 1024 * 1024\}/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
 
         #BEFORE 
         #password=$$(/simva-env/bin/python3 -c "from notebook.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
@@ -155,7 +155,6 @@ services:
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
       MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
       MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
-      WEBSOCKET_MAX_SIZE_IN_MO: ${SIMVA_WEBSOCKET_SIZE_MAX_IN_MO:-100}
     restart: unless-stopped
     healthcheck:
       test: "curl -sS http://localhost:8888/ || exit 1"
