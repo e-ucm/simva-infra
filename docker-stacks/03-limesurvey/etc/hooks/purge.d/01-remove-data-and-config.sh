@@ -5,7 +5,7 @@ set -euo pipefail
 ${SIMVA_BIN_HOME}/purge-folder-contents.sh \
     "${SIMVA_CONFIG_HOME}/limesurvey/etc" \
     "${SIMVA_DATA_HOME}/limesurvey/data/plugins" \
-    "${SIMVA_DATA_HOME}/limesurvey/simplesamlphp-data/config"
+    "${SIMVA_DATA_HOME}/limesurvey/plugins"
 
 ${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/limesurvey/.initialized"\

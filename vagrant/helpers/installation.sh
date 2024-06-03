@@ -48,6 +48,14 @@ else
   echo "apache2-utils already available."
 fi
 
+# --- unzip ---
+if ! command -v unzip >/dev/null 2>&1; then
+  echo "Installing unzip..."
+  sudo apt-get install -y unzip
+else
+  echo "unzip already available."
+fi
+
 
 # --- Docker ---
 if ! command -v docker >/dev/null 2>&1; then
@@ -136,6 +144,8 @@ echo "sha256sum : $(sha256sum --version || true)"
 echo "dos2unix : $(dos2unix --version || true)"
 
 echo "node : $(node -v || true)"
+
+echo "unzip : $(unzip -v || true)"
 
 echo "npm : $(npm -v|| true)"
 

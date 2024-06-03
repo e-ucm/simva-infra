@@ -88,6 +88,7 @@ EOF
             echo "Setting password for username ${user_username} done"
         done
         
+        __add_or_update_client_scope "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/clients-scopes/openid" "/opt/keycloak/data/simva-realm/clients-scopes/openid"
         __add_or_update_client_scope "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/clients-scopes/lti" "/opt/keycloak/data/simva-realm/clients-scopes/lti"
         __add_or_update_client_scope "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/clients-scopes/saml" "/opt/keycloak/data/simva-realm/clients-scopes/saml"
         __add_or_update_client_scope "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/clients-scopes/policy-role" "/opt/keycloak/data/simva-realm/clients-scopes/policy-role"
