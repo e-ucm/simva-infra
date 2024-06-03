@@ -1,10 +1,22 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 services:
   mcs:
+    << : *default-opts
     image: minio/mcs:v0.2.1
     command: server
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.mcs/certs/CAs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
@@ -18,12 +30,10 @@ services:
       MCS_SECRET_KEY: "${SIMVA_MINIO_MCS_SECRET:-password}"
       # Required using self signed certificates
       MCS_MINIO_SERVER_TLS_ROOT_CAS: "/root/.mcs/certs/CAs/rootCA.pem"
-      MINIO_HOST: "minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
-      MCS_MINIO_SERVER: "https://minio.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MINIO_HOST: "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MCS_MINIO_SERVER: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
     restart: unless-stopped
     hostname: mcs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       traefik_services:
         aliases:

@@ -1,42 +1,24 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 services:
   mongodb:
-    image: mongo:4.2.8
+    << : *default-opts
+    image: ${SIMVA_MONGODB_IMAGE:-mongo}:${SIMVA_MONGODB_VERSION:-4.2.8}
     networks:
       traefik_services:
         aliases:
-          - simva-mongo.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.tcp.services.simva-mongodb.loadbalancer.server.port=27017"
-      - "traefik.tcp.routers.simva-mongodb.rule=HostSNI(`simva-mongo.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-
-  simva-api:
-    ports:
-      - target: 3000
-        published: 3000
-        protocol: tcp
-        mode: host
-      - target: 9229
-        published: 9230
-        protocol: tcp
-        mode: host
-
-  simva-front:
-    ports:
-      - target: 3050
-        published: 3050
-        protocol: tcp
-        mode: host
-      - target: 9229
-        published: 9229
-        protocol: tcp
-        mode: host
-
-  simva-trace-allocator:
-    ports:
-      - target: 9229
-        published: 9231
-        protocol: tcp
-        mode: host
+      - "traefik.tcp.routers.simva-mongodb.rule=HostSNI(`${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"

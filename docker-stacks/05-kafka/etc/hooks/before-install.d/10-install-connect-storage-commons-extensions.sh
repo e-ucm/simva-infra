@@ -7,7 +7,7 @@ EXTENSIONS_DIR="${STACK_HOME}/extensions/kafka-connect-storage-common"
 for extension in $(find ${EXTENSIONS_DIR} -mindepth 1 -maxdepth 1 -type d); do
     extension_name=${extension#"$EXTENSIONS_DIR"}
     if [[ ! -e "${extension}/target${extension_name}.jar" ]]; then
-        docker run -it --rm --name maven-project-builder \
+        docker run --rm --name maven-project-builder \
             -v $extension:/usr/src/mymaven -w /usr/src/mymaven \
             -v ${SIMVA_DATA_HOME}/maven/m2:/usr/src/mymaven/.m2 \
             -u $(id -u ${USER}):$(id -g ${USER}) \

@@ -1,5 +1,15 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   traefik_services:
     name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
@@ -8,7 +18,8 @@ networks:
 services:
 
   limesurvey:
-    image: eucm/limesurvey:4.3.15-4
+    << : *default-opts
+    image: ${SIMVA_LIMESURVEY_IMAGE:-eucm/limesurvey}:${SIMVA_LIMESURVEY_VERSION:-4.3.15-4}
     entrypoint:
       - '/bin/bash'
       - '-c'
@@ -19,46 +30,42 @@ services:
       - 'start'
     environment:
       DEBUG: "${SIMVA_LIMESURVEY_DEBUG_ENTRYPOINT:-false}"
-      LIMESURVEY_DB_HOST: mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      LIMESURVEY_DB_HOST: mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       LIMESURVEY_DB_NAME: ${SIMVA_LIMESURVEY_MYSQL_DATABASE:-limesurvey}
       LIMESURVEY_DB_USER: ${SIMVA_LIMESURVEY_MYSQL_USER:-limesurvey}
       LIMESURVEY_DB_PASSWORD: ${SIMVA_LIMESURVEY_MYSQL_PASSWORD:-password}
       LIMESURVEY_ADMIN_USER: ${SIMVA_LIMESURVEY_ADMIN_USER:-admin}
-      LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-password2}
+      LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-secret}
       LIMESURVEY_ADMIN_NAME: ${SIMVA_LIMESURVEY_ADMIN_NAME:-Simva Administrator}
-      LIMESURVEY_ADMIN_EMAIL: ${SIMVA_LIMESURVEY_ADMIN_EMAIL:-lime-dev@limesurvey.external.test}
-      LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE: "${SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE:-limesurvey}"
+      LIMESURVEY_ADMIN_EMAIL: "${SIMVA_LIMESURVEY_ADMIN_EMAIL_USERNAME:-lime-dev}@${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE: "${SIMVA_LIMESURVEY_CLIENT_ID:-limesurvey}"
       LIMESURVEY_SAML_PLUGIN_UID_MAPPING: "username"
       SIMPLESAMLPHP_PATH: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}"
       SIMPLESAMLPHP_SESSION_COOKIE_PATH: "/"
       SIMPLESAMLPHP_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD:-password}"
       SIMPLESAMLPHP_ENABLE_DEFAULT_VHOST: "true"
-      SIMPLESAMLPHP_INTERNAL_PROXY_HOSTNAME: "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      SIMPLESAMLPHP_INTERNAL_PROXY_HOSTNAME: "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       SIMPLESAMLPHP_ADMIN_PROTECT_INDEX_PAGE: "true"
-      MSMTP_HOST: "${SIMVA_LIMESURVEY_MSMTP_HOST:-mail.keycloak.internal.test}"
-      MSMTP_FROM: "${SIMVA_LIMESURVEY_MSMTP_FROM:-no-reply@limesurvey.external.test}"
+      MSMTP_HOST: "${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      MSMTP_FROM: "no-reply@${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMPLESAMLPHP_LOG_LEVEL: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL:-INFO}"
-      SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_NAME:-limesurvey}"
+      SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_CLIENT_ID:-limesurvey}"
       SIMPLESAMLPHP_SP_PRIVATE_KEY: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-example.key}
       SIMPLESAMLPHP_SP_CERT: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-example.crt}
-      SIMPLESAMLPHP_SP_CERT_SUBJ: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ:-/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=limesurvey.internal.test}"
-      SIMPLESAMLPHP_SP_IDP_ID: "${SIMPLESAMLPHP_SP_IDP_ID:-https://sso.external.test/auth/realms/simva}"
-      SIMPLESAMLPHP_SP_IDP_METADATA_URL: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_IDP_METADATA_URL:-https://sso.external.test/auth/realms/simva/protocol/saml/descriptor}"
+      SIMPLESAMLPHP_SP_CERT_SUBJ: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ:-/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}}"
+      SIMPLESAMLPHP_SP_IDP_ID: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}"
+      SIMPLESAMLPHP_SP_IDP_METADATA_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/protocol/saml/descriptor"
       SIMPLESAMLPHP_SIGN_AUTHN_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_LOGOUT_REQUESTS: "true"
       SIMPLESAMLPHP_SIGN_REDIRECTS_REQUESTS: "true"
       SIMPLESAMLPHP_ENCRYPTED_ASSERTIONS: "true"
-      # ###################################################
-      # Duplicated: should be SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_NAME or SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE ?
-      #
-      # SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE:-limesurvey}"
-      # ###################################################
-      LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST:-sso.external.test}"
-      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-120}
+      LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
     volumes:
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/simplesamlphp-data/config:/etc/simplesamlphp
-      - ${SIMVA_TLS_HOME?TLS home folder required}:/etc/simplesamlphp/certs:ro
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/etc:/etc/limesurvey
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}-data/config:/etc${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/etc${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}/certs:ro
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/limesurvey/etc:/etc/limesurvey
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/plugins:/var/www/html/plugins
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/upload:/var/www/html/upload
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/tmp:/var/www/html/tmp
@@ -69,23 +76,22 @@ services:
       interval: 60s
       timeout: 20s
       retries: 3
-    hostname: limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
+    hostname: ${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.ls.loadbalancer.server.port=80"
-      - "traefik.http.routers.ls.rule=Host(`limesurvey.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.ls.rule=Host(`${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.ls.middlewares=secHeaders@file"
 
   mariadb:
+    << : *default-opts
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/mariadb:/var/lib/mysql
@@ -104,27 +110,28 @@ services:
       timeout: 20s
       retries: 3
     restart: unless-stopped
-    hostname: mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
   mariadb-backup:
+    << : *default-opts
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/mariadb-dump:/dump
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
-      - MYSQL_HOST=mariadb.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      - MYSQL_HOST=mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       - MYSQL_ROOT_PASSWORD=${SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD:-root}
       - BACKUP_NUM_KEEP=7
       - BACKUP_FREQUENCY=1d
-      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-120}
+      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-240}
     entrypoint: |
       bash -c '/container-tools/wait-for-it.sh -h $${MYSQL_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- bash -s <<EOF
       trap "break;exit" SIGHUP SIGINT SIGTERM
@@ -135,8 +142,8 @@ services:
       done
       EOF'
     restart: unless-stopped
-    hostname: mariadb-backup.limesurvey.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: mariadb-backup.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - mariadb.limesurvey-backup.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}-backup.${SIMVA_INTERNAL_DOMAIN:-internal.test}

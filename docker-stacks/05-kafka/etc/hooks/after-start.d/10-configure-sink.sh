@@ -2,11 +2,20 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-wait_time=10;
-count=20;
+if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
+  ${SIMVA_HOME}/bin/wait-available.sh "Keycloak SIMVA REALM" "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration" "true" "false";
+else 
+  ${SIMVA_HOME}/bin/wait-available.sh "Keycloak SIMVA REALM" "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/auth/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration" "true" "false";
+fi
+
+${SIMVA_HOME}/bin/wait-available.sh "Minio" "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/minio/health/live" "true" "false";
+
+mc_max_retries=${SIMVA_MAX_RETRIES:-20}
+wait_time=${SIMVA_WAIT_TIME:-10};
+count=${mc_max_retries};
 done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
-    echo 1>&2 "Checking minio: $((20-$count+1)) pass";
+    echo 1>&2 "Checking kafka connect: $((${mc_max_retries}-$count+1)) pass";
     set +e
     docker compose exec connect curl -f -sS http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/
     ret=$?;
@@ -19,23 +28,26 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
     fi;
     count=$((count-1));
 done;
-if [ $count -eq 0 ]; then
-    echo 1>&2 "Kafka connect not available !";
-    exit 1
+if [ $count -eq 0 ] && [ "$done" != "ok" ]; then
+  echo 1>&2 "Kafka Connect not available !";
+  exit 1
+fi;
+if [ "$done" == "ok" ]; then
+  echo 1>&2 "Kafka Connect available !";
 fi;
 
 connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json" -r)
 
 set +e
-stack exec connect curl -f -sS \
+docker compose exec connect curl -f -sS \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json' \
   http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} >/dev/null 2>&1
 ret=$?
+echo $ret
 set -e
 
-if [[ $ret -ne 0 ]]; then
-
+if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
   jq_script=$(cat <<'JQ_SCRIPT'
   .config["store.url"]=$minioUrl
     | .config["aws.access.key.id"]=$minioUser
@@ -43,24 +55,41 @@ if [[ $ret -ne 0 ]]; then
         | .config["s3.bucket.name"]=$bucketName
           | .config["topics.dir"]=$topicsDir
             | .config["topics"]=$topics
-              | .
+              | .config["flush.size"]=$flushSize
+                | .
 JQ_SCRIPT
 )
+
   cat ${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink-template.json | jq \
-  --arg minioUrl "${SIMVA_KAFKA_CONNECT_SINK_MINIO_URL}" \
+  --arg minioUrl "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
   --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \
   --arg bucketName "${SIMVA_TRACES_BUCKET_NAME}" \
   --arg topicsDir "${SIMVA_SINK_TOPICS_DIR}" \
   --arg topics "${SIMVA_TRACES_TOPIC}" \
+  --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
+fi 
 
+set +e
+if [[ $ret -eq 0 ]]; then 
   connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
+  echo "DELETE"
+  docker compose exec connect curl \
+      --request DELETE \
+      http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} #>/dev/null 2>&1
+    retDelete=$?
+    echo $retDelete
+fi 
 
-  docker compose exec connect curl -f -sS \
-    --header 'Content-Type: application/json' \
-    --header 'Accept: application/json' \
-    --request POST \
-    --data '@/usr/share/simva/simva-sink.json' \
-    http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors >/dev/null 2>&1
-fi
+echo "POST"
+docker compose exec connect curl -f -sS \
+  --header 'Content-Type: application/json' \
+  --header 'Accept: application/json' \
+  --request POST \
+  --data "$(echo $(jq -c . "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"))" \
+  http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors #>/dev/null 2>&1
+  retPost=$?
+
+  echo $retPost
+set -e

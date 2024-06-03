@@ -5,15 +5,27 @@ set -euo pipefail
 
 
 SIMVA_API_GIT_REPO_URL=https://github.com/e-ucm/simva.git
-SIMVA_API_GIT_REF=${SIMVA_API_GIT_REF:-dev}
+SIMVA_API_GIT_REF=${SIMVA_API_GIT_REF:-master}
 
 SIMVA_FRONT_GIT_REPO_URL=https://github.com/e-ucm/simva-front.git
-SIMVA_FRONT_GIT_REF=${SIMVA_FRONT_GIT_REF:-dev}
+SIMVA_FRONT_GIT_REF=${SIMVA_FRONT_GIT_REF:-master}
 
 SIMVA_TRACE_ALLOCATOR_GIT_REPO_URL=https://github.com/e-ucm/simva-trace-allocator.git
-SIMVA_TRACE_ALLOCATOR_GIT_REF=${SIMVA_TRACE_ALLOCATOR_GIT_REF:-dev}
+SIMVA_TRACE_ALLOCATOR_GIT_REF=${SIMVA_TRACE_ALLOCATOR_GIT_REF:-master}
 
-if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
+RUNCHECKOUTCODE=false
+if [[ ! -e "${SIMVA_DATA_HOME}/simva/.initialized" ]]; then
+    echo "SIMVA it is not initialized, initializing checkout code."
+    RUNCHECKOUTCODE=true
+fi
+if [[ $SIMVA_DEVELOPMENT_LOCAL == true ]]; then
+    echo "SIMVA is in local development environment, no checkout as code is local."
+    RUNCHECKOUTCODE=false
+elif [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
+    echo "SIMVA is in development environment, launch checkout code."
+    RUNCHECKOUTCODE=true
+fi
+if [[ ${RUNCHECKOUTCODE} == true ]] ; then
 
     ###########################################################
     ######################### BACKEND #########################
@@ -31,23 +43,22 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
     sha256sum package.json package-lock.json > sha256sums
     popd > /dev/null 2>&1
 
-    # Verify checksusms of current files
-    pushd ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api > /dev/null 2>&1
-    old_bash_opts=$-
-    set +e
-    sha256sum -c --status ${tmp_dir}/sha256sums
+    # Verify checksums of current files
+    newSha=$(cat ${tmp_dir}/sha256sums)
+    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/sha256sums" ] ; then 
+        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/sha256sums)
+    else 
+        oldSha=""
+    fi
+    echo $oldSha
+    echo $newSha
 
     # If checksums do not verify -> reinstall dependencies
-    reinstall_deps=$?
-    if [[ ${old_bash_opts} =~ e ]]; then
-        set -e
+    rsync_opts="--exclude node_modules"
+    if [[ ! ${newSha} == ${oldSha} ]]; then
+        rsync_opts=""
     fi
-
-    popd > /dev/null 2>&1
-    rsync_opts="--exclude .gitignore"
-    if [[ ${reinstall_deps} -eq 0 ]]; then
-        rsync_opts="--exclude node_modules"
-    fi
+    echo $rsync_opts
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api/ > /dev/null 2>&1
 
     ############################################################
@@ -66,22 +77,22 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
     sha256sum package.json package-lock.json > sha256sums
     popd > /dev/null 2>&1
 
-    # Verify checksusms of current files
-    pushd ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front > /dev/null 2>&1
-    old_bash_opts=$-
-    set +e
-    sha256sum -c --status ${tmp_dir}/sha256sums
+    # Verify checksums of current files
+    newSha=$(cat ${tmp_dir}/sha256sums)
+    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front/sha256sums" ]; then 
+        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front/sha256sums)
+    else 
+        oldSha=""
+    fi
+    echo $oldSha
+    echo $newSha
 
     # If checksums do not verify -> reinstall dependencies
-    reinstall_deps=$?
-    if [[ ${old_bash_opts} =~ e ]]; then
-        set -e
+    rsync_opts="--exclude node_modules"
+    if [[ ! ${newSha} == ${oldSha} ]]; then
+        rsync_opts=""
     fi
-    popd > /dev/null 2>&1
-    rsync_opts="--exclude .gitignore"
-    if [[ ${reinstall_deps} -eq 0 ]]; then
-        rsync_opts="--exclude node_modules"
-    fi
+    echo $rsync_opts
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front/ > /dev/null 2>&1
 
     ###################################################################
@@ -100,21 +111,22 @@ if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]]; then
     sha256sum package.json package-lock.json > sha256sums
     popd > /dev/null 2>&1
 
-    # Verify checksusms of current files
-    pushd ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator > /dev/null 2>&1
-    old_bash_opts=$-
-    set +e
-    sha256sum -c --status ${tmp_dir}/sha256sums
+    # Verify checksums of current files
+    newSha=$(cat ${tmp_dir}/sha256sums)
+    if [ -e "${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator/sha256sums" ]; then 
+        oldSha=$(cat ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator/sha256sums)
+    else 
+        oldSha=""
+    fi
+    echo $oldSha
+    echo $newSha
 
     # If checksums do not verify -> reinstall dependencies
-    reinstall_deps=$?
-    if [[ ${old_bash_opts} =~ e ]]; then
-        set -e
+    rsync_opts="--exclude node_modules"
+    if [[ ! ${newSha} == ${oldSha} ]]; then
+        rsync_opts=""
     fi
-    popd > /dev/null 2>&1
-    rsync_opts="--exclude .gitignore"
-    if [[ ${reinstall_deps} -eq 0 ]]; then
-        rsync_opts="--exclude node_modules"
-    fi
+    echo $rsync_opts
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator/ > /dev/null 2>&1
+    chmod -R 777 ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva
 fi

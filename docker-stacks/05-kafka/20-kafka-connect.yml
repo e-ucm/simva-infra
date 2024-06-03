@@ -1,13 +1,23 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   traefik_services:
     external: true
 
 services:
-
   connect:
-    image: confluentinc/cp-kafka-connect:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    << : *default-opts
+    image: ${SIMVA_KAFKA_CONNECT_IMAGE:-confluentinc/cp-kafka-connect}:${SIMVA_KAFKA_VERSION:-5.5.0}
     command: >
       bash -c '
         # Add extra jar files to all storage plugins
@@ -77,12 +87,13 @@ services:
 
       # Reduce Connect memory utilization
       KAFKA_HEAP_OPTS: "-Xms256M -Xmx512M"
-      # https://github.com/confluentinc/cp-demo/blob/${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}-post/docker-compose.yml
+      # https://github.com/confluentinc/cp-demo/blob/${SIMVA_KAFKA_VERSION:-5.5.0}-post/docker-compose.yml
       KAFKA_JVM_PERFORMANCE_OPTS: -server -XX:+UseG1GC -XX:GCTimeRatio=1
                   -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20
                   -XX:MaxGCPauseMillis=10000 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent
                   -XX:MaxInlineLevel=15 -Djava.awt.headless=true
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       # kafka-connect plugins have their own classpath, so it is required to add manually extensions to storage
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/connect/kafka-connect-storage-common:/usr/share/simva/kafka-connect-storage-common
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/connect:/usr/share/simva
@@ -92,8 +103,6 @@ services:
       - kafka1
       #- schema-registry
     hostname: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:

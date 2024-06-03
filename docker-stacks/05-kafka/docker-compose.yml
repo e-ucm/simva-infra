@@ -1,5 +1,15 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   kafka_services:
     driver: bridge
@@ -18,6 +28,7 @@ services:
 # http://kafka.apache.org/documentation.html#java
 
   zk1:
+    << : *default-opts
 #    image: zookeeper:3.5.7 is the the recommended version from confluentinc
 #XXX: Check why and if it is interesting to use confluentinc/cp-zookeeper instead of this image.
     image: zookeeper:3.4.9
@@ -33,6 +44,7 @@ services:
       # Plain zookeer options (zkEnv.sh)
       ZK_SERVER_HEAP: "256"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/zoo1/data:/data
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/zoo1/datalog:/datalog
     restart: unless-stopped
@@ -43,7 +55,8 @@ services:
           - zk1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
   kafka1:
-    image: confluentinc/cp-kafka:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    << : *default-opts
+    image: ${SIMVA_CONFLUENT_PLATFORM_IMAGE:-confluentinc/cp-kafka}:${SIMVA_KAFKA_VERSION:-5.5.0}
     environment:
       KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092,LISTENER_DOCKER_EXTERNAL://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
@@ -55,6 +68,7 @@ services:
       # WARN: this is for demo / dev purposes
       KAFKA_HEAP_OPTS: "-Xms512m -Xmx512m"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/kafka1/data:/var/lib/kafka/data
     depends_on:
       - zk1
