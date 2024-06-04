@@ -165,7 +165,8 @@ export SIMVA_SIMVA_API_HOST_SUBDOMAIN="simva-api"
 export SIMVA_SIMVA_API_PORT="443"
 #Jupyter Notebook
 export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
-#Portainer
+#LOGS
+export SIMVA_DOZZLE_HOST_SUBDOMAIN="logs"
 export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
 
 #####################
