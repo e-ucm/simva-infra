@@ -15,31 +15,36 @@ networks:
     external: true
 
 services:
-  topics-ui:
-    << : *default-opts
-#    image: landoop/kafka-topics-ui:0.9.4
-    image: landoop/kafka-topics-ui:latest
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
     environment:
-      KAFKA_REST_PROXY_URL: http://kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8086/
-      PROXY: "true"
-# XXX: See https://github.com/stefanprodan/dockprom/issues/205
-# sol: https://github.com/stefanprodan/dockprom/issues/205#issuecomment-798628548
+      KAFKA_CLUSTERS_0_NAME: SIMVA
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092
+      #KAFKA_CLUSTERS_0_METRICS_PORT: 9997
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085/
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: Kafka Connect
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8083/
+      DYNAMIC_CONFIG_ENABLED: 'true'
     volumes:
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - kafka-rest-proxy
-    hostname: topics-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      - connect
+      - schema-registry
+      - kafka1
     networks:
       default:
         aliases:
-          - topics-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - kafka-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - topics-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - kafka-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.topics-ui.loadbalancer.server.port=8000"
-      - "traefik.http.routers.topics-ui.rule=Host(`topics-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.services.kafka-ui.loadbalancer.server.port=8080"
+      - "traefik.http.routers.kafka-ui.rule=Host(`kafka-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+
 
   zoonavigator:
     << : *default-opts
