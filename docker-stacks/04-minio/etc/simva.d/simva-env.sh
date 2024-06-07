@@ -27,8 +27,8 @@ if [ $VERSION_EPOCH -ge $CUTOFF_EPOCH ]; then
   if [[ -e "${SIMVA_DATA_HOME}/minio/migration-in-progress-fs-to-xl" ]]; then
     export COMPOSE_FILE="minio-migration-fs-to-xl.yml"
   else 
-    export COMPOSE_FILE="docker-compose-minio-new.yml"
+    export COMPOSE_FILE="docker-compose-minio-xl-after-2022.yml"
   fi
 else
-    export COMPOSE_FILE="docker-compose-minio-old.yml"
+    export COMPOSE_FILE="docker-compose-minio-fs-before-2022.yml"
 fi
