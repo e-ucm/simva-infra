@@ -43,7 +43,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.kafka-ui.loadbalancer.server.port=8080"
       - "traefik.http.routers.kafka-ui.rule=Host(`kafka-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-
+      - "traefik.http.routers.kafka-ui.middlewares=dashboardAuth@file"
 
   zoonavigator:
     << : *default-opts
@@ -70,3 +70,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.zoonavigator.loadbalancer.server.port=9000"
       - "traefik.http.routers.zoonavigator.rule=Host(`zoonavigator.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.zoonavigator.middlewares=dashboardAuth@file"
