@@ -2842,13 +2842,6 @@
       "firstName" : "Administrator",
       "lastName" : "Administrator",
       "email" :  "{{ .users.administrator.username }}@{{ .clients.simva.externalDomain }}",
-      "credentials" : [ {
-        "id" : "1b0d2adf-20cd-485e-8396-7ce79942e625",
-        "type" : "password",
-        "createdDate" : 1592588138265,
-        "secretData" : "{{ .users.administrator.secretData }}",
-        "credentialData" : "{{ .users.administrator.credentialData }}"
-      } ],
       "disableableCredentialTypes" : [ ],
       "requiredActions" : [ ],
       "realmRoles" : [ "uma_authorization", "administrator", "offline_access" ],
@@ -2887,13 +2880,6 @@
       "firstName" : "Researcher",
       "lastName" : "Researcher",
       "email" :  "{{ .users.researcher.username }}@{{ .clients.simva.externalDomain }}",
-      "credentials" : [ {
-        "id" : "779aa3d0-a7c7-4f1d-a3f7-cb546399ae93",
-        "type" : "password",
-        "createdDate" : 1592588100119,
-        "secretData" : "{{ .users.researcher.secretData }}",
-        "credentialData" : "{{ .users.researcher.credentialData }}"
-      } ],
       "disableableCredentialTypes" : [ ],
       "requiredActions" : [ ],
       "realmRoles" : [ "uma_authorization", "offline_access", "researcher" ],
@@ -2912,13 +2898,6 @@
       "firstName" : "Student",
       "lastName" : "Student",
       "email" :  "{{ .users.student.username }}@{{ .clients.simva.externalDomain }}",
-      "credentials" : [ {
-        "id" : "ad102266-601d-44af-a678-84c33e7b5db2",
-        "type" : "password",
-        "createdDate" : 1592588021194,
-        "secretData" : "{{ .users.student.secretData }}",
-        "credentialData" : "{{ .users.student.credentialData }}"
-      } ],
       "disableableCredentialTypes" : [ ],
       "requiredActions" : [ ],
       "realmRoles" : [ "student", "uma_authorization", "offline_access" ],
@@ -2937,13 +2916,6 @@
       "firstName" : "teacher",
       "lastName" : "Teacher",
       "email" :  "{{ .users.teacher.username }}@{{ .clients.simva.externalDomain }}",
-      "credentials" : [ {
-        "id" : "da4a2a9b-d321-4ef5-be04-6f3050f5f470",
-        "type" : "password",
-        "createdDate" : 1592586892890,
-        "secretData" : "{{ .users.teacher.secretData }}",
-        "credentialData" : "{{ .users.teacher.credentialData }}"
-      } ],
       "attributes" : {
       },
       "disableableCredentialTypes" : [ ],
@@ -2964,13 +2936,6 @@
       "firstName" : "Teaching",
       "lastName" : "Assistant",
       "email" :  "{{ .users.teaching_assistant.username }}@{{ .clients.simva.externalDomain }}",
-      "credentials" : [ {
-        "id" : "68a63b77-5b73-45ed-9dd6-f7f346d65643",
-        "type" : "password",
-        "createdDate" : 1592588074036,
-        "secretData" : "{{ .users.teaching_assistant.secretData }}",
-        "credentialData" : "{{ .users.teaching_assistant.credentialData }}"
-      } ],
       "disableableCredentialTypes" : [ ],
       "requiredActions" : [ ],
       "realmRoles" : [ "uma_authorization", "teaching-assistant", "offline_access" ],
