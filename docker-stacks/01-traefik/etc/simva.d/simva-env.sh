@@ -3,7 +3,7 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 export SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD=$(docker run --rm httpd:2.4-alpine htpasswd -nbB ${SIMVA_TRAEFIK_DASHBOARD_USER} ${SIMVA_TRAEFIK_DASHBOARD_PASSWORD} | cut -d ":" -f 2)
-#export SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD=$(openssl passwd -6 -salt "$(openssl rand -base64 6)" "${SIMVA_TRAEFIK_DASHBOARD_PASSWORD}")
+#export SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD=$(openssl passwd -apr1 ${SIMVA_TRAEFIK_DASHBOARD_PASSWORD} | sed -E "s:[\$]:\$\$:g")
 
 export COMPOSE_FILE="docker-compose.yml"
 if [[ "${SIMVA_ENVIRONMENT}" == "production" ]]; then
