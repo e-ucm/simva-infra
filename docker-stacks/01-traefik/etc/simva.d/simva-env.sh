@@ -2,6 +2,7 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
+#https://doc.traefik.io/traefik/middlewares/http/basicauth/
 export SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD=$(docker run --rm httpd:2.4-alpine htpasswd -nbB ${SIMVA_TRAEFIK_DASHBOARD_USER} ${SIMVA_TRAEFIK_DASHBOARD_PASSWORD} | cut -d ":" -f 2)
 #export SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD=$(openssl passwd -apr1 ${SIMVA_TRAEFIK_DASHBOARD_PASSWORD} | sed -E "s:[\$]:\$\$:g")
 
