@@ -89,7 +89,6 @@ docker compose exec connect curl -f -sS \
   --request POST \
   --data "$(echo $(jq -c . "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"))" \
   http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors #>/dev/null 2>&1
-  retPost=$?
-
-  echo $retPost
+retPost=$?
+echo $retPost
 set -e

@@ -83,19 +83,17 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c '
+      if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
+        cp /root/.mc/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
+        cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
+      fi;
+      /usr/bin/mc config host add simva-minio $${MINIO_URL} $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY} --api s3v4;
+      /usr/bin/mc ready simva-minio;
+      if [[ $$? -ne 0 ]]; then
+        echo "Error: Unable to initialize connection to MinIO."
+        exit 1
+      fi;
       /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/data/minio-initialized" ]; then
-        if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
-          ls -lia /root/.mc/certs/CAs/
-          ls -lia /etc/ssl/certs/
-          cp /root/.mc/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
-          cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
-        fi;
-        /usr/bin/mc config host add simva-minio $${MINIO_URL} $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY} --api s3v4;
-        /usr/bin/mc ready simva-minio;
-        if [[ $$? -ne 0 ]]; then
-          echo "Error: Unable to initialize connection to MinIO."
-          exit 1
-        fi
         /usr/bin/mc --debug mb simva-minio/$${MINIO_BUCKET};
         format=$$(cat /data/.minio.sys/format.json);
         echo "Format :";
@@ -109,7 +107,7 @@ services:
         /usr/bin/mc --debug admin policy create simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json;
         /usr/bin/mc --debug admin policy attach simva-minio/ simvaSink --user $${SIMVA_SINK_USER}
         touch /data/minio-initialized;
-      fi
+      fi;
       '
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio:/data
