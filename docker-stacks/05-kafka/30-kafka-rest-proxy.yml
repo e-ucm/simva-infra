@@ -1,9 +1,19 @@
 version: '3.7'
 
-services:
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
 
+services:
   kafka-rest-proxy:
-    image: confluentinc/cp-kafka-rest:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
+    << : *default-opts
+    image: confluentinc/cp-kafka-rest:${SIMVA_KAFKA_VERSION:-5.5.0}
     environment:
       KAFKA_REST_LISTENERS: http://0.0.0.0:8086/
       KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085/
@@ -13,6 +23,8 @@ services:
       - zk1
       - kafka1
       - schema-registry
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     hostname: kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

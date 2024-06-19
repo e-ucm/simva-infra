@@ -1,14 +1,26 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 services:
   nginx:
-    image: nginx:1.19.2
+    << : *default-opts
+    image: nginx:1.19.2 #stable-alpine3.19
     environment:
-      SIMVA_DNS_SERVICE_IP: ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
-      SIMVA_LOAD_BALANCER_IP: ${SIMVA_LOAD_BALANCER_IP:-172.30.0.80}
+      SIMVA_LOAD_BALANCER_IP: ${SIMVA_LOAD_BALANCER_IPS:-172.30.0.80}
+      SIMVA_TRAEFIK_HOST_SUBDOMAIN: ${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}
       SIMVA_INTERNAL_DOMAIN: ${SIMVA_INTERNAL_DOMAIN:-internal.test}
       SIMVA_EXTERNAL_DOMAIN: ${SIMVA_EXTERNAL_DOMAIN:-external.test}
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - "${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/traefik/nginx/templates:/etc/nginx/templates:ro"
       - "${SIMVA_TLS_HOME:?TLS home folder required}:/etc/traefik/ssl:ro"
     depends_on:
@@ -24,22 +36,21 @@ services:
         mode: host
     restart: unless-stopped
     hostname: "nginx.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:
           - "nginx.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       traefik_services:
-        ipv4_address: "${SIMVA_LOAD_BALANCER_IP:-172.30.0.80}"
+        ipv4_address: "${SIMVA_LOAD_BALANCER_IPS:-172.30.0.80}"
         aliases:
           - "nginx.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
 
   whoami:
+    << : *default-opts
     image: containous/whoami
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     hostname: "whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:

@@ -1,0 +1,52 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    external: true
+
+services:
+  mail:
+    << : *default-opts
+    image: maildev/maildev:1.1.0
+    networks:
+      traefik_services:
+        aliases:
+          - "${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mail.loadbalancer.server.port=80"
+      - "traefik.http.routers.mail.rule=Host(`${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.mail.middlewares=dashboardAuth@file"
+      
+  phpmyadmin:
+    << : *default-opts
+    image: phpmyadmin/phpmyadmin:5.0.2
+    environment:
+      PMA_HOST: "mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+    depends_on:
+      - mariadb
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    hostname: phpmyadmin.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - phpmyadmin.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - phpmyadmin.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.kc-phpmyadmin.loadbalancer.server.port=80"
+      - "traefik.http.routers.kc-phpmyadmin.rule=Host(`phpmyadmin-kc.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.kc-phpmyadmin.middlewares=dashboardAuth@file"

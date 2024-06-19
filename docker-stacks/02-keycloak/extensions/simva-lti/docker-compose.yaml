@@ -1,0 +1,100 @@
+version: '3.7'
+
+volumes:
+  mariadb_data:
+    driver: local
+
+services:
+  mariadb:
+    image: mariadb:10.4.13
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=keycloak
+      - MYSQL_USER=keycloak
+      - MYSQL_PASSWORD=password
+# https://github.com/docker-library/mariadb/issues/261
+# https://github.com/docker-library/mariadb/issues/262      
+      - MYSQL_INITDB_SKIP_TZINFO=true
+    hostname: mariadb.keycloak.internal.test
+    networks:
+      default:
+        aliases:
+          - mariadb.keycloak.internal.test
+
+  mariadb-backup:
+    image: mariadb:10.4.13
+    volumes:
+      - ./mariadb-dump:/dump
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - MYSQL_HOST=mariadb.keycloak.internal.test
+      - MYSQL_ROOT_PASSWORD=root
+      - BACKUP_NUM_KEEP=7
+      - BACKUP_FREQUENCY=1d
+    entrypoint: |
+      bash -c 'bash -s <<EOF
+      trap "break;exit" SIGHUP SIGINT SIGTERM
+      sleep 2m
+      while /bin/true; do
+        mysqldump --all-databases -h"$$MYSQL_HOST" -uroot -p"$$MYSQL_ROOT_PASSWORD" > /dump/dump_\`date +%d-%m-%Y"_"%H_%M_%S\`.sql
+        (ls -t /dump/dump*.sql|head -n $$BACKUP_NUM_KEEP;ls /dump/dump*.sql)|sort|uniq -u|xargs rm -- {}
+        sleep $$BACKUP_FREQUENCY
+      done 
+      EOF'
+
+# XXX: Use owncloud docker images as an example of using wait-for in order to wait for MariaDB availabily before launching keycloak
+  keycloak:
+    << : *default-opts
+    image: quay.io/keycloak/keycloak:24.0.2
+    environment:
+      # Hostname
+      - KC_HOSTNAME=keycloak.internal.test
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HOSTNAME_STRICT=false
+      # HTTP
+      - KC_HTTP_ENABLED=true
+      - KC_HTTP_HOST=0.0.0.0
+      - HTTP_ADDRESS_FORWARDING=true
+      # PROXY
+      - KC_PROXY=edge
+      - KC_PROXY_HEADERS=xforwarded
+      - PROXY_ADDRESS_FORWARDING=true
+      # Health and metrics
+      - KC_HEALTH_ENABLED=false
+      - KC_METRICS_ENABLED=false
+      # Log level
+      - KC_LOG_LEVEL=info
+      # Database
+      - KC_DB=mariadb
+      - KC_DB_URL_HOST=mariadb.keycloak.internal.test
+      - KC_DB_URL_DATABASE=keycloak
+      - KC_DB_USER=keycloak
+      - KC_DB_PASSWORD=password
+      # Master Realm + Admin user
+      - KC_REALM_NAME=master
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=password
+    depends_on:
+      - mariadb
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./claims/:/claims
+      - ./deployments:/opt/keycloak/providers
+    restart: unless-stopped
+    hostname: keycloak.internal.test
+    networks:
+      default:
+        aliases:
+          - keycloak.internal.test       
+    ports:
+      - "8080:8080"
+
+  apache:
+    image: php:7.4-apache
+    volumes:
+      - "./php:/var/www/html"
+    ports:
+      - "8081:80"

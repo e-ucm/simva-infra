@@ -1,0 +1,46 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+  traefik_admin:
+    name: "traefik_admin"
+    external: true
+
+services:
+  dozzle:
+    << : *default-opts
+    image: ${SIMVA_DOZZLE_IMAGE:-amir20/dozzle}:${SIMVA_DOZZLE_VERSION:-latest}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_CONFIG_HOME}/logs/dozzle-config/users.yml:/data/users.yml:ro
+    hostname: logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    environment:
+      DOZZLE_AUTH_PROVIDER: simple
+      DOZZLE_REMOTE_HOST: "tcp://socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2375/|${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_admin:
+        aliases:
+          - "${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.logs.loadbalancer.server.port=8080"
+      - "traefik.http.routers.logs.rule=Host(`${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.logs.middlewares=dashboardAuth@file"

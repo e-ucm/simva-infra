@@ -1,13 +1,19 @@
 version: '3.7'
 
-services:
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
 
+services:
   ksqldb-cli:
-    image: confluentinc/cp-ksqldb-cli:${SIMVA_CONFLUENT_PLATFORM_VERSION:-5.5.0}
-    depends_on:
-      - kafka-broker1
-      - kafka-connect
-      - ksqldb-server
+    << : *default-opts
+    image: confluentinc/cp-ksqldb-cli:${SIMVA_KAFKA_VERSION:-5.5.0}
     entrypoint: /bin/sh
     tty: true
     depends_on:
@@ -15,6 +21,8 @@ services:
       - kafka1
       - connect
       - ksqldb-server
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
     hostname: ksqldb-cli.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

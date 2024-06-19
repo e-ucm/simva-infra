@@ -26,16 +26,8 @@
 
     [entryPoints.web]
         address = ":80"
-{{ if and (eq .Env.SIMVA_ENVIRONMENT "development") (eq .Env.SIMVA_DEV_LOAD_BALANCER "true")  }}
         [entryPoints.web.forwardedHeaders]
             trustedIPs = [ "{{ .Env.SIMVA_LOAD_BALANCER_IPS }}" ]
-{{ else }}
-        [entryPoints.web.http.redirections]
-            [entryPoints.web.http.redirections.entryPoint]
-                to = "websecure"
-                scheme = "https"
-                permanent = true
-{{ end }}
     [entryPoints.websecure]
         address = ":443"
         [entryPoints.websecure.http.tls]

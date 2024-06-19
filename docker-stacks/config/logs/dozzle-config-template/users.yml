@@ -1,0 +1,4 @@
+users:
+  <<SIMVA_DOZZLE_USERNAME>>:
+    name: "<<SIMVA_DOZZLE_USERNAME>>"
+    password: "<<SIMVA_DOZZLE_PASSWORD>>"

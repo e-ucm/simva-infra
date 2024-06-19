@@ -1,11 +1,20 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 services:
   whoami:
+    << : *default-opts
     image: containous/whoami
     hostname: "whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:
@@ -19,6 +28,15 @@ services:
       - "traefik.http.routers.whoami.rule=Host(`whoami.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
   traefik:
+    << : *default-opts
+    networks:
+      traefik_services:
+        aliases:
+          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - phpmyadmin-ls.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - phpmyadmin-kc.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - kafka-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - zoonavigator.${SIMVA_EXTERNAL_DOMAIN:-external.test}
     ports:
       - target: 80
         published: 80
@@ -30,6 +48,7 @@ services:
         mode: host
 
   csp-reporter:
+    << : *default-opts
     image: node:12.18.2
     command: bash -c "cd /app && if [[ ! -d "node_modules" ]]; then npm install; fi && node ./index.js"
     stdin_open: true
@@ -39,11 +58,10 @@ services:
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       PORT: "3003"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter:/app
     hostname: csp-reporter.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    dns:
-      - ${SIMVA_DNS_SERVICE_IP:-172.30.0.53}
     networks:
       default:
         aliases:

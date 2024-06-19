@@ -1,0 +1,6 @@
+simva-api/
+simva-front/
+simva-trace-allocator/
+.version
+.externaldomain
+.initialized

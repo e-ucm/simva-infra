@@ -47,7 +47,7 @@ That corresponds to the canned policy names that are installed when minio is lau
       * Claim JSON Type String
 > NOTE: It is mandatory to add all available scopes due to [minio/issues/9238](https://github.com/minio/minio/issues/9238). Monitor the issue to just enable the minimum required scopes.
 3. Create a new OpenID client
-  * Client ID: Use the value defined in docker-compose `MINIO_IDENTITY_OPENID_CLIENT_ID` environment variable (e.g. `https://minio.external.test`)
+  * Client ID: Use the value defined in docker-compose `SIMVA_MINIO_CLIENT_ID` environment variable (e.g. `minio`)
   * Root URL: Define the base URL for minio (e.g. `https://minio.external.test`)
   * Settings:
     * Implicit Flow: On

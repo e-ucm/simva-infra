@@ -52,14 +52,14 @@ public class JsonFieldPartitioner<T> extends DefaultPartitioner<T> {
 
   @Override
   public String encodePartition(SinkRecord sinkRecord) {
-    Object value = sinkRecord.value();
+    Object value = sinkRecord.key();
     Map<String, String> partitionValueMap = new LinkedHashMap<>();
     String partitionValue;
 
     for (String fieldName : fieldNames) {
       log.debug("Extracting partition field '{}'.", fieldName);
       if (value instanceof Struct) {
-        final Schema valueSchema = sinkRecord.valueSchema();
+        final Schema valueSchema = sinkRecord.keySchema();
         log.trace("Extracting partition field '{}' from struct '{}'.", fieldName, valueSchema);
         partitionValue = getPartitionValue((Struct) value, fieldName, valueSchema);
       } else if (value instanceof Map) {

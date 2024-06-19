@@ -1,1 +1,6 @@
 .vagrant
+docker-stacks/.simva-initialized
+docker-stacks/bin/gomplate
+docker-stacks/config/container-tools/wait-for
+.DS_Store
+docker-log.txt

@@ -1,15 +1,32 @@
 version: '3.7'
 
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
 networks:
   traefik_services:
     name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
     external: true
+  traefik_admin:
+    name: "traefik_admin"
+    external: true
 
 services:
   socket-proxy:
+    << : *default-opts
     image: tecnativa/docker-socket-proxy
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+        - "2375:2375"
     environment:
       LOG_LEVEL: "${SIMVA_SOCKET_PROXY_LOG_LEVEL:-info}"
       NETWORKS: 1
@@ -28,90 +45,19 @@ services:
       default:
         aliases:
           - "socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-
-  dns-proxy-server:
-    image: eucm/dns-proxy-server:2.19.0-dh-2
-    entrypoint:
-      - '/bin/sh'
-      - '-c'
-      - |
-        [ ! -d "/app/conf" ] && mkdir -p /app/conf;
-        [ ! -f "/app/conf/config.json" ] && cat << EOF > /app/conf/config.json
-        {
-          "version": 2,
-          "remoteDnsServers": [
-            "8.8.8.8:53",
-            "8.8.4.4:53"
-          ],
-          "envs": [
-            {
-              "name": "",
-              "hostnames": [
-                {
-                  "id": 1562843575352085033,
-                  "hostname": ".${SIMVA_EXTERNAL_DOMAIN:-external.test}",
-                  "ip": "127.0.0.1",
-                  "target": "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}",
-                  "ttl": 3600,
-                  "type": "CNAME"
-                }
-              ]
-            }
-          ],
-          "activeEnv": "",
-          "webServerPort": 5380,
-          "dnsServerPort": 53,
-          "defaultDns": false,
-          "logLevel": "INFO",
-          "logFile": "console",
-          "dpsNetwork": false,
-          "dpsNetworkAutoConnect": false,
-          "registerContainerNames": true,
-          "hostMachineHostname": "host.docker.test",
-          "domain": "docker.test"
-        }
-        EOF
-        exec /usr/bin/docker-entrypoint "$$@"
-    command:
-      - "--"
-      - "/app/dns-proxy-server"
-    environment:
-      MG_LOG_LEVEL: "${SIMVA_DNS_PROXY_SERVER_LOG_LEVEL:-INFO}"
-#      MG_DOCKER_HOST: "tcp://socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2375"
-#      MG_DOCKER_API_VERSION: "v1.24"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    depends_on:
-      - socket-proxy
-# XXX Seems there is no binary to do the healthcheck
-#    healthcheck:
-#      test: "wget --quiet --tries=1 --spider http://localhost:5380/env/active"
-#      interval: 60s
-#      timeout: 20s
-#      retries: 3
-    restart: unless-stopped
-    hostname: "dns.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-    networks:
-      default:
+      traefik_admin:
         aliases:
-          - "dns.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      traefik_services:
-        ipv4_address: "${SIMVA_DNS_SERVICE_IP:-172.30.0.53}"
-        aliases:
-          - "dns.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.dns.loadbalancer.server.port=5380"
-      - "traefik.http.routers.dns.rule=Host(`dns.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-
+          - "socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          
   traefik:
-    image: traefik:2.2.11
+    << : *default-opts
+    image: ${SIMVA_TRAEFIK_IMAGE:-traefik}:${SIMVA_TRAEFIK_VERSION:-2.11.3}
     entrypoint:
       - '/bin/sh'
       - '-c'
       - |
         mkdir -p /etc/traefik/dynamic-config;
-        cat << EOF > /etc/traefik/dynamic-config/file-provider.toml
+        cat << 'EOF' > /etc/traefik/dynamic-config/file-provider.toml
         [[tls.certificates]]
           certFile = "/etc/traefik/ssl/traefik-fullchain.pem"
           keyFile = "/etc/traefik/ssl/traefik-key.pem"
@@ -131,41 +77,50 @@ services:
           [http.middlewares.dashboardAuth.basicAuth]
             # admin:password
             users = [
-              "${SIMVA_TRAEFIK_DASHBOARD_USER:?Traefik dashboard username must be configured}:${SIMVA_TRAEFIK_DASHBOARD_PASSWORD:?Traefik's dashboard password must be configured}"
+              "${SIMVA_TRAEFIK_DASHBOARD_USER:?Traefik dashboard username must be configured}:${SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD:?Traefik dashboard password must be configured}"
             ]
           [http.middlewares.secHeaders.headers]
             contentTypeNosniff = true
-            contentSecurityPolicy = "frame-src 'self' https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none';${SIMVA_TRAEFIK_EXTRA_CSP_POLICY}"
+            customFrameOptionsValue = "ALLOW-FROM https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+            contentSecurityPolicy = "frame-src 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none'; ${SIMVA_TRAEFIK_EXTRA_CSP_POLICY}"
         EOF
         exec /entrypoint.sh "$$@"
     command:
       - "--"
       - "traefik"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME:?TLS home folder required}:/etc/traefik/ssl:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/traefik/traefik/static-conf:/etc/traefik
     depends_on:
       - socket-proxy
-      - dns-proxy-server
     healthcheck:
       test: "traefik healthcheck --entryPoints.ping.address=:8082 --ping.entryPoint=ping --ping"
       interval: 10s
       timeout: 20s
       retries: 3
     restart: unless-stopped
-    hostname: "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+    hostname: "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     networks:
       default:
         aliases:
-          - "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       traefik_services:
         aliases:
-          - "traefik.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"  
+          - "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      traefik_admin:
+        aliases:
+          - "socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     labels:
-      - "dps.network=${SIMVA_SERVICE_NETWORK:-traefik_services}"
       - "traefik.enable=true"
       # Access API enpoint through traefik itself
       - "traefik.http.services.api.loadbalancer.server.port=8080"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.dashboard.rule=Host(`${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=dashboardAuth@file"

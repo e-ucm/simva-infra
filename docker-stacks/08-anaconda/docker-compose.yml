@@ -1,0 +1,177 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+  anaconda:
+    << : *default-opts
+    image: ${SIMVA_ANACONDA_IMAGE:-continuumio/anaconda3}:${SIMVA_ANACONDA_VERSION:-2024.02-1}
+    entrypoint: >
+      /bin/bash -c '
+        set -euo pipefail;
+        # Install gosu
+        apt-get update;
+        apt-get install -y gosu gcc;
+        rm -rf /var/lib/apt/lists/*;
+
+        # Install tini
+        TINI_VERSION="v0.19.0";
+        TINI_DOWNLOAD_URL="https://github.com/krallin/tini/releases/download/$${TINI_VERSION}/tini-amd64";
+        TINI_DOWNLOAD_SHA256SUM_URL="$${TINI_DOWNLOAD_URL}.sha256sum";
+        curl -sSL "$${TINI_DOWNLOAD_URL}" > /tmp/tini-amd64;
+        curl -sSL "$${TINI_DOWNLOAD_SHA256SUM_URL}" > /tmp/sha256sum;
+        pushd /tmp;
+        sha256sum -c sha256sum;
+        popd;
+        mv /tmp/tini-amd64 /usr/local/bin/tini
+        chmod +x /usr/local/bin/tini
+
+        # Anaconda Jupyter install
+        # Check if the group 'anaconda' exists
+        if ! getent group anaconda > /dev/null; then
+            groupadd -r anaconda
+        fi;
+        # Check if the user 'anaconda' exists
+        if ! getent passwd anaconda > /dev/null; then
+            useradd -r -g anaconda -s /bin/bash anaconda
+        fi;
+        if [[ ! -d /home/anaconda ]]; then
+          mkdir /home/anaconda;
+        fi;
+        chown anaconda: -R /home/anaconda;
+        if [[ ! -d /opt/notebooks ]]; then
+          mkdir /opt/notebooks;
+        fi;
+        chown anaconda: -R /opt/notebooks;
+
+        # Check if Anaconda has been initialized
+        if [[ ! -e /home/anaconda/.jupyter/anaconda-initialized ]]; then
+            # Create and activate simva-env
+            python3 -m venv simva-env
+            source /simva-env/bin/activate
+
+            # Anaconda Jupyter install
+            # Upgrade PIP
+            /simva-env/bin/python3 -m pip install --upgrade pip
+            # install notebook
+            /simva-env/bin/python3 -m pip install notebook
+            # install Jupyter server
+            /simva-env/bin/python3 -m pip install jupyter_server
+
+            # Jupyter ipauth (OAuth2 install)
+            # XXX: Merge request that includes modifications for ipyauth to support keycloak pending for approval from the maintainer.
+            # workaround install local package
+            # pip install ipyauth;
+            # /simva-env/bin/python3 -m pip install /opt/packages/ipyauth.tar.gz
+            # Install other dependencies required by the Demo Notebook
+            /simva-env/bin/python3 -m pip install boto3 jwt
+
+            # Install ipympl
+            /simva-env/bin/python3 -m pip install ipympl
+
+            # Install ipyparallel
+            /simva-env/bin/python3 -m pip install ipyparallel
+            
+            # Install requirements for tmon
+            if [[ -e /opt/notebooks/t-mon/requirements.txt ]]; then
+              /simva-env/bin/python3 -m pip install -r /opt/notebooks/t-mon/requirements.txt
+            fi;
+
+            date > /home/anaconda/.jupyter/anaconda-initialized
+            echo "SIMVA: Anaconda Jupyter installed and initialized"
+        else 
+          source /simva-env/bin/activate
+        fi;
+
+        chown -R anaconda: /simva-env/;
+        chmod -R u=rxw /simva-env/
+        
+        /simva-env/bin/jupyter server extension enable --py --sys-prefix ipympl;
+        /simva-env/bin/jupyter server extension enable --py --sys-prefix widgetsnbextension;
+        #/simva-env/bin/jupyter server extension enable --py ipyauth.ipyauth_widget;
+        #/simva-env/bin/jupyter server extension enable --py ipyauth.ipyauth_callback;
+        
+        ####  Before :
+        #/simva-env/bin/jupyter nbextension enable ipympl --py --sys-prefix
+        #/simva-env/bin/jupyter nbextension enable --py --sys-prefix ipyauth.ipyauth_widget;
+        #/simva-env/bin/jupyter serverextension enable --py --sys-prefix ipyauth.ipyauth_callback;
+
+        # Generate user config folder / file
+        if [[ ! -e "/home/anaconda/.jupyter/jupyter_notebook_config.py" ]]; then
+            gosu anaconda /simva-env/bin/jupyter notebook --generate-config
+        fi;
+
+        # Setup password
+        export JUPYTER_PASSWORD=$${JUPYTER_PASSWORD:-jupyter};
+        password=$$(/simva-env/bin/python3 -c "from jupyter_server.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
+        unset JUPYTER_PASSWORD;
+        ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
+        sed -r -i -e "s/^#?\s*c.ServerApp.password\s+=.*/c.ServerApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
+
+        # Need to change websocket_max_message_size for the fileUpload widget in ipywidget to authorize files greater than 10Mo (default value): 
+        # https://stackoverflow.com/questions/58158779/how-to-upload-a-large-file-using-the-ipywidgets-fileupload
+        # https://github.com/jupyter-widgets/ipywidgets/issues/2522
+        sed -r -i -e "s/^#?\s*c.ServerApp.tornado_settings = \{\}.*/c.ServerApp.tornado_settings = \{\"websocket_max_message_size\": 500 * 1024 * 1024\}/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
+
+        #BEFORE 
+        #password=$$(/simva-env/bin/python3 -c "from notebook.auth import passwd; import os; password_environment_variable = os.environ.get('"'"'JUPYTER_PASSWORD'"'"'); print(passwd(password_environment_variable))");
+        #unset JUPYTER_PASSWORD;
+        #ESCAPED_REPLACE=$$(printf '"'"'%s\n'"'"' "$${password}" | sed -e '"'"'s/[\/&]/\\&/g'"'"');
+        #sed -r -i -e "s/^#?\s*c.NotebookApp.password\s+=.*/c.NotebookApp.password = '"'"'$${ESCAPED_REPLACE}'"'"'/" /home/anaconda/.jupyter/jupyter_notebook_config.py;
+
+        # Run the Jupyter Notebook
+        /usr/local/bin/tini -- $$@
+      '
+    command:
+     - '--'
+     - 'gosu anaconda /simva-env/bin/jupyter server --notebook-dir=/opt/notebooks --ip="0.0.0.0" --port=8888 --no-browser'
+    volumes:
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/packages:/opt/packages/
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks:/opt/notebooks/
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/jupyter-config:/home/anaconda/.jupyter/
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/simva-env:/simva-env
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+    environment:
+      JUPYTER_PASSWORD: "${SIMVA_JUPYTER_PASSWORD:-password}"
+      MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_CLIENT_ID:-minio}"
+      MINIO_IDENTITY_OPENID_CONFIG_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration"
+      MINIO_IDENTITY_OPENID_SCOPES: "${SIMVA_MINIO_IDENTITY_OPENID_SCOPES:-openid,policy_role_attribute}"
+      MINIO_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      MINIO_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
+      MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -sS http://localhost:8888/ || exit 1"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    hostname: ${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.jupyter.loadbalancer.server.port=8888"
+      - "traefik.http.routers.jupyter.rule=Host(`${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+    
