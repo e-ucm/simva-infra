@@ -1,25 +1,12 @@
-#############
-# REMOVE DATA
-#############
-# Removing wait-for file
-if [[ -e "${SIMVA_CONTAINER_TOOLS_HOME}/wait-for" ]]; then
-    rm "${SIMVA_CONTAINER_TOOLS_HOME}/wait-for"
-fi
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
 
-# Removing gomplate file
-if [[ -e "${SIMVA_PROJECT_DIR}/bin/gomplate" ]]; then
-    rm "${SIMVA_PROJECT_DIR}/bin/gomplate"
-fi
+${SIMVA_HOME}/bin/purge-file-if-exist.sh \
+    "${SIMVA_CONTAINER_TOOLS_HOME}/wait-for" \
+    "${SIMVA_PROJECT_DIR}/bin/gomplate" \
+    "${SIMVA_PROJECT_DIR}/.simva-initialized" \
+    "${SIMVA_PROJECT_DIR}/.vagrant"
 
-# Removing .simva-initialized file
-if [[ -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
-    rm "${SIMVA_PROJECT_DIR}/.simva-initialized"
-fi
-
-# Removing .vagrant file
-if [[ -e "${SIMVA_PROJECT_DIR}/.vagrant" ]]; then
-    rm "${SIMVA_PROJECT_DIR}/.vagrant"
-fi
-
-# Removing simva-env.sh.backup file
-rm -rf "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/*"
+${SIMVA_HOME}/bin/purge-folder-contents.sh \
+    "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/"
