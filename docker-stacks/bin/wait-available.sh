@@ -35,8 +35,8 @@ fi
 
 payload=${5:-}
 
-mc_max_retries=${SIMVA_MAX_RETRIES:-20}
-wait_time=${SIMVA_WAIT_TIME:-10};
+mc_max_retries=${SIMVA_MAX_RETRIES}
+wait_time=${SIMVA_WAIT_TIME};
 count=${mc_max_retries};
 done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do

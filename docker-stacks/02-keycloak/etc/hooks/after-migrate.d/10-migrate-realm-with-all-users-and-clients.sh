@@ -1,8 +1,12 @@
-GENERATED_JSON_FILE="${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm/simva-realm-full.json"
-KEYCLOAK_CONFIG_EXPORT_FOLDER="${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export"
-TEMP_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-realm-temp.json"
-EXPORTED_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-realm.json"
-EXPORTED_USERS_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-users-0.json"
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
+
+GENERATED_JSON_FILE="${SIMVA_CONFIG_HOME}/keycloak/simva-realm/simva-realm-full.json"
+KEYCLOAK_CONFIG_EXPORT_FOLDER="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export"
+TEMP_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM}-realm-temp.json"
+EXPORTED_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM}-realm.json"
+EXPORTED_USERS_JSON_FILE="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM}-users-0.json"
 if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then 
     previousUsers=$(jq '.users' "$GENERATED_JSON_FILE")
     previousUsersFile="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/previousUsers.json"
@@ -10,8 +14,8 @@ if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then
     
     # Counter for file number
     file_number=0
-    # Iterate over files matching the format ${SIMVA_SSO_REALM:-simva}-users-X.json
-    for userfile in "${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM:-simva}-users-"*.json; do
+    # Iterate over files matching the format ${SIMVA_SSO_REALM}-users-X.json
+    for userfile in "${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM}-users-"*.json; do
         # Increment the file number
         ((file_number++))
         # Process the file here (replace echo with actual processing)

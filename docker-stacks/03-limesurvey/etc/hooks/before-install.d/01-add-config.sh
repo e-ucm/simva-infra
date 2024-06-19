@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
 
 config_contents=$(<"${SIMVA_CONFIG_HOME}/limesurvey/etc-template/config.php")
 

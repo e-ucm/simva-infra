@@ -10,6 +10,9 @@ networks:
       driver: default
       config:
         - subnet: "${SIMVA_NETWORK_CIDR:-172.30.0.0/24}"
+  traefik_admin:
+    name: "traefik_admin"
+    driver: bridge
 
 services:
   noop:

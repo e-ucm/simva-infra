@@ -2,8 +2,6 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-
-
 SIMVA_TMON_GIT_REPO_URL=https://github.com/e-ucm/t-mon.git
 SIMVA_TMON_GIT_REF=${SIMVA_TMON_GIT_REF:-master}
 
@@ -12,17 +10,17 @@ if [[ ! -e "${SIMVA_DATA_HOME}/simva/.initialized" ]]; then
     echo "SIMVA it is not initialized, initializing checkout code."
     RUNCHECKOUTCODE=true
 fi
-if [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]] ; then
+if [[ "${SIMVA_ENVIRONMENT}" == "development" ]] ; then
     echo "SIMVA is in development environment, launch checkout code."
     RUNCHECKOUTCODE=true
 fi
 if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     # Create source folder
-    mkdir -p ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks/t-mon
+    mkdir -p ${SIMVA_DATA_HOME}/anaconda/notebooks/t-mon
     
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
     git clone --depth 1 --branch ${SIMVA_TMON_GIT_REF} ${SIMVA_TMON_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
-    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks/t-mon/ > /dev/null 2>&1
-    sudo chmod -R 777 ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/anaconda/notebooks/t-mon/
+    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/anaconda/notebooks/t-mon/ > /dev/null 2>&1
+    sudo chmod -R 777 ${SIMVA_DATA_HOME}/anaconda/notebooks/t-mon/
 fi

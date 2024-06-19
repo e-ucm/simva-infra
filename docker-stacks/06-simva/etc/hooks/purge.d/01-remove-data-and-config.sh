@@ -1,32 +1,14 @@
-###################
-# REMOVE SIMVA DATA
-###################
-# Removing Simva Mongodb data
-cd "${SIMVA_DATA_HOME}/simva/mongo" && rm -rf ./*
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
 
-# RemovingSimva Puppeteer data 
-cd "${SIMVA_DATA_HOME}/simva/puppeteer" && rm -rf ./*
+${SIMVA_HOME}/bin/purge-folder-contents.sh \
+    "${SIMVA_DATA_HOME}/simva/mongo" \
+    "${SIMVA_DATA_HOME}/simva/simva-api" \
+    "${SIMVA_DATA_HOME}/simva/simva-front" \
+    "${SIMVA_DATA_HOME}/simva/simva-trace-allocator"
 
-# Removing Simva API data
-cd "${SIMVA_DATA_HOME}/simva/simva-api" && rm -rf ./*
-
-# Removing Simva Front data
-cd "${SIMVA_DATA_HOME}/simva/simva-front" && rm -rf ./*
-
-# Removing Simva Trace Allocator data
-cd "${SIMVA_DATA_HOME}/simva/simva-trace-allocator" && rm -rf ./*
-
-# Removing Simva Trace Allocator logs
-if [[ -e "${SIMVA_PROJECT_DIR}/trace-allocator.log" ]]; then
-    rm "${SIMVA_PROJECT_DIR}/trace-allocator.log"
-fi
-
-if [[ -e "${SIMVA_DATA_HOME}/simva/.initialized" ]]; then
-    rm "${SIMVA_DATA_HOME}/simva/.initialized"
-fi
-if [[ -e "${SIMVA_DATA_HOME}/simva/.externaldomain" ]]; then
-    rm "${SIMVA_DATA_HOME}/simva/.externaldomain"
-fi 
-if [[ -e "${SIMVA_DATA_HOME}/simva/.version" ]]; then
-    rm "${SIMVA_DATA_HOME}/simva/.version"
-fi
+${SIMVA_HOME}/bin/purge-file-if-exist.sh \
+    "${SIMVA_DATA_HOME}/simva/.initialized" \
+    "${SIMVA_DATA_HOME}/simva/.externaldomain" \
+    "${SIMVA_DATA_HOME}/simva/.version"

@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
 
 minioPoliciesFolder="${SIMVA_CONFIG_HOME}/minio/policies"
 for path in $(ls $minioPoliciesFolder-template/*) ; do 

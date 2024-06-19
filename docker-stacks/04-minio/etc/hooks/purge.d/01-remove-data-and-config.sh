@@ -1,21 +1,15 @@
-###################
-# REMOVE MINIO DATA
-###################
-# Removing Minio data
-cd "${SIMVA_DATA_HOME}/minio" && rm -rf ./*
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
 
-#####################
-# REMOVE MINIO CONFIG
-#####################
-# Removing Minio policies configuration
-cd "${SIMVA_CONFIG_HOME}/minio/policies" && rm -rf ./*
+${SIMVA_HOME}/bin/purge-folder-contents.sh \
+    "${SIMVA_DATA_HOME}/minio" \
+    "${SIMVA_CONFIG_HOME}/minio/policies"
 
-if [[ -e "${SIMVA_DATA_HOME}/minio/.initialized" ]]; then
-    rm "${SIMVA_DATA_HOME}/minio/.initialized"
-fi
-if [[ -e "${SIMVA_DATA_HOME}/minio/.externaldomain" ]]; then
-    rm "${SIMVA_DATA_HOME}/minio/.externaldomain"
-fi 
-if [[ -e "${SIMVA_DATA_HOME}/minio/.version" ]]; then
-    rm "${SIMVA_DATA_HOME}/minio/.version"
-fi
+rm -rf ${SIMVA_DATA_HOME}/minio/.minio.sys
+
+${SIMVA_HOME}/bin/purge-file-if-exist.sh \
+    "${SIMVA_DATA_HOME}/minio/minio-initialized" \
+    "${SIMVA_DATA_HOME}/minio/.initialized" \
+    "${SIMVA_DATA_HOME}/minio/.externaldomain" \
+    "${SIMVA_DATA_HOME}/minio/.version"

@@ -165,7 +165,8 @@ export SIMVA_SIMVA_API_HOST_SUBDOMAIN="simva-api"
 export SIMVA_SIMVA_API_PORT="443"
 #Jupyter Notebook
 export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
-#Portainer
+#LOGS
+export SIMVA_DOZZLE_HOST_SUBDOMAIN="logs"
 export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
 
 #####################
@@ -237,7 +238,7 @@ export SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH="/simplesamlphp"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL="INFO"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY="limesurvey-key.pem"
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT="limesurvey-fullchain.pem"
-export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ="/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ="/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}"
 
 ##############
 # Minio info #
@@ -248,7 +249,6 @@ export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 # Kafka info #
 ##############
 export SIMVA_KAFKA_NETWORK="kafka_services"
-export SIMVA_KAFKA_DNS_IP="127.0.0.11"
 export SIMVA_TRACES_BUCKET_NAME="traces"
 export SIMVA_SINK_TOPICS_DIR="kafka-topics"
 export SIMVA_TRACES_TOPIC="traces"
