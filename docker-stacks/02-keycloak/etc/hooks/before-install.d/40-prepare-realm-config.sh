@@ -2,34 +2,7 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-# usage: file_env VAR [DEFAULT]
-#    ie: file_env 'XYZ_DB_PASSWORD' 'example'
-# (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
-#  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
-__file_env() {
-    local save_bash_options=$-
-    local var="$1"
-    local fileVar="${var}_FILE"
-    local def="${2:-}"
-    set +u
-    if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
-        echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
-        exit 1
-    fi
-    set -u
-    local val="$def"
-    if [ "${!var:-}" ]; then
-        val="${!var}"
-    elif [ "${!fileVar:-}" ]; then
-        val="$(< "${!fileVar}")"
-    fi
-    export "$var"="$val"
-    unset "$fileVar"
-
-    if [[ $save_bash_options =~ u ]]; then
-        set -u
-    fi
-}
+source ${SIMVA_HOME}/bin/get-or-generate.sh
 
 # Oneline certificate
 limesurvey_cert=$(sed '1d; $d;:a;N;$!ba;s/\n//g' "${SIMVA_TLS_HOME}/limesurvey.pem")
@@ -54,30 +27,15 @@ function generate_realm_data() {
     if [[ ! -e "${STACK_CONF}/simva-env.sh" ]]; then
         touch "${STACK_CONF}/simva-env.sh"
     fi
-
-    echo "---" > ${conf_file}
-    echo "users:" >> ${conf_file}
-
-    # Update users config
+    
     users="student teaching_assistant teacher researcher administrator"
+    echo "users:" >> ${conf_file}
     for user in $users; do
         user=$(echo ${user} | sed -e 's/[^0-9A-Za-z_]/_/g' )
         user_username=$(get_or_generate_username "${user}" "${STACK_CONF}/simva-env.sh" "USER")
-        user_password=$(get_or_generate_password "${user}" "${STACK_CONF}/simva-env.sh" "USER")
-
-        secretData=""
-        while read l; do
-            credentialData=$secretData;
-            secretData=$l;
-        done < <(${SIMVA_HOME}/bin/pbkdf2 -b64 -l 64 -i 27500 -j ${user_password})
-        secretData=$(echo ${secretData} | sed -e 's/"/\\\\\\"/g')
-        credentialData=$(echo ${credentialData} | sed -e 's/"/\\\\\\"/g')
         echo "  ${user}:" >> ${conf_file}
         echo "    username: \"${user_username}\"" >> ${conf_file}
-        echo "    password: \"${user_password}\"" >> ${conf_file}
-        echo "    secretData: \"${secretData}\"" >> ${conf_file}
-        echo "    credentialData: \"${credentialData}\"" >> ${conf_file}
-    done
+    done 
 
     echo "smtpServer:" >> ${conf_file}
     echo "  host: \"${SIMVA_MAIL_HOST_SUBDOMAIN}.${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}\"" >> ${conf_file}
@@ -139,59 +97,6 @@ function generate_realm_data() {
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
     echo "    baseUrl: \"https://${SIMVA_JUPYTER_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/tree\"" >> ${conf_file}
-}
-
-function get_or_generate_password() {
-    local client=${1}
-    local conf=${2:-""}
-    local IsUser=${3:-""}
-    local var=""
-    if [[ ${IsUser} == "USER" ]]; then
-        var="SIMVA_${client^^}_PASSWORD"
-    else 
-        var="SIMVA_${client^^}_CLIENT_SECRET"
-    fi
-    
-    var=$(echo $var | sed -e 's/[^0-9A-Za-z_]/_/g' )
-
-    __file_env $var ''
-
-    if [[ -z "${!var}" ]]; then
-        client_secret=$((cat /dev/urandom || true) | (LC_ALL=C tr -c -d '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' || true ) | dd bs=32 count=1 2>/dev/null)
-        if [[ -e ${conf} ]]; then
-            echo "export ${var}=\"${client_secret}\"" >> "${conf}"
-        fi
-    else
-        client_secret=${!var}
-    fi
-
-    echo ${client_secret}
-}
-
-function get_or_generate_username() {
-    local client=${1}
-    local conf=${2:-""}
-    local IsUser=${3:-""}
-    local var=""
-    if [[ ${IsUser} == "USER" ]]; then
-        var="SIMVA_${client^^}_USER"
-    else 
-        var="SIMVA_${client^^}_CLIENT_ID"
-    fi
-    var=$(echo $var | sed -e 's/[^0-9A-Za-z_]/_/g' )
-
-    __file_env $var ''
-
-    if [[ -z "${!var}" ]]; then
-        client_user=${client}
-        if [[ -e ${conf} ]]; then
-            echo "export ${var}=\"${client_user}\"" >> "${conf}"
-        fi
-    else
-        client_user=${!var}
-    fi
-
-    echo ${client_user}
 }
 
 function configure_realm_file() {

@@ -5,7 +5,7 @@ set -euo pipefail
 files_to_remove=$@
 
 for file in ${files_to_remove}; do
-  echo $file
+  echo "Removing file if exist $file"
   if [[ -e "${file}" ]]; then
     rm -f "${file}"
   fi

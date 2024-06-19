@@ -5,5 +5,6 @@ set -euo pipefail
 folders_to_remove=$@
 
 for folder in ${folders_to_remove}; do
+  echo "Removing content of folder $folder"
   rm -rf "${folder}/*"
 done;
