@@ -32,11 +32,11 @@ services:
     networks:
       traefik_services:
         aliases:
-          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}
           - phpmyadmin-ls.${SIMVA_EXTERNAL_DOMAIN:-external.test}
           - phpmyadmin-kc.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-          - topic-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-          - connect-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - kafka-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - zoonavigator.${SIMVA_EXTERNAL_DOMAIN:-external.test}
     ports:
       - target: 80
         published: 80

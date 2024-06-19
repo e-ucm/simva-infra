@@ -29,19 +29,18 @@ services:
     environment:
       DOZZLE_AUTH_PROVIDER: simple
       DOZZLE_REMOTE_HOST: "tcp://socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2375/|${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      #DOZZLE_HOSTNAME: "${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     networks:
       default:
         aliases:
-          - logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_admin:
         aliases:
-          - "logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.logs.loadbalancer.server.port=8080"
-      - "traefik.http.routers.logs.rule=Host(`logs.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.logs.rule=Host(`${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.logs.middlewares=dashboardAuth@file"
