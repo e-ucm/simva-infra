@@ -274,8 +274,6 @@ export SIMVA_FRONT_MONGO_DB="/simva-front"
 ##############
 export SIMVA_SCRIPT_WAIT_TIME="10"
 export SIMVA_STORAGE_LOCAL_PATH="/storage"
-
-export SIMVA_SSO_ALLOWED_ROLES="teacher,teaching-assistant,researcher,student"
 export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
 export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
 
@@ -409,18 +407,22 @@ export SIMVA_ADMINISTRATOR_PASSWORD="administrator"
 # else it is generated automatically by script
 ########################################################
 # Template Student Username and password FOR KEYCLOAK
+export SIMVA_STUDENT_ALLOWED_ROLE="true"
 export SIMVA_STUDENT_USER="student"
 #export SIMVA_STUDENT_PASSWORD="password"
 
 # Template teaching-assistant Username and password FOR KEYCLOAK
+export SIMVA_TEACHING_ASSISTANT_ALLOWED_ROLE="true"
 export SIMVA_TEACHING_ASSISTANT_USER="teaching-assistant" 
 #export SIMVA_TEACHING_ASSISTANT_PASSWORD="password" 
 
 # Template teacher Username and password FOR KEYCLOAK
+export SIMVA_TEACHER_ALLOWED_ROLE="true"
 export SIMVA_TEACHER_USER="teacher"
 #export SIMVA_TEACHER_PASSWORD="password"
 
 # Template researcher Username and password FOR KEYCLOAK
+export SIMVA_RESEARCHER_ALLOWED_ROLE="true"
 export SIMVA_RESEARCHER_USER="researcher"
 #export SIMVA_RESEARCHER_PASSWORD="password"
 ########################################################
