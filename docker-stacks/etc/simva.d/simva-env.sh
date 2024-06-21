@@ -36,11 +36,14 @@ export SIMVA_CONFIG_HOME="${SIMVA_HOME}/config"
 
 export SIMVA_TLS_HOME="${SIMVA_CONFIG_HOME}/tls"
 
+export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
+
+#########################################
+# Generate self signed TLS certificates #
+#########################################
 export SIMVA_TLS_GENERATE_SELF_SIGNED="false"
 
 [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && SIMVA_TLS_GENERATE_SELF_SIGNED="true"
-
-export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 
 ###########################################
 # Images versions and SIMVA Git reference #
@@ -83,14 +86,16 @@ export SIMVA_PORTAINER_VERSION="latest"
 
 export SIMVA_DOZZLE_IMAGE="amir20/dozzle"
 export SIMVA_DOZZLE_VERSION="latest"
+
 #Git reference branch
 export CSP_REPORTER_GIT_REF="master"
+export SIMVA_KEYCLOAK_EVENT_GIT_REF="v0.26"
+
 branch="master"
 [[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]] && branch="dev"
 export SIMVA_API_GIT_REF=$branch
 export SIMVA_FRONT_GIT_REF=$branch
 export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
-
 base_for_simva_repos="${SIMVA_DATA_HOME}/simva"
 [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_simva_repos="${SIMVA_HOME}/../.."
 if [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]]; then
@@ -100,8 +105,6 @@ else
 fi
 export SIMVA_FRONT_GIT_REPO="${base_for_simva_repos}/simva-front"
 export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-allocator"
-
-export SIMVA_KEYCLOAK_EVENT_GIT_REF="v0.26"
 
 ###################
 # Service Network #
@@ -123,6 +126,9 @@ export SIMVA_DEV_LOAD_BALANCER="false"
 export SIMVA_LOAD_BALANCER_IPS="172.30.0.80"
 [[ "${SIMVA_ENVIRONMENT}" == "production" ]] && SIMVA_LOAD_BALANCER_IPS="127.0.0.1"
 
+#################################
+# OS and Architecture detection #
+#################################
 # Determine the current operating system and architecture
 export SIMVA_SYSTEM_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 case $(uname -m) in
@@ -179,7 +185,6 @@ export SIMVA_SOCKET_PROXY_LOG_LEVEL="info"
 # Traefik info #
 ################
 # Traefik: disables SSL certificate verification
-#
 # Note: It is far better (and more secure) to config SIMVA_SSL_ROOT_CAS
 export SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY="false"
 
@@ -193,17 +198,16 @@ export SIMVA_TRAEFIK_EXTRA_CSP_POLICY=""
 
 # Traefik: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
-#
 # example: foo.crt,bar.crt
 export SIMVA_SSL_ROOT_CAS="${SIMVA_DATA_HOME}/tls/ca/isrgrootx1.pem"
 
 #Truststore CA Alias
 export SIMVA_TRUSTSTORE_CA_ALIAS='simvaCA'
 
-###################################################################
-# Checking time for KeyCloak, Minio,Kafka and Anaconda availabled #
-###################################################################
-#Checking time and max retries for KeyCloak, Minio,Kafka and Anaconda availabled
+##########################################
+# Checking time for container availabled #
+##########################################
+#Checking time and max retries for containers availabled
 export SIMVA_WAIT_TIMEOUT="120"
 export SIMVA_WAIT_TIME="15"
 export SIMVA_MAX_RETRIES="20"
@@ -256,12 +260,6 @@ export SIMVA_SINK_USERS_DIR="users"
 export SIMVA_SINK_TRACES_FILE="traces.json"
 export SIMVA_TRACES_FLUSH_SIZE=500
 
-#####################
-# Analytics A2 info #
-#####################
-export SIMVA_A2_HOST="a2"
-export SIMVA_A2_ANALYTICSBACKEND_API="/api/proxy/gleaner"
-
 #######################
 # SIMVA MONGO DB INFO #
 #######################
@@ -276,7 +274,6 @@ export SIMVA_SCRIPT_WAIT_TIME="10"
 export SIMVA_STORAGE_LOCAL_PATH="/storage"
 export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
 export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
-
 export SIMVA_LTI_ENABLED="false"
 
 ##############################
@@ -332,26 +329,13 @@ export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="password"
 export SIMVA_MINIO_ACCESS_KEY="minio"
 export SIMVA_MINIO_SECRET_KEY="password"
 
-#Minio MC default user
-export SIMVA_MINIO_MCS_USER="mcs"
-export SIMVA_MINIO_MCS_SECRET="password"
-
-export SIMVA_MCS_HMAC_JWT_SECRET="YOURJWTSIGNINGSECRET"
-#required to encrypt jwet payload
-export SIMVA_MCS_PBKDF_PASSPHRASE="SECRET"
-#required to encrypt jwet payload
-export SIMVA_MCS_PBKDF_SALT="SECRET"
-
+#Kafka connect to sink default user
 export SIMVA_KAFKA_CONNECT_SINK_USER="simva-sink"
 export SIMVA_KAFKA_CONNECT_SINK_SECRET="password"
 
 # SIMVA API default user
 export SIMVA_API_ADMIN_USERNAME="admin"
 export SIMVA_API_ADMIN_PASSWORD="password"
-
-#A2 Password
-export SIMVA_A2_ADMIN_USER="root"
-export SIMVA_A2_ADMIN_PASSWORD="password"
 
 #SIMVA LTI plateform DB
 export SIMVA_LTI_PLATFORM_DB_USER="root"
