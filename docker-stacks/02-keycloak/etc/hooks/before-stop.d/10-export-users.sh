@@ -12,7 +12,8 @@ if [[ -e "${SIMVA_DATA_HOME}/keycloak/.initialized" ]]; then
             if [ ! $keycloakContainer = "" ]; then
                 echo "Keycloak container is running. Launching export of users..."
                 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
-                    rm -rf ${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/*
+                    ${SIMVA_HOME}/bin/purge-folder-contents.sh "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/"
+                    chmod a+w "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/"
                     docker compose exec keycloak /opt/keycloak/bin/kc.sh export --dir "/opt/keycloak/data/export/" --users different_files --users-per-file 100 --realm ${SIMVA_SSO_REALM} --optimized
                     rm $exportinProgressFile
                 else 

@@ -8,6 +8,7 @@ export SIMVA_PROJECT_URL='https://github.com/e-ucm/simva-infra'
 export SIMVA_PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 OLD_PATH=$PATH
 export PATH=$PATH:${SIMVA_PROJECT_DIR}/bin
+declare -g "MIGRATEDOMAINCONFIRMED=FALSE"
 
 # check backup version file
 function sourceBackupEnvFile() {
@@ -575,11 +576,11 @@ function install() {
         local stack_name="${stack##*-}"
         local stack_name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
         local var_name="SIMVA_${stack_name_uppercase}_VERSION"
+        echo $external_domain > "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain"
         if [[ -v $var_name ]]; then
             echo "Variable $var_name is set"
             local version=${!var_name}
             echo $version > "${SIMVA_DATA_HOME}/${stack_name}/.version"
-            echo $external_domain > "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain"
         else
             echo "Variable $var_name is not set."
         fi
@@ -820,55 +821,67 @@ function start() {
     fi
     local new_external_domain=$SIMVA_EXTERNAL_DOMAIN
     local previous_external_domain=$(getValueFromBackupFile "SIMVA_EXTERNAL_DOMAIN")
-    prev=$previous_external_domain
+    local prev=$previous_external_domain
     local phase="start"
+    for stack in ${stacks}; do
+        local stack_name="${stack##*-}"
+        if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain" ]]; then
+            install "${wait_time}" "true" $stack;
+        fi
+    done
     setExecutable ${phase} ${stacks}
     execute_before_hooks ${phase} ${stacks}
     for stack in ${stacks}; do
         STACK_HOME="${SIMVA_HOME}/${stack}"
         local stack_name="${stack##*-}"
-        local previous_external_domain
-        if [[ -e "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain" ]]; then 
-            previous_external_domain=$(cat "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain")
-        else 
-            previous_external_domain=$prev
-        fi
-        echo "new_external_domain: $new_external_domain"
-        echo "previous_external_domain: $previous_external_domain"
-        local stack_name="${stack##*-}"
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
             previous_wait_time=$wait_time;
             wait_time=20;
-            recho "${stack} it is not initialized, this launch will take longer than normal."
+            echo "${stack} it is not initialized, this launch will take longer than normal."
         fi
         if [[ $check_upgrade == "true" ]]; then
+            if [[ -e "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain" ]]; then 
+                previous_external_domain=$(cat "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain")
+            fi
             local compare_result_domain=$(compare_versions $new_external_domain $previous_external_domain)
             declare -g "COMPARE_DOMAIN=$compare_result_domain"
+            if [[ ! $COMPARE_DOMAIN == 0 ]]; then
+                echo "previous_external_domain: $previous_external_domain"
+                echo "new_external_domain: $new_external_domain"            
+                echo "A new external domain has been detected in simva-env.sh for stack $stack_name."
+                echo "A backup of your data is advised before migrate domain."
+                if [[ $MIGRATEDOMAINCONFIRMED == "FALSE" ]]; then
+                    read -p "Are you sure you want to migrate to this external domain ? (Y/N): " externalDomainConfirm && [[ $externalDomainConfirm == [yY] || $externalDomainConfirm == [yY][eE][sS] ]] || exit 1
+                    export MIGRATEDOMAINCONFIRMED=$externalDomainConfirm
+                fi;
+                echo "Migrate domain of $stack_name..."
+                migrateDomain "${wait_time}" $stack
+                echo $new_external_domain > "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain"
+                previous_external_domain=$prev
+            fi;
             stack_name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
             local var_name="SIMVA_${stack_name_uppercase}_VERSION"
             if [[ -v $var_name ]]; then
                 echo "Variable $var_name is set"
                 local new_version=${!var_name}
-                echo "new_version: $new_version"
                 local previous_version
                 if [[ -e "${SIMVA_DATA_HOME}/${stack_name}/.version" ]]; then 
                     previous_version=$(cat "${SIMVA_DATA_HOME}/${stack_name}/.version")
                 else 
                     previous_version=$(getValueFromBackupFile $var_name)
                 fi 
-                echo "previous_version: $previous_version"
                 compare_result=$(compare_versions $new_version $previous_version)
                 if [[ ! $compare_result == 0 ]]; then
+                    echo "previous_version: $previous_version"
+                    echo "new_version: $new_version"
+                    echo "A new version has been detected in simva-env.sh for stack $stack_name."
+                    echo "A backup of your data is advised before upgrade."
+                    read -p "Are you sure you want to upgrade to this version ? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
                     echo "Upgrading $stack_name version..."
                     upgrade "${wait_time}" $stack
                 fi;
             else
                 echo "Variable $var_name is not set."
-            fi;
-            if [[ ! $COMPARE_DOMAIN == 0 ]]; then
-                echo "Migrate domain of $stack_name..."
-                migrateDomain "${wait_time}" $stack
-                echo $new_external_domain > "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain"
             fi;
         fi;
         docker_compose_stacks "${stack}" "${wait_time}" "up -d"
