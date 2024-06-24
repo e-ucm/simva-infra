@@ -12,4 +12,5 @@ ${SIMVA_HOME}/bin/purge-folder-contents.sh \
 ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/kafka/.initialized" \
     "${SIMVA_DATA_HOME}/kafka/.externaldomain" \
-    "${SIMVA_DATA_HOME}/kafka/.version"
+    "${SIMVA_DATA_HOME}/kafka/.version" \
+    "${SIMVA_DATA_HOME}/kafka/minio-events-topics-created"
