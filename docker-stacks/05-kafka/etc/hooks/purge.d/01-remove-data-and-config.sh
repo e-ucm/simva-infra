@@ -4,9 +4,6 @@ set -euo pipefail
 
 ${SIMVA_HOME}/bin/purge-folder-contents.sh \
     "${SIMVA_CONFIG_HOME}/kafka/connect" \
-    "${SIMVA_CONFIG_HOME}/kafka/connect-ui" \
-    "${SIMVA_CONFIG_HOME}/kafka/schema-registry-ui" \
-    "${SIMVA_CONFIG_HOME}/kafka/topics-ui" \
     "${SIMVA_DATA_HOME}/kafka/connect/kafka-connect-storage-common" \
     "${SIMVA_DATA_HOME}/kafka/data/backup" \
     "${SIMVA_DATA_HOME}/kafka/data/kafka1" \

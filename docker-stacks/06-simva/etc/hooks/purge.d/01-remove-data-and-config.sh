@@ -5,8 +5,10 @@ set -euo pipefail
 ${SIMVA_HOME}/bin/purge-folder-contents.sh \
     "${SIMVA_DATA_HOME}/simva/mongo" \
     "${SIMVA_DATA_HOME}/simva/simva-api" \
+    "${SIMVA_DATA_HOME}/simva/simva-api-logs" \
     "${SIMVA_DATA_HOME}/simva/simva-front" \
-    "${SIMVA_DATA_HOME}/simva/simva-trace-allocator"
+    "${SIMVA_DATA_HOME}/simva/simva-trace-allocator" \
+    "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-data"
 
 ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/simva/.initialized" \

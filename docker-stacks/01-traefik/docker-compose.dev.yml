@@ -26,7 +26,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.whoami.loadbalancer.server.port=80"
       - "traefik.http.routers.whoami.rule=Host(`whoami.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-
   traefik:
     << : *default-opts
     networks:
@@ -73,3 +72,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.csp-reporter.loadbalancer.server.port=3003"
       - "traefik.http.routers.csp-reporter.rule=Host(`csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.csp-reporter.middlewares=dashboardAuth@file"
