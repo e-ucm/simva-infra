@@ -1,4 +1,4 @@
-parent=keycloak.v2
+parent=keycloak.v3
 
 # This is the logo in upper lefthand corner.
 # It must be a relative path.
