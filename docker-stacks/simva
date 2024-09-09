@@ -489,6 +489,7 @@ function setExecutable_scripts_from_folder() {
         for FILE in $(find ${folder} -iname \*.sh -type f | sort); do
             echo "Set executable script file : ${FILE}"
             chmod a+x ${FILE}
+            dos2unix ${FILE}
         done
     fi
 }
