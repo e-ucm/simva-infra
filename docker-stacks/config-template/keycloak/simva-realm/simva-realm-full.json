@@ -162,7 +162,7 @@
     ],
     "client" : {
       "{{ .clients.limesurvey.clientId }}" : [ ],
-      "{{ .clients.jupyter.clientId }}" : [ ],
+      "{{ .clients.tmon.clientId }}" : [ ],
       "realm-management" : [
         {
           "id" : "33c9b791-8ab1-4875-aab6-2ba98d2e19a3",
@@ -1219,19 +1219,19 @@
     },
     {
       "id": "2e52267c-a0d1-410f-b8b2-ee33119e9ab9",
-      "clientId": "{{ .clients.jupyter.clientId }}",
-      "adminUrl": "http://localhost:8888",
-      "baseUrl" : "{{ .clients.jupyter.baseUrl }}",
+      "clientId": "{{ .clients.tmon.clientId }}",
+      "adminUrl": "{{ .clients.tmon.baseUrl }}",
+      "baseUrl" : "{{ .clients.tmon.baseUrl }}",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "{{ .clients.jupyter.secret }}",
+      "secret": "{{ .clients.tmon.secret }}",
       "redirectUris": [
-        "http://localhost:8888/*"
+        "{{ .clients.tmon.baseUrl }}/*"
       ],
       "webOrigins": [
-        "http://localhost:8888"
+        "{{ .clients.tmon.baseUrl }}"
       ],
       "notBefore": 0,
       "bearerOnly": false,
