@@ -1,0 +1,48 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+  tmon-app:
+    build: ${SIMVA_DATA_HOME}/tmon
+    entrypoint: >
+     /bin/sh -c '
+     if [ ! -e "/usr/local/share/ca-certificates/internal-CA.crt" ]; then
+          cp /root/.tmon/certs/CAs/rootCA.pem "/usr/local/share/ca-certificates/internal-CA.crt";
+          update-ca-certificates;
+          cat /etc/ca-certificates.conf;
+      else
+        echo "root certificates already presents."
+      fi;
+      python /app/TMonSimvaApp.py'
+    volumes:
+      - ${SIMVA_DATA_HOME}/tmon:/app
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.tmon/certs/CAs
+    environment:
+      - DASH_DEBUG=true
+      - REQUESTS_CA_BUNDLE=/root/.tmon/certs/CAs/rootCA.pem
+    hostname: ${SIMVA_TMON_HOST_DASHBOARD_SUBDOMAIN:-tmon}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_TMON_HOST_DASHBOARD_SUBDOMAIN:-tmon}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_TMON_HOST_DASHBOARD_SUBDOMAIN:-tmon}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.tmon.loadbalancer.server.port=8050"
+      - "traefik.http.routers.tmon.rule=Host(`${SIMVA_TMON_HOST_DASHBOARD_SUBDOMAIN:-tmon}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
