@@ -248,6 +248,7 @@ export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ="/C=ES/ST=Madrid/L=Madrid/O=U
 # Minio info #
 ##############
 export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
+export SIMVA_MINIO_EVENTS_TOPIC="minio-events"
 
 ##############
 # Kafka info #
@@ -288,6 +289,8 @@ export SIMVA_TRACE_ALLOCATOR_REMOVE_DRY_RUN="false"
 export SIMVA_TRACE_ALLOCATOR_GC_INTERVAL="864000000" #10 days in ms - 10*24*60*60*10000 = 864.000.000 ms
 export SIMVA_TRACE_ALLOCATOR_COPY_INSTEAD_RENAME="true"
 export SIMVA_TRACE_ALLOCATOR_TRY_RECOVERY="true"
+export SIMVA_TRACE_ALLOCATOR_KAFKA_CLIENT_ID="simva_trace_allocator"
+export SIMVA_TRACE_ALLOCATOR_KAFKA_GROUP_ID="simva_trace_allocator"
 
 ####################################################################
 ######## Authentification username and password (TO MODIFY) ########

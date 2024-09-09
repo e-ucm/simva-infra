@@ -21,7 +21,7 @@ docker compose exec minio-client  /bin/sh -c "/usr/bin/mc config host add simva-
       fi;"
 if [ ! -e "${SIMVA_DATA_HOME}/minio/minio-events-initialized" ]; then
         echo "Creating event listener"
-        docker compose exec minio-client /bin/sh -c "/usr/bin/mc --debug admin config set simva-minio/ notify_kafka:minio-file-upload brokers=\"kafka1.${SIMVA_INTERNAL_DOMAIN}:19092\" topic=\"minio-events\";"
+        docker compose exec minio-client /bin/sh -c "/usr/bin/mc --debug admin config set simva-minio/ notify_kafka:minio-file-upload brokers=\"kafka1.${SIMVA_INTERNAL_DOMAIN}:19092\" topic=\"${SIMVA_MINIO_EVENTS_TOPIC}\";"
         echo "Event listener created"
         docker compose exec minio-client /bin/sh -c "/usr/bin/mc --debug admin service restart simva-minio/;
         /usr/bin/mc ready simva-minio;"

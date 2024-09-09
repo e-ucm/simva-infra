@@ -254,6 +254,11 @@ services:
       SIMVA_PORT: "${SIMVA_SIMVA_API_PORT:-443}"
       SIMVA_USER: "${SIMVA_API_ADMIN_USERNAME:-admin}"
       SIMVA_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD:-password}"
+      #KAFKA
+      SIMVA_KAFKA_CLIENTID: "${SIMVA_TRACE_ALLOCATOR_KAFKA_CLIENT_ID:-simva_trace_allocator}"
+      SIMVA_KAFKA_BROKER: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092"
+      SIMVA_KAFKA_GROUPID: "${SIMVA_TRACE_ALLOCATOR_KAFKA_GROUP_ID:-simva_trace_allocator}"
+      SIMVA_KAFKA_MINIO_TOPIC: "${SIMVA_MINIO_EVENTS_TOPIC:-minio-events}"
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -268,5 +273,8 @@ services:
         aliases:
           - simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
+        aliases:
+          - simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      kafka_services:
         aliases:
           - simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
