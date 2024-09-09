@@ -257,7 +257,7 @@ export SIMVA_KAFKA_NETWORK="kafka_services"
 export SIMVA_TRACES_BUCKET_NAME="traces"
 export SIMVA_SINK_TOPICS_DIR="kafka-topics"
 export SIMVA_TRACES_TOPIC="traces"
-export SIMVA_SINK_USERS_DIR="users"
+export SIMVA_SINK_OUTPUTS_DIR="outputs"
 export SIMVA_SINK_TRACES_FILE="traces.json"
 export SIMVA_TRACES_FLUSH_SIZE=500
 
