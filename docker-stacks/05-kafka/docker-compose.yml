@@ -112,7 +112,7 @@ services:
       MINIO_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       MINIO_HOST: "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
-      MINIO_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      MINIO_URL: "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
       MINIO_MCS_USER: "${SIMVA_MINIO_MCS_USER:-mcs}"

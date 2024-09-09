@@ -43,7 +43,7 @@ services:
     environment:
       MINIO_ROOT_USER: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_BROWSER_REDIRECT_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      MINIO_SERVER_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      MINIO_SERVER_URL: "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       MINIO_ROOT_PASSWORD: "${SIMVA_MINIO_SECRET_KEY:-secret}"
       MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_CLIENT_ID:-minio}"
       MINIO_IDENTITY_OPENID_CLIENT_SECRET: "${SIMVA_MINIO_CLIENT_SECRET:-secret}"
@@ -76,7 +76,7 @@ services:
       - "traefik.http.routers.minio-ui.rule=Host(`${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.services.minio-api-service.loadbalancer.server.port=9000"
       - "traefik.http.routers.minio-api.service=minio-api-service"
-      - "traefik.http.routers.minio-api.rule=Host(`${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.minio-api.rule=Host(`${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
   
   mc:
     << : *default-opts
@@ -123,7 +123,7 @@ services:
       MINIO_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
       MINIO_HOST: "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
-      MINIO_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      MINIO_URL: "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
       MINIO_MCS_USER: "${SIMVA_MINIO_MCS_USER:-mcs}"

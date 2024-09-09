@@ -111,7 +111,7 @@ services:
           - "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-          - "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-api.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"  
           - "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
