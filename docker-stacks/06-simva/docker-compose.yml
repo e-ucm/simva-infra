@@ -216,7 +216,11 @@ services:
   simva-trace-allocator:
     << : *default-opts
     image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_VERSION:-20.9.0-bullseye}
-    command: bash -c "cd /app && ./docker-startup.sh"
+    command: bash -c "
+        admin_username=$$(echo ${SIMVA_API_ADMIN_USERNAME:-admin} | tr '[:upper:]' '[:lower:]');
+        json=\"{\\\"username\\\":\\\"$${admin_username}\\\",\\\"password\\\":\\\"${SIMVA_API_ADMIN_PASSWORD:-password}\\\"}\";
+        /bin/wait-available-with-connection.sh 'SIMVA API' 'https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/users/login' $${json} 'token' $${NODE_EXTRA_CA_CERTS};
+        cd /app && ./docker-startup.sh"
     stdin_open: true
     tty: true
     environment:
@@ -254,6 +258,8 @@ services:
       SIMVA_PORT: "${SIMVA_SIMVA_API_PORT:-443}"
       SIMVA_USER: "${SIMVA_API_ADMIN_USERNAME:-admin}"
       SIMVA_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD:-password}"
+      SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
       #KAFKA
       SIMVA_KAFKA_CLIENTID: "${SIMVA_TRACE_ALLOCATOR_KAFKA_CLIENT_ID:-simva_trace_allocator}"
       SIMVA_KAFKA_BROKER: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092"
@@ -265,6 +271,7 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}:/app
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator-data:/${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-/data}
+      - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
     depends_on:
       - simva-api
     hostname: simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}

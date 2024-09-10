@@ -27,6 +27,17 @@ if [[ $# -lt 4 ]]; then
 fi
 token_variable_name=${4}
 
+if [[ $# -lt 5 ]]; then
+    echo >&2 "missing cacert path";
+    exit 1;
+fi
+cacert=${5}
+if [[ $cacert == "false" ]]; then
+  cacert=""
+else 
+  cacert=" --cacert $cacert"
+fi
+
 mc_max_retries=${SIMVA_MAX_RETRIES}
 wait_time=${SIMVA_WAIT_TIME};
 count=${mc_max_retries};
@@ -35,11 +46,11 @@ while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
   echo 1>&2 "Checking $stack_name availability: $((${mc_max_retries}-$count+1)) pass";
   set +e
   # Make POST request to API and get token
-  token=$(curl -s -X POST -H "Content-Type: application/json" -d "$payload" "$stack_host" | jq -r ".$token_variable_name");
+  token=$(curl -s $cacert -X POST -H "Content-Type: application/json" -d "$payload" "$stack_host");
   set -e
-  if [ -n "$token" ]; then
-    bearer="Bearer $token"
-    echo "$bearer"
+  if [[ "$token" =~ .*"$token_variable_name".* ]]; then
+    echo "Got $token_variable_name:"
+    echo "$token"
     done="ok";
   else
     echo "Failed to get $token_variable_name"
