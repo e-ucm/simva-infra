@@ -249,6 +249,7 @@ export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ="/C=ES/ST=Madrid/L=Madrid/O=U
 ##############
 export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 export SIMVA_MINIO_EVENTS_TOPIC="minio-events"
+export SIMVA_MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME=3600 # Time in seconds 1 h = 60 min = 60*60 seconds = 3600 seconds
 
 ##############
 # Kafka info #
@@ -260,6 +261,8 @@ export SIMVA_TRACES_TOPIC="traces"
 export SIMVA_SINK_OUTPUTS_DIR="outputs"
 export SIMVA_SINK_TRACES_FILE="traces.json"
 export SIMVA_TRACES_FLUSH_SIZE=500
+export SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_MS=30000
+export SIMVA_OFFSET_FLUSH_INTERVAL_MS=30000
 
 #######################
 # SIMVA MONGO DB INFO #
@@ -280,6 +283,7 @@ export SIMVA_LTI_ENABLED="false"
 ##############################
 # SIMVA Trace Allocator INFO #
 ##############################
+export SIMVA_TRACE_ALLOCATOR_CONCAT_EVENT_POLICY="true" # if true minio-events else previous version of trace allocator
 export SIMVA_TRACE_ALLOCATOR_BATCH_SIZE="100"
 export SIMVA_TRACE_ALLOCATOR_MAX_DELAY="300000" #5 mins in ms - 5*60*1000 = 300.000 ms
 export SIMVA_TRACE_ALLOCATOR_REFRESH_INTERVAL="14400000" #4 hours in ms -4*60*60*1000 = 14.400.000 ms
