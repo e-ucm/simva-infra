@@ -100,9 +100,7 @@ services:
         format=$$(cat /data/.minio.sys/format.json);
         echo "Format :";
         echo $$format;
-        /usr/bin/mc --debug admin policy create simva-minio/ write-user-folder /policies/write-user-folder.json;
         /usr/bin/mc --debug admin policy create simva-minio/ write-user-folder-jwt /policies/write-user-folder-jwt.json;
-        /usr/bin/mc --debug admin policy create simva-minio/ readonly-user-folder /policies/readonly-user-folder.json;
         /usr/bin/mc --debug admin policy create simva-minio/ readonly-user-folder-jwt /policies/readonly-user-folder-jwt.json;
         /usr/bin/mc --debug admin policy create simva-minio/ simva-adv4-user /policies/simva-adv4-user.json;
         /usr/bin/mc --debug admin user add simva-minio $${SIMVA_SINK_USER} $${SIMVA_SINK_SECRET}
@@ -126,8 +124,6 @@ services:
       MINIO_URL: "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
-      MINIO_MCS_USER: "${SIMVA_MINIO_MCS_USER:-mcs}"
-      MINIO_MCS_SECRET: "${SIMVA_MINIO_MCS_SECRET:-password}"
       MINIO_BUCKET: "${SIMVA_TRACES_BUCKET_NAME:-traces}"
       SIMVA_SINK_USER: "${SIMVA_KAFKA_CONNECT_SINK_USER:-simva-sink}"
       SIMVA_SINK_SECRET: "${SIMVA_KAFKA_CONNECT_SINK_SECRET:-password}"

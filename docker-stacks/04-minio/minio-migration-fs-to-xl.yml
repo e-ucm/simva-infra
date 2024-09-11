@@ -39,11 +39,6 @@ services:
           format=$$(cat /data/.minio.sys/format.json);
           echo "Format :";
           echo $$format;
-          /usr/bin/mc --debug admin policy create simva-minio/ write-user-folder /policies/write-user-folder.json;
-          /usr/bin/mc --debug admin policy create simva-minio/ write-user-folder-jwt /policies/write-user-folder-jwt.json;
-          /usr/bin/mc --debug admin policy create simva-minio/ readonly-user-folder /policies/readonly-user-folder.json;
-          /usr/bin/mc --debug admin policy create simva-minio/ readonly-user-folder-jwt /policies/readonly-user-folder-jwt.json;
-          /usr/bin/mc --debug admin policy create simva-minio/ simva-adv4-user /policies/simva-adv4-user.json;
           /usr/bin/mc --debug admin user add simva-minio/ $${SIMVA_SINK_USER} $${SIMVA_SINK_SECRET};
           /usr/bin/mc --debug admin policy create simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json;
           /usr/bin/mc --debug admin policy attach simva-minio/ simvaSink --user $${SIMVA_SINK_USER};

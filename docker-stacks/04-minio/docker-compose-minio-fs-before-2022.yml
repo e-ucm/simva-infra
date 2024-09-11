@@ -157,15 +157,9 @@ services:
             echo "Error: Unable to initialize connection to MinIO."
             exit 1
           fi;
-          /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder /policies/write-user-folder.json;
           /usr/bin/mc --debug admin policy add simva-minio/ write-user-folder-jwt /policies/write-user-folder-jwt.json;
-          /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder /policies/readonly-user-folder.json;
           /usr/bin/mc --debug admin policy add simva-minio/ readonly-user-folder-jwt /policies/readonly-user-folder-jwt.json;
           /usr/bin/mc --debug admin policy add simva-minio/ simva-adv4-user /policies/simva-adv4-user.json;
-          /usr/bin/mc --debug admin user add simva-minio $${MINIO_MCS_USER} $${MINIO_MCS_SECRET}
-          /usr/bin/mc --debug admin policy add simva-minio/ mcsAdmin /policies/mcsAdmin.json;
-          /usr/bin/mc --debug admin policy add simva-minio/ mcsRestrictedAdmin /policies/mcsRestrictedAdmin.json;
-          /usr/bin/mc --debug admin policy set simva-minio/ mcsAdmin user=$${MINIO_MCS_USER}
           /usr/bin/mc --debug admin user add simva-minio $${SIMVA_SINK_USER} $${SIMVA_SINK_SECRET}
           /usr/bin/mc --debug admin policy add simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json;
           /usr/bin/mc --debug admin policy set simva-minio/ simvaSink user=$${SIMVA_SINK_USER}
@@ -190,8 +184,6 @@ services:
       MINIO_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
-      MINIO_MCS_USER: "${SIMVA_MINIO_MCS_USER:-mcs}"
-      MINIO_MCS_SECRET: "${SIMVA_MINIO_MCS_SECRET:-password}"
       MINIO_BUCKET: "${SIMVA_TRACES_BUCKET_NAME:-traces}"
       SIMVA_SINK_USER: "${SIMVA_KAFKA_CONNECT_SINK_USER:-simva-sink}"
       SIMVA_SINK_SECRET: "${SIMVA_KAFKA_CONNECT_SINK_SECRET:-password}"
