@@ -187,9 +187,9 @@ function check_dependencies() {
     local ret_value=0
     for binary in ${DEPENDENCIES}; do
         set +e
-        path=$(which ${binary})
-
-        if [[ ! ${path} > /dev/null ]]; then
+        path=$(which ${binary} 2>/dev/null)
+        
+        if [[ -z ${path} ]]; then
           echo 1>&2 "not found: ${binary}"
           ret_value=1
         else 
