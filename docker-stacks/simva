@@ -23,7 +23,7 @@ function sourceEnvFile() {
 }
 
 sourceEnvFile
-DEPENDENCIES="find mkcert jq docker sha256sum curl"
+DEPENDENCIES="find mkcert jq docker sha256sum curl java-11-openjdk-devel"
 DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME}"
 
 function getValueFromBackupFile() {
@@ -188,7 +188,7 @@ function check_dependencies() {
     for binary in ${DEPENDENCIES}; do
         set +e
         path=$(which ${binary} 2>/dev/null)
-        
+
         if [[ -z ${path} ]]; then
           echo 1>&2 "not found: ${binary}"
           ret_value=1
