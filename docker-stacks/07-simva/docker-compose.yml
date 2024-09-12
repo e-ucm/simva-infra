@@ -124,12 +124,14 @@ services:
       SHLINK_PORT: ${SIMVA_SHLINK_PORT:-443}
       SHLINK_PROTOCOL: ${SIMVA_SHLINK_EXTERNAL_PROTOCOL:-https}
       SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
+      SIMVA_FILTER_PATH: "${SIMVA_FILTER_LOCAL_PATH:-/filter}/"
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/home/node/logs:rw
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva${SIMVA_STORAGE_LOCAL_PATH:-/storage}:${SIMVA_STORAGE_LOCAL_PATH:-/storage}
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva${SIMVA_FILTER_LOCAL_PATH:-/filter}:${SIMVA_FILTER_LOCAL_PATH:-/filter}
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-api.sh:/home/node/entrypoint.d/docker-startup.sh
