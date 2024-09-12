@@ -56,12 +56,14 @@ if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
           | .config["topics.dir"]=$topicsDir
             | .config["topics"]=$topics
               | .config["flush.size"]=$flushSize
-                | .
+                    | .
 JQ_SCRIPT
 )
+#                | .config["rotate.schedule.interval.ms"]=$rotateScheduleInterval
+#                 | .config["offset.flush.interval.ms"]=$offsetFlushInterval
 
   cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
-  --arg minioUrl "https://${SIMVA_MINIO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" \
+  --arg minioUrl "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
   --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \
   --arg bucketName "${SIMVA_TRACES_BUCKET_NAME}" \
@@ -69,6 +71,9 @@ JQ_SCRIPT
   --arg topics "${SIMVA_TRACES_TOPIC}" \
   --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
+
+  #  --arg rotateScheduleInterval "${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_MS}" \
+  #  --arg offsetFlushInterval "${SIMVA_OFFSET_FLUSH_INTERVAL_MS}" \
 fi 
 
 set +e
@@ -89,7 +94,6 @@ docker compose exec connect curl -f -sS \
   --request POST \
   --data "$(echo $(jq -c . "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"))" \
   http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors #>/dev/null 2>&1
-  retPost=$?
-
-  echo $retPost
+retPost=$?
+echo $retPost
 set -e
