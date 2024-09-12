@@ -275,6 +275,7 @@ export SIMVA_FRONT_MONGO_DB="/simva-front"
 ##############
 export SIMVA_SCRIPT_WAIT_TIME="10"
 export SIMVA_STORAGE_LOCAL_PATH="/storage"
+export SIMVA_FILTER_LOCAL_PATH="/filter"
 export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
 export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
 export SIMVA_LTI_ENABLED="false"
