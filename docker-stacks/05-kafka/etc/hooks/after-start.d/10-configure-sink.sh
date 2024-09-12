@@ -56,11 +56,11 @@ if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
           | .config["topics.dir"]=$topicsDir
             | .config["topics"]=$topics
               | .config["flush.size"]=$flushSize
-                | .config["rotate.schedule.interval.ms"]=$rotateScheduleInterval
-                  | .config["offset.flush.interval.ms"]=$offsetFlushInterval
                     | .
 JQ_SCRIPT
 )
+#                | .config["rotate.schedule.interval.ms"]=$rotateScheduleInterval
+#                 | .config["offset.flush.interval.ms"]=$offsetFlushInterval
 
   cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
   --arg minioUrl "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" \
@@ -70,9 +70,10 @@ JQ_SCRIPT
   --arg topicsDir "${SIMVA_SINK_TOPICS_DIR}" \
   --arg topics "${SIMVA_TRACES_TOPIC}" \
   --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
-  --arg rotateScheduleInterval "${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_MS}" \
-  --arg offsetFlushInterval "${SIMVA_OFFSET_FLUSH_INTERVAL_MS}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
+
+  #  --arg rotateScheduleInterval "${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_MS}" \
+  #  --arg offsetFlushInterval "${SIMVA_OFFSET_FLUSH_INTERVAL_MS}" \
 fi 
 
 set +e
