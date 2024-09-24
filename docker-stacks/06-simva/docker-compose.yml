@@ -31,8 +31,6 @@ services:
       default:
         aliases:
           - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    ports:
-        - "27017:27017"
 
   simva-api:
     << : *default-opts
