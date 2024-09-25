@@ -19,6 +19,7 @@
       "topics.dir": "kafka-topics",
       "s3.bucket.name": "traces",
       "aws.access.key.id": "minio",
-      "aws.secret.access.key": "password"
-    }
+      "aws.secret.access.key": "password",
+      "rotate.interval.ms": "300000"
   }
+}
