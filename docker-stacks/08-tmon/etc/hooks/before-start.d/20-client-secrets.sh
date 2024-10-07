@@ -14,4 +14,5 @@ cat "${tmon_config_folder}/${base_name}_example${base_extension}" \
     | sed  "s/<<SIMVA_TMON_CLIENT_ID>>/${SIMVA_TMON_CLIENT_ID}/g" \
     | sed  "s/<<SIMVA_TMON_CLIENT_SECRET>>/${SIMVA_TMON_CLIENT_SECRET}/g" \
     | sed  "s/<<SIMVA_SIMVA_API_HOST_SUBDOMAIN>>/${SIMVA_SIMVA_API_HOST_SUBDOMAIN}/g" \
+    | sed  "s/<<SSL_CERT_FILE>>/${SIMVA_TLS_HOME}/ca/rootCA.pem/g" \
     > "${tmon_folder}/${base_name}${base_extension}"
