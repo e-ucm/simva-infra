@@ -18,10 +18,16 @@ networks:
 services:
   tmon-app:
     build: ${SIMVA_DATA_HOME}/tmon
-    ports:
-      - "8050:8050"
+    entrypoint: >
+     /bin/sh -c '
+      if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
+        cp /root/.tmon/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
+        cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
+      fi;
+      python /app/TMonSimvaApp.py'
     volumes:
       - ${SIMVA_DATA_HOME}/tmon:/app
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.tmon/certs/CAs
     environment:
       - DASH_DEBUG=true
     hostname: ${SIMVA_TMON_HOST_DASHBOARD_SUBDOMAIN:-tmon}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
