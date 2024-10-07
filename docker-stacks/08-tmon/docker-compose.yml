@@ -21,8 +21,11 @@ services:
     entrypoint: >
      /bin/sh -c '
       if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
+        echo "copying root certificates."
         cp /root/.tmon/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
         cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
+      else
+        echo "root certificates already presents."
       fi;
       python /app/TMonSimvaApp.py'
     volumes:
