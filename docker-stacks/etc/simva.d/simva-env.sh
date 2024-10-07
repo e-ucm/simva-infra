@@ -23,7 +23,7 @@ export SIMVA_MAX_UPLOAD_FILE_SIZE="33554432" #32mb
 ################
 # SIMVA STACKS #
 ################
-export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva 08-anaconda 09-logs"
+export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva 08-anaconda 08-tmon 09-logs"
 
 #############################
 # SIMVA installation folder #
@@ -162,6 +162,7 @@ export SIMVA_MAIL_PORT="25"
 export SIMVA_LIMESURVEY_HOST_SUBDOMAIN="limesurvey"
 #Minio host
 export SIMVA_MINIO_HOST_SUBDOMAIN="minio"
+export SIMVA_MINIO_API_HOST_SUBDOMAIN="minio-api"
 #Analytics A2 host
 export SIMVA_ANALYTICS_HOST_SUBDOMAIN="analytics"
 #SIMVA MONGO DB 
@@ -171,6 +172,8 @@ export SIMVA_SIMVA_API_HOST_SUBDOMAIN="simva-api"
 export SIMVA_SIMVA_API_PORT="443"
 #Jupyter Notebook
 export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
+#TMon
+export SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN="tmon"
 #LOGS
 export SIMVA_DOZZLE_HOST_SUBDOMAIN="logs"
 export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
@@ -381,9 +384,9 @@ export SIMVA_LIMESURVEY_CLIENT_ID="limesurvey"
 export SIMVA_MINIO_CLIENT_ID="minio"
 #export SIMVA_MINIO_CLIENT_SECRET="secret"
 
-# Jupyter ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_JUPYTER_CLIENT_ID="jupyter"
-#export SIMVA_JUPYTER_CLIENT_SECRET="secret"
+# TMon Dashboard ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_TMON_CLIENT_ID="tmon"
+#export SIMVA_TMON_CLIENT_SECRET="secret"
 
 ####################################################################
 # USERNAME AND PASSWORD VARIABLES FOR KEYCLOAK USER CREATION 
