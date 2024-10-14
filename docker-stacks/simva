@@ -687,10 +687,10 @@ function upgrade() {
                     line=$((line + 1))
                     IFS='|' read -r -a names <<< "$version"
                     firstvarname=$(tr '[:lower:]' '[:upper:]' <<< "${names[0]}")
-                    if [[ ${firstvarname} == "$stack_name_uppercase" ]]; then
+                    if [[ "${firstvarname}" == "$stack_name_uppercase" ]]; then
                         for name in "${names[@]}"; do
-                            name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$name")
-                            variable="SIMVA_${name_uppercase}_VERSION"
+                            local name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$name")
+                            local variable="SIMVA_${name_uppercase}_VERSION"
                             if [[ $name == "$stack_name_uppercase"* ]]; then
                                 if declare -p "$variable" &>/dev/null; then
                                     variables+=("$variable")
@@ -704,7 +704,7 @@ function upgrade() {
                             fi
                         done
                     else
-                        echo "Error: The first variable name in $version_file has to be $stack_name corresponding to variable SIMVA_${name_uppercase}_VERSION"
+                        echo "Error: The first variable name in $version_file has to be $stack_name corresponding to variable SIMVA_${stack_name_uppercase}_VERSION"
                         exit 1
                     fi
                 else
@@ -1152,3 +1152,4 @@ function build() {
 require_root
 check_dependencies
 main $@
+
