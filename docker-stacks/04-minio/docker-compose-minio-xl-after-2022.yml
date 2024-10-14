@@ -1,0 +1,140 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+  minio:
+    << : *default-opts
+    image: ${SIMVA_MINIO_IMAGE:-quay.io/minio/minio}:${SIMVA_MINIO_VERSION:-RELEASE.2024-06-04T19-20-08Z}
+    entrypoint: >
+      /bin/sh -c '
+      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_SSO_HOST};
+        if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
+          cp /root/.minio/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
+          cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
+        fi;
+        /bin/wait-available.sh "Keycloak" "https://$${MINIO_SSO_HOST}/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" "false" "/etc/ssl/certs/internal-CA.pem";
+        /usr/bin/docker-entrypoint.sh $$@;
+      '
+    command:
+     - '--'
+     - 'server'
+     - '--console-address :9001'
+     - '/data'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio:/data
+# be advised if minio is launched as a non-root user you need to change this setting
+# Note too that this setting it is only needed if using a non-recognized CA
+# (https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html#install-certificates-from-third-party-cas)
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+      - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available.sh:/bin/wait-available.sh:ro
+    environment:
+      MINIO_ROOT_USER: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
+      MINIO_BROWSER_REDIRECT_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      MINIO_SERVER_URL: "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      MINIO_ROOT_PASSWORD: "${SIMVA_MINIO_SECRET_KEY:-secret}"
+      MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_CLIENT_ID:-minio}"
+      MINIO_IDENTITY_OPENID_CLIENT_SECRET: "${SIMVA_MINIO_CLIENT_SECRET:-secret}"
+      MINIO_IDENTITY_OPENID_DISPLAY_NAME: "Connect via ${SIMVA_SSO_REALM:-simva} SSO"
+      MINIO_IDENTITY_OPENID_CONFIG_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration"
+      MINIO_IDENTITY_OPENID_SCOPES: "${SIMVA_MINIO_IDENTITY_OPENID_SCOPES:-openid,policy_role_attribute}"
+      MINIO_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
+      SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -sS http://localhost:9000/minio/health/live || exit 1"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    hostname: ${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.minio-ui-service.loadbalancer.server.port=9001"
+      - "traefik.http.routers.minio-ui.service=minio-ui-service"
+      - "traefik.http.routers.minio-ui.rule=Host(`${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.services.minio-api-service.loadbalancer.server.port=9000"
+      - "traefik.http.routers.minio-api.service=minio-api-service"
+      - "traefik.http.routers.minio-api.rule=Host(`${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+  
+  mc:
+    << : *default-opts
+    image: ${SIMVA_MINIO_MC_IMAGE:-minio/mc}:${SIMVA_MINIO_MC_VERSION:-RELEASE.2024-06-01T15-03-35Z}
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c '
+      if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
+        cp /root/.mc/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
+        cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
+      fi;
+      /usr/bin/mc config host add simva-minio $${MINIO_URL} $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY} --api s3v4;
+      /usr/bin/mc ready simva-minio;
+      if [[ $$? -ne 0 ]]; then
+        echo "Error: Unable to initialize connection to MinIO."
+        exit 1
+      fi;
+      /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/data/minio-initialized" ]; then
+        /usr/bin/mc --debug mb simva-minio/$${MINIO_BUCKET};
+        format=$$(cat /data/.minio.sys/format.json);
+        echo "Format :";
+        echo $$format;
+        /usr/bin/mc --debug admin policy create simva-minio/ write-user-folder-jwt /policies/write-user-folder-jwt.json;
+        /usr/bin/mc --debug admin policy create simva-minio/ readonly-user-folder-jwt /policies/readonly-user-folder-jwt.json;
+        /usr/bin/mc --debug admin policy create simva-minio/ simva-adv4-user /policies/simva-adv4-user.json;
+        /usr/bin/mc --debug admin user add simva-minio $${SIMVA_SINK_USER} $${SIMVA_SINK_SECRET}
+        /usr/bin/mc --debug admin policy create simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json;
+        /usr/bin/mc --debug admin policy attach simva-minio/ simvaSink --user $${SIMVA_SINK_USER}
+        touch /data/minio-initialized;
+      fi;
+      '
+    volumes:
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio:/data
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/minio/policies:/policies:ro
+      # Add extra CA (for self-signed certificates)
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.mc/certs/CAs/
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+      - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available.sh:/bin/wait-available.sh:ro
+    environment:
+      MINIO_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MINIO_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      MINIO_HOST: "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
+      MINIO_URL: "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
+      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
+      MINIO_BUCKET: "${SIMVA_TRACES_BUCKET_NAME:-traces}"
+      SIMVA_SINK_USER: "${SIMVA_KAFKA_CONNECT_SINK_USER:-simva-sink}"
+      SIMVA_SINK_SECRET: "${SIMVA_KAFKA_CONNECT_SINK_SECRET:-password}"
+      SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
+    hostname: mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}

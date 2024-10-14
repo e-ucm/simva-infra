@@ -56,18 +56,20 @@ if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
           | .config["topics.dir"]=$topicsDir
             | .config["topics"]=$topics
               | .config["flush.size"]=$flushSize
-                | .
+                | .config["rotate.interval.ms"]=$rotateInterval
+                        | .
 JQ_SCRIPT
 )
 
   cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
-  --arg minioUrl "https://${SIMVA_MINIO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" \
+  --arg minioUrl "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
   --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \
   --arg bucketName "${SIMVA_TRACES_BUCKET_NAME}" \
   --arg topicsDir "${SIMVA_SINK_TOPICS_DIR}" \
   --arg topics "${SIMVA_TRACES_TOPIC}" \
   --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
+  --arg rotateInterval "${SIMVA_TRACES_ROTATE_INTERVAL_MS}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
 fi 
 
@@ -89,7 +91,6 @@ docker compose exec connect curl -f -sS \
   --request POST \
   --data "$(echo $(jq -c . "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"))" \
   http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors #>/dev/null 2>&1
-  retPost=$?
-
-  echo $retPost
+retPost=$?
+echo $retPost
 set -e
