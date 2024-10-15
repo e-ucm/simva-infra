@@ -42,14 +42,39 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
         $this->triggerWebhook($event, 'survey_completed');
     }
 
+    /**
+     * Function to fetch response data from the survey_* table
+     * @param int $surveyId
+     * @param int $responseId
+     * @return array|null
+     */
+    protected function getResponseData($surveyId, $responseId)
+    {
+        // LimeSurvey stores responses in a table named "survey_{surveyId}"
+        $tableName = '{{survey_' . intval($surveyId) . '}}';
+
+        // Fetch the response data by querying the appropriate table
+        $response = Yii::app()->db->createCommand()
+            ->select('*')
+            ->from($tableName)
+            ->where('id = :responseId', [':responseId' => $responseId])
+            ->queryRow();
+
+        return $response ? $response : null;
+    }
+
     protected function triggerWebhook(PluginEvent $event, $eventType)
     {
         error_log(json_encode($event));
         
         $surveyId = $event->get('surveyId');
+        
+        // Get token from the URL manually
+        $token = Yii::app()->request->getParam('token', null);
 
-        // Attempt to fetch token (if available)
-        $token = null !== $event->get('token') ? $event->get('token') : 'No token available';
+        if($token == null) {
+            $token = $event->get('token'); // Attempt to get from event object
+        }
 
         // Try to fetch the current or default language
         $surveyInfo = Survey::model()->findByPk($surveyId);
@@ -84,9 +109,13 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
             return; // Exit if the URL is not valid
         }
 
-        $time_start = microtime(true);
-        $response = $this->sendWebhook($webhookUrl, $payload);
-        $this->debug($webhookUrl, $payload, $time_start, $response);
+        if($token !== null) {
+            $time_start = microtime(true);
+            error_log('Sending message ' . json_encode($payload));
+            $this->debug($webhookUrl, $payload, $time_start, null);
+            $response = $this->sendWebhook($webhookUrl, $payload);
+            $this->debug($webhookUrl, $payload, $time_start, $response);
+        }
     }
 
 
