@@ -1,23 +1,18 @@
 <?php
 
 class LimeSuveyStatusWebhookPlugin extends PluginBase
-{
-    protected $storage = 'DbStorage';  // To store plugin settings in the database.
-    static protected $description = 'Webhook plugin that triggers API call on survey completion and initialization';
-    static protected $name = 'Webhook Plugin';
+	{
+		protected $storage = 'DbStorage';
+		static protected $description = 'A simple Webhook for LimeSurvey';
+		static protected $name = 'LimeSuveyStatusWebhookPlugin';
 
-    public function init() {
-        // Hook into events triggered when a survey is completed and when a survey is initialized (before the first page is loaded)
-        $this->subscribe('afterSurveyComplete'); // This event will be triggered when a respondent completed the survey
-        $this->subscribe('beforeSurveyPage');  // This event will be triggered when a respondent initializes the survey
-    }
+        public function init() {
+            // Hook into events triggered when a survey is completed and when a survey is initialized (before the first page is loaded)
+            $this->subscribe('afterSurveyComplete'); // This event will be triggered when a respondent completed the survey
+            $this->subscribe('beforeSurveyPage');  // This event will be triggered when a respondent initializes the survey
+        }
 
-    /**
-     * This function defines the plugin settings that are saved in the database.
-     */
-    public function getPluginSettings($getValues = true)
-    {
-        return [
+		protected $settings = [
             'sWebhookUrl' => [
                 'type' => 'string',
                 'label' => 'Webhook URL',
@@ -31,28 +26,37 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
                 'help' => 'Enable debugging to output the webhook call details.',
             ],
         ];
-    }
+
 
     public function beforeSurveyPage()
     {
         $event = $this->getEvent();
-        file_put_contents('/debug/debug.log', "survey_initialized", FILE_APPEND);
+        error_log("survey_initialized");
         $this->triggerWebhook($event, 'survey_initialized');
     }
 
     public function afterSurveyComplete()
     {
         $event = $this->getEvent();
-        file_put_contents('/debug/debug.log', "survey_completed", FILE_APPEND);
+        error_log("survey_completed");
         $this->triggerWebhook($event, 'survey_completed');
     }
 
     protected function triggerWebhook(PluginEvent $event, $eventType)
     {
+        error_log(json_encode($event));
+        
         $surveyId = $event->get('surveyId');
-        $token = $event->get('token');
-        $lang = $event->get('lang');
-        $surveyGroup = $event->get('surveyGroup');
+
+        // Attempt to fetch token (if available)
+        $token = null !== $event->get('token') ? $event->get('token') : 'No token available';
+
+        // Try to fetch the current or default language
+        $surveyInfo = Survey::model()->findByPk($surveyId);
+        $lang = null !== $event->get('lang') ? $event->get('lang') : $surveyInfo->language; // Fallback to default language
+
+        // Attempt to retrieve a survey group if applicable (you may need custom logic here)
+        $surveyGroup = $event->get('surveyGroup'); // Get survey group if applicable
 
         $payload = [
             'event' => $eventType,
@@ -61,14 +65,18 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
             'lang' => $lang,
             'surveyGroup' => $surveyGroup,
         ];
-        file_put_contents('/debug/debug.log', $payload, FILE_APPEND);
+        
         // Include response data only for completion
         if ($eventType === 'survey_completed') {
             $payload['responseId'] = $event->get('responseId');
-            $payload['responseData'] = $event->get('responseData');
+            // Fetch response data manually from the survey table
+            $payload['responseData'] = $this->getResponseData($surveyId, $payload['responseId']);
         }
+        
+        error_log(json_encode($payload));
 
-        $webhookUrl = $this->get('sWebhookUrl', '', '');
+        $webhookUrl = $this->get('sWebhookUrl',  null, null, '');
+        error_log($webhookUrl);
         
         // Validate webhook URL
         if (filter_var($webhookUrl, FILTER_VALIDATE_URL) === false) {
@@ -135,12 +143,8 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
             $html .= 'Total execution time in seconds: ' . (microtime(true) - $time_start) . '<br>';
             $html .= 'Response: ' . print_r($response, true) . '<br>';
             $html .= '</pre>';
-
             // Get the current event and append the debug HTML to the content
-            $event = $this->getEvent();
-            $event->getContent($this)->addContent($html);
-            // Log to a specific file
-            file_put_contents('/debug/debug.log', $logMessage, FILE_APPEND);
+            error_log($logMessage);
         }
     }
 }
