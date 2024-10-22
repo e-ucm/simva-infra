@@ -2,7 +2,7 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then 
+if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initializedRemoteControl" ]]; then 
     # Name of the Docker container running the application
     CONTAINER_NAME="limesurvey"
     # Path to the file inside the container where we want to add the function
@@ -12,7 +12,7 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
     NEW_FUNCTION_FILE_NAME="export_survey_structure.php"
 
     # Step 1: Remove the last closing brace '}' from the target file inside the container
-    docker compose exec -it $CONTAINER_NAME bash -c "sed -i '\${/^}$/d' $REMOTE_FILE_PATH"
+    docker compose exec -it $CONTAINER_NAME bash -c  "sed -i '\$s/^[[:space:]]*}//; \$d' $REMOTE_FILE_PATH"
 
     # Step 2: Copy the file containing the new function to the container
     docker compose cp $STACK_HOME/patch/$NEW_FUNCTION_FILE_NAME $CONTAINER_NAME:/tmp/
@@ -28,4 +28,5 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
     ${SIMVA_HOME}/bin/wait-available.sh "Limesurvey" "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/" "true" "false";
 
     echo "New function added to the file and container restarted (if applicable)."
+    touch "${SIMVA_DATA_HOME}/limesurvey/.initializedRemoteControl"
 fi

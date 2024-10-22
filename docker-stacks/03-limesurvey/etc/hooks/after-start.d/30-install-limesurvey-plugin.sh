@@ -5,11 +5,12 @@ set -euo pipefail
 if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then 
     # Variable
     PLUGIN_NAME="LimeSuveyStatusWebhookPlugin"
-    
+
     # Step 3: Enable the plugin using LimeSurvey's API (Optional)
-    LIMESURVEY_URL="https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/index.php/admin/remotecontrol"
+    LIMESURVEY_URL="https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/admin/remotecontrol"
 
     # Get session key
+    VAR=$(curl -s --data "method=get_session_key&params={\"username\":\"$SIMVA_LIMESURVEY_ADMIN_USER\",\"password\":\"$SIMVA_LIMESURVEY_ADMIN_PASSWORD\"}" $LIMESURVEY_URL)
     SESSION_KEY=$(curl -s --data "method=get_session_key&params={\"username\":\"$SIMVA_LIMESURVEY_ADMIN_USER\",\"password\":\"$SIMVA_LIMESURVEY_ADMIN_PASSWORD\"}" $LIMESURVEY_URL | jq -r '.result')
 
     # Enable the plugin
