@@ -4,24 +4,45 @@ set -euo pipefail
 
 if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then 
     # Variable
+    LIMESURVEY_CONTAINER="limesurvey"
     PLUGIN_NAME="LimeSuveyStatusWebhookPlugin"
+    PLUGIN_VERSION="1.0.0"
+    PLUGIN_DEST="/var/www/html/plugins/"      # Destination inside the container
+    MYSQL_CONTAINER="mariadb"  # The name of your MySQL container
+    DB_NAME=$SIMVA_LIMESURVEY_MYSQL_DATABASE
+    DB_USER=$SIMVA_LIMESURVEY_MYSQL_USER
+    DB_PASSWORD=$SIMVA_LIMESURVEY_MYSQL_PASSWORD
 
-    # Step 3: Enable the plugin using LimeSurvey's API (Optional)
-    LIMESURVEY_URL="https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/admin/remotecontrol"
+    # Step 2: Set ownership and permissions (adjust user if needed)
+    echo "Setting ownership and permissions..."
+    docker compose exec "$LIMESURVEY_CONTAINER" chown -R www-data:www-data "$PLUGIN_DEST$PLUGIN_NAME"
+    docker compose exec "$LIMESURVEY_CONTAINER" chmod -R 755 "$PLUGIN_DEST$PLUGIN_NAME"
 
-    # Get session key
-    VAR=$(curl -s --data "method=get_session_key&params={\"username\":\"$SIMVA_LIMESURVEY_ADMIN_USER\",\"password\":\"$SIMVA_LIMESURVEY_ADMIN_PASSWORD\"}" $LIMESURVEY_URL)
-    SESSION_KEY=$(curl -s --data "method=get_session_key&params={\"username\":\"$SIMVA_LIMESURVEY_ADMIN_USER\",\"password\":\"$SIMVA_LIMESURVEY_ADMIN_PASSWORD\"}" $LIMESURVEY_URL | jq -r '.result')
+    # Step 3: Clear LimeSurvey cache
+    echo "Clearing LimeSurvey cache..."
+    docker compose exec "$LIMESURVEY_CONTAINER" rm -rf /var/www/html/tmp/runtime/cache/*
 
-    # Enable the plugin
-    curl -s --data "method=activate_plugin&params={\"sSessionKey\":\"$SESSION_KEY\",\"plugin\":\"$PLUGIN_NAME\"}" $LIMESURVEY_URL
+    # Step 1: Insert the Plugin
+    echo "Inserting plugin into the plugins table..."
+    docker compose exec -it $MYSQL_CONTAINER mysql -u $DB_USER -p"$DB_PASSWORD" -e "
+    USE $DB_NAME;
+    INSERT INTO \`plugins\` (name, plugin_type, active, priority, version)
+    VALUES ('$PLUGIN_NAME', 'core', 1, 10, '$PLUGIN_VERSION');
+    "
 
-    # Enable the plugin
-    curl -s --data "method=set_plugin_settings&params={\"sSessionKey\":\"$SESSION_KEY\",\"sPlugin\":\"$PLUGIN_NAME\",\"aSettings\":{\"sBug\":\"true\",\"sWebhookUrl\":\"$PLUGIN_NAME\"}}" $LIMESURVEY_URL
+    # Step 2: Get the plugin ID
+    echo "Getting plugin ID..."
+    PLUGIN_ID=$(docker compose exec -it $MYSQL_CONTAINER mysql -u $DB_USER -p"$DB_PASSWORD" -e "USE $DB_NAME; SELECT id FROM \`plugins\` WHERE name = '$PLUGIN_NAME';" | tail -n 1)
+    echo $PLUGIN_ID
 
-    # Logout from API session
-    curl -s --data "method=release_session_key&params={\"sSessionKey\":\"$SESSION_KEY\"}" $LIMESURVEY_URL
+    # Step 3: Insert plugin settings
+    echo "Inserting plugin settings..."
+    docker compose exec -it $MYSQL_CONTAINER mysql -u $DB_USER -p"$DB_PASSWORD" -e "
+        USE $DB_NAME;
+        INSERT INTO \`plugin_settings\` (plugin_id, \`key\`, value)
+        VALUES ($PLUGIN_ID, 'sBug', 'true'),
+            ($PLUGIN_ID, 'sWebhookUrl', 'https:\\\\\\/\\\\/$SIMVA_SIMVA_API_HOST_SUBDOMAIN.$SIMVA_EXTERNAL_DOMAIN\\\\/limesurvey-completion-webhooks');
+    "
 
-    echo "Plugin $PLUGIN_NAME installed and activated!"
-
+    echo "Plugin $PLUGIN_NAME has been installed and its settings have been added!"
 fi
