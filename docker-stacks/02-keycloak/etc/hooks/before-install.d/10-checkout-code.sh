@@ -44,5 +44,5 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
             <finalName>${project.artifactId}</finalName>' \
         > "${extension}/pom.xml.template"
     fi
+    chmod -R 777 ${extension}
 fi
-chmod -R 777 ${extension}
