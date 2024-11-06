@@ -162,6 +162,7 @@ export SIMVA_MAIL_PORT="25"
 export SIMVA_LIMESURVEY_HOST_SUBDOMAIN="limesurvey"
 #Minio host
 export SIMVA_MINIO_HOST_SUBDOMAIN="minio"
+export SIMVA_MINIO_API_HOST_SUBDOMAIN="minio-api"
 #Analytics A2 host
 export SIMVA_ANALYTICS_HOST_SUBDOMAIN="analytics"
 #SIMVA MONGO DB 
