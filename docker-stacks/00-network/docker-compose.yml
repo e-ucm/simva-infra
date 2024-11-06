@@ -17,3 +17,10 @@ networks:
 services:
   noop:
     image: eucm/noop
+    networks:
+      default:
+        aliases:
+          - "noop.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      traefik_admin:
+        aliases:
+          - "noop.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
