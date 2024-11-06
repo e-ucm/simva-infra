@@ -923,7 +923,8 @@ function start() {
             fi;
         fi;
         docker_compose_stacks "${stack}" "${wait_time}" "up -d --remove-orphans"
-        docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
+        docker volume prune -f
+        docker image prune -f
     done
     for stack in ${stacks}; do
         execute_after_hooks ${phase} ${stack}
