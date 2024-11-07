@@ -15,8 +15,8 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
 
     # Step 2: Set ownership and permissions (adjust user if needed)
     echo "Setting ownership and permissions..."
-    docker compose exec "$LIMESURVEY_CONTAINER" chown -R www-data:www-data "$PLUGIN_DEST$PLUGIN_NAME"
-    docker compose exec "$LIMESURVEY_CONTAINER" chmod -R 755 "$PLUGIN_DEST$PLUGIN_NAME"
+    #docker compose exec "$LIMESURVEY_CONTAINER" chown -R www-data:www-data "$PLUGIN_DEST$PLUGIN_NAME"
+    docker compose exec "$LIMESURVEY_CONTAINER" chmod -R 777 "$PLUGIN_DEST$PLUGIN_NAME"
 
     # Step 3: Clear LimeSurvey cache
     echo "Clearing LimeSurvey cache..."
