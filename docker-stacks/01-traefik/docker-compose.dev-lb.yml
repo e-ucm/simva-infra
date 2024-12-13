@@ -17,6 +17,14 @@ services:
     environment:
       SIMVA_LOAD_BALANCER_IP: ${SIMVA_LOAD_BALANCER_IPS:-172.30.0.80}
       SIMVA_TRAEFIK_HOST_SUBDOMAIN: ${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}
+      SIMVA_SSO_HOST_SUBDOMAIN: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}
+      SIMVA_MAIL_HOST_SUBDOMAIN: ${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}
+      SIMVA_LIMESURVEY_HOST_SUBDOMAIN: ${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}
+      SIMVA_MINIO_HOST_SUBDOMAIN: ${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}
+      SIMVA_MINIO_API_HOST_SUBDOMAIN: ${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}
+      SIMVA_SIMVA_API_HOST_SUBDOMAIN: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}
+      SIMVA_JUPYTER_HOST_SUBDOMAIN: ${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}
+      SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN: ${SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN:-tmon}
       SIMVA_INTERNAL_DOMAIN: ${SIMVA_INTERNAL_DOMAIN:-internal.test}
       SIMVA_EXTERNAL_DOMAIN: ${SIMVA_EXTERNAL_DOMAIN:-external.test}
     volumes:
@@ -45,20 +53,20 @@ services:
         aliases:
           - "nginx.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
 
-  whoami:
+  nginx-whoami:
     << : *default-opts
     image: containous/whoami
     volumes:
       - /etc/localtime:/etc/localtime:ro
-    hostname: "whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+    hostname: "nginx-whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     networks:
       default:
         aliases:
-          - "whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "nginx-whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       traefik_services:
         aliases:
-          - "whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "nginx-whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.whoami.loadbalancer.server.port=80"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.services.whoami-nginx.loadbalancer.server.port=80"
+      - "traefik.http.routers.whoami-nginx.rule=Host(`nginx-whoami.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
