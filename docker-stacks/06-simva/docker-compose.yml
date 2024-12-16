@@ -32,6 +32,54 @@ services:
         aliases:
           - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
+  shlink:
+    << : *default-opts
+    image: ${SIMVA_SHLINK_IMAGE:-ghcr.io/shlinkio/shlink}:${SIMVA_SHLINK_VERSION:-stable}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    #  - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/shlink:/data/db
+    environment:
+      DEFAULT_DOMAIN: ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      IS_HTTPS_ENABLED: false
+      TIMEZONE: ${SIMVA_TIMEZONE:-Europe/Madrid}
+      INITIAL_API_KEY: ${SIMVA_SHLINK_API_KEY:-myshlinkapikey}
+    hostname: ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.shlink.loadbalancer.server.port=8080"
+      - "traefik.http.routers.shlink.rule=Host(`${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+
+  shlink-web-client:
+    << : *default-opts
+    image: ${SIMVA_SHLINK_IMAGE:-ghcr.io/shlinkio/shlink-web-client}:${SIMVA_SHLINK_VERSION:-latest}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    #  - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/shlink:/data/db
+    environment:
+      SHLINK_SERVER_URL: https://${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-myshlinkapikey}
+      SHLINK_SERVER_NAME: "SHLINK"
+    hostname: ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.shlink-admin.loadbalancer.server.port=8080"
+      - "traefik.http.routers.shlink-admin.rule=Host(`${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.shlink-admin.middlewares=dashboardAuth@file"
+
   simva-api:
     << : *default-opts
     image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_VERSION:-20.9.0-bullseye}
@@ -129,7 +177,7 @@ services:
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca:ro
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_API_GIT_REPO}:/app
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva${SIMVA_STORAGE_LOCAL_PATH:-/storage}:${SIMVA_STORAGE_LOCAL_PATH:-/storage}
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
@@ -185,8 +233,6 @@ services:
       SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
       SSO_PORT: "443"
       SSO_ACCOUNT_PATH: "/account"
-      SSO_ADMIN_PATH: "/admin"
-      SSO_CONSOLE_PATH: "/console"
       SSO_USER_CAN_SELECT_ROLE: "${SIMVA_SSO_USER_CAN_SELECT_ROLE:-true}"
       SSO_ADMINISTRATOR_CONTACT: "${SIMVA_SSO_ADMINISTRATOR_CONTACT:-contact@administrator.com}"
       SSO_STUDENT_ALLOWED_ROLE: "${SIMVA_STUDENT_ALLOWED_ROLE:-true}"
@@ -210,10 +256,20 @@ services:
       LIMESURVEY_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-secret}"
       #LTI 
       LTI_ENABLED: "${SIMVA_LTI_ENABLED:-false}"
+      #KAFKA
+      SIMVA_KAFKA_CLIENTID: "${SIMVA_EVENTS_KAFKA_CLIENT_ID:-simva_events}"
+      SIMVA_KAFKA_BROKER: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092"
+      SIMVA_KAFKA_GROUPID: "${SIMVA_EVENTS_KAFKA_GROUP_ID:-simva_events}"
+      SIMVA_KAFKA_SIMVA_EVENTS_TOPIC: "${SIMVA_SIMVA_EVENTS_TOPIC:-simva_events_topic}"
+      #SHLINK
+      SHLINK_SERVER_HOST: ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      SHLINK_PORT: ${SIMVA_SHLINK_PORT:-443}
+      SHLINK_PROTOCOL: ${SIMVA_SHLINK_EXTERNAL_PROTOCOL:-https}
+      SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-myshlinkapikey}
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca:ro
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}:/app
     depends_on:
       - simva-api
@@ -290,9 +346,9 @@ services:
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca:ro
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}:/app
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator-data:/${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-/data}
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator-data:${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-/data}
       - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
     depends_on:
       - simva-api
