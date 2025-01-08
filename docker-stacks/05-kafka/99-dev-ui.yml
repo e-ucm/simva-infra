@@ -16,7 +16,7 @@ networks:
 
 services:
   kafka-ui:
-    image: provectuslabs/kafka-ui:latest
+    image: ${SIMVA_KAKFA_UI_IMAGE:-provectuslabs/kafka-ui}:${SIMVA_KAKFA_UI_VERSION:-latest}
     environment:
       KAFKA_CLUSTERS_0_NAME: SIMVA
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092
@@ -35,14 +35,14 @@ services:
     networks:
       default:
         aliases:
-          - kafka-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_KAFKA_UI_HOST_SUBDOMAIN:-kafka-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - kafka-ui.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_KAFKA_UI_HOST_SUBDOMAIN:-kafka-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.kafka-ui.loadbalancer.server.port=8080"
-      - "traefik.http.routers.kafka-ui.rule=Host(`kafka-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.kafka-ui.rule=Host(`${SIMVA_KAFKA_UI_HOST_SUBDOMAIN:-kafka-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.kafka-ui.middlewares=dashboardAuth@file"
 
   zoonavigator:
@@ -58,16 +58,16 @@ services:
       - zk1
     volumes:
       - /etc/localtime:/etc/localtime:ro
-    hostname: zoonavigator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - zoonavigator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - zoonavigator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.zoonavigator.loadbalancer.server.port=9000"
-      - "traefik.http.routers.zoonavigator.rule=Host(`zoonavigator.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.zoonavigator.rule=Host(`${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.zoonavigator.middlewares=dashboardAuth@file"

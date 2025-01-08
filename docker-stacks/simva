@@ -15,11 +15,21 @@ function sourceBackupEnvFile() {
     if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" ]]; then
         source "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh"
     fi
+     if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then 
+        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh" ]]; then
+            source "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh"
+        fi
+    fi
 }
 
 function sourceEnvFile() {
     if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
         source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
+    fi
+    if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then 
+        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh" ]]; then
+            source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh"
+        fi
     fi
 }
 
@@ -558,11 +568,17 @@ function install() {
     fi
 
     if [[ $backup == "true" ]]; then 
-        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" ]]; then
-            current_datetime=$(date +"%Y%m%d-%H%M%S")
+        current_datetime=$(date +"%Y%m%d-%H%M%S")
+        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" ]]; then    
             cp "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env-$current_datetime.sh"
         fi 
         cp "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh"
+        if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then 
+            if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh" ]]; then    
+                cp "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env-dev-$current_datetime.sh"
+            fi 
+            cp "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh"
+        fi
     fi
 
     local phase="install"

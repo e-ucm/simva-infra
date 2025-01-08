@@ -73,7 +73,7 @@ services:
 
   mail:
     << : *default-opts
-    image: maildev/maildev:1.1.0
+    image: ${SIMVA_MAILDEV_IMAGE:-maildev/maildev}:${SIMVA_MAILDEV_VERSION:-1.1.0}
     environment:
       - MAILDEV_SMTP_PORT=25
       - MAILDEV_WEB_PORT=80

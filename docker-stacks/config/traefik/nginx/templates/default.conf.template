@@ -97,14 +97,34 @@ server {
     listen       443 ssl;
     listen  [::]:443 ssl;
 
+    # 01 TRAEFIK
+    server_name  ${SIMVA_TRAEFIK_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    server_name  ${SIMVA_WHOAMI_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    server_name  ${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    # 02 KEYCLOAK
     server_name  ${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
     server_name  ${SIMVA_MAIL_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    server_name  ${SIMVA_PHPMYADMIN_KC_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    # 03 LIMESURVEY
     server_name  ${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    server_name  ${SIMVA_PHPMYADMIN_LS_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    # 04 MINIO
     server_name  ${SIMVA_MINIO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
     server_name  ${SIMVA_MINIO_API_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    # 05 KAFKA
+    server_name  ${SIMVA_KAFKA_UI_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    server_name  ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    # 06 SIMVA
     server_name  ${SIMVA_SIMVA_API_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    server_name  ${SIMVA_SHLINK_EXTERNAL_DOMAIN};
+    server_name  ${SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    server_name  ${SIMVA_MONGO_UI_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    # 08 TMON
     server_name  ${SIMVA_JUPYTER_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
     server_name  ${SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    # 09 LOGS
+    server_name  ${SIMVA_DOZZLE_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
+    server_name  ${SIMVA_PORTAINER_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
 
     ssl_certificate /etc/traefik/ssl/traefik-fullchain.pem;
     ssl_certificate_key /etc/traefik/ssl/traefik-key.pem;
@@ -159,7 +179,7 @@ server {
     listen       443 ssl;
     listen  [::]:443 ssl;
 
-    server_name  nginx-whoami.${SIMVA_EXTERNAL_DOMAIN};
+    server_name  ${SIMVA_WHOAMI_NGINX_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN};
 
     ssl_certificate /etc/traefik/ssl/traefik-fullchain.pem;
     ssl_certificate_key /etc/traefik/ssl/traefik-key.pem;
@@ -207,6 +227,6 @@ server {
         proxy_buffers           32 4k;
 
         # END proxy_params
-        proxy_pass http://nginx-whoami.${SIMVA_INTERNAL_DOMAIN}:80;
+        proxy_pass http://${SIMVA_WHOAMI_NGINX_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}:80;
     }
 }

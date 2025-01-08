@@ -31,7 +31,7 @@ services:
     << : *default-opts
 #    image: zookeeper:3.5.7 is the the recommended version from confluentinc
 #XXX: Check why and if it is interesting to use confluentinc/cp-zookeeper instead of this image.
-    image: zookeeper:3.4.9
+    image: ${SIMVA_ZOOKEEPER_IMAGE:-zookeeper}:${SIMVA_ZOOKEEPER_VERSION:-3.4.9}
     environment:
       ZOO_MY_ID: 1
       ZOO_PORT: 2181

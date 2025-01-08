@@ -16,12 +16,14 @@ if [[ ! -e "${SIMVA_DATA_HOME}/simva/.initialized" ]]; then
     echo "SIMVA it is not initialized, initializing checkout code."
     RUNCHECKOUTCODE=true
 fi
-if [[ $SIMVA_DEVELOPMENT_LOCAL == true ]]; then
-    echo "SIMVA is in local development environment, no checkout as code is local."
-    RUNCHECKOUTCODE=false
-elif [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
-    echo "SIMVA is in development environment, launch checkout code."
-    RUNCHECKOUTCODE=true
+if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
+    if [[ $SIMVA_DEVELOPMENT_LOCAL == true ]]; then
+        echo "SIMVA is in local development environment, no checkout as code is local."
+        RUNCHECKOUTCODE=false
+    else 
+        echo "SIMVA is in development environment, launch checkout code."
+        RUNCHECKOUTCODE=true
+    fi
 fi
 if [[ ${RUNCHECKOUTCODE} == true ]] ; then
 

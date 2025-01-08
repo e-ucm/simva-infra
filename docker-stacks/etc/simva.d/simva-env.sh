@@ -5,10 +5,8 @@
 ###############################
 # values: development, production
 export SIMVA_ENVIRONMENT="development"
-export SIMVA_DEVELOPMENT_LOCAL="false"
 
 export SIMVA_DEBUG="false"
-[[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_DEBUG="true"
 
 #######################
 # SIMVA LOGGING FILES #
@@ -43,8 +41,6 @@ export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 #########################################
 export SIMVA_TLS_GENERATE_SELF_SIGNED="false"
 
-[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && SIMVA_TLS_GENERATE_SELF_SIGNED="true"
-
 ###########################################
 # Images versions and SIMVA Git reference #
 ###########################################
@@ -78,33 +74,16 @@ export SIMVA_SIMVA_VERSION="20.9.0-bullseye"
 export SIMVA_MONGODB_IMAGE="mongo"
 export SIMVA_MONGODB_VERSION="4.2.8"
 
-export SIMVA_ANACONDA_IMAGE="continuumio/anaconda3"
-export SIMVA_ANACONDA_VERSION="2024.02-1"
-
-export SIMVA_PORTAINER_IMAGE="portainer/portainer-ce"
-export SIMVA_PORTAINER_VERSION="latest"
-
 export SIMVA_DOZZLE_IMAGE="amir20/dozzle"
 export SIMVA_DOZZLE_VERSION="latest"
 
 #Git reference branch
-export CSP_REPORTER_GIT_REF="master"
 export SIMVA_KEYCLOAK_EVENT_GIT_REF="v0.26"
 
 branch="master"
-[[ "${SIMVA_ENVIRONMENT:-production}" == "development" ]] && branch="dev"
 export SIMVA_API_GIT_REF=$branch
 export SIMVA_FRONT_GIT_REF=$branch
 export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
-base_for_simva_repos="${SIMVA_DATA_HOME}/simva"
-[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_simva_repos="${SIMVA_HOME}/../.."
-if [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]]; then
-    export SIMVA_API_GIT_REPO="${base_for_simva_repos}/simva"
-else 
-    export SIMVA_API_GIT_REPO="${base_for_simva_repos}/simva-api"
-fi
-export SIMVA_FRONT_GIT_REPO="${base_for_simva_repos}/simva-front"
-export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-allocator"
 
 ###################
 # Service Network #
@@ -170,11 +149,15 @@ export SIMVA_MONGO_HOST_SUBDOMAIN="simva-mongo"
 #SIMVA API
 export SIMVA_SIMVA_API_HOST_SUBDOMAIN="simva-api"
 export SIMVA_SIMVA_API_PORT="443"
-#Jupyter Notebook
-export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
+#Short URL
+export SIMVA_SHLINK_HOST_SUBDOMAIN="shlink"
+export SIMVA_SHLINK_EXTERNAL_DOMAIN=""
+if [[ $SIMVA_SHLINK_EXTERNAL_DOMAIN == "" ]]; then 
+    export SIMVA_SHLINK_EXTERNAL_DOMAIN="${SIMVA_SHLINK_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
+fi
+export SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN="shlink-admin"
 #LOGS
 export SIMVA_DOZZLE_HOST_SUBDOMAIN="logs"
-export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
 
 #####################
 # Socket Proxy info #
@@ -195,7 +178,6 @@ export SIMVA_TRAEFIK_LOG_LEVEL="INFO"
 # Traefik: control access log generation: true, false
 export SIMVA_TRAEFIK_ACCESS_LOG="false"
 export SIMVA_TRAEFIK_EXTRA_CSP_POLICY=""
-[[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_TRAEFIK_EXTRA_CSP_POLICY=" report-uri https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN}/report-violation; report-to https://csp-reporter.${SIMVA_EXTERNAL_DOMAIN}/report-violation;"
 
 # Traefik: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
@@ -280,6 +262,12 @@ export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
 export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
 export SIMVA_LTI_ENABLED="false"
 
+###############
+# SHLINK INFO #
+###############
+export SIMVA_SHLINK_SERVERNAME="SHLINK"
+export SIMVA_SHLINK_TIMEZONE="Europe/Madrid"
+
 ##############################
 # SIMVA Trace Allocator INFO #
 ##############################
@@ -348,11 +336,8 @@ export SIMVA_API_ADMIN_PASSWORD="password"
 export SIMVA_LTI_PLATFORM_DB_USER="root"
 export SIMVA_LTI_PLATFORM_DB_PASSWORD="password"
 
-#Jupyter Password
-export SIMVA_JUPYTER_PASSWORD="password"
-
-# Portainer admin password
-export SIMVA_PORTAINER_ADMIN_PASSWORD="password"
+#Shlink 
+export SIMVA_SHLINK_API_KEY="password"
 
 # DOZZLE
 export SIMVA_DOZZLE_USERNAME="simva"
@@ -385,6 +370,14 @@ export SIMVA_MINIO_CLIENT_ID="minio"
 # Jupyter ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_JUPYTER_CLIENT_ID="jupyter"
 #export SIMVA_JUPYTER_CLIENT_SECRET="secret"
+
+# TMon ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_TMON_CLIENT_ID="tmon"
+export SIMVA_TMON_CLIENT_SECRET="secret"
+
+# Keycloak Client ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+export SIMVA_KEYCLOAK_CLIENT_CLIENT_ID="keycloak_client"
+export SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET="secret"
 
 ####################################################################
 # USERNAME AND PASSWORD VARIABLES FOR KEYCLOAK USER CREATION 
