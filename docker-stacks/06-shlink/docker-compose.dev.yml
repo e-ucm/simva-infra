@@ -1,0 +1,35 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+services:
+  shlink-web-client:
+    << : *default-opts
+    image: ${SIMVA_SHLINK_IMAGE:-ghcr.io/shlinkio/shlink-web-client}:${SIMVA_SHLINK_VERSION:-latest}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      SHLINK_SERVER_URL: https://${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}
+      SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
+      SHLINK_SERVER_NAME: "SHLINK"
+    hostname: ${SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.shlink-admin.loadbalancer.server.port=8080"
+      - "traefik.http.routers.shlink-admin.rule=Host(`${SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.shlink-admin.middlewares=dashboardAuth@file"
