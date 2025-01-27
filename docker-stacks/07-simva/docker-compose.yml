@@ -126,6 +126,11 @@ services:
       LTI_PLATFORM_DB_PASSWORD: "${SIMVA_LTI_PLATFORM_DB_PASSWORD:-password}"
       #STORAGE
       SIMVA_STORAGE_PATH: "${SIMVA_STORAGE_LOCAL_PATH:-/storage}/"
+      #SHLINK
+      SHLINK_SERVER_HOST: ${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}
+      SHLINK_PORT: ${SIMVA_SHLINK_PORT:-443}
+      SHLINK_PROTOCOL: ${SIMVA_SHLINK_EXTERNAL_PROTOCOL:-https}
+      SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
