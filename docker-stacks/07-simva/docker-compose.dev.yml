@@ -17,6 +17,9 @@ services:
   simva-front:
     ports:
       - "127.0.0.1:9230:9229"
+  simva-trace-allocator:
+    ports:
+      - "127.0.0.1:9231:9229"
   mongodb:
     << : *default-opts
     image: ${SIMVA_MONGODB_IMAGE:-mongo}:${SIMVA_MONGODB_VERSION:-4.2.8}
