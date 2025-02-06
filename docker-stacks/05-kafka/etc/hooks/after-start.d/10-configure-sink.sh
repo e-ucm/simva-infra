@@ -60,6 +60,8 @@ if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
                         | .
 JQ_SCRIPT
 )
+  local scheduleIntervalMin="${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN}"
+  local scheduleIntervalMs=$((scheduleIntervalMin * 60 * 1000))
 
   cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
   --arg minioUrl "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" \
@@ -69,7 +71,7 @@ JQ_SCRIPT
   --arg topicsDir "${SIMVA_SINK_TOPICS_DIR}" \
   --arg topics "${SIMVA_TRACES_TOPIC}" \
   --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
-  --arg rotateInterval "${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_MS}" \
+  --arg rotateInterval "${scheduleIntervalMs}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
 fi 
 

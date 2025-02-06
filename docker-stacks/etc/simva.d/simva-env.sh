@@ -190,7 +190,7 @@ export SIMVA_TRUSTSTORE_CA_ALIAS='simvaCA'
 ##########################################
 # Checking time for container availabled #
 ##########################################
-#Checking time and max retries for containers availabled
+#Checking time and max retries in second for containers availabled
 export SIMVA_WAIT_TIMEOUT="120"
 export SIMVA_WAIT_TIME="15"
 export SIMVA_MAX_RETRIES="20"
@@ -232,7 +232,7 @@ export SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ="/C=ES/ST=Madrid/L=Madrid/O=U
 ##############
 export SIMVA_MINIO_IDENTITY_OPENID_SCOPES="openid,policy_role_attribute"
 export SIMVA_MINIO_EVENTS_TOPIC="minio-events"
-export SIMVA_MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME=3600 # Time in seconds 1 h = 60 min = 60*60 seconds = 3600 seconds
+export SIMVA_MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME_IN_MIN=60 # Time in minute 1 h = 60 min
 
 ##############
 # Kafka info #
@@ -244,7 +244,7 @@ export SIMVA_TRACES_TOPIC="traces"
 export SIMVA_SINK_OUTPUTS_DIR="outputs"
 export SIMVA_SINK_TRACES_FILE="traces.json"
 export SIMVA_TRACES_FLUSH_SIZE=500
-export SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_MS=30000
+export SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN=5
 
 #######################
 # SIMVA MONGO DB INFO #
@@ -273,12 +273,12 @@ export SIMVA_SHLINK_TIMEZONE="Europe/Madrid"
 ##############################
 export SIMVA_TRACE_ALLOCATOR_CONCAT_EVENT_POLICY="true" # if true minio-events else previous version of trace allocator
 export SIMVA_TRACE_ALLOCATOR_BATCH_SIZE="100"
-export SIMVA_TRACE_ALLOCATOR_MAX_DELAY="300000" #5 mins in ms - 5*60*1000 = 300.000 ms
-export SIMVA_TRACE_ALLOCATOR_REFRESH_INTERVAL="14400000" #4 hours in ms -4*60*60*1000 = 14.400.000 ms
+export SIMVA_TRACE_ALLOCATOR_MAX_DELAY_IN_MIN="5"
+export SIMVA_TRACE_ALLOCATOR_REFRESH_INTERVAL_IN_MIN="240" #4h in min (4*60)
 export SIMVA_TRACE_ALLOCATOR_LOCAL_STATE="/data"
 export SIMVA_TRACE_ALLOCATOR_REMOTE_STATE="state"
 export SIMVA_TRACE_ALLOCATOR_REMOVE_DRY_RUN="false"
-export SIMVA_TRACE_ALLOCATOR_GC_INTERVAL="864000000" #10 days in ms - 10*24*60*60*10000 = 864.000.000 ms
+export SIMVA_TRACE_ALLOCATOR_GC_INTERVAL_IN_MIN="120" #2h in min (2*60)
 export SIMVA_TRACE_ALLOCATOR_COPY_INSTEAD_RENAME="true"
 export SIMVA_TRACE_ALLOCATOR_TRY_RECOVERY="true"
 export SIMVA_TRACE_ALLOCATOR_KAFKA_CLIENT_ID="simva_trace_allocator"
