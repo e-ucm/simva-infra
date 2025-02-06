@@ -56,7 +56,7 @@ if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
           | .config["topics.dir"]=$topicsDir
             | .config["topics"]=$topics
               | .config["flush.size"]=$flushSize
-                | .config["rotate.interval.ms"]=$rotateInterval
+                | .config["rotate.schedule.interval.ms"]=$rotateInterval
                         | .
 JQ_SCRIPT
 )
@@ -69,7 +69,7 @@ JQ_SCRIPT
   --arg topicsDir "${SIMVA_SINK_TOPICS_DIR}" \
   --arg topics "${SIMVA_TRACES_TOPIC}" \
   --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
-  --arg rotateInterval "${SIMVA_TRACES_ROTATE_INTERVAL_MS}" \
+  --arg rotateInterval "${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_MS}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
 fi 
 

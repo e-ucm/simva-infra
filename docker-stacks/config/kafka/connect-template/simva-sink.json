@@ -20,6 +20,9 @@
       "s3.bucket.name": "traces",
       "aws.access.key.id": "minio",
       "aws.secret.access.key": "password",
-      "rotate.interval.ms": "300000"
+      "rotate.interval.ms": "-1",
+      "rotate.schedule.interval.ms": "30000",
+      "locale": "en_US",
+      "timezone": "UTC"
   }
 }
