@@ -18,3 +18,33 @@ services:
         published: 9092
         protocol: tcp
         mode: host
+
+  kafka-ui:
+    image: ${SIMVA_KAKFA_UI_IMAGE:-provectuslabs/kafka-ui}:${SIMVA_KAKFA_UI_VERSION:-latest}
+    environment:
+      KAFKA_CLUSTERS_0_NAME: SIMVA
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092
+      #KAFKA_CLUSTERS_0_METRICS_PORT: 9997
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085/
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: Kafka Connect
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8083/
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - kafka-rest-proxy
+      - connect
+      - schema-registry
+      - kafka1
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_KAFKA_UI_HOST_SUBDOMAIN:-kafka-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_KAFKA_UI_HOST_SUBDOMAIN:-kafka-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.kafka-ui.loadbalancer.server.port=8080"
+      - "traefik.http.routers.kafka-ui.rule=Host(`${SIMVA_KAFKA_UI_HOST_SUBDOMAIN:-kafka-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.kafka-ui.middlewares=dashboardAuth@file"

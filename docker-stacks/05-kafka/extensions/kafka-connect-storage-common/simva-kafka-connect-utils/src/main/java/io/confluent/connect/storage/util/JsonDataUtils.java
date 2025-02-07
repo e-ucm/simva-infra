@@ -14,84 +14,97 @@
  * limitations under the License.
  */
 
-package io.confluent.connect.storage.util;
+ package io.confluent.connect.storage.util;
 
-import org.apache.kafka.connect.data.Field;
-import org.apache.kafka.connect.data.Schema;
-import org.apache.kafka.connect.data.Struct;
-import org.apache.kafka.connect.errors.DataException;
-
-import java.util.Map;
-
-/**
- * 
- * @author https://github.com/OneCricketeer
- */
-public class JsonDataUtils {
-
-  /**
-   * Regex pattern that respects fields with periods within them.
-   * Used to handle a field extraction of <code>"foo.bar"</code> differently than
-   * <code>foo.bar</code>, with the later being the <code>bar</code> field within the
-   * <code>foo</code> {@link Struct}
-   */
-  private static final String QUOTED_DOT_PATTERN = "\\.(?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)";
-
-  public static Object getField(Object structOrMap, String fieldName) {
-    if (structOrMap instanceof Struct) {
-      return ((Struct) structOrMap).get(fieldName);
-    } else if (structOrMap instanceof Map) {
-      Object field = ((Map<?, ?>) structOrMap).get(fieldName);
-      if (field == null) {
-        throw new DataException(String.format("Unable to find nested field '%s'", fieldName));
-      }
-      return field;
-    }
-    throw new DataException(String.format(
-          "Argument not a Struct or Map. Cannot get field '%s' from: %s",
-          fieldName,
-          structOrMap
-    ));
-  }
-
-  public static Object getNestedFieldValue(Object structOrMap, String fieldName) {
-    try {
-      Object innermost = structOrMap;
-      String[] tokens;
-      // Structs cannot contain fields with periods
-      if (structOrMap instanceof Struct) {
-        tokens = fieldName.split("\\.");
-      } else {
-        tokens = fieldName.split(QUOTED_DOT_PATTERN);
-      }
-      // Iterate down to final struct
-      for (String name : tokens) {
-        name = name.replaceAll("\"", "");
-        innermost = getField(innermost, name);
-      }
-      return innermost;
-    } catch (DataException e) {
-      throw new DataException(
-            String.format("The nested field named '%s' does not exist.", fieldName),
-            e
-      );
-    }
-  }
-
-  public static Field getNestedField(Schema schema, String fieldName) {
-    final String[] fieldNames = fieldName.split("\\.");
-    try {
-      Field innermost = schema.field(fieldNames[0]);
-      // Iterate down to final schema
-      for (int i = 1; i < fieldNames.length; ++i) {
-        innermost = innermost.schema().field(fieldNames[i]);
-      }
-      return innermost;
-    } catch (DataException e) {
-      throw new DataException(
-            String.format("The nested field named '%s' does not exist.", fieldName),
-            e
-      );
-    }
-  }
-}
+ import org.apache.kafka.connect.data.Field;
+ import org.apache.kafka.connect.data.Schema;
+ import org.apache.kafka.connect.data.Struct;
+ import org.apache.kafka.connect.errors.DataException;
+ 
+ import java.util.Map;
+ import java.util.List;
+ 
+ /**
+  * 
+  * @author https://github.com/OneCricketeer
+  */
+ public class JsonDataUtils {
+ 
+   /**
+    * Regex pattern that respects fields with periods within them.
+    * Used to handle a field extraction of <code>"foo.bar"</code> differently than
+    * <code>foo.bar</code>, with the later being the <code>bar</code> field within the
+    * <code>foo</code> {@link Struct}
+    */
+   private static final String QUOTED_DOT_PATTERN = "\\.(?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)";
+ 
+   public static Object getField(Object structOrMap, String fieldName) {
+     if (structOrMap instanceof Struct) {
+       return ((Struct) structOrMap).get(fieldName);
+     } else if (structOrMap instanceof Map) {
+       Object field = ((Map<?, ?>) structOrMap).get(fieldName);
+       if (field == null) {
+         throw new DataException(String.format("Unable to find nested field '%s'", fieldName));
+       }
+       return field;
+     }
+     throw new DataException(String.format(
+           "Argument not a Struct or Map. Cannot get field '%s' from: %s",
+           fieldName,
+           structOrMap
+     ));
+   }
+ 
+   public static Object getNestedFieldValue(Object structOrMap, String fieldName) {
+     try {
+       Object innermost = structOrMap;
+       String[] tokens;
+       // Structs cannot contain fields with periods
+       if (structOrMap instanceof Struct) {
+         tokens = fieldName.split("\\.");
+       } else {
+         tokens = fieldName.split(QUOTED_DOT_PATTERN);
+       }
+       // Iterate down to final struct
+       for (String name : tokens) {
+         name = name.replaceAll("\"", "");
+         innermost = getField(innermost, name);
+       }
+       return innermost;
+     } catch (DataException e) {
+       throw new DataException(
+             String.format("The nested field named '%s' does not exist.", fieldName),
+             e
+       );
+     }
+   }
+ 
+   public static Field getNestedField(Schema schema, String fieldName) {
+     final String[] fieldNames = fieldName.split("\\.");
+     try {
+       Field innermost = schema.field(fieldNames[0]);
+       // Iterate down to final schema
+       for (int i = 1; i < fieldNames.length; ++i) {
+         innermost = innermost.schema().field(fieldNames[i]);
+       }
+       return innermost;
+     } catch (DataException e) {
+       throw new DataException(
+             String.format("The nested field named '%s' does not exist.", fieldName),
+             e
+       );
+     }
+   }
+ 
+   // Implement the join method manually
+   public static String join(List<String> list, String separator) {
+       StringBuilder sb = new StringBuilder();
+       for (int i = 0; i < list.size(); i++) {
+         sb.append(list.get(i));
+         if (i < list.size() - 1) {
+           sb.append(separator);
+         }
+       }
+       return sb.toString();
+   }
+ }

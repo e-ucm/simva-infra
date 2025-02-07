@@ -18,7 +18,8 @@
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>
 		<maven.compiler.target>8</maven.compiler.target>
-		<kafka.connect.version>5.5.0</kafka.connect.version>
+		<kafka.connect.version>7.8.0</kafka.connect.version>
+		<kafka.connect-storage-partitioner.version>11.2.16</kafka.connect-storage-partitioner.version>
 		<confluent.maven.repo>http://packages.confluent.io/maven/</confluent.maven.repo>
 	</properties>
 
@@ -34,7 +35,7 @@
 		<dependency>
 			<groupId>io.confluent</groupId>
 			<artifactId>kafka-connect-storage-partitioner</artifactId>
-			<version>${kafka.connect.version}</version>
+			<version>${kafka.connect-storage-partitioner.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
