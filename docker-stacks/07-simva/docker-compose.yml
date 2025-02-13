@@ -12,6 +12,7 @@ x-default-opts:
 
 networks:
   traefik_services:
+    driver: bridge
     name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
     external: true
   kafka_services:
@@ -34,7 +35,6 @@ services:
 
   simva-api:
     << : *default-opts
-    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_VERSION:-20.9.0-bullseye}
     entrypoint: 
     - 'bash'
     - '-c'
@@ -43,10 +43,13 @@ services:
           update-ca-certificates;
           cat /etc/ca-certificates.conf;
         fi;
-        mkdir -p ${SIMVA_STORAGE_PATH:-/storage} && cd /app && ./docker-startup.sh'
+        mkdir -p ${SIMVA_STORAGE_PATH:-/storage} && cd /home/node/app && ./docker-startup.sh'
     stdin_open: true
     tty: true
     environment:
+      #LOG
+      LOG_LEVEL: "info"
+      LOG_FOLDER: "/home/node/logs"
       #WAIT TIME FOR KEYCLOAK AVAILABILITY
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
       MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
@@ -85,7 +88,7 @@ services:
       MINIO_TRACES_TOPIC: "${SIMVA_TRACES_TOPIC:-traces}"
       MINIO_OUTPUTS_DIR: "${SIMVA_SINK_OUTPUTS_DIR:-outputs}"
       MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces.json}"
-      MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME : "${SIMVA_MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME:-1h}"
+      MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME : "${SIMVA_MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME:-1h}" 
       #LIMESURVEY
       LIMESURVEY_HOST: "${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       LIMESURVEY_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
@@ -135,7 +138,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
-      - ${SIMVA_API_GIT_REPO}:/app
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/home/node/logs:rw
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva${SIMVA_STORAGE_LOCAL_PATH:-/storage}:${SIMVA_STORAGE_LOCAL_PATH:-/storage}
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
@@ -159,7 +162,6 @@ services:
 
   simva-front:
     << : *default-opts
-    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_VERSION:-20.9.0-bullseye}
     entrypoint:
       - 'bash'
       - '-c'
@@ -168,10 +170,13 @@ services:
           update-ca-certificates;
           cat /etc/ca-certificates.conf;
         fi;
-        cd /app && ./docker-startup.sh'
+        cd /home/node/app && ./docker-startup.sh'
     stdin_open: true
     tty: true
     environment:
+      #LOG
+      LOG_LEVEL: "debug"
+      LOG_FOLDER: "/home/node/logs"
       #LOG/DEBUG
       DEBUG: "${SIMVA_DEBUG:-true}"
       #NODES
@@ -227,7 +232,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
-      - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}:/app
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front-logs:/home/node/logs:rw
     depends_on:
       - simva-api
     hostname: simva-front.${SIMVA_INTERNAL_DOMAIN:-internal.test}
@@ -245,7 +250,6 @@ services:
 
   simva-trace-allocator:
     << : *default-opts
-    image: ${SIMVA_SIMVA_IMAGE:-node}:${SIMVA_SIMVA_VERSION:-20.9.0-bullseye}
     command: bash -c "if [ ! -e "/usr/local/share/ca-certificates/internal-CA.crt" ]; then
           cp /var/lib/simva/ca/rootCA.pem "/usr/local/share/ca-certificates/internal-CA.crt";
           update-ca-certificates;
@@ -254,7 +258,7 @@ services:
         admin_username=$$(echo ${SIMVA_API_ADMIN_USERNAME:-admin} | tr '[:upper:]' '[:lower:]');
         json=\"{\\\"username\\\":\\\"$${admin_username}\\\",\\\"password\\\":\\\"${SIMVA_API_ADMIN_PASSWORD:-password}\\\"}\";
         /bin/wait-available-with-connection.sh 'SIMVA API' 'https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/users/login' $${json} 'token' $${NODE_EXTRA_CA_CERTS};
-        cd /app && ./docker-startup.sh"
+        cd /home/node/app && ./docker-startup.sh"
     stdin_open: true
     tty: true
     environment:
@@ -262,18 +266,19 @@ services:
       DEBUG: "${SIMVA_DEBUG:-true}"
       #LOG
       LOG_LEVEL: "debug"
+      LOG_FOLDER: "/home/node/logs"
       #NODE
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       NODE_EXTRA_CA_CERTS: "/var/lib/simva/ca/rootCA.pem"
       #TRACE ALLOCATOR
       CONCAT_EVENT_POLICY: "${SIMVA_TRACE_ALLOCATOR_CONCAT_EVENT_POLICY:-true}"
       BATCH_SIZE: "${SIMVA_TRACE_ALLOCATOR_BATCH_SIZE:-100}"
-      MAX_DELAY: "${SIMVA_TRACE_ALLOCATOR_MAX_DELAY:-5min}"
-      REFRESH_INTERVAL: "${SIMVA_TRACE_ALLOCATOR_REFRESH_INTERVAL:-240min}"
+      MAX_DELAY: "${SIMVA_TRACE_ALLOCATOR_MAX_DELAY:-5m}"
+      REFRESH_INTERVAL: "${SIMVA_TRACE_ALLOCATOR_REFRESH_INTERVAL:-240m}"
       LOCAL_STATE: "${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-/data}"
       REMOTE_STATE: "${SIMVA_TRACE_ALLOCATOR_REMOTE_STATE:-state}"
       REMOVE_DRY_RUN: "${SIMVA_TRACE_ALLOCATOR_REMOVE_DRY_RUN:-true}"
-      GC_INTERVAL: "${SIMVA_TRACE_ALLOCATOR_GC_INTERVAL:-120min}"
+      GC_INTERVAL: "${SIMVA_TRACE_ALLOCATOR_GC_INTERVAL:-120m}"
       COPY_INSTEAD_RENAME: "${SIMVA_TRACE_ALLOCATOR_COPY_INSTEAD_RENAME:-true}"
       TRY_RECOVERY: ${SIMVA_TRACE_ALLOCATOR_TRY_RECOVERY:-true}
       #MINIO
@@ -304,7 +309,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
-      - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}:/app
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator-logs:/home/node/logs:rw
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator-data:${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-/data}
       - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
     depends_on:
