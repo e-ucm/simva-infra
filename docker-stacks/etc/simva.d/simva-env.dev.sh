@@ -79,6 +79,8 @@ export SIMVA_KAFKA_UI_HOST_SUBDOMAIN="kafka-ui"
 export SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN="zoonavigator"
 #SIMVA MONGO DB 
 export SIMVA_MONGO_UI_HOST_SUBDOMAIN="simva-mongo-ui"
+#SHLINK
+export SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN="shlink-admin"
 #Jupyter Notebook
 export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
 #LOGS
