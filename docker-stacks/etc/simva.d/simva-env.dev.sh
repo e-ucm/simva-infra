@@ -45,6 +45,9 @@ export SIMVA_API_GIT_REF=$branch
 export SIMVA_FRONT_GIT_REF=$branch
 export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
 export SIMVA_LIMESURVEY_DOCKER_GIT_REF="remotecontrol-patch"
+export SIMVA_TMON_GIT_REF=$branch
+export SIMVA_TMON_ANACONDA_GIT_REF="master-jupyter-notebook"
+
 base_for_simva_repos="${SIMVA_DATA_HOME}/simva"
 [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_simva_repos="${SIMVA_HOME}/../.."
 if [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]]; then
@@ -58,6 +61,9 @@ export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-alloc
 base_for_limesurvey_repos="${SIMVA_DATA_HOME}/limesurvey"
 [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_limesurvey_repos="${SIMVA_HOME}/../.."
 export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/docker-limesurvey"
+base_for_tmon_repos="${SIMVA_DATA_HOME}/tmon"
+[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_tmon_repos="${SIMVA_HOME}/../.."
+export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"
 
 # SIMVA Load Balancer IPs
 export SIMVA_DEV_LOAD_BALANCER="false"

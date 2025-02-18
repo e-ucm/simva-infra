@@ -69,6 +69,10 @@ export SIMVA_SIMVA_FRONT_VERSION="0.0.1"
 export SIMVA_MONGODB_IMAGE="mongo"
 export SIMVA_MONGODB_VERSION="4.2.8"
 
+#TMON
+export SIMVA_TMON_IMAGE="eucm/t-mon"
+export SIMVA_TMON_VERSION="0.0.1"
+
 #LOGS
 export SIMVA_LOGS_IMAGE="amir20/dozzle"
 export SIMVA_LOGS_VERSION="8.10.3"

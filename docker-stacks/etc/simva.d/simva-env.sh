@@ -76,6 +76,8 @@ export SIMVA_SHLINK_EXTERNAL_DOMAIN=""
 export SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN="tmon"
 #LOGS
 export SIMVA_DOZZLE_HOST_SUBDOMAIN="logs"
+#TMon
+export SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN="tmon"
 
 #####################
 # Socket Proxy info #
