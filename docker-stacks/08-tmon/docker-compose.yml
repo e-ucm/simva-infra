@@ -17,23 +17,6 @@ networks:
 
 services:
   tmon-app:
-    build: ${SIMVA_DATA_HOME}/tmon
-    entrypoint: >
-     /bin/sh -c '
-     if [ ! -e "/usr/local/share/ca-certificates/internal-CA.crt" ]; then
-          cp /root/.tmon/certs/CAs/rootCA.pem "/usr/local/share/ca-certificates/internal-CA.crt";
-          update-ca-certificates;
-          cat /etc/ca-certificates.conf;
-      else
-        echo "root certificates already presents."
-      fi;
-      python /app/TMonSimvaApp.py'
-    volumes:
-      - ${SIMVA_DATA_HOME}/tmon:/app
-      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.tmon/certs/CAs
-    environment:
-      - DASH_DEBUG=true
-      - REQUESTS_CA_BUNDLE=/root/.tmon/certs/CAs/rootCA.pem
     hostname: ${SIMVA_TMON_HOST_DASHBOARD_SUBDOMAIN:-tmon}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

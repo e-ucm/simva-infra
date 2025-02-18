@@ -23,6 +23,52 @@ export SIMVA_MAX_UPLOAD_FILE_SIZE="33554432" #32mb
 #########################################
 export SIMVA_TLS_GENERATE_SELF_SIGNED="false"
 
+###########################################
+# Images versions and SIMVA Git reference #
+###########################################
+# Images versions
+export SIMVA_TRAEFIK_IMAGE="traefik"
+export SIMVA_TRAEFIK_VERSION="2.11.3"
+
+export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"
+export SIMVA_KEYCLOAK_VERSION="24.0.2"
+
+export SIMVA_MARIADB_IMAGE="mariadb"
+export SIMVA_MARIADB_VERSION="10.4.13"
+
+export SIMVA_LIMESURVEY_IMAGE="eucm/limesurvey"
+export SIMVA_LIMESURVEY_VERSION="4.3.15-4"
+
+export SIMVA_MINIO_IMAGE="minio/minio"
+export SIMVA_MINIO_VERSION="RELEASE.2025-01-20T14-49-07Z"
+export SIMVA_MINIO_MC_IMAGE="minio/mc"
+export SIMVA_MINIO_MC_VERSION="RELEASE.2025-02-04T04-57-50Z"
+
+export SIMVA_KAFKA_IMAGE="confluentinc/cp-kafka"
+export SIMVA_KAFKA_CONNECT_IMAGE="confluentinc/cp-kafka-connect"
+export SIMVA_KAFKA_VERSION="5.5.0"
+export SIMVA_ZOOKEEPER_IMAGE="zookeeper"
+export SIMVA_ZOOKEEPER_VERSION="3.4.9"
+
+export SIMVA_SIMVA_IMAGE="eucm/simva-api"
+export SIMVA_SIMVA_VERSION="0.0.1"
+export SIMVA_SIMVA_TRACE_ALLOCATOR_IMAGE="eucm/simva-trace-allocator"
+export SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION="0.0.1"
+export SIMVA_SIMVA_FRONT_IMAGE="eucm/simva-front"
+export SIMVA_SIMVA_FRONT_VERSION="0.0.1"
+
+export SIMVA_MONGODB_IMAGE="mongo"
+export SIMVA_MONGODB_VERSION="4.2.8" #"7.0.16"
+
+export SIMVA_TMON_IMAGE="eucm/t-mon"
+export SIMVA_TMON_VERSION="0.0.1"
+
+export SIMVA_DOZZLE_IMAGE="amir20/dozzle"
+export SIMVA_DOZZLE_VERSION="8.10.3"
+
+#Git reference branch
+export SIMVA_KEYCLOAK_EVENT_GIT_REF="v0.26"
+
 ###################
 # Service Network #
 ###################
@@ -76,6 +122,8 @@ export SIMVA_SHLINK_EXTERNAL_DOMAIN=""
 export SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN="tmon"
 #LOGS
 export SIMVA_DOZZLE_HOST_SUBDOMAIN="logs"
+#TMon
+export SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN="tmon"
 
 #####################
 # Socket Proxy info #

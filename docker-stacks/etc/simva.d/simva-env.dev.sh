@@ -49,6 +49,9 @@ branch="dev"
 export SIMVA_API_GIT_REF=$branch
 export SIMVA_FRONT_GIT_REF=$branch
 export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
+export SIMVA_TMON_GIT_REF=$branch
+export SIMVA_TMON_ANACONDA_GIT_REF="master-jupyter-notebook"
+
 base_for_simva_repos="${SIMVA_DATA_HOME}/simva"
 [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_simva_repos="${SIMVA_HOME}/../.."
 if [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]]; then
@@ -58,6 +61,10 @@ else
 fi
 export SIMVA_FRONT_GIT_REPO="${base_for_simva_repos}/simva-front"
 export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-allocator"
+
+base_for_tmon_repos="${SIMVA_DATA_HOME}/tmon"
+[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_tmon_repos="${SIMVA_HOME}/../.."
+export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"
 
 # SIMVA Load Balancer IPs
 export SIMVA_DEV_LOAD_BALANCER="false"
