@@ -4,7 +4,7 @@ set -euo pipefail
 if [[ "${SIMVA_KAFKA_VERSION}" == "7.8.0" ]]; then
     export COMPOSE_FILE="docker-compose-version-7.yml:docker-compose-minio-client.yml"
     if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
-        export COMPOSE_FILE="$COMPOSE_FILE:docker-compose.dev.yml"
+        export COMPOSE_FILE="$COMPOSE_FILE:docker-compose-version-7.dev.yml:docker-compose.dev.yml"
     fi
     # Load the Cluster ID from the file for later use
     export KAFKA_CLUSTER_ID=$(cat ${SIMVA_DATA_HOME}/kafka/clusterid)
