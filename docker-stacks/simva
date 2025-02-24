@@ -444,8 +444,17 @@ function execute_after_hooks() {
             run_scripts_from_folder ${folder}
         ;;
         "purge")
-            folder="${folder}/purge.d"
-            run_scripts_from_folder ${folder}
+            doRunPurgeScripts="true";
+            for stack in ${SIMVA_STACKS}; do 
+                export STACK_DATA="${SIMVA_DATA_HOME}/${stack##*-}"
+                if [[ -e "${STACK_DATA}/.initialized" ]]; then
+                    doRunPurgeScripts="false"
+                fi 
+            done
+            if [[ "${doRunPurgeScripts}" == "true" ]]; then
+                folder="${folder}/purge.d"
+                run_scripts_from_folder ${folder}
+            fi
         ;;
         "start")
             folder="${folder}/after-start.d"
