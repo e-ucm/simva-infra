@@ -1,0 +1,26 @@
+---
+users:
+  administrator:
+    username: "administrator"
+  researcher:
+    username: "researcher"
+  teacher:
+    username: "teacher"
+  teaching_assistant:
+    username: "teaching_assistant"
+  student:
+    username: "student"
+clients:
+  limesurvey:
+    baseUrl: "https://limesurvey.external.test"
+    sspBaseUrl: "https://limesurvey.external.test/simplesamlphp/module.php/saml/sp"
+    secret: "f600b9f7-d1f7-4f64-8b6f-b4bce3cff44a"
+    certificate: "MIIDjDCCAnSgAwIBAgIRAIYo6XOlPfFQoNaQ8y+m/vwwDQYJKoZIhvcNAQELBQAwFjEUMBIGA1UEAwwLRWFzeS1SU0EgQ0EwHhcNMjAwNzAxMDAyMTA3WhcNMjMwNjE2MDAyMTA3WjAjMSEwHwYDVQQDDBhsaW1lc3VydmV5LmludGVybmFsLnRlc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDg+mLIYuFBUIgpITqstXrquJdOIP2WlbxBvWVRHWiNxrioSNnq9Z5cPfOA3godzh6VQet0OTCW/V1v3Pe0I+rIdG+9ylFrsuw/uo7EIhzJ6wIJgSGruzkyI9z9wF1SZeaAlLc2KAN6m67lwIjd8uqSnsCModxqTorJZh+4YyCnsxJjU5hOrhSdOgJ2JS356T4S2aKkh+3HI4BwpFuMdiy2CdmuGV1W4/oqtvY3juDm9zgqHdHjwTgRxVh3jYgpfNB7+sMOQqdsBaHwFbIfQIiNE0Kcg9//YspIWcaR1OrNEEvJuOHlPo86pc9D3h5gSAONhqkLbnvVVWQ8sWcN6iEDAgMBAAGjgccwgcQwCQYDVR0TBAIwADAdBgNVHQ4EFgQUFZBu9KcET7RM0i1V0hj3m7gEdmwwUQYDVR0jBEowSIAUNOD0d021fHYcir4UebCMny2eQVChGqQYMBYxFDASBgNVBAMMC0Vhc3ktUlNBIENBghQKYZ5QXA2IZ0lkvCmR69N/b3COujATBgNVHSUEDDAKBggrBgEFBQcDATALBgNVHQ8EBAMCBaAwIwYDVR0RBBwwGoIYbGltZXN1cnZleS5pbnRlcm5hbC50ZXN0MA0GCSqGSIb3DQEBCwUAA4IBAQDLl4k5vMndDSnHCKaznJCUjahRw4C6U/prbz4Y4e26+p4IjkWwc6yi4Elfw6k7CBItAXzf+AZ0/wPIWjsP63xlKdl5P7fgTIGiyCH/4tVVqmAMBPhs0IIsJZefnRr2jhqcajhyd4Vhl3KxLebVUUG9yNxkd66AvyaSAKfbwP5iL80gXbMMipZjqus5An49ohqTKSFXfP4QRp5KdfOP0Nqa9hb2sDRa8NKYLdygiwW7m1r/gMNJlmZPrwfp4UCf8EDMCe+yG3QeSEyTv8mPZ/j2fDWmHZo1iXaGqjZOvyfJ3VOiwfdkIm/21+fqEYLLHB5/b1wsnd170faLabr/YT1V"
+  minio:
+    baseUrl: "https://minio.external.test"
+    secret: "858e724d-a489-4ece-9630-a8976ecb61e9"
+  simva:
+    baseUrl: "https://external.test"
+    apiUrl: "https://simva-api.external.test"
+    ssoUrl: "https://sso.external.test"
+    secret: "secret"

@@ -61,7 +61,7 @@ services:
       SIMVA_PORTAINER_HOST_SUBDOMAIN: ${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - "${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/traefik/nginx/templates:/etc/nginx/templates:ro"
+      - "${SIMVA_CONFIG_TEMPLATE_HOME:-/home/vagrant/docker-stacks/config-template}/traefik/nginx:/etc/nginx/templates:ro"
       - "${SIMVA_TLS_HOME:?TLS home folder required}:/etc/traefik/ssl:ro"
     depends_on:
       - traefik
