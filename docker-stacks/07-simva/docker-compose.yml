@@ -12,11 +12,9 @@ x-default-opts:
 
 networks:
   traefik_services:
-    driver: bridge
     name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
     external: true
   kafka_services:
-    driver: bridge
     name: "${SIMVA_KAFKA_NETWORK:-kafka_services}"
     external: true
 
