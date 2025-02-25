@@ -12,7 +12,7 @@ if [[ "${SIMVA_KAFKA_VERSION%%.*}" >= 7 ]]; then # "7.8.0"
         export KAFKA_CLUSTER_ID=$(cat "$CLUSTER_ID_FILE")
     else
         echo "Generating a new KRaft Cluster ID..."
-        KAFKA_CLUSTER_ID=$(docker run --rm confluentinc/cp-server:7.8.0 kafka-storage random-uuid)
+        KAFKA_CLUSTER_ID=$(docker run --rm ${SIMVA_KAFKA_SERVER_IMAGE:-confluentinc/cp-server}:${SIMVA_KAFKA_VERSION:-7.8.0} kafka-storage random-uuid)
         
         # Save the Cluster ID to a file for persistence
         echo "$KAFKA_CLUSTER_ID" > "$CLUSTER_ID_FILE"

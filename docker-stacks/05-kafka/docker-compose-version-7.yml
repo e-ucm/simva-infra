@@ -31,7 +31,7 @@ services:
 
   kafka1:
     << : *default-opts
-    image: ${SIMVA_CONFLUENT_PLATFORM_IMAGE:-confluentinc/cp-kafka}:${SIMVA_KAFKA_VERSION:-7.8.0}
+    image: ${SIMVA_KAFKA_IMAGE:-confluentinc/cp-kafka}:${SIMVA_KAFKA_VERSION:-7.8.0}
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://0.0.0.0:19092,LISTENER_DOCKER_EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
@@ -74,7 +74,7 @@ services:
 
   connect:
     << : *default-opts
-    image: cnfldemos/kafka-connect-datagen:0.6.4-7.6.0
+    image: ${SIMVA_KAFKA_CONNECT_IMAGE:-cnfldemos/kafka-connect-datagen}:${SIMVA_KAFKA_CONNECT_VERSION:-0.6.4-7.6.0}
     command: >
       bash -c '
         confluent-hub install --no-prompt confluentinc/kafka-connect-s3:latest

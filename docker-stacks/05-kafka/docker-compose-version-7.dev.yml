@@ -21,7 +21,7 @@ networks:
 services:
   schema-registry:
     << : *default-opts
-    image: confluentinc/cp-schema-registry:7.8.0
+    image: ${SIMVA_KAFKA_SCHEMA_REGISTRY_IMAGE:-confluentinc/cp-schema-registry}:${SIMVA_KAFKA_VERSION:-7.8.0}
     depends_on:
       - kafka1
     environment:
@@ -40,7 +40,7 @@ services:
           - schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
   kafka-rest-proxy:
-    image: confluentinc/cp-kafka-rest:7.8.0
+    image: ${SIMVA_KAFKA_REST_IMAGE:-confluentinc/cp-kafka-rest}:${SIMVA_KAFKA_VERSION:-7.8.0}
     environment:
       KAFKA_REST_LISTENERS: http://0.0.0.0:8086/
       KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085/
