@@ -45,18 +45,16 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
     git clone --depth 1 --branch ${SIMVA_API_GIT_REF} ${SIMVA_API_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
-
-    res=$(${SIMVA_HOME}/bin/check-checksum.sh $tmp_dir "${SIMVA_DATA_HOME}/simva/simva-api-sha256sums" "package.json package-lock.json")
-    echo $res
     
-    # If checksums do not verify -> reinstall dependencies
-    rsync_opts="--exclude node_modules"
-    if [[ ! $(${SIMVA_HOME}/bin/get-last-caracter-from-string.sh "$res") == "0" ]]; then
-        rsync_opts=""
+    set +e
+    ${SIMVA_HOME}/bin/check-checksum.sh $tmp_dir "${SIMVA_DATA_HOME}/simva/simva-api-sha256sums" "Dockerfile package.json package-lock.json"
+    ret=$?
+    set -e
+    echo $ret
+    if [[ ! $ret == 0 ]]; then
         RUNBUILDCODE=true
     fi
-    echo $rsync_opts
-    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-api/ > /dev/null 2>&1
+    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-api/ > /dev/null 2>&1
 
     ############################################################
     ######################### FRONTEND #########################
@@ -68,17 +66,16 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
     git clone --depth 1 --branch ${SIMVA_FRONT_GIT_REF} ${SIMVA_FRONT_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
-    res=$(${SIMVA_HOME}/bin/check-checksum.sh $tmp_dir "${SIMVA_DATA_HOME}/simva/simva-front-sha256sums" "package.json package-lock.json")
-    echo $res
-    
-    # If checksums do not verify -> reinstall dependencies
-    rsync_opts="--exclude node_modules"
-    if [[ ! $(${SIMVA_HOME}/bin/get-last-caracter-from-string.sh "$res") == "0" ]]; then
-        rsync_opts=""
+    set +e
+    ${SIMVA_HOME}/bin/check-checksum.sh $tmp_dir "${SIMVA_DATA_HOME}/simva/simva-front-sha256sums" "Dockerfile package.json package-lock.json"
+    ret=$?
+    set -e
+    echo $ret
+    if [[ ! $ret == 0 ]]; then
         RUNBUILDCODE=true
     fi
     echo $rsync_opts
-    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-front/ > /dev/null 2>&1
+    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-front/ > /dev/null 2>&1
 
     ###################################################################
     ######################### TRACE ALLOCATOR #########################
@@ -89,18 +86,15 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
     git clone --depth 1 --branch ${SIMVA_TRACE_ALLOCATOR_GIT_REF} ${SIMVA_TRACE_ALLOCATOR_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
-
-    res=$(${SIMVA_HOME}/bin/check-checksum.sh $tmp_dir "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-sha256sums" "package.json package-lock.json")
-    echo $res
-    
-    # If checksums do not verify -> reinstall dependencies
-    rsync_opts="--exclude node_modules"
-    if [[ ! $(${SIMVA_HOME}/bin/get-last-caracter-from-string.sh "$res") == "0" ]]; then
-        rsync_opts=""
+    set +e
+    ${SIMVA_HOME}/bin/check-checksum.sh $tmp_dir "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-sha256sums" "Dockerfile package.json package-lock.json"
+    ret=$?
+    set -e
+    echo $ret
+    if [[ ! $ret == 0 ]]; then
         RUNBUILDCODE=true
     fi
-    echo $rsync_opts
-    rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-trace-allocator/ > /dev/null 2>&1
+    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-trace-allocator/ > /dev/null 2>&1
     chmod -R 777 ${SIMVA_DATA_HOME}/simva
 fi
 if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
@@ -108,9 +102,12 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     ######################### BACKEND #########################
     ###########################################################
     echo "SIMVA API"
-    res=$(${SIMVA_HOME}/bin/check-checksum.sh ${SIMVA_API_GIT_REPO} "${SIMVA_DATA_HOME}/simva/simva-api-sha256sums" "package.json package-lock.json")
-    echo $res
-    if [[ ! $(${SIMVA_HOME}/bin/get-last-caracter-from-string.sh "$res") == "0" ]]; then
+    set +e
+    ${SIMVA_HOME}/bin/check-checksum.sh ${SIMVA_API_GIT_REPO} "${SIMVA_DATA_HOME}/simva/simva-api-sha256sums" "Dockerfile package.json package-lock.json"
+    ret=$?
+    set -e
+    echo $ret
+    if [[ ! $ret == 0 ]]; then
         rm -rf ${SIMVA_API_GIT_REPO}/node_modules
         RUNBUILDCODE=true
     fi
@@ -118,9 +115,12 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     ############################# FRONTEND ############################
     ################################################################### 
     echo "SIMVA FRONT"
-    res=$(${SIMVA_HOME}/bin/check-checksum.sh ${SIMVA_FRONT_GIT_REPO} "${SIMVA_DATA_HOME}/simva/simva-front-sha256sums" "package.json package-lock.json")
-    echo $res
-    if [[ ! $(${SIMVA_HOME}/bin/get-last-caracter-from-string.sh "$res") == "0" ]]; then
+    set +e
+    ${SIMVA_HOME}/bin/check-checksum.sh ${SIMVA_FRONT_GIT_REPO} "${SIMVA_DATA_HOME}/simva/simva-front-sha256sums" "Dockerfile package.json package-lock.json"
+    ret=$?
+    set -e
+    echo $ret
+    if [[ ! $ret == 0 ]]; then
         rm -rf ${SIMVA_FRONT_GIT_REPO}/node_modules
         RUNBUILDCODE=true
     fi
@@ -128,9 +128,12 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     ######################### TRACE ALLOCATOR #########################
     ###################################################################
     echo "SIMVA TRACE ALLOCATOR"
-    res=$(${SIMVA_HOME}/bin/check-checksum.sh ${SIMVA_TRACE_ALLOCATOR_GIT_REPO} "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-sha256sums" "package.json package-lock.json")
-    echo $res
-    if [[ ! $(${SIMVA_HOME}/bin/get-last-caracter-from-string.sh "$res") == "0" ]]; then
+    set +e
+    ${SIMVA_HOME}/bin/check-checksum.sh ${SIMVA_TRACE_ALLOCATOR_GIT_REPO} "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-sha256sums" "Dockerfile package.json package-lock.json"
+    ret=$?
+    set -e
+    echo $ret
+    if [[ ! $ret == 0 ]]; then
         rm -rf ${SIMVA_TRACE_ALLOCATOR_GIT_REPO}/node_modules
         RUNBUILDCODE=true
     fi
