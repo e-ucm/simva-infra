@@ -18,6 +18,7 @@ services:
     volumes:
       - ${SIMVA_API_GIT_REPO}:/home/node/app/
       - ${SIMVA_DATA_HOME}/simva/simva-api-profiling:/home/node/profiling
+      - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9229:9229"
   simva-front:
@@ -27,6 +28,7 @@ services:
     volumes:
       - ${SIMVA_FRONT_GIT_REPO}:/home/node/app/
       - ${SIMVA_DATA_HOME}/simva/simva-front-profiling:/home/node/profiling
+      - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9230:9229"
   simva-trace-allocator:
@@ -36,6 +38,7 @@ services:
     volumes:
       - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO}:/home/node/app/
       - ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling:/home/node/profiling
+      - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9231:9229"
   mongodb:
