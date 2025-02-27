@@ -74,7 +74,6 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     if [[ ! $ret == 0 ]]; then
         RUNBUILDCODE=true
     fi
-    echo $rsync_opts
     rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-front/ > /dev/null 2>&1
 
     ###################################################################

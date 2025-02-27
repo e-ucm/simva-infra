@@ -126,13 +126,13 @@ services:
       SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
     restart: unless-stopped
     volumes:
-      - ${STACK_HOME?STACK home folder required}/etc/entrypoints/docker-startup-api.sh:/home/node/entrypoint/docker-startup.sh
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/home/node/logs:rw
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva${SIMVA_STORAGE_LOCAL_PATH:-/storage}:${SIMVA_STORAGE_LOCAL_PATH:-/storage}
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint/docker-startup-api.sh:/home/node/entrypoint/docker-startup.sh
     depends_on:
       - mongodb
     hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
@@ -216,7 +216,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-front-logs:/home/node/logs:rw
-      - ${STACK_HOME?STACK home folder required}/etc/entrypoints/docker-startup-front.sh:/home/node/entrypoint/docker-startup.sh
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint/docker-startup-front.sh:/home/node/entrypoint/docker-startup.sh
     depends_on:
       - simva-api
     hostname: simva-front.${SIMVA_INTERNAL_DOMAIN:-internal.test}
@@ -288,7 +288,7 @@ services:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator-logs:/home/node/logs:rw
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-trace-allocator-data:${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-/data}
       - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
-      - ${STACK_HOME?STACK home folder required}/etc/entrypoints/docker-startup-trace-allocator.sh:/home/node/entrypoint/docker-startup.sh
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint/docker-startup-trace-allocator.sh:/home/node/entrypoint/docker-startup.sh
     depends_on:
       - simva-api
     hostname: simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
