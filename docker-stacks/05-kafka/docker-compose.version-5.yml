@@ -13,11 +13,81 @@ x-default-opts:
 networks:
   traefik_services:
     external: true
+  kafka_services:
+    name: "${SIMVA_KAFKA_NETWORK:-kafka_services}"
 
+## based on https://github.com/simplesteph/kafka-stack-docker-compose/blob/master/full-stack.yml
 services:
+###
+### It is possible to use all conflueninc products during development if you just use 1 broker
+### https://docs.confluent.io/current/control-center/installation/licenses.html#developer-license
+###
+### So it is possible to use Confluentinc control center during development.
+
+# https://community.cloudera.com/t5/Support-Questions/Kafka-Best-Practices-KAFKA-JVM-PERFORMANCE-OPTS/td-p/207143
+# http://kafka.apache.org/documentation.html#java
+
+  zk1:
+    << : *default-opts
+#    image: zookeeper:3.5.7 is the the recommended version from confluentinc
+#XXX: Check why and if it is interesting to use confluentinc/cp-zookeeper instead of this image.
+    image: ${SIMVA_ZOOKEEPER_IMAGE:-zookeeper}:${SIMVA_ZOOKEEPER_VERSION:-3.4.9}
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=zk1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2888:3888
+      # confluentinc/cp-zookeeper options
+      #KAFKA_HEAP_OPTS: "-Xmx512M -Xms512M"
+
+      # https://mapr.com/support/s/article/How-to-change-the-max-heap-size-of-zookeeper?language=en_US ?
+
+      # Plain zookeer options (zkEnv.sh)
+      ZK_SERVER_HEAP: "256"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/zoo1/data:/data
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/zoo1/datalog:/datalog
+    restart: unless-stopped
+    hostname: zk1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - zk1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+  kafka1:
+    << : *default-opts
+    image: ${SIMVA_CONFLUENT_PLATFORM_IMAGE:-confluentinc/cp-kafka}:${SIMVA_KAFKA_VERSION:-5.5.0}
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092,LISTENER_DOCKER_EXTERNAL://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zk1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      # WARN: this is for demo / dev purposes
+      KAFKA_HEAP_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/kafka1/data:/var/lib/kafka/data
+    depends_on:
+      - zk1
+    hostname: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      kafka_services:
+        aliases:
+          - kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+
   connect:
     << : *default-opts
-    image: confluentinc/cp-kafka-connect:${SIMVA_KAFKA_VERSION:-5.5.0}
+    image: ${SIMVA_KAFKA_CONNECT_IMAGE:-confluentinc/cp-kafka-connect}:${SIMVA_KAFKA_VERSION:-5.5.0}
     command: >
       bash -c '
         # Add extra jar files to all storage plugins
@@ -101,7 +171,6 @@ services:
     depends_on:
       - zk1
       - kafka1
-      #- schema-registry
     hostname: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

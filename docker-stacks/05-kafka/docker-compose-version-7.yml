@@ -14,7 +14,6 @@ networks:
   traefik_services:
     external: true
   kafka_services:
-    driver: bridge
     name: "${SIMVA_KAFKA_NETWORK:-kafka_services}"
 
 ## based on https://github.com/simplesteph/kafka-stack-docker-compose/blob/master/full-stack.yml
