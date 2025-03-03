@@ -8,7 +8,7 @@ for extension in $(find ${EXTENSIONS_DIR} -mindepth 1 -maxdepth 1 -type d); do
     extension_name=${extension#"$EXTENSIONS_DIR"}
     if [[ ! -e "${extension}/target${extension_name}.jar" ]]; then
         if [[ ! -e "${extension}/pom.xml" ]]; then 
-            if [[ "${SIMVA_KAFKA_VERSION%%.*}" >= 7 ]]; then # "7.8.0"
+            if [[ "${SIMVA_KAFKA_VERSION%%.*}" -ge 7 ]]; then # "7.8.0"
                 cp "${extension}/pom-7.8.0.xml" "${extension}/pom.xml"
             else 
                 cp "${extension}/pom-5.5.0.xml" "${extension}/pom.xml"

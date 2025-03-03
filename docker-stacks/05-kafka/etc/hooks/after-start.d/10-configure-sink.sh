@@ -63,7 +63,7 @@ JQ_SCRIPT
 scheduleIntervalMin="${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN}"
 scheduleIntervalMs=$((scheduleIntervalMin * 60 * 1000))
 
-cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
+cat ${SIMVA_CONFIG_TEMPLATE_HOME}/kafka/connect/simva-sink.json | jq \
   --arg minioUrl "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
   --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \

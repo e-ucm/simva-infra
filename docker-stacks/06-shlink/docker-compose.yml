@@ -10,6 +10,11 @@ x-default-opts:
   # options:
   #   gelf-address: "udp://127.0.0.1:5000"
 
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
 services:
   shlink:
     << : *default-opts

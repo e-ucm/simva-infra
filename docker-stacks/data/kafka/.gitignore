@@ -1,3 +1,5 @@
 .version
 .externaldomain
 .initialized
+clusterid
+minio-events-topics-created

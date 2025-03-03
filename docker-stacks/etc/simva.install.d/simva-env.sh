@@ -1,7 +1,7 @@
 ################
 # SIMVA STACKS #
 ################
-export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-simva 08-anaconda 09-logs"
+export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 07-simva 08-anaconda 09-logs"
 
 #############################
 # SIMVA installation folder #
@@ -41,10 +41,8 @@ export SIMVA_MINIO_MC_IMAGE="minio/mc"
 export SIMVA_MINIO_MC_VERSION="RELEASE.2025-02-04T04-57-50Z"
 
 export SIMVA_KAFKA_IMAGE="confluentinc/cp-kafka"
-export SIMVA_KAFKA_CONNECT_IMAGE="confluentinc/cp-kafka-connect"
-export SIMVA_KAFKA_VERSION="5.5.0"
-export SIMVA_ZOOKEEPER_IMAGE="zookeeper"
-export SIMVA_ZOOKEEPER_VERSION="3.4.9"
+export SIMVA_KAFKA_CONNECT_IMAGE="cnfldemos/kafka-connect-datagen"
+export SIMVA_KAFKA_VERSION="7.8.0"
 
 export SIMVA_SIMVA_IMAGE="node"
 export SIMVA_SIMVA_VERSION="20.9.0-bullseye"
