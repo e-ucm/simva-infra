@@ -23,7 +23,12 @@ services:
     entrypoint:
       - '/bin/bash'
       - '-c'
-      - '/container-tools/wait-for-it.sh -h $${LIMESURVEY_DB_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- /container-tools/wait-for-it.sh -h $${LIMESURVEY_SSO_HOST} -p 443 -t $${WAIT_TIMEOUT} -- /usr/bin/entrypoint $$@'
+      -  'if [ ! -e "/usr/local/share/ca-certificates/internal-CA.crt" ]; then
+          cp /root/.limesurvey/certs/CAs/rootCA.pem "/usr/local/share/ca-certificates/internal-CA.crt";
+          update-ca-certificates;
+          cat /etc/ca-certificates.conf;
+        fi;
+        /container-tools/wait-for-it.sh -h $${LIMESURVEY_DB_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- /container-tools/wait-for-it.sh -h $${LIMESURVEY_SSO_HOST} -p 443 -t $${WAIT_TIMEOUT} -- /usr/bin/entrypoint $$@'
     command:
       - '--'
       - '/usr/bin/server'
@@ -70,6 +75,7 @@ services:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/upload:/var/www/html/upload
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/tmp:/var/www/html/tmp
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.limesurvey/certs/CAs:ro
     restart: unless-stopped
     healthcheck:
       test: "curl -sS http://localhost:80 || exit 1"

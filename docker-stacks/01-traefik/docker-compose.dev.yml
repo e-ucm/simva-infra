@@ -13,42 +13,38 @@ x-default-opts:
 services:
   whoami:
     << : *default-opts
-    image: containous/whoami
-    hostname: "whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+    image: ${SIMVA_WHOAMI_IMAGE:-containous/whoami}:${SIMVA_WHOAMI_VERSION:-latest}
+    hostname: "${SIMVA_WHOAMI_HOST_SUBDOMAIN:-whoami}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     networks:
       default:
         aliases:
-          - "whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "${SIMVA_WHOAMI_HOST_SUBDOMAIN:-whoami}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       traefik_services:
         aliases:
-          - "whoami.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+          - "${SIMVA_WHOAMI_HOST_SUBDOMAIN:-whoami}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.whoami.loadbalancer.server.port=80"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.whoami.rule=Host(`${SIMVA_WHOAMI_HOST_SUBDOMAIN:-whoami}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+  
   traefik:
     << : *default-opts
     networks:
       traefik_services:
         aliases:
-          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-          - phpmyadmin-ls.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-          - phpmyadmin-kc.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-          - kafka-ui.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-          - zoonavigator.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-    ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
-      - target: 443
-        published: 443
-        protocol: tcp
-        mode: host
-
+          - ${SIMVA_WHOAMI_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}
+          - ${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}
+          - ${SIMVA_PHPMYADMIN_KC_HOST_SUBDOMAIN:-phpmyadmin-kc}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - ${SIMVA_PHPMYADMIN_LS_HOST_SUBDOMAIN:-phpmyadmin-ls}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - ${SIMVA_KAFKA_UI_HOST_SUBDOMAIN:-kafka-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - ${SIMVA_MONGO_UI_HOST_SUBDOMAIN:-simva-mongo-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - ${SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - ${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - ${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
   csp-reporter:
     << : *default-opts
-    image: node:12.18.2
+    image: ${SIMVA_NODE_IMAGE:-node}:${SIMVA_NODE_VERSION:-12.18.2}
     command: bash -c "cd /app && if [[ ! -d "node_modules" ]]; then npm install; fi && node ./index.js"
     stdin_open: true
     tty: true
@@ -60,16 +56,16 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter:/app
-    hostname: csp-reporter.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: ${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN:-csp-reporter}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - csp-reporter.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN:-csp-reporter}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - csp-reporter.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN:-csp-reporter}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.csp-reporter.loadbalancer.server.port=3003"
-      - "traefik.http.routers.csp-reporter.rule=Host(`csp-reporter.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.csp-reporter.rule=Host(`${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN:-csp-reporter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.csp-reporter.middlewares=dashboardAuth@file"

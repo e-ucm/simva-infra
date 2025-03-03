@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
+
+${SIMVA_HOME}/bin/purge-folder-contents.sh \
+    "${SIMVA_DATA_HOME}/simva/mongo" \
+    "${SIMVA_DATA_HOME}/simva/simva-api" \
+    "${SIMVA_DATA_HOME}/simva/simva-front" \
+    "${SIMVA_DATA_HOME}/simva/simva-trace-allocator" \
+    "${SIMVA_DATA_HOME}/simva/simva-api-logs" \
+    "${SIMVA_DATA_HOME}/simva/simva-front-logs" \
+    "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-logs" \
+    "${SIMVA_DATA_HOME}/simva/simva-api-profiling" \
+    "${SIMVA_DATA_HOME}/simva/simva-front-profiling" \
+    "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling" \
+    "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-data"
+
+${SIMVA_HOME}/bin/purge-file-if-exist.sh \
+    "${SIMVA_DATA_HOME}/simva/.initialized" \
+    "${SIMVA_DATA_HOME}/simva/.externaldomain" \
+    "${SIMVA_DATA_HOME}/simva/.version" \
+    "${SIMVA_DATA_HOME}/simva/simva-api-sha256sums" \
+    "${SIMVA_DATA_HOME}/simva/simva-front-sha256sums" \
+    "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-sha256sums" \

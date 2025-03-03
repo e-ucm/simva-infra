@@ -36,7 +36,7 @@ if [ "$done" == "ok" ]; then
   echo 1>&2 "Kafka Connect available !";
 fi;
 
-connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json" -r)
+connector_name=$(jq '.name' "${SIMVA_CONFIG_TEMPLATE_HOME}/kafka/connect/simva-sink.json" -r)
 
 set +e
 docker compose exec connect curl -f -sS \
@@ -47,8 +47,7 @@ ret=$?
 echo $ret
 set -e
 
-if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
-  jq_script=$(cat <<'JQ_SCRIPT'
+jq_script=$(cat <<'JQ_SCRIPT'
   .config["store.url"]=$minioUrl
     | .config["aws.access.key.id"]=$minioUser
       | .config["aws.secret.access.key"]=$minioSecret
@@ -56,13 +55,15 @@ if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
           | .config["topics.dir"]=$topicsDir
             | .config["topics"]=$topics
               | .config["flush.size"]=$flushSize
-                    | .
+                | .config["rotate.schedule.interval.ms"]=$rotateInterval
+                        | .
 JQ_SCRIPT
 )
-#                | .config["rotate.schedule.interval.ms"]=$rotateScheduleInterval
-#                 | .config["offset.flush.interval.ms"]=$offsetFlushInterval
 
-  cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
+scheduleIntervalMin="${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN}"
+scheduleIntervalMs=$((scheduleIntervalMin * 60 * 1000))
+
+cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
   --arg minioUrl "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
   --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \
@@ -70,11 +71,8 @@ JQ_SCRIPT
   --arg topicsDir "${SIMVA_SINK_TOPICS_DIR}" \
   --arg topics "${SIMVA_TRACES_TOPIC}" \
   --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
+  --arg rotateInterval "${scheduleIntervalMs}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
-
-  #  --arg rotateScheduleInterval "${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_MS}" \
-  #  --arg offsetFlushInterval "${SIMVA_OFFSET_FLUSH_INTERVAL_MS}" \
-fi 
 
 set +e
 if [[ $ret -eq 0 ]]; then 

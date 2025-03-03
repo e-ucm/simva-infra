@@ -118,7 +118,7 @@ public class JsonFieldPartitioner<T> extends DefaultPartitioner<T> {
   public List<T> partitionFields() {
     if (partitionFields == null) {
       partitionFields = newSchemaGenerator(config).newPartitionFields(
-          Utils.join(fieldNames, ",")
+          JsonDataUtils.join(fieldNames, ",")
       );
     }
     return partitionFields;

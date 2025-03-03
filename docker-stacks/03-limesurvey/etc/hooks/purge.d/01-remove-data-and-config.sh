@@ -15,4 +15,5 @@ ${SIMVA_HOME}/bin/purge-folder-contents.sh \
 ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/limesurvey/.initialized"\
     "${SIMVA_DATA_HOME}/limesurvey/.externaldomain"\
-    "${SIMVA_DATA_HOME}/limesurvey/.version"
+    "${SIMVA_DATA_HOME}/limesurvey/.version"\
+    "${SIMVA_DATA_HOME}/limesurvey/.initializedRemoteControl"

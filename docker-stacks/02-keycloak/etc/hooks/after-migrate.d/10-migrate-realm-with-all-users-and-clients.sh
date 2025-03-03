@@ -12,15 +12,10 @@ if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then
     previousUsersFile="${KEYCLOAK_CONFIG_EXPORT_FOLDER}/previousUsers.json"
     echo $previousUsers > $previousUsersFile
     
-    # Counter for file number
-    file_number=0
     # Iterate over files matching the format ${SIMVA_SSO_REALM}-users-X.json
     for userfile in "${KEYCLOAK_CONFIG_EXPORT_FOLDER}/${SIMVA_SSO_REALM}-users-"*.json; do
-        # Increment the file number
-        ((file_number++))
         # Process the file here (replace echo with actual processing)
         echo "Processing file: $userfile"
-        echo "File number: $file_number"
         #Adding all new clients to generated file
         newUsers=$(jq '.users' "$userfile")
 
