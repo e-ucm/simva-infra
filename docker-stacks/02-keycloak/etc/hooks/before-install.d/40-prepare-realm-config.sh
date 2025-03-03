@@ -108,7 +108,7 @@ function configure_realm_file() {
     local environment="${1}"
 
     gomplate -c ".=file://${STACK_CONF}/realm-data.${environment}.yml" \
-        -f "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-template/simva-realm-full.json" \
+        -f "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/simva-realm-full.json" \
         -o "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/simva-realm-full.json"
 
 }

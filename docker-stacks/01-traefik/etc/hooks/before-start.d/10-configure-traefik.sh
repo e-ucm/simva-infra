@@ -3,5 +3,5 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 gomplate \
-    -f "${SIMVA_CONFIG_HOME}/traefik/traefik/static-conf-template/traefik.toml" \
+    -f "${SIMVA_CONFIG_TEMPLATE_HOME}/traefik/traefik/static-conf/traefik.toml" \
     -o "${SIMVA_CONFIG_HOME}/traefik/traefik/static-conf/traefik.toml"

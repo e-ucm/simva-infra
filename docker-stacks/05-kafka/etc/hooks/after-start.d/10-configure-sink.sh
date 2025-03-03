@@ -36,7 +36,7 @@ if [ "$done" == "ok" ]; then
   echo 1>&2 "Kafka Connect available !";
 fi;
 
-connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json" -r)
+connector_name=$(jq '.name' "${SIMVA_CONFIG_TEMPLATE_HOME}/kafka/connect/simva-sink.json" -r)
 
 set +e
 docker compose exec connect curl -f -sS \
