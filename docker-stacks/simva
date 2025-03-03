@@ -1163,7 +1163,7 @@ function build() {
     local stack=${1}
     shift
 
-    docker_compose_stacks "${stack}" "${wait_time}" build $@
+    docker_compose_stacks "${stack}" "${wait_time}" build  --no-cache --pull $@
 }
 
 # entrypoint

@@ -12,12 +12,33 @@ x-default-opts:
 
 services:
   simva-api:
+    build: ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}
+    environment:
+      ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
+    volumes:
+      - ${SIMVA_API_GIT_REPO}:/home/node/app/
+      - ${SIMVA_DATA_HOME}/simva/simva-api-profiling:/home/node/profiling
+      - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9229:9229"
   simva-front:
+    build: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}
+    environment:
+      ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
+    volumes:
+      - ${SIMVA_FRONT_GIT_REPO}:/home/node/app/
+      - ${SIMVA_DATA_HOME}/simva/simva-front-profiling:/home/node/profiling
+      - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9230:9229"
   simva-trace-allocator:
+    build: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}
+    environment:
+      ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
+    volumes:
+      - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO}:/home/node/app/
+      - ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling:/home/node/profiling
+      - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9231:9229"
   mongodb:

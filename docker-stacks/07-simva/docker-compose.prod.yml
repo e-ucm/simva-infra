@@ -1,0 +1,19 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+services:
+  simva-api:
+    image: ${SIMVA_SIMVA_IMAGE:-eucm/simva-api}:${SIMVA_SIMVA_VERSION:-v1.0.0}
+  simva-front:
+    image: ${SIMVA_SIMVA_FRONT_IMAGE:-eucm/simva-front}:${SIMVA_SIMVA_FRONT_VERSION:-v1.0.0}
+  simva-trace-allocator:
+    image: ${SIMVA_SIMVA_TRACE_ALLOCATOR_IMAGE:-eucm/simva-trace-allocator}:${SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION:-v1.0.0}

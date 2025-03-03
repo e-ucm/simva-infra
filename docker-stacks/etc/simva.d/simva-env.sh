@@ -70,8 +70,12 @@ export SIMVA_KAFKA_CONNECT_VERSION="0.6.4-7.6.0"
 export SIMVA_ZOOKEEPER_IMAGE="zookeeper"
 export SIMVA_ZOOKEEPER_VERSION="3.4.9"
 
-export SIMVA_SIMVA_IMAGE="node"
-export SIMVA_SIMVA_VERSION="20.9.0-bullseye"
+export SIMVA_SIMVA_IMAGE="eucm/simva-api"
+export SIMVA_SIMVA_VERSION="0.0.1"
+export SIMVA_SIMVA_TRACE_ALLOCATOR_IMAGE="eucm/simva-trace-allocator"
+export SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION="0.0.1"
+export SIMVA_SIMVA_FRONT_IMAGE="eucm/simva-front"
+export SIMVA_SIMVA_FRONT_VERSION="0.0.1"
 
 export SIMVA_MONGODB_IMAGE="mongo"
 export SIMVA_MONGODB_VERSION="4.2.8"
@@ -81,11 +85,6 @@ export SIMVA_DOZZLE_VERSION="8.10.3"
 
 #Git reference branch
 export SIMVA_KEYCLOAK_EVENT_GIT_REF="v0.26"
-
-branch="master"
-export SIMVA_API_GIT_REF=$branch
-export SIMVA_FRONT_GIT_REF=$branch
-export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
 
 ###################
 # Service Network #
