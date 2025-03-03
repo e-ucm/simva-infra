@@ -26,8 +26,8 @@ export SIMVA_MAILDEV_VERSION="1.1.0"
 export SIMVA_PHPMYADMIN_IMAGE="phpmyadmin/phpmyadmin"
 export SIMVA_PHPMYADMIN_VERSION="5.0.2"
 
-export SIMVA_ZOOKEEPER_IMAGE="zookeeper"
-export SIMVA_ZOOKEEPER_VERSION="3.4.9"
+export SIMVA_KAFKA_SCHEMA_REGISTRY_IMAGE="confluentinc/cp-schema-registry"
+export SIMVA_KAFKA_REST_IMAGE="confluentinc/cp-kafka-rest"
 
 export SIMVA_KAKFA_UI_IMAGE="provectuslabs/kafka-ui"
 export SIMVA_KAKFA_UI_VERSION="latest"

@@ -47,8 +47,7 @@ ret=$?
 echo $ret
 set -e
 
-if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
-  jq_script=$(cat <<'JQ_SCRIPT'
+jq_script=$(cat <<'JQ_SCRIPT'
   .config["store.url"]=$minioUrl
     | .config["aws.access.key.id"]=$minioUser
       | .config["aws.secret.access.key"]=$minioSecret
@@ -60,10 +59,11 @@ if [[ ! -e "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" ]]; then
                         | .
 JQ_SCRIPT
 )
-  scheduleIntervalMin="${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN}"
-  scheduleIntervalMs=$((scheduleIntervalMin * 60 * 1000))
 
-  cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
+scheduleIntervalMin="${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN}"
+scheduleIntervalMs=$((scheduleIntervalMin * 60 * 1000))
+
+cat ${SIMVA_CONFIG_HOME}/kafka/connect-template/simva-sink.json | jq \
   --arg minioUrl "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" \
   --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
   --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \
@@ -73,7 +73,6 @@ JQ_SCRIPT
   --arg flushSize "${SIMVA_TRACES_FLUSH_SIZE}" \
   --arg rotateInterval "${scheduleIntervalMs}" \
   "$jq_script" > "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json"
-fi 
 
 set +e
 if [[ $ret -eq 0 ]]; then 

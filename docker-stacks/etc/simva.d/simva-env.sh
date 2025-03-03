@@ -63,8 +63,10 @@ export SIMVA_MINIO_MC_IMAGE="minio/mc"
 export SIMVA_MINIO_MC_VERSION="RELEASE.2025-02-04T04-57-50Z"
 
 export SIMVA_KAFKA_IMAGE="confluentinc/cp-kafka"
-export SIMVA_KAFKA_CONNECT_IMAGE="confluentinc/cp-kafka-connect"
-export SIMVA_KAFKA_VERSION="5.5.0"
+export SIMVA_KAFKA_VERSION="7.8.0"
+export SIMVA_KAFKA_SERVER_IMAGE="confluentinc/cp-server"
+export SIMVA_KAFKA_CONNECT_IMAGE="cnfldemos/kafka-connect-datagen"
+export SIMVA_KAFKA_CONNECT_VERSION="0.6.4-7.6.0"
 export SIMVA_ZOOKEEPER_IMAGE="zookeeper"
 export SIMVA_ZOOKEEPER_VERSION="3.4.9"
 

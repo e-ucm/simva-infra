@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.confluent.connect.storage.util;
-
 import org.apache.kafka.connect.data.Field;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.errors.DataException;
 
 import java.util.Map;
+import java.util.List;
 
 /**
  * 
@@ -93,5 +92,17 @@ public class JsonDataUtils {
             e
       );
     }
+  }
+
+  // Implement the join method manually
+  public static String join(List<String> list, String separator) {
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < list.size(); i++) {
+        sb.append(list.get(i));
+        if (i < list.size() - 1) {
+          sb.append(separator);
+        }
+      }
+      return sb.toString();
   }
 }
