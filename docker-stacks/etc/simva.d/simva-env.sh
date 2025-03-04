@@ -163,12 +163,6 @@ export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
 export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
 export SIMVA_LTI_ENABLED="false"
 
-###############
-# SHLINK INFO #
-###############
-export SIMVA_SHLINK_SERVERNAME="SHLINK"
-export SIMVA_SHLINK_TIMEZONE="Europe/Madrid"
-
 ##############################
 # SIMVA Trace Allocator INFO #
 ##############################
@@ -184,6 +178,8 @@ export SIMVA_TRACE_ALLOCATOR_COPY_INSTEAD_RENAME="true"
 export SIMVA_TRACE_ALLOCATOR_TRY_RECOVERY="true"
 export SIMVA_TRACE_ALLOCATOR_KAFKA_CLIENT_ID="simva_trace_allocator"
 export SIMVA_TRACE_ALLOCATOR_KAFKA_GROUP_ID="simva_trace_allocator"
+
+export SIMVA_TIMEZONE="Europe/Madrid"
 
 ####################################################################
 ######## Authentification username and password (TO MODIFY) ########
