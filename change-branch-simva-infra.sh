@@ -9,7 +9,7 @@ fi
 
 SIMVA_INFRA_GIT_REPO_URL=https://github.com/e-ucm/simva-infra.git
 SIMVA_INFRA_GIT_REF=$1
-SIMVA_INFRA_FOLDER="./"
+SIMVA_INFRA_FOLDER=$(dirname "$0")/
 ###################################################################
 ######################### SIMVA INFRASTRUCTURE ####################
 ###################################################################
