@@ -1040,6 +1040,8 @@ function setExecutable() {
     fi
     for stack in ${stacks}; do
         HooksFolder="${SIMVA_HOME}/${stack}/etc/hooks"
+        folder="${HooksFolder}/helpers.d"
+        setExecutable_scripts_from_folder ${folder}
         case "${phase}" in
             "install")
                 folder="${HooksFolder}/before-install.d"
@@ -1098,6 +1100,8 @@ function setExecutable() {
         esac
     done;
     HooksFolder="${SIMVA_HOME}/etc/hooks"
+    folder="${HooksFolder}/helpers.d"
+    setExecutable_scripts_from_folder ${folder}
     case "${phase}" in
         "install")
             folder="${HooksFolder}/before-install.d"
