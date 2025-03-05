@@ -12,5 +12,4 @@ for extension in $(find ${EXTENSIONS_DIR} -mindepth 1 -maxdepth 1 -type d); do
 done
 
  ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
-      "${SIMVA_DATA_HOME}/minio/minio-events-initialized" \
       "${SIMVA_DATA_HOME}/kafka/minio-events-topics-created"
