@@ -8,7 +8,6 @@ ${SIMVA_HOME}/bin/purge-folder-contents.sh \
     "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export"
 
 ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
-    "${SIMVA_CONFIG_HOME}/keycloak/themes/simva/account/theme.properties" \
     "${SIMVA_CONFIG_HOME}/keycloak/simva-env.sh" \
     "${SIMVA_CONFIG_HOME}/keycloak/realm-data.dev.yml" \
     "${SIMVA_CONFIG_HOME}/keycloak/realm-data.prod.yml" \
