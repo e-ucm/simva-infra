@@ -17,5 +17,4 @@ ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/kafka/storageformatted" \
     "${SIMVA_DATA_HOME}/kafka/clusterid" \
     "${SIMVA_DATA_HOME}/kafka/minio-events-topics-created" \
-    "${SIMVA_DATA_HOME}/minio/minio-events-initialized" \
-    "${STACK_HOME}/extensions/kafka-connect-storage-common/pom.xml"
+    "${SIMVA_DATA_HOME}/minio/minio-events-initialized"

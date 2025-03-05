@@ -29,6 +29,6 @@ if [ ! -e "${SIMVA_DATA_HOME}/minio/minio-events-initialized" ]; then
         arn=$(echo $info | jq .info.sqsARN[0])
         echo $info
         echo $arn
-        docker compose exec minio-client /bin/sh -c "/usr/bin/mc --debug event add --event put --prefix \"${SIMVA_SINK_TOPICS_DIR}/${SIMVA_TRACES_TOPIC}/_id=\" --suffix \"traces+*.json\" simva-minio/${SIMVA_TRACES_BUCKET_NAME} $arn"
+        docker compose exec minio-client /bin/sh -c "/usr/bin/mc --debug event add --event put --prefix \"${SIMVA_SINK_TOPICS_DIR}/${SIMVA_TRACES_TOPIC}/_id=\" --suffix \"${SIMVA_TRACES_TOPIC}+*.json\" simva-minio/${SIMVA_TRACES_BUCKET_NAME} $arn"
         touch "${SIMVA_DATA_HOME}/minio/minio-events-initialized"
 fi
