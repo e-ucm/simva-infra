@@ -888,7 +888,7 @@ function start() {
         stacks=$@
     fi
     
-    if [[ ! -e "${SIMVA_PROJECT_DIR}/.simva-initialized" ]]; then
+    if [[ ! -e "${SIMVA_DATA_HOME}/.simva-initialized" ]]; then
         wait_time=20;
         recho "SIMVA it is not initialized, this launch will take longer than normal."
     fi
@@ -969,7 +969,7 @@ function start() {
             touch "${SIMVA_DATA_HOME}/${stack_name}/.initialized"
         fi
     done;
-    touch "${SIMVA_PROJECT_DIR}/.simva-initialized"
+    touch "${SIMVA_DATA_HOME}/.simva-initialized"
 }
 
 # stop stacks

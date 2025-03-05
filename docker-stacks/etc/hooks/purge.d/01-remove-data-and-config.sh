@@ -5,7 +5,7 @@ set -euo pipefail
 ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_CONTAINER_TOOLS_HOME}/wait-for" \
     "${SIMVA_PROJECT_DIR}/bin/gomplate" \
-    "${SIMVA_PROJECT_DIR}/.simva-initialized" \
+    "${SIMVA_DATA_HOME}/.simva-initialized" \
     "${SIMVA_PROJECT_DIR}/.vagrant"
 
 ${SIMVA_HOME}/bin/purge-folder-contents.sh \
