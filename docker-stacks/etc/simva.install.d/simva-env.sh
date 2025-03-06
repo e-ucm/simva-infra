@@ -57,11 +57,9 @@ export SIMVA_MONGODB_VERSION="4.2.8"
 export SIMVA_DOZZLE_IMAGE="amir20/dozzle"
 export SIMVA_DOZZLE_VERSION="8.10.3"
 
-#Git reference branch
-export SIMVA_KEYCLOAK_EVENT_GIT_REF="v0.26"
-
-export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.0.0"
-export SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION="0.29"
+#Git reference tag version release branch
+export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.1.0"
+export SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION="0.26"
 
 #################################
 # OS and Architecture detection #

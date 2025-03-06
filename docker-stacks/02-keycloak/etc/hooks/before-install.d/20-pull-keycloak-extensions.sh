@@ -33,7 +33,7 @@ for ext in $SIMVA_EXTENSIONS; do
     fi
 done
 
-ext="keycloak-events"
+ext="io.phasetwo.keycloak.keycloak-events"
 ext_jar="${ext}-${SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION}.jar"
 if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
     wget -q -P ${EXTENSIONS_DIR} "https://github.com/e-ucm/keycloak-events/releases/download/v${SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION}/${ext_jar}"
@@ -41,7 +41,7 @@ if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
     if [[ ! -f "${EXTENSIONS_DIR}/${shasums}" ]]; then
         wget -q -O "${EXTENSIONS_DIR}/${shasums}" "https://github.com/e-ucm/keycloak-events/releases/download/v${SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION}/SHA256SUMS"
     fi
-    echo "$(cat "${EXTENSIONS_DIR}/${shasums}"  | grep "${ext_jar}" | cut -d' ' -f1) ${ext_jar}" | sha256sum -c -w -s -
+    echo "$(cat "${EXTENSIONS_DIR}/${shasums}"  | grep "${ext_jar}" | cut -d' ' -f1) ${ext_jar}" | sha256sum -c -w -
     cp "${EXTENSIONS_DIR}/${ext_jar}" "${DEPLOYMENT_DIR}/${ext}.jar"
 fi
 popd
