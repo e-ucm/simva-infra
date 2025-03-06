@@ -2,7 +2,6 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 outputparsed=$("${STACK_HOME}/etc/hooks/helpers.d/get-consumer-group-properties.sh")
-#echo $outputparsed
 current_offset=$(echo "$outputparsed" | cut -d ' ' -f 4)
 offset=$(echo "$outputparsed" | cut -d ' ' -f 5)
 lag=$(echo "$outputparsed" | cut -d ' ' -f 6)

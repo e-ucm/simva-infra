@@ -7,7 +7,6 @@ ${SIMVA_HOME}/bin/purge-folder-contents.sh \
     "${SIMVA_DATA_HOME}/kafka/connect/kafka-connect-storage-common" \
     "${SIMVA_DATA_HOME}/kafka/data/backup" \
     "${SIMVA_DATA_HOME}/kafka/data/kafka1/data" \
-    "${SIMVA_DATA_HOME}/kafka/data/kafka1/kraft-combined-logs" \
     "${SIMVA_DATA_HOME}/kafka/data/zoo1"
 
 ${SIMVA_HOME}/bin/purge-file-if-exist.sh \

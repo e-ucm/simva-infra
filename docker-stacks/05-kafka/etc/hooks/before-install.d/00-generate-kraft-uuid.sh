@@ -22,4 +22,3 @@ if [[ "${SIMVA_KAFKA_VERSION%%.*}" -ge 7 ]]; then # "7.8.0"
 fi;
 
 chmod -R 777 ${SIMVA_DATA_HOME}/kafka/data/kafka1/data
-chmod -R 777 ${SIMVA_DATA_HOME}/kafka/data/kafka1/kraft-combined-logs

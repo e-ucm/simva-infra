@@ -47,7 +47,7 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
 
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
-      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
       # Replace CLUSTER_ID with a unique base64 UUID using "bin/kafka-storage.sh random-uuid"
       # See https://docs.confluent.io/kafka/operations-tools/kafka-tools.html#kafka-storage-sh
       CLUSTER_ID: "${KAFKA_CLUSTER_ID:-ITHASTOBEGENERATEDBEFORE}"
@@ -58,7 +58,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/kafka1/data:/var/lib/kafka/data:rw
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/kafka1/kraft-combined-logs:/tmp/kraft-combined-logs:rw
     hostname: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
