@@ -4,7 +4,6 @@ set -euo pipefail
 
 # Define variables
 KAFKA_CONTAINER_NAME="kafka1"
-BOOTSTRAP_SERVER="localhost:9092"
 CONSUMER_GROUP=""
 TOPIC=""
 
@@ -70,12 +69,31 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Get the current offset
-output=$(docker compose exec -it $KAFKA_CONTAINER_NAME \
-      kafka-consumer-groups \
-      --bootstrap-server $BOOTSTRAP_SERVER \
-      --describe --group $CONSUMER_GROUP);
-
-# Parse the output to get the offsets for the specified topic
-parsed=$(echo "$output" | grep "$TOPIC" | grep $TOPIC | tr -s ' ');
-echo $parsed;
+canStop=false;
+while [[ $canStop == false ]]; do
+  
+  outputparsed=$("${STACK_HOME}/etc/hooks/helpers.d/get-consumer-group-properties.sh" -c $CONSUMER_GROUP -t $TOPIC)
+  echo $outputparsed
+  if [[ -e "$outputparsed" ]]; then
+    current_offset=$(echo "$outputparsed" | cut -d ' ' -f 4)
+    log_end_offset=$(echo "$outputparsed" | cut -d ' ' -f 5)
+    lag=$(echo "$outputparsed" | cut -d ' ' -f 6)
+    echo "current_offset : " $current_offset
+    echo "log_end_offset : " $log_end_offset
+    echo "Lag : " $lag
+    
+    if [[ $lag == 0 ]]; then 
+      canStop=true;
+    else 
+      if [[ $lag == "-" ]]; then 
+        canStop=true;
+      else 
+        echo "Waiting " $(( ${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN} / 3)) "minutes";
+        sleep $((60 * $SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN / 3));
+      fi
+    fi
+  else 
+    canStop=true;
+  fi
+done
+echo "Loop has stopped";

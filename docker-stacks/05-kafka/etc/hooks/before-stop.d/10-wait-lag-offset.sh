@@ -2,32 +2,18 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-canStop=false;
-
-while [[ $canStop == false ]]; do
+service_name="kafka1"
+set +e
+up=$(docker compose ps $service_name | grep $service_name)
+echo $up
+set -e
+if [[ ! $up == undefined  ]]; then
+  echo "The container is running."
   echo "Working... Please wait ${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN} minutes to consume message via rotate schedule. Press Ctrl+C to stop checking..."
-  outputparsed=$("${STACK_HOME}/etc/hooks/helpers.d/get-consumer-group-properties.sh")
-  if [[ -e "$outputparsed" ]]; then
-    current_offset=$(echo "$outputparsed" | cut -d ' ' -f 4)
-    log_end_offset=$(echo "$outputparsed" | cut -d ' ' -f 5)
-    lag=$(echo "$outputparsed" | cut -d ' ' -f 6)
-    echo "current_offset : " $current_offset
-    echo "log_end_offset : " $log_end_offset
-    echo "Lag : " $lag
-    
-    if [[ $lag == 0 ]]; then 
-      canStop=true;
-    else 
-      if [[ $lag == "-" ]]; then 
-        canStop=true;
-      else 
-        echo "Waiting " $(( ${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN} / 3)) "minutes";
-        sleep $((60 * $SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN / 3));
-      fi
-    fi
-  else 
-    canStop=true;
-  fi
-done
-
-echo "Loop has stopped";
+  CONSUMER_GROUP=connect-$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
+  TOPIC="${SIMVA_TRACES_TOPIC}"
+  "${STACK_HOME}/etc/hooks/helpers.d/wait-lag-offset.sh" -c $CONSUMER_GROUP -t $TOPIC
+  "${STACK_HOME}/etc/hooks/helpers.d/wait-lag-offset.sh" -c "${SIMVA_TRACE_ALLOCATOR_KAFKA_GROUP_ID}" -t "${SIMVA_MINIO_EVENTS_TOPIC}"
+else
+    echo "The container is not running."
+fi
