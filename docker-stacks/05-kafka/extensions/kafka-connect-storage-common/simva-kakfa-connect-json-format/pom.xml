@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>es.e-ucm.simva.kafka</groupId>
+    <artifactId>simva-kakfa-connect-json-format</artifactId>
+    <version>1.0.0</version>
+    
+	<properties>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+        <confluent.maven.repo>http://packages.confluent.io/maven/</confluent.maven.repo>
+	</properties>
+
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <name>Confluent</name>
+            <url>${confluent.maven.repo}</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- ✅ Kafka Connect API -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-api</artifactId>
+            <version>${kafka.connect-api.version}</version> <!-- Match your Kafka version -->
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Kafka Connect JSON Converter -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-json</artifactId>
+            <version>${kafka.connect-api.version}</version> <!-- Match your Kafka version -->
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ✅ Confluent S3 Sink Connector -->
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-connect-s3</artifactId>
+            <version>${kafka.connect-s3.version}</version> <!-- Match your Confluent Platform version -->
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ✅ Jackson for JSON Processing -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.0</version>
+        </dependency>
+
+        <!-- ✅ Logging (SLF4J for Kafka Connect Logs) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+		<finalName>${project.groupId}.${project.artifactId}-${project.version}</finalName>
+        <plugins>
+            <!-- ✅ Ensure Kafka Connect compatibility -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <!-- ✅ Create a JAR for Kafka Connect Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>io.confluent.connect.s3.format.json.CustomJsonFormat</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

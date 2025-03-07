@@ -60,6 +60,7 @@ export SIMVA_DOZZLE_VERSION="8.10.3"
 #Git reference tag version release branch
 export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.1.0"
 export SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION="0.26"
+export SIMVA_KAFKA_EXTENSIONS_VERSION="1.0.0"
 
 #################################
 # OS and Architecture detection #
