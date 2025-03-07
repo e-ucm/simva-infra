@@ -10,7 +10,7 @@ fi
 DEPLOYMENT_DIR="${SIMVA_DATA_HOME}/keycloak/deployments"
 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
     # (tested in Keycloak 24.0.2)
-    SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme" # es.e-ucm.simva.keycloak.custom-token-auth-spi"
+    SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme es.e-ucm.simva.keycloak.custom-token-auth-spi"
 else
     # (tested in Keycloak 10.0.2)
     SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.lti-oidc-mapper es.e-ucm.simva.keycloak.script-policy-attribute-mapper"
