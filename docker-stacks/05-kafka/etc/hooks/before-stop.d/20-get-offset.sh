@@ -4,7 +4,7 @@ service_name="kafka1"
 set +e
 up=$(docker compose ps $service_name | grep $service_name)
 set -e
-if [[ ! $up == undefined  ]]; then
+if [[ ! $up == '' ]]; then
     echo "The container is running."
     CONSUMER_GROUP=connect-$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
     TOPIC="${SIMVA_TRACES_TOPIC}"
