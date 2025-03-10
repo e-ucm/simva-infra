@@ -1173,7 +1173,7 @@ function log() {
     local stack=${1}
     shift
 
-    docker_compose_stacks "${stack}" "${wait_time}" logs $@
+    docker_compose_stacks "${stack}" "${wait_time}" logs -f --tail 100 $@
 }
 
 # build stack
