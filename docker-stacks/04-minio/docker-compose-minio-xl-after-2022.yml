@@ -23,7 +23,7 @@ services:
           cp /root/.minio/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
           cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
         fi;
-        /bin/wait-available.sh "Keycloak" "https://$${MINIO_SSO_HOST}/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" "false" "/etc/ssl/certs/internal-CA.pem";
+        /bin/wait-available.sh "Keycloak" "https://$${MINIO_SSO_HOST}/realms/$${MINIO_SSO_REALM}/.well-known/openid-configuration" "false";
         /usr/bin/docker-entrypoint.sh $$@;
       '
     command:
