@@ -8,11 +8,11 @@ if [[ ! -d "${EXTENSIONS_DIR}" ]]; then
 fi
 
 DEPLOYMENT_DIR="${SIMVA_DATA_HOME}/keycloak/deployments"
-if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} gt 25 ]]; then
+if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -gt 25 ]]; then
     # (tested in Keycloak 26.1.3)
     SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme-v2 es.e-ucm.simva.keycloak.custom-token-auth-spi"
 else
-    if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} gt 18 ]]; then
+    if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -gt 18 ]]; then
         # (tested in Keycloak 24.0.2)
         SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme es.e-ucm.simva.keycloak.custom-token-auth-spi"
     else
