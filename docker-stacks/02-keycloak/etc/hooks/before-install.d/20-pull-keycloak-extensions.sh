@@ -10,7 +10,7 @@ fi
 DEPLOYMENT_DIR="${SIMVA_DATA_HOME}/keycloak/deployments"
 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} gt 25 ]]; then
     # (tested in Keycloak 26.1.3)
-    SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme-keycloakv2 es.e-ucm.simva.keycloak.custom-token-auth-spi"
+    SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme-v2 es.e-ucm.simva.keycloak.custom-token-auth-spi"
 else
     if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} gt 18 ]]; then
         # (tested in Keycloak 24.0.2)
@@ -25,7 +25,7 @@ pushd "${EXTENSIONS_DIR}"
 
 GIT_RELEASE_URL="https://github.com/e-ucm/keycloak-extensions/releases/download/v${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}"
 for ext in $SIMVA_EXTENSIONS; do
-    ext_jar="${ext}-${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}.jar"
+    ext_jar="${ext}-keycloak${SIMVA_KEYCLOAK_VERSION%%.*}-${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}.jar"
     if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
         wget -q -P "${EXTENSIONS_DIR}" "${GIT_RELEASE_URL}/${ext_jar}"
         chmod 777 "${EXTENSIONS_DIR}/${ext_jar}"

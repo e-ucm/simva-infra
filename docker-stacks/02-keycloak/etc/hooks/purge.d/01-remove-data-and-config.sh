@@ -1,4 +1,5 @@
 ${SIMVA_HOME}/bin/purge-folder-contents.sh \
+    "${SIMVA_DATA_HOME}/keycloak/extensions" \
     "${SIMVA_DATA_HOME}/keycloak/deployments" \
     "${SIMVA_DATA_HOME}/keycloak/kcadm" \
     "${SIMVA_DATA_HOME}/keycloak/mariadb" \
