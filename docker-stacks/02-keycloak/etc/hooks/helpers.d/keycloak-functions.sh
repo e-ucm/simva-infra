@@ -3,18 +3,18 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 function __keycloak_login() {
-    if [[ ! -f "${KEYCLOAK_TRUSTSTORE_FILE}" ]]; then
+    if [[ ! -f "${SIMVA_TRUSTSTORE_FILE}" ]]; then
         if [[ -f "${SIMVA_ROOT_CA_FILE}" ]]; then
             keytool -importcert -trustcacerts -noprompt \
                 -storepass "${SIMVA_TRUSTSTORE_PASSWORD}" \
                 -alias "${SIMVA_TRUSTSTORE_CA_ALIAS}" \
-                -keystore "${KEYCLOAK_TRUSTSTORE_FILE}" \
+                -keystore "${SIMVA_TRUSTSTORE_FILE}" \
                 -file "${SIMVA_ROOT_CA_FILE}"
         fi
     fi
 
-    if [[ -f "${KEYCLOAK_TRUSTSTORE_FILE}" ]]; then
-        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config truststore --trustpass ${SIMVA_TRUSTSTORE_PASSWORD} "/root/.keycloak/certs/$(basename "${KEYCLOAK_TRUSTSTORE_FILE}")"
+    if [[ -f "${SIMVA_TRUSTSTORE_FILE}" ]]; then
+        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config truststore --trustpass ${SIMVA_TRUSTSTORE_PASSWORD} "/root/.keycloak/certs/$(basename "${SIMVA_TRUSTSTORE_FILE}")"
     fi
     "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config credentials --server "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" --realm "master" --user ${SIMVA_KEYCLOAK_ADMIN_USER} --password ${SIMVA_KEYCLOAK_ADMIN_PASSWORD}
 }
