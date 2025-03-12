@@ -92,7 +92,22 @@ fi
 # Traefik: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
 # example: foo.crt,bar.crt
-export SIMVA_SSL_ROOT_CAS="${SIMVA_DATA_HOME}/tls/ca/isrgrootx1.pem"
+export SIMVA_SSL_ROOT_CAS="${SIMVA_TLS_HOME}/ca/isrgrootx1.pem"
+export SIMVA_ROOT_CA_FILE="${SIMVA_TLS_HOME}/ca/rootCA.pem"
+export SIMVA_ROOT_CA_KEY_FILE="${SIMVA_TLS_HOME}/ca/rootCA-key.pem"
+
+export SIMVA_DHPARAM_FILE="${SIMVA_TLS_HOME}/dhparam.pem"
+
+export SIMVA_LIMESURVEY_FULLCHAIN_CERT_FILE="${SIMVA_TLS_HOME}/limesurvey-fullchain.pem"
+export SIMVA_LIMESURVEY_KEY_FILE="${SIMVA_TLS_HOME}/limesurvey-key.pem"
+export SIMVA_LIMESURVEY_CERT_FILE="${SIMVA_TLS_HOME}/limesurvey.pem"
+export SIMVA_LIMESURVEY_CERT_CRS_FILE="${SIMVA_TLS_HOME}/limesurvey.csr"
+
+export SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE="${SIMVA_TLS_HOME}/traefik-fullchain.pem"
+export SIMVA_TRAEFIK_KEY_FILE="${SIMVA_TLS_HOME}/traefik-key.pem"
+export SIMVA_TRAEFIK_CERT_FILE="${SIMVA_TLS_HOME}/traefik.pem"
+
+export SIMVA_TRUSTSTORE_FILE="${SIMVA_TLS_HOME}/truststore.jks"
 
 ##########################################
 # Checking time for container availabled #

@@ -5,7 +5,7 @@ set -euo pipefail
 source ${SIMVA_HOME}/bin/get-or-generate.sh
 
 # Oneline certificate
-limesurvey_cert=$(sed '1d; $d;:a;N;$!ba;s/\n//g' "${SIMVA_TLS_HOME}/limesurvey.pem")
+limesurvey_cert=$(sed '1d; $d;:a;N;$!ba;s/\n//g' "${SIMVA_LIMESURVEY_CERT_FILE}")
 
 function configure_realm_production() {
     generate_realm_data "${STACK_CONF}/realm-data.prod.yml"
