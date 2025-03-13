@@ -1,0 +1,26 @@
+{
+  "id": "6272ecbe-dc30-4e09-819f-2b822561c25a",
+  "name": "saml_group_list",
+  "description": "User's groups",
+  "protocol": "saml",
+  "attributes": {
+    "include.in.token.scope": "true",
+    "display.on.consent.screen": "true"
+  },
+  "protocolMappers": [
+    {
+      "id": "2137d8eb-32c0-4797-8ed9-3a80d58e1d87",
+      "name": "group_list",
+      "protocol": "saml",
+      "protocolMapper": "saml-group-membership-mapper",
+      "consentRequired": false,
+      "config": {
+        "single": "false",
+        "attribute.nameformat": "Basic",
+        "full.path": "true",
+        "friendly.name": "Group where the user participates",
+        "attribute.name": "member"
+      }
+    }
+  ]
+}

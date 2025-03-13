@@ -1,0 +1,10 @@
+{
+    "id": "08b2e074-6c40-4b4e-bb96-4a55b4b6b250",
+    "name": "https://purl.imsglobal.org/spec/lti-ap/scope/control.all",
+    "description": "https://purl.imsglobal.org/spec/lti-ap/scope/control.all",
+    "protocol": "openid-connect",
+    "attributes": {
+      "include.in.token.scope": "true",
+      "display.on.consent.screen": "true"
+    }
+}

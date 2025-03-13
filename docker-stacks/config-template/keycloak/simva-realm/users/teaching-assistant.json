@@ -1,0 +1,19 @@
+{
+    "id" : "34c47206-d4b1-4d7b-859f-c5ce260ade75",
+    "createdTimestamp" : 1592588057292,
+    "username" :  "{{ .users.teaching_assistant.username }}",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Teaching",
+    "lastName" : "Assistant",
+    "email" :  "{{ .users.teaching_assistant.username }}@{{ .clients.simva.externalDomain }}",
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "uma_authorization", "teaching-assistant", "offline_access" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+}
