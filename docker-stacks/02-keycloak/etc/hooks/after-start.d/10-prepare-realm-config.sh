@@ -21,7 +21,7 @@ function generate_realm_data() {
 
     if [[ -e "${conf_file}" ]]; then
         echo "Config file already available: ${conf_file}";
-        return
+        rm -rf ${conf_file};
     fi
 
     if [[ ! -e "${STACK_CONF}/simva-env.sh" ]]; then
@@ -35,7 +35,7 @@ function generate_realm_data() {
         user_username=$(get_or_generate_username "${user}" "${STACK_CONF}/simva-env.sh" "USER")
         echo "  ${user}:" >> ${conf_file}
         echo "    username: \"${user_username}\"" >> ${conf_file}
-    done 
+    done
 
     echo "smtpServer:" >> ${conf_file}
     echo "  host: \"${SIMVA_MAIL_HOST_SUBDOMAIN}.${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}\"" >> ${conf_file}
@@ -60,7 +60,7 @@ function generate_realm_data() {
     echo "    sspBaseUrl: \"https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}/module.php/saml/sp\"" >> ${conf_file}
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
-    echo "    certificate: \"${limesurvey_cert}\"" >> ${conf_file}
+    echo "    certificate: \"${limesurvey_cert//-----END CERTIFICATE-----/}\"" >> ${conf_file}
 
     client_id=$(get_or_generate_username "minio" "${STACK_CONF}/simva-env.sh")
     client_secret=$(get_or_generate_password "minio" "${STACK_CONF}/simva-env.sh")
@@ -81,12 +81,20 @@ function generate_realm_data() {
     echo "    realmId: \"${SIMVA_SSO_REALM}\"" >> ${conf_file}
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
+    echo "    registrationAllowed: \"${SIMVA_SSO_REGISTRATION_ALLOWED}\"" >> ${conf_file}
     
     client_id=$(get_or_generate_username "lti_platform" "${STACK_CONF}/simva-env.sh")
     client_secret=$(get_or_generate_password "lti_platform" "${STACK_CONF}/simva-env.sh")
 
     echo "  lti_platform:" >> ${conf_file}
     echo "    baseUrl: \"https://${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
+    echo "    clientId: \"${client_id}\"" >> ${conf_file}
+    echo "    secret: \"${client_secret}\"" >> ${conf_file}
+
+    client_id=$(get_or_generate_username "keycloak_client" "${STACK_CONF}/simva-env.sh")
+    client_secret=$(get_or_generate_password "keycloak_client" "${STACK_CONF}/simva-env.sh")
+
+    echo "  keycloak_client:" >> ${conf_file}
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
 
@@ -97,6 +105,14 @@ function generate_realm_data() {
     echo "    clientId: \"${client_id}\"" >> ${conf_file}
     echo "    secret: \"${client_secret}\"" >> ${conf_file}
     echo "    baseUrl: \"https://${SIMVA_JUPYTER_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/tree\"" >> ${conf_file}
+
+    client_id=$(get_or_generate_username "tmon" "${STACK_CONF}/simva-env.sh")
+    client_secret=$(get_or_generate_password "tmon" "${STACK_CONF}/simva-env.sh")
+
+    echo "  tmon:" >> ${conf_file}
+    echo "    clientId: \"${client_id}\"" >> ${conf_file}
+    echo "    secret: \"${client_secret}\"" >> ${conf_file}
+    echo "    baseUrl: \"https://${SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}\"" >> ${conf_file}
 }
 
 function configure_realm_file() {
@@ -104,13 +120,27 @@ function configure_realm_file() {
         echo >&2 "missing environment";
         exit 1;
     fi
-
     local environment="${1}"
+    
+    ${SIMVA_HOME}/bin/purge-folder-contents.sh "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/"
 
     gomplate -c ".=file://${STACK_CONF}/realm-data.${environment}.yml" \
         -f "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/simva-realm-full.json" \
         -o "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/simva-realm-full.json"
 
+    folders=("clients" "roles" "users")
+    for i in "${!folders[@]}"; do
+        folder=${folders[$i]};
+        if [[ ! -e "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/$folder/" ]]; then 
+            mkdir "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/$folder/"
+        fi
+        for file in ${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/$folder/*; do
+            filename=$(basename "$file")
+            gomplate -c ".=file://${STACK_CONF}/realm-data.${environment}.yml" \
+                    -f "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/$folder/${filename}" \
+                    -o "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/$folder/${filename}"
+        done
+    done
 }
 
 function configure_realm_development() {

@@ -8,7 +8,7 @@ export RUN_IN_CONTAINER_NAME="keycloak"
 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
     if [[ ! -e "${SIMVA_DATA_HOME}/keycloak/.initialized" ]]; then 
         echo "SIMVA is not initialized. Importing realm..." 
-        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kc.sh import --file "/opt/keycloak/data/import/simva-realm-full.json" --override false --optimized
+        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kc.sh import --file "/opt/keycloak/data/simva-realm-filled/simva-realm-full.json" --override false --optimized
     else
         echo "SIMVA is initialized." 
         migrationinProgressFile="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/.migrationinprogress"
@@ -24,6 +24,12 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
     
     source "${STACK_HOME}/etc/hooks/helpers.d/keycloak-functions.sh"
     source "${SIMVA_HOME}/bin/get-or-generate.sh"
+
+    __update_realm_with_params -s registrationAllowed=${SIMVA_SSO_REGISTRATION_ALLOWED}
+    
+    __add_or_update_role "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/roles" "/opt/keycloak/data/simva-realm-filled/roles"
+    __add_or_update_user "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/users" "/opt/keycloak/data/simva-realm-filled/users"
+
     __keycloak_login
     # Update users config
     users="student teaching_assistant teacher researcher administrator"
@@ -43,6 +49,12 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
         "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh set-password -r ${SIMVA_SSO_REALM} --username $user_username --new-password $user_password
         echo "Setting password for username ${user_username} done"
     done
+    
+    __add_or_update_client_scope "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/clients-scopes/lti" "/opt/keycloak/data/simva-realm/clients-scopes/lti"
+    __add_or_update_client_scope "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/clients-scopes/saml" "/opt/keycloak/data/simva-realm/clients-scopes/saml"
+    __add_or_update_client_scope "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/clients-scopes/policy-role" "/opt/keycloak/data/simva-realm/clients-scopes/policy-role"
+    
+    __add_or_update_client "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/clients" "/opt/keycloak/data/simva-realm-filled/clients"
 else
     echo "Please upgrade to a newer keycloak version ( > 18.*.*) before importing users and realm."
 fi;

@@ -104,6 +104,7 @@ export SIMVA_TRUSTSTORE_CA_ALIAS='simvaCA'
 export SIMVA_SSO_REALM="simva"
 export SIMVA_KEYCLOAK_MYSQL_DATABASE="keycloak"
 export SIMVA_SSO_LOG_LEVEL="info"
+export SIMVA_SSO_REGISTRATION_ALLOWED="true"
 
 #################
 # Mail SSO info #
