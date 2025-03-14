@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 export SIMVA_DEVELOPMENT_LOCAL="false"
 export SIMVA_DEBUG="true"
-export SIMVA_ENABLE_DEBUG_PROFILING="true"
+export SIMVA_ENABLE_DEBUG_PROFILING="false"
 
 #########################################
 # Generate self signed TLS certificates #

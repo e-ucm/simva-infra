@@ -69,7 +69,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/keycloak/providers
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
-      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm/:/opt/keycloak/data/import/:ro
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm/:/opt/keycloak/data/simva-realm-filled/:ro
+      - ${SIMVA_CONFIG_TEMPLATE_HOME:-/home/vagrant/docker-stacks/config-template}/keycloak/simva-realm/:/opt/keycloak/data/simva-realm/:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/:/opt/keycloak/data/export/:rw
       - ${SIMVA_TLS_HOME?TLS home folder required}:/root/.keycloak/certs/:ro
     restart: unless-stopped
@@ -79,6 +80,8 @@ services:
 #      timeout: 20s
 #      retries: 3
     hostname: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    depends_on:
+      - mariadb
     networks:
       default:
         aliases:

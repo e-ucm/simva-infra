@@ -1,9 +1,9 @@
 ${SIMVA_HOME}/bin/purge-folder-contents.sh \
+    "${SIMVA_DATA_HOME}/keycloak/extensions" \
     "${SIMVA_DATA_HOME}/keycloak/deployments" \
     "${SIMVA_DATA_HOME}/keycloak/kcadm" \
     "${SIMVA_DATA_HOME}/keycloak/mariadb" \
     "${SIMVA_DATA_HOME}/keycloak/mariadb-dump" \
-    "${SIMVA_DATA_HOME}/maven/m2" \
     "${SIMVA_CONFIG_HOME}/keycloak/simva-realm" \
     "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export"
 

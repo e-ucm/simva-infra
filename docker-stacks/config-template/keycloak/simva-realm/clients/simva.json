@@ -1,0 +1,84 @@
+{
+  "id": "caa0515a-884a-4cd5-8821-6b56a44d9683",
+  "clientId" : "{{ .clients.simva.clientId }}",
+  "name": "",
+  "description": "",
+  "rootUrl" : "{{ .clients.simva.baseUrl }}",
+  "adminUrl" : "{{ .clients.simva.baseUrl }}",
+  "baseUrl" : "{{ .clients.simva.baseUrl }}",
+  "surrogateAuthRequired": false,
+  "enabled": true,
+  "alwaysDisplayInConsole": true,
+  "clientAuthenticatorType": "client-secret",
+  "secret": "{{ .clients.simva.secret }}",
+  "redirectUris": [
+    "{{ .clients.simva.baseUrl }}/*"
+  ],
+  "webOrigins": [
+    "{{ .clients.simva.baseUrl }}"
+  ],
+  "notBefore": 0,
+  "bearerOnly": false,
+  "consentRequired": false,
+  "standardFlowEnabled": true,
+  "implicitFlowEnabled": false,
+  "directAccessGrantsEnabled": true,
+  "serviceAccountsEnabled": false,
+  "publicClient": false,
+  "frontchannelLogout": false,
+  "protocol": "openid-connect",
+  "attributes": {
+    "access.token.lifespan": "3600",
+    "saml.force.post.binding": "false",
+    "saml.multivalued.roles": "false",
+    "post.logout.redirect.uris": "+",
+    "oauth2.device.authorization.grant.enabled": "false",
+    "backchannel.logout.revoke.offline.tokens": "false",
+    "saml.server.signature.keyinfo.ext": "false",
+    "use.refresh.tokens": "true",
+    "realm_client": "false",
+    "oidc.ciba.grant.enabled": "false",
+    "backchannel.logout.session.required": "true",
+    "client_credentials.use_refresh_token": "false",
+    "require.pushed.authorization.requests": "false",
+    "client.session.max.lifespan": "14400",
+    "client.session.idle.timeout": "14400",
+    "saml.assertion.signature": "false",
+    "saml.encrypt": "false",
+    "saml.clients.signature": "false",
+    "tls.clients.certificate.bound.access.tokens": "false",
+    "saml.server.signature": "false",
+    "exclude.session.state.from.auth.response": "false",
+    "client.use.lightweight.access.token.enabled": "false",
+    "saml_force_name_id_format": "false",
+    "acr.loa.map": "{}",
+    "tls.client.certificate.bound.access.tokens": "false",
+    "saml.authnstatement": "false",
+    "display.on.consent.screen": "false",
+    "token.response.type.bearer.lower-case": "false",
+    "saml.onetimeuse.condition": "false"
+  },
+  "authenticationFlowBindingOverrides": {
+    "browser": "29e942a4-37a2-490d-b879-c06dbba5bbf7"
+  },
+  "fullScopeAllowed": true,
+  "nodeReRegistrationTimeout": -1,
+  "defaultClientScopes": [
+    "web-origins",
+    "roles",
+    "profile",
+    "basic",
+    "email"
+  ],
+  "optionalClientScopes": [
+    "address",
+    "phone",
+    "offline_access",
+    "microprofile-jwt"
+  ],
+  "access": {
+    "view": true,
+    "configure": true,
+    "manage": true
+  }
+}

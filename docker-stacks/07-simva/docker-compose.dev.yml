@@ -15,6 +15,7 @@ services:
     build: ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}
     environment:
       ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
+      PROFILING_FOLDER: /home/node/profiling
     volumes:
       - ${SIMVA_API_GIT_REPO}:/home/node/app/
       - ${SIMVA_DATA_HOME}/simva/simva-api-profiling:/home/node/profiling
@@ -25,6 +26,7 @@ services:
     build: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}
     environment:
       ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
+      PROFILING_FOLDER: /home/node/profiling
     volumes:
       - ${SIMVA_FRONT_GIT_REPO}:/home/node/app/
       - ${SIMVA_DATA_HOME}/simva/simva-front-profiling:/home/node/profiling
@@ -35,6 +37,7 @@ services:
     build: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}
     environment:
       ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
+      PROFILING_FOLDER: /home/node/profiling
     volumes:
       - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO}:/home/node/app/
       - ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling:/home/node/profiling

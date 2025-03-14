@@ -1,0 +1,19 @@
+{
+    "id" : "25b70094-4cbc-4e57-b555-eccd0e879da6",
+    "createdTimestamp" : 1592588013241,
+    "username" :  "{{ .users.student.username }}",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Student",
+    "lastName" : "Student",
+    "email" :  "{{ .users.student.username }}@{{ .clients.simva.externalDomain }}",
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "student", "uma_authorization", "offline_access" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+}

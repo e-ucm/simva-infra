@@ -8,7 +8,11 @@ mkdir -p ${SIMVA_STORAGE_PATH:-/storage} && cd /home/node/app
 #start api
 echo "${NODE_ENV:-production}"
 if [[ "${NODE_ENV:-production}" == "development" ]]; then
-  npm run dev
+  if [[ "${ENABLE_DEBUG_PROFILING:-false}" == "true" ]]; then
+    npm run dev:profiling
+  else 
+    npm run dev
+  fi
 else
   npm start
 fi

@@ -1,0 +1,13 @@
+{
+    "id": "c92eba8b-0518-4cec-92e6-ceea5361e537",
+    "name": "researcher",
+    "composite": true,
+    "composites": {
+      "realm": [
+        "teacher"
+      ]
+    },
+    "clientRole": false,
+    "containerId": "{{ .clients.simva.realmId }}",
+    "attributes": {}
+}

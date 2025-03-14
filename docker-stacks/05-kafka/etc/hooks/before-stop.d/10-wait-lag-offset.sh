@@ -7,7 +7,7 @@ set +e
 up=$(docker compose ps $service_name | grep $service_name)
 echo $up
 set -e
-if [[ ! $up == undefined  ]]; then
+if [[ ! $up == '' ]]; then
   echo "The container is running."
   echo "Working... Please wait ${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN} minutes to consume message via rotate schedule. Press Ctrl+C to stop checking..."
   CONSUMER_GROUP=connect-$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
