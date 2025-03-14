@@ -31,10 +31,10 @@ if [[ ! -e "${SIMVA_TRAEFIK_CERT_FILE}" ]]; then
     cat "${SIMVA_ROOT_CA_FILE}" >> "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE}"
     chmod a+r "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE}"
     keytool -importcert -trustcacerts -noprompt \
-                     -storepass ${SIMVA_TRUSTSTORE_PASSWORD} \
-                     -keystore ${SIMVA_TRUSTSTORE_FILE} \
-                     -alias ${SIMVA_TRUSTSTORE_CA_ALIAS}  \
-                     -file ${SIMVA_ROOT_CA_FILE}
+        -storepass ${SIMVA_TRUSTSTORE_PASSWORD} \
+        -keystore ${SIMVA_TRUSTSTORE_FILE} \
+        -alias ${SIMVA_TRUSTSTORE_CA_ALIAS}  \
+        -file ${SIMVA_ROOT_CA_FILE}
 fi
 
 if [[ ! -e "${SIMVA_DHPARAM_FILE}" ]]; then
