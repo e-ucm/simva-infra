@@ -27,7 +27,7 @@ export SIMVA_TRAEFIK_IMAGE="traefik"
 export SIMVA_TRAEFIK_VERSION="2.11.3"
 
 export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"
-export SIMVA_KEYCLOAK_VERSION="24.0.2"
+export SIMVA_KEYCLOAK_VERSION="26.1.3"
 
 export SIMVA_MARIADB_IMAGE="mariadb"
 export SIMVA_MARIADB_VERSION="10.4.13"
@@ -58,7 +58,7 @@ export SIMVA_DOZZLE_IMAGE="amir20/dozzle"
 export SIMVA_DOZZLE_VERSION="8.10.3"
 
 #Git reference tag version release branch
-export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.1.0"
+export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.2.0"
 export SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION="0.26"
 export SIMVA_KAFKA_EXTENSIONS_VERSION="1.0.0"
 
@@ -92,7 +92,22 @@ fi
 # Traefik: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
 # example: foo.crt,bar.crt
-export SIMVA_SSL_ROOT_CAS="${SIMVA_DATA_HOME}/tls/ca/isrgrootx1.pem"
+export SIMVA_SSL_ROOT_CAS="${SIMVA_TLS_HOME}/ca/isrgrootx1.pem"
+export SIMVA_ROOT_CA_FILE="${SIMVA_TLS_HOME}/ca/rootCA.pem"
+export SIMVA_ROOT_CA_KEY_FILE="${SIMVA_TLS_HOME}/ca/rootCA-key.pem"
+
+export SIMVA_DHPARAM_FILE="${SIMVA_TLS_HOME}/dhparam.pem"
+
+export SIMVA_LIMESURVEY_FULLCHAIN_CERT_FILE="${SIMVA_TLS_HOME}/limesurvey-fullchain.pem"
+export SIMVA_LIMESURVEY_KEY_FILE="${SIMVA_TLS_HOME}/limesurvey-key.pem"
+export SIMVA_LIMESURVEY_CERT_FILE="${SIMVA_TLS_HOME}/limesurvey.pem"
+export SIMVA_LIMESURVEY_CERT_CRS_FILE="${SIMVA_TLS_HOME}/limesurvey.csr"
+
+export SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE="${SIMVA_TLS_HOME}/traefik-fullchain.pem"
+export SIMVA_TRAEFIK_KEY_FILE="${SIMVA_TLS_HOME}/traefik-key.pem"
+export SIMVA_TRAEFIK_CERT_FILE="${SIMVA_TLS_HOME}/traefik.pem"
+
+export SIMVA_TRUSTSTORE_FILE="${SIMVA_TLS_HOME}/truststore.jks"
 
 ##########################################
 # Checking time for container availabled #

@@ -1,0 +1,26 @@
+{
+  "id": "92f8dbcb-8390-4058-9eb4-3d3aea26cc9a",
+  "name": "policy_role_attribute",
+  "description": "Policy role attribute",
+  "protocol": "openid-connect",
+  "attributes": {
+    "include.in.token.scope": "true",
+    "display.on.consent.screen": "false"
+  },
+  "protocolMappers": [
+    {
+      "id": "4a93092f-8ee5-40cb-8db6-57b15c8a998f",
+      "name": "policy_role_attribute",
+      "protocol": "openid-connect",
+      "protocolMapper": "policy-role-attribute-mapper",
+      "consentRequired": false,
+      "config": {
+        "user.attribute": "policy",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "policy",
+        "userinfo.token.claim": "true"
+      }
+    }
+  ]
+}

@@ -21,7 +21,7 @@ services:
 # see: https://issues.redhat.com/browse/KEYCLOAK-1578, https://github.com/thomasdarimont/keycloak-health-checks/
   keycloak:
     << : *default-opts
-    image: ${SIMVA_KEYCLOAK_IMAGE:-quay.io/keycloak/keycloak}:${SIMVA_KEYCLOAK_VERSION:-24.0.2}
+    image: ${SIMVA_KEYCLOAK_IMAGE:-quay.io/keycloak/keycloak}:${SIMVA_KEYCLOAK_VERSION:-26.1.3}
     entrypoint:
       - '/bin/bash'
       - '-c'
@@ -29,14 +29,11 @@ services:
     environment:
       # Hostname
       - KC_HOSTNAME=${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-      - KC_HOSTNAME_STRICT_HTTPS=true
-      - KC_HOSTNAME_STRICT=false
       # HTTP
       - KC_HTTP_ENABLED=true
       - KC_HTTP_HOST=0.0.0.0
       - HTTP_ADDRESS_FORWARDING=true
       # PROXY
-      - KC_PROXY=edge
       - KC_PROXY_HEADERS=xforwarded
       - PROXY_ADDRESS_FORWARDING=true
       # Health and metrics
@@ -54,8 +51,8 @@ services:
       - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-240}
       # Master Realm + Admin user
       - KC_REALM_NAME=master
-      - KEYCLOAK_ADMIN=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
-      - KEYCLOAK_ADMIN_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
+      - KC_BOOTSTRAP_ADMIN_USERNAME=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       #SIMVA Realm theme
       - KC_SPI_THEME_DEFAULT=simva
       - KC_SIMVA_FRONT_URL=${SIMVA_EXTERNAL_PROTOCOL:-https}://${SIMVA_EXTERNAL_DOMAIN:-external.test}
@@ -73,15 +70,10 @@ services:
       - ${SIMVA_CONFIG_TEMPLATE_HOME:-/home/vagrant/docker-stacks/config-template}/keycloak/simva-realm/:/opt/keycloak/data/simva-realm/:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/:/opt/keycloak/data/export/:rw
       - ${SIMVA_TLS_HOME?TLS home folder required}:/root/.keycloak/certs/:ro
-    restart: unless-stopped
-#    healthcheck:
-#     test: "wget http://0.0.0.0/health/ready:8080 || exit 1"
-#     interval: 60s
-#      timeout: 20s
-#      retries: 3
-    hostname: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     depends_on:
       - mariadb
+    restart: unless-stopped
+    hostname: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:

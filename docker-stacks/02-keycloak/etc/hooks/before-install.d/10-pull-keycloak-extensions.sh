@@ -8,19 +8,24 @@ if [[ ! -d "${EXTENSIONS_DIR}" ]]; then
 fi
 
 DEPLOYMENT_DIR="${SIMVA_DATA_HOME}/keycloak/deployments"
-if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
-    # (tested in Keycloak 24.0.2)
-    SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme es.e-ucm.simva.keycloak.custom-token-auth-spi"
+if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -gt 25 ]]; then
+    # (tested in Keycloak 26.1.3)
+    SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme-v2 es.e-ucm.simva.keycloak.custom-token-auth-spi"
 else
-    # (tested in Keycloak 10.0.2)
-    SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.lti-oidc-mapper es.e-ucm.simva.keycloak.script-policy-attribute-mapper"
+    if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -gt 18 ]]; then
+        # (tested in Keycloak 24.0.2)
+        SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme es.e-ucm.simva.keycloak.custom-token-auth-spi"
+    else
+        # (tested in Keycloak 10.0.2)
+        SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.lti-oidc-mapper es.e-ucm.simva.keycloak.script-policy-attribute-mapper"
+    fi
 fi
 
 pushd "${EXTENSIONS_DIR}"
 
 GIT_RELEASE_URL="https://github.com/e-ucm/keycloak-extensions/releases/download/v${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}"
 for ext in $SIMVA_EXTENSIONS; do
-    ext_jar="${ext}-${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}.jar"
+    ext_jar="${ext}-keycloak${SIMVA_KEYCLOAK_VERSION%%.*}-${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}.jar"
     if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
         wget -q -P "${EXTENSIONS_DIR}" "${GIT_RELEASE_URL}/${ext_jar}"
         chmod 777 "${EXTENSIONS_DIR}/${ext_jar}"
@@ -29,8 +34,8 @@ for ext in $SIMVA_EXTENSIONS; do
             wget -q -O "${EXTENSIONS_DIR}/${shasums}" "${GIT_RELEASE_URL}/SHA256SUMS"
         fi
         echo "$(cat "${EXTENSIONS_DIR}/${shasums}"  | grep "${ext_jar}" | cut -d' ' -f1) ${ext_jar}" | sha256sum -c -w -
-        cp "${EXTENSIONS_DIR}/${ext_jar}" "${DEPLOYMENT_DIR}/${ext}.jar"
     fi
+    cp "${EXTENSIONS_DIR}/${ext_jar}" "${DEPLOYMENT_DIR}/${ext}.jar"
 done
 
 ext="io.phasetwo.keycloak.keycloak-events"
@@ -42,6 +47,6 @@ if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
         wget -q -O "${EXTENSIONS_DIR}/${shasums}" "https://github.com/e-ucm/keycloak-events/releases/download/v${SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION}/SHA256SUMS"
     fi
     echo "$(cat "${EXTENSIONS_DIR}/${shasums}"  | grep "${ext_jar}" | cut -d' ' -f1) ${ext_jar}" | sha256sum -c -w -
-    cp "${EXTENSIONS_DIR}/${ext_jar}" "${DEPLOYMENT_DIR}/${ext}.jar"
 fi
+cp "${EXTENSIONS_DIR}/${ext_jar}" "${DEPLOYMENT_DIR}/${ext}.jar"
 popd
