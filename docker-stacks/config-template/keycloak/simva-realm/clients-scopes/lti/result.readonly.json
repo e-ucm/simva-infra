@@ -1,0 +1,10 @@
+{
+  "id": "3f9730f4-9dea-415d-809b-aa5663c1a33e",
+  "name": "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+  "description": "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+  "protocol": "openid-connect",
+  "attributes": {
+    "include.in.token.scope": "true",
+    "display.on.consent.screen": "true"
+  }
+}
