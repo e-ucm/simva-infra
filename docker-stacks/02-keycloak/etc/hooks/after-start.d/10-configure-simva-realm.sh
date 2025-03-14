@@ -25,7 +25,7 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
     source "${STACK_HOME}/etc/hooks/helpers.d/keycloak-functions.sh"
     source "${SIMVA_HOME}/bin/get-or-generate.sh"
 
-    __update_realm_with_params -s registrationAllowed=${SIMVA_SSO_REGISTRATION_ALLOWED}
+    __update_realm_with_params -s registrationAllowed=${SIMVA_SSO_SELF_REGISTRATION_ALLOWED}
     
     __add_or_update_role "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/roles" "/opt/keycloak/data/simva-realm-filled/roles"
     __add_or_update_user "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/users" "/opt/keycloak/data/simva-realm-filled/users"
@@ -37,14 +37,16 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
     if [[ -e ${conf_file} ]]; then
         rm -rf ${conf_file}
     fi
-    echo "users:" >> ${conf_file}
+    echo "users:" > ${conf_file}
     for user in $users; do
         user=$(echo ${user} | sed -e 's/[^0-9A-Za-z_]/_/g' )
         user_username=$(get_or_generate_username "${user}" "${STACK_CONF}/simva-env.sh" "USER")
         user_password=$(get_or_generate_password "${user}" "${STACK_CONF}/simva-env.sh" "USER")
-        echo "  ${user}:" >> ${conf_file}
-        echo "    username: \"${user_username}\"" >> ${conf_file}
-        echo "    password: \"${user_password}\"" >> ${conf_file}
+        cat << EOF >> ${conf_file}
+  ${user}:
+    username: "${user_username}"
+    password: "${user_password}"
+EOF
         echo "Setting password for username ${user_username}"
         "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh set-password -r ${SIMVA_SSO_REALM} --username $user_username --new-password $user_password
         echo "Setting password for username ${user_username} done"
