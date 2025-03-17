@@ -11,3 +11,4 @@ if [[ -e $EXPORTED_JSON_FILE ]] && [[ -e $EXPORTED_USERS_JSON_FILE ]]; then
     cp $GENERATED_JSON_FILE $EXPORTED_JSON_FILE
     touch "${KEYCLOAK_CONFIG_EXPORT_FOLDER}/.migrationinprogress"
 fi;
+rm "${SIMVA_CONFIG_HOME}/keycloak/.migration"

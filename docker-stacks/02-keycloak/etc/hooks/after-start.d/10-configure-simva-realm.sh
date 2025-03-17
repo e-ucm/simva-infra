@@ -22,7 +22,7 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
         fi;
     fi;
     
-    if [[ ! -e "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/.exportinprogress" ]]; then 
+    if [[ ! -e "${SIMVA_CONFIG_HOME}/keycloak/.migration" ]]; then 
         source "${STACK_HOME}/etc/hooks/helpers.d/keycloak-functions.sh"
         source "${SIMVA_HOME}/bin/get-or-generate.sh"
 
