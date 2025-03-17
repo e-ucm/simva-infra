@@ -271,6 +271,95 @@ function __add_or_update_role() {
    __add_or_update_keycloak_resource "roles" "name" "name" "name" $@
 }
 
+function __get_keycloak_resource_from_exact() {
+    if [[ $# -lt 1 ]]; then
+        echo "keycloak resource path expected";
+        exit 1;
+    fi
+    keycloak_resource=$1
+    shift 1
+
+    if [[ $# -lt 1 ]]; then
+        echo "$keycloak_resource 'field' expected";
+        exit 1;
+    fi
+    field=$1
+    shift 1
+    
+    if [[ $# -lt 1 ]]; then
+        echo "$keycloak_resource 'field $field value' expected";
+        exit 1;
+    fi
+    value=$1
+
+    __keycloak_login
+    "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh get -r ${SIMVA_SSO_REALM} "$keycloak_resource" -q exact=true -q $field=$value | jq -e -c -r ".[] | select(.$field == \"${value}\")"
+}
+
+function __add_or_update_keycloak_resource_from_exact() {
+     if [[ $# -lt 1 ]]; then
+        echo "keycloak resource path expected";
+        exit 1;
+    fi
+    keycloak_resource=$1
+    shift 1
+
+    if [[ $# -lt 1 ]]; then
+        echo "$keycloak_resource field expected";
+        exit 1;
+    fi
+    field=$1;
+    shift 1
+
+    if [[ $# -lt 1 ]]; then
+        echo "Lookup $keycloak_resource field expected";
+        exit 1;
+    fi
+    lookupField=$1;
+    shift 1
+
+    if [[ $# -lt 1 ]]; then
+        echo "Endpoint $keycloak_resource field expected";
+        exit 1;
+    fi
+    endpointField=$1;
+    shift 1
+
+    if [[ $# -lt 1 ]]; then
+        echo "$keycloak_resource local folder expected";
+        exit 1;
+    fi
+    localFolder=$1;
+    shift 1
+
+    if [[ $# -lt 1 ]]; then
+        echo "$keycloak_resource docker folder expected";
+        exit 1;
+    fi
+    dockerFolder=$1;
+    shift 1
+
+    for file in $localFolder/*; do
+        filename=$(basename "$file")
+        id=$(cat $file | jq -e -c -r ".$lookupField")
+        keycloak_resource_id=$(cat $file | jq -e -c -r ".$field")
+        set +e
+        present_keycloak_resource=$(__get_keycloak_resource_from_exact $keycloak_resource $field $keycloak_resource_id);
+        result=$?
+        set -e
+        if [[ $result -eq 0 ]]; then
+            present_keycloak_resource_name=$(echo $present_keycloak_resource | jq -e -c -r ".$field")
+            present_keycloak_resource_id=$(echo $present_keycloak_resource | jq -e -c -r ".$endpointField")
+            echo "'${present_keycloak_resource_name}' $keycloak_resource already configured. Reload it..."
+            __update_keycloak_resource $keycloak_resource $present_keycloak_resource_id "$dockerFolder/$filename"
+        else
+            echo "'${keycloak_resource_id}' $keycloak_resource not configured."
+            __add_keycloak_resource $keycloak_resource "$dockerFolder/$filename"
+        fi
+    done
+}
+
+
 function __add_or_update_user() {
-   __add_or_update_keycloak_resource "users" "username" "username" "id" $@
+   __add_or_update_keycloak_resource_from_exact "users" "username" "username" "id" $@
 }
