@@ -1725,8 +1725,8 @@
     },
     {
       "id": "29e942a4-37a2-490d-b879-c06dbba5bbf7",
-      "alias": "Custom browser",
-      "description": "Custom browser based authentication",
+      "alias": "{{ .clients.simva.realmId }} browser",
+      "description": "{{ .clients.simva.realmId }} browser based authentication",
       "providerId": "basic-flow",
       "topLevel": true,
       "builtIn": false,
@@ -1760,14 +1760,14 @@
           "requirement": "ALTERNATIVE",
           "priority": 30,
           "autheticatorFlow": true,
-          "flowAlias": "Custom browser forms",
+          "flowAlias": "{{ .clients.simva.realmId }} browser forms",
           "userSetupAllowed": false
         }
       ]
     },
     {
       "id": "0e49c7df-ec70-4d57-83a3-42a41011e32c",
-      "alias": "Custom browser Browser - Conditional OTP",
+      "alias": "{{ .clients.simva.realmId }} browser Browser - Conditional OTP",
       "description": "Flow to determine if the OTP is required for the authentication",
       "providerId": "basic-flow",
       "topLevel": false,
@@ -1793,7 +1793,7 @@
     },
     {
       "id": "6b23c72d-e521-4333-9370-b1c304228829",
-      "alias": "Custom browser forms",
+      "alias": "{{ .clients.simva.realmId }} browser forms",
       "description": "Username, password, otp and other auth forms.",
       "providerId": "basic-flow",
       "topLevel": false,
@@ -1812,14 +1812,14 @@
           "requirement": "CONDITIONAL",
           "priority": 23,
           "autheticatorFlow": true,
-          "flowAlias": "Custom browser Browser - Conditional OTP",
+          "flowAlias": "{{ .clients.simva.realmId }} browser Browser - Conditional OTP",
           "userSetupAllowed": false
         }
       ]
     },
     {
       "id": "f5537ab7-dd45-4397-9be6-4328a2162feb",
-      "alias": "Custom direct grant",
+      "alias": "{{ .clients.simva.realmId }} direct grant",
       "description": "OpenID Connect Resource Owner Grant",
       "providerId": "basic-flow",
       "topLevel": true,
@@ -1846,14 +1846,14 @@
           "requirement": "CONDITIONAL",
           "priority": 31,
           "autheticatorFlow": true,
-          "flowAlias": "Custom direct grant Direct Grant - Conditional OTP",
+          "flowAlias": "{{ .clients.simva.realmId }} direct grant Direct Grant - Conditional OTP",
           "userSetupAllowed": false
         }
       ]
     },
     {
       "id": "d9caf1a4-70d1-4aa0-a6b0-15f6a29a9489",
-      "alias": "Custom direct grant Direct Grant - Conditional OTP",
+      "alias": "{{ .clients.simva.realmId }} direct grant Direct Grant - Conditional OTP",
       "description": "Flow to determine if the OTP is required for the authentication",
       "providerId": "basic-flow",
       "topLevel": false,
