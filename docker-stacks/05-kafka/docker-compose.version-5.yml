@@ -152,6 +152,7 @@ services:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/connect/kafka-connect-storage-common:/usr/share/simva/kafka-connect-storage-common
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/connect:/usr/share/simva
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/usr/share/simva/ca
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-rootCA.sh:/usr/share/entrypoint.d/docker-startup.sh
     depends_on:
       - zk1
       - kafka1
