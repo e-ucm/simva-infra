@@ -9,7 +9,7 @@ if [[ ! -e ""${SIMVA_ROOT_CA_FILE}"" ]]; then
         chmod a+r "${SIMVA_ROOT_CA_KEY_FILE}"
         chmod a+r "${SIMVA_ROOT_CA_FILE}"
     else 
-        echo "Please insert your ${SIMVA_ROOT_CA_FILE} or run using ${SIMVA_TLS_GENERATE_SELF_SIGNED}=true to self generate your certificates."
+        echo "Please insert your ${SIMVA_ROOT_CA_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
         exit 1;
     fi
 fi
@@ -30,7 +30,7 @@ if [[ ! -e "${SIMVA_TRAEFIK_CERT_FILE}" ]]; then
         chmod a+r "${SIMVA_TRAEFIK_KEY_FILE}"
         chmod a+r "${SIMVA_TRAEFIK_CERT_FILE}"
     else 
-        echo "Please insert your ${SIMVA_TRAEFIK_CERT_FILE} or run using ${SIMVA_TLS_GENERATE_SELF_SIGNED}=true to self generate your certificates."
+        echo "Please insert your ${SIMVA_TRAEFIK_CERT_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
         exit 1;
     fi
 fi 
@@ -53,7 +53,7 @@ if [[ ! -e "${SIMVA_DHPARAM_FILE}" ]]; then
     if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
         openssl dhparam -out "${SIMVA_DHPARAM_FILE}" 2048
     else 
-        echo "Please insert your ${SIMVA_DHPARAM_FILE} or run using ${SIMVA_TLS_GENERATE_SELF_SIGNED}=true to self generate your certificates."
+        echo "Please insert your ${SIMVA_DHPARAM_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
         exit 1;
     fi
 fi
