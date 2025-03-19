@@ -1,11 +1,8 @@
-########################
-# REMOVE LIMESURVEY DATA
-########################
-# Removing Limesurvey etc data 
-cd "${SIMVA_DATA_HOME}/limesurvey/data/etc" && rm -rf ./*
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
 
-# Removing Limesurvey plugins data 
-cd "${SIMVA_DATA_HOME}/limesurvey/data/plugins" && rm -rf ./*
-
-# Removing Limesurvey tmp data 
-cd "${SIMVA_DATA_HOME}/limesurvey/data/tmp" && rm -rf ./*
+${SIMVA_HOME}/bin/purge-folder-contents.sh \
+    "${SIMVA_DATA_HOME}/limesurvey/data/etc" \
+    "${SIMVA_DATA_HOME}/limesurvey/data/plugins" \
+    "${SIMVA_DATA_HOME}/limesurvey/data/tmp"

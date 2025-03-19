@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
+
 rm -rf "${SIMVA_CONFIG_HOME}/limesurvey/etc/config.php"
 
 # Removing Limesurvey simplesamlphp config data 

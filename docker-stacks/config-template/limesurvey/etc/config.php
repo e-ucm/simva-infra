@@ -26,10 +26,10 @@
 return array(
     'components' => array(
         'db' => array(
-            'connectionString' => 'mysql:host=mariadb.<<SIMVA_LIMESURVEY_HOST_SUBDOMAIN>>.<<SIMVA_INTERNAL_DOMAIN>>;port=3306;dbname=<<SIMVA_LIMESURVEY_MYSQL_DATABASE>>;',
+            'connectionString' => 'mysql:host={{ .db.url }};port=3306;dbname={{ .db.database }};',
             'emulatePrepare' => true,
-            'username' => '<<SIMVA_LIMESURVEY_MYSQL_USER>>',
-            'password' => '<<SIMVA_LIMESURVEY_MYSQL_PASSWORD>>',
+            'username' => '{{ .db.user }}',
+            'password' => '{{ .db.password }}',
             'charset' => 'utf8mb4',
             'attributes' => array(),
             'tablePrefix' => '',
@@ -40,7 +40,7 @@ return array(
         // 'session' => array (
             // 'class' => 'application.core.web.DbHttpSession',
             // 'connectionID' => 'db',
-            // 'sessionTableName' => '{{sessions}}',
+            // 'sessionTableName' => '{sessions}',
         // ),
 
         'urlManager' => array(
@@ -54,6 +54,30 @@ return array(
     ),
     // Use the following config variable to set modified optional settings copied from config-defaults.php
     'config'=>array(
+        // Update default LimeSurvey config here
+        'WebHookStatusSettings' => [
+            'fixed' => [
+                'sWebhookUrl' => '{{ .plugins.webhooks.url }}',
+            ],
+            'sBug' => '{{ .plugins.webhooks.debug }}'
+        ],
+		'AuthOAuth2Settings' => [
+			'fixed' => [
+				'client_id' => '{{ .plugins.oauth2.client_id }}',
+				'client_secret' => '{{ .plugins.oauth2.client_secret }}',
+				'authorize_url' => '{{ .plugins.oauth2.keycloak_realm_url }}/protocol/openid-connect/auth',
+				'access_token_url' => '{{ .plugins.oauth2.keycloak_realm_url }}/protocol/openid-connect/token',
+				'resource_owner_details_url' => '{{ .plugins.oauth2.keycloak_realm_url }}/protocol/openid-connect/userinfo',
+				'is_default' => true,
+			],
+			'hidden' => ['client_id','client_secret'],
+			'scopes' => 'openid profile email',
+			'scope_separator' => ' ',
+			'identifier_attribute' => 'username',
+			'username_key' => '	preferred_username',
+			'email_key' => 'email',
+			'display_name_key' => 'preferred_username',
+		],
         // debug: Set this to 1 if you are looking for errors. If you still get no errors after enabling this
         // then please check your error-logs - either in your hosting provider admin panel or in some /logs directory
         // on your webspace.

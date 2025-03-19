@@ -35,33 +35,11 @@ services:
       ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-secret}
       PUBLIC_URL: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
       BASE_URL: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
-      #LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE: "${SIMVA_LIMESURVEY_CLIENT_ID:-limesurvey}"
-      #LIMESURVEY_SAML_PLUGIN_UID_MAPPING: "username"
-      #SIMPLESAMLPHP_PATH: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}"
-      #SIMPLESAMLPHP_SESSION_COOKIE_PATH: "/"
-      #SIMPLESAMLPHP_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD:-password}"
-      #SIMPLESAMLPHP_ENABLE_DEFAULT_VHOST: "true"
-      #SIMPLESAMLPHP_INTERNAL_PROXY_HOSTNAME: "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      #SIMPLESAMLPHP_ADMIN_PROTECT_INDEX_PAGE: "true"
-      #MSMTP_HOST: "${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      #MSMTP_FROM: "no-reply@${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      #SIMPLESAMLPHP_LOG_LEVEL: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL:-INFO}"
-      #SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_CLIENT_ID:-limesurvey}"
-      #SIMPLESAMLPHP_SP_PRIVATE_KEY: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-example.key}
-      #SIMPLESAMLPHP_SP_CERT: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-example.crt}
-      #SIMPLESAMLPHP_SP_CERT_SUBJ: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ:-/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}}"
-      #SIMPLESAMLPHP_SP_IDP_ID: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}"
-      #SIMPLESAMLPHP_SP_IDP_METADATA_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/protocol/saml/descriptor"
-      #SIMPLESAMLPHP_SIGN_AUTHN_REQUESTS: "true"
-      #SIMPLESAMLPHP_SIGN_LOGOUT_REQUESTS: "true"
-      #SIMPLESAMLPHP_SIGN_REDIRECTS_REQUESTS: "true"
-      #SIMPLESAMLPHP_ENCRYPTED_ASSERTIONS: "true"
-      #LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
+      LIMESURVEY_WEBHOOK_PLUGIN_URL: https://${SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/limesurvey-completion-webhooks
+      LIMESURVEY_WEBHOOK_PLUGIN_DEBUG: ${SIMVA_DEBUG:-true}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      #- ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}-data/config:/etc${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}
-      #- ${SIMVA_TLS_HOME?TLS home folder required}:/etc${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}/certs:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/limesurvey/etc/config.php:/var/www/html/application/config/config.php
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/limesurvey/etc/security.php:/var/www/html/application/config/security.php
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/plugins:/var/www/html/plugins

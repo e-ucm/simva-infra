@@ -18,7 +18,7 @@ networks:
 services:
   limesurvey:
     << : *default-opts
-    image: eucm/limesurvey:4.3.15-4
+    image: eucm/limesurvey:4.3.15-4 #4.6.3-2
     entrypoint:
       - '/bin/bash'
       - '-c'
@@ -60,6 +60,8 @@ services:
       SIMPLESAMLPHP_ENCRYPTED_ASSERTIONS: "true"
       LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
+      LIMESURVEY_WEBHOOK_PLUGIN_URL: https://${SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/limesurvey-completion-webhooks
+      LIMESURVEY_WEBHOOK_PLUGIN_DEBUG: ${SIMVA_DEBUG:-true}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}-data/config:/etc${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}

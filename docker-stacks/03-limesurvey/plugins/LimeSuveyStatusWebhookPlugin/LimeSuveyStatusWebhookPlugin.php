@@ -10,23 +10,65 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
             // Hook into events triggered when a survey is completed and when a survey is initialized (before the first page is loaded)
             $this->subscribe('afterSurveyComplete'); // This event will be triggered when a respondent completed the survey
             $this->subscribe('beforeSurveyPage');  // This event will be triggered when a respondent initializes the survey
+            // Set a config setting dynamically
+            //$this->set('sWebhookUrl', getenv('LIMESURVEY_WEBHOOK_PLUGIN_URL') ? getenv('LIMESURVEY_WEBHOOK_PLUGIN_URL') : '');
+            error_log("sWebhookUrl : " . $this->get('sWebhookUrl', null, null, false));
+            //#error_log((boolean)json_decode(strtolower(getenv('LIMESURVEY_WEBHOOK_PLUGIN_DEBUG'))));
+            //$bug=(strtolower(getenv('LIMESURVEY_WEBHOOK_PLUGIN_DEBUG')) == "true" ? true : false);
+            //#error_log($bug);
+            //$this->set('sBug', getenv('LIMESURVEY_WEBHOOK_PLUGIN_DEBUG') ? $bug : false);
+            error_log("sBug : " . $this->get('sBug', null, null, false));
         }
 
-		protected $settings = [
+        protected $settings = [];
+
+    /**
+     * @param mixed $getValues
+     */
+    public function getPluginSettings($getValues = true) {
+        //if (!Permission::model()->hasGlobalPermission('settings', 'read')) {
+        //    throw new CHttpException(403);
+        //}
+        /* Definition and default */
+        $fixedPluginSettings = $this->getFixedGlobalSetting();
+        $this->settings = [
             'sWebhookUrl' => [
                 'type' => 'string',
-                'label' => 'Webhook URL',
-                'default' => '',
-                'help' => 'The URL to call when a survey is completed or initialized.',
+                'label' => $this->gT('Webhook URL'),
+                'default' => $this->getGlobalSetting('webhook_url'),
+                'htmlOptions' => [
+                    'readonly' => in_array('webhook_url', $fixedPluginSettings)
+                ],
+                'help' => $this->gT('The URL to call when a survey is completed or initialized.'),
             ],
             'sBug' => [
                 'type' => 'boolean',
-                'label' => 'Enable Debug Mode',
-                'default' => false,
-                'help' => 'Enable debugging to output the webhook call details.',
+                'label' => $this->gT('Enable Debug Mode'),
+                'default' => false, #(boolean)json_decode(strtolower($this->getGlobalSetting('debug'))),
+                'htmlOptions' => [
+                    'readonly' => in_array('debug', $fixedPluginSettings)
+                ],
+                'help' => $this->gT('Enable debugging to output the webhook call details.'),
             ],
         ];
 
+        /* Get current */
+        $pluginSettings = parent::getPluginSettings($getValues);
+        error_log(json_encode($pluginSettings));
+        /* Update current for fixed one */
+        if ($getValues) {
+            foreach ($fixedPluginSettings as $setting) {
+                $pluginSettings[$setting]['current'] = $this->getGlobalSetting($setting);
+            }
+        }
+        error_log(json_encode($pluginSettings));
+        /* Remove hidden */
+        foreach ($this->getHiddenGlobalSetting() as $setting) {
+            unset($pluginSettings[$setting]);
+        }
+        error_log(json_encode($pluginSettings));
+        return $pluginSettings;
+    }
 
     public function beforeSurveyPage()
     {
@@ -175,5 +217,49 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
             // Get the current event and append the debug HTML to the content
             error_log($logMessage);
         }
+    }
+
+        /**
+     * get settings according to current DB and fixed config.php
+     * @param string $setting
+     * @param mixed $default
+     * @return mixed
+     */
+    private function getGlobalSetting($setting, $default = null)
+    {
+        $AuthOAuth2Settings = App()->getConfig('WebHookStatusSettings');
+        if (isset($AuthOAuth2Settings['fixed'][$setting])) {
+            return $AuthOAuth2Settings['fixed'][$setting];
+        }
+        if (isset($AuthOAuth2Settings[$setting])) {
+            return $this->get($setting, null, null, $AuthOAuth2Settings[$setting]);
+        }
+        return $this->get($setting, null, null, $default);
+    }
+
+    /**
+     * Get the fixed settings name
+     * @return string[]
+     */
+    private function getFixedGlobalSetting()
+    {
+        $AuthOAuth2Setting = App()->getConfig('WebHookStatusSettings');
+        if (isset($AuthOAuth2Setting['fixed'])) {
+            return array_keys($AuthOAuth2Setting['fixed']);
+        }
+        return [];
+    }
+
+    /**
+     * Get the hidden settings name
+     * @return string[]
+     */
+    private function getHiddenGlobalSetting()
+    {
+        $AuthOAuth2Setting = App()->getConfig('AuthOAuth2Settings');
+        if (isset($AuthOAuth2Setting['hidden'])) {
+            return $AuthOAuth2Setting['hidden'];
+        }
+        return [];
     }
 }
