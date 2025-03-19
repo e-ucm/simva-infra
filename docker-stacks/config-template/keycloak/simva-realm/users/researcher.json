@@ -10,10 +10,8 @@
     "email" :  "{{ .users.researcher.username }}@{{ .clients.simva.externalDomain }}",
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "uma_authorization", "offline_access", "researcher" ],
-    "clientRoles" : {
-      "account" : [ "view-profile", "manage-account" ]
-    },
+    "realmRoles" : [ "researcher" ],
+    "clientRoles" : {},
     "notBefore" : 0,
     "groups" : [ ]
   }

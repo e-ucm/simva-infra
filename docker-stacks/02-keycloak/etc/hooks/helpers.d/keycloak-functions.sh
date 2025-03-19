@@ -300,6 +300,21 @@ function __add_or_update_role() {
             done
             echo "$roles"
             "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --rname $rolename $roles
+            clients=$(jq -c -r '.composites.client // { "defaultClient": [] } | to_entries[] | "\(.key)=\(.value)"' "$file")
+            for client in $clients; do
+                clientid=$(echo "$client" | cut -d'=' -f1)     # Extract the clientid
+                roles=$(echo "$client" | cut -d'=' -f2)        # Extract the rest as the role
+                echo "Processing client: $clientid"
+                roleTable=$(echo "$roles" | jq -c -r '. // [] | join(" ")')
+                clientRoles=""
+                for role in $roleTable; do
+                    clientRoles+="--rolename $role "
+                done
+                if [[ ! $clientRoles == "" ]]; then 
+                    echo $clientRoles
+                    "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --rname $rolename --cclientid $clientid $clientRoles
+                fi
+            done
         fi
     done
     role=$(__get_role_from_exact "name" "default-roles-${SIMVA_SSO_REALM}")
@@ -415,5 +430,44 @@ function __add_or_update_keycloak_resource_from_exact() {
 
 
 function __add_or_update_user() {
-   __add_or_update_keycloak_resource_from_exact "users" "username" "username" "id" $@
+    if [[ $# -lt 1 ]]; then
+        echo "$keycloak_resource local folder expected";
+        exit 1;
+    fi
+    localFolder=$1;
+    shift 1
+
+    if [[ $# -lt 1 ]]; then
+        echo "$keycloak_resource docker folder expected";
+        exit 1;
+    fi
+    dockerFolder=$1;
+    shift 1
+    
+    __add_or_update_keycloak_resource_from_exact "users" "username" "username" "id" $localFolder $dockerFolder
+    for file in $localFolder/*; do
+        username=$(jq -c -r ".username" "$file")
+        realmRoles=$(jq -c -r '.realmRoles // [] | join(" ")' "$file")  # Ensure empty array if not found
+        roles=""
+        for role in $realmRoles; do
+            composedRole=$(__get_role_from_exact "name" "$role")
+            roles+="--rolename $role "
+        done
+        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --uusername $username $roles
+        clients=$(jq -c -r '.clientRoles // { "defaultClient": [] } | to_entries[] | "\(.key)=\(.value)"' "$file")
+        for client in $clients; do
+            clientid=$(echo "$client" | cut -d'=' -f1)     # Extract the clientid
+            roles=$(echo "$client" | cut -d'=' -f2)        # Extract the rest as the role
+            echo "Processing client: $clientid"
+            roleTable=$(echo "$roles" | jq -c -r '. // [] | join(" ")')
+            clientRoles=""
+            for role in $roleTable; do
+                clientRoles+="--rolename $role "
+            done
+            if [[ ! $clientRoles == "" ]]; then 
+                echo $clientRoles
+                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --uusername $username --cclientid $clientid $clientRoles
+            fi
+        done
+    done
 }

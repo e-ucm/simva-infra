@@ -10,10 +10,8 @@
     "email" :  "{{ .users.teaching_assistant.username }}@{{ .clients.simva.externalDomain }}",
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "uma_authorization", "teaching-assistant", "offline_access" ],
-    "clientRoles" : {
-      "account" : [ "view-profile", "manage-account" ]
-    },
+    "realmRoles" : [ "teaching-assistant" ],
+    "clientRoles" : {},
     "notBefore" : 0,
     "groups" : [ ]
 }
