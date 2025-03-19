@@ -12,7 +12,7 @@
   "clientAuthenticatorType": "client-secret",
   "secret": "{{ .clients.limesurvey.secret }}",
   "redirectUris": [ 
-    "/*"
+    "{{ .clients.limesurvey.baseUrl }}/*"
   ],
   "webOrigins": [ 
     "{{ .clients.limesurvey.baseUrl }}" 
