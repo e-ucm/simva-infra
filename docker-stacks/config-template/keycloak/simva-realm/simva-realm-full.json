@@ -1385,7 +1385,7 @@
   "accountTheme": "simva",
   "adminTheme": "simva",
   "emailTheme": "simva",
-  "eventsEnabled": true,
+  "eventsEnabled": "{{ .events.enabled }}",
   "eventsExpiration": 604800,
   "eventsListeners": [
     "jboss-logging"
@@ -1510,8 +1510,8 @@
     "CODE_TO_TOKEN",
     "IDENTITY_PROVIDER_FIRST_LOGIN_ERROR"
   ],
-  "adminEventsEnabled": true,
-  "adminEventsDetailsEnabled": true,
+  "adminEventsEnabled": "{{ .events.enabled }}",
+  "adminEventsDetailsEnabled": "{{ .events.enabled }}",
   "identityProviders": [],
   "identityProviderMappers": [],
   "components": {

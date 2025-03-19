@@ -26,7 +26,12 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
         source "${STACK_HOME}/etc/hooks/helpers.d/keycloak-functions.sh"
         source "${SIMVA_HOME}/bin/get-or-generate.sh"
 
-        __update_realm_with_params -s registrationAllowed=${SIMVA_SSO_SELF_REGISTRATION_ALLOWED}
+        events_activated=$([ "$SIMVA_ENVIRONMENT" == "development" ] && echo "true" || echo "false")
+
+        __update_realm_with_params -s registrationAllowed=${SIMVA_SSO_SELF_REGISTRATION_ALLOWED} \
+            -s eventsEnabled=${events_activated} \
+            -s adminEventsEnabled=${events_activated} \
+            -s adminEventsDetailsEnabled=${events_activated}
         
         __add_or_update_role "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/roles" "/opt/keycloak/data/simva-realm-filled/roles"
         __add_or_update_user "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/users" "/opt/keycloak/data/simva-realm-filled/users"
