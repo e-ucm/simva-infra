@@ -2,8 +2,8 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-OAUTH2_GIT_REPO_URL="https://github.com/SondagesPro/limesurvey-oauth2.git"
-OAUTH2_GIT_REF="sondagespro"
+OAUTH2_GIT_REPO_URL="https://github.com/e-ucm/limesurvey-oauth2.git"
+OAUTH2_GIT_REF="move-deeper-in-userdata"
 
 # Create source folder
 if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/data/plugins/AuthOAuth2" ]]; then 

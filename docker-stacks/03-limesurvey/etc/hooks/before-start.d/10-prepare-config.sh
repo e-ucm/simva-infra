@@ -27,6 +27,7 @@ function generate_data() {
 
     limesurvey_client_id=$(get_or_generate_username "limesurvey" "${SIMVA_CONFIG_HOME}/keycloak/simva-env.sh")
     limesurvey_client_secret=$(get_or_generate_password "limesurvey" "${SIMVA_CONFIG_HOME}/keycloak/simva-env.sh")
+    isdev=$([ "$SIMVA_ENVIRONMENT" == "development" ] && echo "true" || echo "false")
 
 cat << EOF > ${conf_file}
 db:
@@ -37,11 +38,12 @@ db:
 plugins:
   webhooks:
     url: "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/limesurvey-completion-webhooks"
-    debug: "true"
+    debug: "${isdev}"
   oauth2:
     keycloak_realm_url: "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/realms/${SIMVA_SSO_REALM}"
     client_id: "${SIMVA_LIMESURVEY_CLIENT_ID}"
     client_secret: "${SIMVA_LIMESURVEY_CLIENT_SECRET}"
+    debug: "${isdev}"
 EOF
 }
 
