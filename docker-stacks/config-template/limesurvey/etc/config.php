@@ -67,6 +67,7 @@ return array(
 				'client_secret' => '{{ .plugins.oauth2.client_secret }}',
 				'authorize_url' => '{{ .plugins.oauth2.keycloak_realm_url }}/protocol/openid-connect/auth',
 				'access_token_url' => '{{ .plugins.oauth2.keycloak_realm_url }}/protocol/openid-connect/token',
+                'logout_url' => '{{ .plugins.oauth2.keycloak_realm_url }}/protocol/openid-connect/logout',
 				'resource_owner_details_url' => '{{ .plugins.oauth2.keycloak_realm_url }}/protocol/openid-connect/userinfo',
 				'is_default' => '',
                 'scopes' => 'openid roles profile email',
