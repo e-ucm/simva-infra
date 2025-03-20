@@ -66,7 +66,11 @@ return array(
         'WebHookStatusSettings' => [
             'fixed' => [
                 'sUrl' => '{{ .plugins.webhooks.url }}',
+                'sAuthToken' => '{{ .plugins.webhooks.api_token }}',
+                'sHeaderSignatureName' => '{{ .plugins.webhooks.header_name }}',
+                'sHeaderSignaturePrefix' => '{{ .plugins.webhooks.header_prefix }}',
             ],
+            'hidden' => ['sAuthToken'],
             'sBug' => '{{ .plugins.webhooks.debug }}'
         ],
 		'AuthOAuth2Settings' => [
@@ -96,22 +100,22 @@ return array(
             'autocreate_users' => 'true',
             'autocreate_permissions' => '{ "users": { "create": false, "read": false, "update": false, "delete": false }, "usergroups": { "create": false, "read": false,"update": false, "delete": false }, "labelsets": { "create": false, "read": false, "update": false, "delete": false, "import": false, "export": false }, "templates": { "create": false, "read": false, "update": false, "delete": false, "import": false, "export": false }, "settings": { "read": false, "update": false, "import": false }, "surveys": { "create": true, "read": true, "update": true, "delete": true, "export": true }, "participantpanel": { "create": false, "read": false, "update": false, "delete": false, "import": false, "export": false }, "auth_db": { "read": false } }',
 		],
-        // debug: Set this to 1 if you are looking for errors. If you still get no errors after enabling this
-        // then please check your error-logs - either in your hosting provider admin panel or in some /logs directory
-        // on your webspace.
-        // LimeSurvey developers: Set this to 2 to additionally display STRICT PHP error messages and put MySQL in STRICT mode and get full access to standard themes
-        'debug'=>0,
-        'debugsql'=>0,
-        // 'force_xmlsettings_for_survey_rendering' => true, // Uncomment if you want to force the use of the XML file rather than DB (for easy theme development)
-        // 'use_asset_manager'=>true, // Uncomment if you want to use debug mode and asset manager at the same time
-        // Update default LimeSurvey config here
-        'class' => 'application.core.components.Config',
-            'settings' => array(
-                'global' => array(
-                    'allowiframe' => '1'
-                )
-            )
-    )
+    ),
+    /**
+    * This parameter enables/disables the RPC interface
+    * Set to 'json' (for JSON-RPC) or 'xml' (for XML-RPC) to enable and 'off' to disable
+    * @var string
+    */
+    //'RPCInterface' => 'json',
+
+    /**
+    * Sets if any part of LimeSUrvey may be embedded in an iframe
+    * Valid values are allow, sameorigin
+    * Default / Recommended: sameorigin
+    * To disable the header, set it to allow
+    * Using 'deny' is currently not supported as it will disable the theme editor preview and probably file upload.
+    */
+    //'x_frame_options' => 'allow',
 );
 /* End of file config.php */
 /* Location: ./application/config/config.php */

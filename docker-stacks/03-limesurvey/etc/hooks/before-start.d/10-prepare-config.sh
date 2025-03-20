@@ -38,6 +38,9 @@ db:
 plugins:
   webhooks:
     url: "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/limesurvey-completion-webhooks"
+    api_token: "${SIMVA_LIMESURVEY_WEBHOOK_API_TOKEN}"
+    header_name: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_NAME}"
+    header_prefix: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_PREFIX}"
     debug: "${isdev}"
   oauth2:
     keycloak_realm_url: "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/realms/${SIMVA_SSO_REALM}"
