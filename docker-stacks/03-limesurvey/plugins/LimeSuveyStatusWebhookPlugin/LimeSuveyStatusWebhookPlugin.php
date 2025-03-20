@@ -10,14 +10,6 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
             // Hook into events triggered when a survey is completed and when a survey is initialized (before the first page is loaded)
             $this->subscribe('afterSurveyComplete'); // This event will be triggered when a respondent completed the survey
             $this->subscribe('beforeSurveyPage');  // This event will be triggered when a respondent initializes the survey
-            // Set a config setting dynamically
-            //$this->set('sWebhookUrl', getenv('LIMESURVEY_WEBHOOK_PLUGIN_URL') ? getenv('LIMESURVEY_WEBHOOK_PLUGIN_URL') : '');
-            error_log("sWebhookUrl : " . $this->get('sWebhookUrl', null, null, false));
-            //#error_log((boolean)json_decode(strtolower(getenv('LIMESURVEY_WEBHOOK_PLUGIN_DEBUG'))));
-            //$bug=(strtolower(getenv('LIMESURVEY_WEBHOOK_PLUGIN_DEBUG')) == "true" ? true : false);
-            //#error_log($bug);
-            //$this->set('sBug', getenv('LIMESURVEY_WEBHOOK_PLUGIN_DEBUG') ? $bug : false);
-            error_log("sBug : " . $this->get('sBug', null, null, false));
         }
 
         protected $settings = [];
@@ -26,13 +18,10 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
      * @param mixed $getValues
      */
     public function getPluginSettings($getValues = true) {
-        //if (!Permission::model()->hasGlobalPermission('settings', 'read')) {
-        //    throw new CHttpException(403);
-        //}
         /* Definition and default */
         $fixedPluginSettings = $this->getFixedGlobalSetting();
         $this->settings = [
-            'sWebhookUrl' => [
+            'webhook_url' => [
                 'type' => 'string',
                 'label' => $this->gT('Webhook URL'),
                 'default' => $this->getGlobalSetting('webhook_url'),
@@ -41,10 +30,10 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
                 ],
                 'help' => $this->gT('The URL to call when a survey is completed or initialized.'),
             ],
-            'sBug' => [
-                'type' => 'boolean',
+            'debug' => [
+                'type' => 'checkbox',
                 'label' => $this->gT('Enable Debug Mode'),
-                'default' => false, #(boolean)json_decode(strtolower($this->getGlobalSetting('debug'))),
+                'default' => $this->getGlobalSetting('debug',false),
                 'htmlOptions' => [
                     'readonly' => in_array('debug', $fixedPluginSettings)
                 ],
@@ -142,7 +131,7 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
         
         error_log(json_encode($payload));
 
-        $webhookUrl = $this->get('sWebhookUrl',  null, null, '');
+        $webhookUrl = $this->getGlobalSetting('webhook_url');
         error_log($webhookUrl);
         
         // Validate webhook URL
@@ -205,7 +194,7 @@ class LimeSuveyStatusWebhookPlugin extends PluginBase
     private function debug($url, $parameters, $time_start, $response)
     {
         // Check if the 'sBug' setting is enabled
-        if ($this->get('sBug', null, null, false)) {
+        if ($this->getGlobalSetting('debug',false)) {
             // Build HTML for debugging output
             $html = '<pre><br><br>----------------------------- DEBUG ----------------------------- <br><br>';
             $html .= 'Parameters: <br>' . print_r($parameters, true);

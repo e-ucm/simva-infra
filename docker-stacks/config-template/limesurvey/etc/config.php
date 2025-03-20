@@ -57,9 +57,9 @@ return array(
         // Update default LimeSurvey config here
         'WebHookStatusSettings' => [
             'fixed' => [
-                'sWebhookUrl' => '{{ .plugins.webhooks.url }}',
+                'webhook_url' => '{{ .plugins.webhooks.url }}',
             ],
-            'sBug' => '{{ .plugins.webhooks.debug }}'
+            'debug' => '{{ .plugins.webhooks.debug }}'
         ],
 		'AuthOAuth2Settings' => [
 			'fixed' => [
