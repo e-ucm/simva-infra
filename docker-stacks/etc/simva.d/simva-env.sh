@@ -122,6 +122,9 @@ export SIMVA_LIMESURVEY_ADMIN_NAME="Simva Administrator"
 export SIMVA_LIMESURVEY_ADMIN_EMAIL_USERNAME="lime-dev"
 export SIMVA_LIMESURVEY_DEBUG_ENTRYPOINT="false"
 
+export SIMVA_LIMESURVEY_WEBHOOK_HEADER_NAME="x-signature-sha256"
+export SIMVA_LIMESURVEY_WEBHOOK_HEADER_PREFIX=""
+
 ###################################
 # Limesurvey SIMPLE SAML PHP info #
 ###################################
@@ -216,6 +219,9 @@ export SIMVA_LIMESURVEY_MYSQL_PASSWORD="password"
 
 #Limesurvey default administrator
 export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="password"
+
+#Limesurvey Webhook Api Token
+export SIMVA_LIMESURVEY_WEBHOOK_API_TOKEN="secret"
 
 #Minio default administrator
 export SIMVA_MINIO_ACCESS_KEY="minio"
