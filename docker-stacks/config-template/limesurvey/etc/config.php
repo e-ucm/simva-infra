@@ -107,7 +107,7 @@ return array(
         * @var string
         */
         'RPCInterface' => 'json',
-
+        'rpc_publish_api' => true,
         /**
         * Sets if any part of LimeSUrvey may be embedded in an iframe
         * Valid values are allow, sameorigin
