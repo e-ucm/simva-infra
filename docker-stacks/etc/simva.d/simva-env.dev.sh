@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-export SIMVA_DEVELOPMENT_LOCAL="false"
 export SIMVA_DEBUG="true"
 
 #########################################
@@ -44,6 +43,7 @@ export SIMVA_PORTAINER_VERSION="latest"
 #Git reference branch
 export CSP_REPORTER_GIT_REF="master"
 
+export SIMVA_DEVELOPMENT_LOCAL="false"
 branch="dev"
 export SIMVA_API_GIT_REF=$branch
 export SIMVA_FRONT_GIT_REF=$branch
