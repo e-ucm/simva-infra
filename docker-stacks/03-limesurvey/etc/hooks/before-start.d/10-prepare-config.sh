@@ -28,8 +28,10 @@ function generate_data() {
     limesurvey_client_id=$(get_or_generate_username "limesurvey" "${SIMVA_CONFIG_HOME}/keycloak/simva-env.sh")
     limesurvey_client_secret=$(get_or_generate_password "limesurvey" "${SIMVA_CONFIG_HOME}/keycloak/simva-env.sh")
     isdev=$([ "$SIMVA_ENVIRONMENT" == "development" ] && echo "true" || echo "false")
+    limesurveydebug=$([ $isdev ] && echo 1 || echo 0)
 
 cat << EOF > ${conf_file}
+debug: ${limesurveydebug}
 db:
   url: "mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}"
   database: "${SIMVA_LIMESURVEY_MYSQL_DATABASE}"
