@@ -58,7 +58,7 @@ return array(
         // then please check your error-logs - either in your hosting provider admin panel or in some /logs directory
         // on your webspace.
         // LimeSurvey developers: Set this to 2 to additionally display STRICT PHP error messages and put MySQL in STRICT mode and get full access to standard themes
-        'debug'=>0,
+        'debug'=>{{ .debug }},
         //1 to enable sql logging, only active when debug = 2
         'debugsql'=>0,
         // 'force_xmlsettings_for_survey_rendering' => true, // Uncomment if you want to force the use of the XML file rather than DB (for easy theme development)
@@ -70,9 +70,11 @@ return array(
                 'sAuthToken' => '{{ .plugins.webhooks.api_token }}',
                 'sHeaderSignatureName' => '{{ .plugins.webhooks.header_name }}',
                 'sHeaderSignaturePrefix' => '{{ .plugins.webhooks.header_prefix }}',
+                'sId'=> ''
             ],
             'hidden' => ['sAuthToken'],
-            'sBug' => '{{ .plugins.webhooks.debug }}'
+            'sBug' => '{{ .plugins.webhooks.debug }}',
+            'events' => '{"render":{"beforeAdminMenuRender":true,"beforePluginManagerMenuRender":true,"beforeQuestionRender":true,"beforeSideMenuRender":true,"beforeSurveyBarRender":true,"beforeTwigRenderTemplate":true,"beforeToolsMenuRender":true,"beforeWelcomePageRender":true},"authentification":{"beforeRegister":true,"beforeRegisterForm":true,"createNewUser":true,"createRandomPassword":true,"checkPasswordRequirement":true},"admin":{"afterQuickMenuLoad":true,"beforeCloseHtml":true,"beforeControllerAction":true,"beforeHasPermission":true,"beforePermissionSetSave":true,"beforeProcessFileUpload":true,"beforeUrlCheck":true,"ExpressionManagerStart":true,"getGlobalBasePermissions":true,"getValidScreenFiles":true,"listExportOptions":true,"newDirectRequest":true,"newExport":true,"NewUnsecureRequest":true,"setVariableExpressionEnd":true},"surveyStatus":{"afterSurveyComplete":true,"beforeSurveyPage":true,"onSurveyDenied":true},"plugin":{"afterPluginLoad":true,"getPluginTwigPath":true,"listExportPlugins":true,"listQuestionPlugins":true},"dynamicmodel":{"beforeModelDelete":true,"beforeModelSave":true,"afterModelDelete":true,"afterModelSave":true},"email":{"afterReceiveOAuthResponse":true,"afterSelectEmailPlugin":true,"beforeEmail":true,"beforeSurveyEmail":true,"beforeTokenEmail":true,"beforeEmailDispatch":true,"beforePrepareRedirectToAuthPage":true,"beforeRedirectToAuthPage":true,"listEmailPlugins":true,"MailerConstruct":true},"dynamicsurvey":{"beforeSurveyDynamicDelete":true,"beforeSurveyDynamicSave":true,"afterSurveyDynamicDelete":true,"afterSurveyDynamicSave":true},"response":{"beforeResponseDelete":true,"beforeResponseSave":true,"afterResponseDelete":true,"afterResponseSave":true},"token":{"afterGenerateToken":true,"beforeTokenDelete":true,"beforeTokenSave":true,"afterTokenDelete":true,"afterTokenSave":true,"beforeTokenDynamicDelete":true,"beforeTokenDynamicSave":true,"afterTokenDynamicDelete":true,"afterTokenDynamicSave":true},"surveyAdmin":{"afterFindSurvey":true,"afterSurveyActivate":true,"afterSurveyDeactivate":true,"afterSurveyQuestionAssessment":true,"afterSurveyQuota":true,"afterSurveySettingsSave":true,"beforeActivate":true,"beforeDeactivate":true,"beforeLoadResponse":true,"beforeSurveyAdminView":true,"beforeSurveyActivate":true,"beforeSurveyDeactivate":true,"beforeSurveySettings":true,"newQuestionAttributes":true,"newSurveySettings":true,"saveSurveyForm":true,"beforeSurveyDelete":true,"beforeSurveySave":true,"afterSurveyDelete":true,"afterSurveySave":true}}'
         ],
 		'AuthOAuth2Settings' => [
 			'fixed' => [
