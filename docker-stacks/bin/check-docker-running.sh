@@ -7,9 +7,9 @@ container_name=${RUN_IN_CONTAINER_NAME}
 case $run_in_container in
     "true" | 1)
         container=$(echo $(docker compose ps --format '{{.Names}}' | grep "$container_name-1"))
-        return $container
+        echo $container
         ;;
     *)
-        return true 
+        echo false
         ;;
 esac
