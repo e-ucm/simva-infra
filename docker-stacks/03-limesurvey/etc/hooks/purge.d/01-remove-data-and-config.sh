@@ -8,6 +8,7 @@ ${SIMVA_HOME}/bin/purge-folder-contents.sh \
     "${SIMVA_DATA_HOME}/limesurvey/data/plugins" \
     "${SIMVA_DATA_HOME}/limesurvey/data/tmp" \
     "${SIMVA_DATA_HOME}/limesurvey/data/upload" \
+    "${SIMVA_DATA_HOME}/limesurvey/plugins" \
     "${SIMVA_DATA_HOME}/limesurvey/mariadb" \
     "${SIMVA_DATA_HOME}/limesurvey/mariadb-dump" \
     "${SIMVA_DATA_HOME}/limesurvey${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}-data/config"

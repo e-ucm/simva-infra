@@ -28,5 +28,7 @@ for key in "${!plugins[@]}"; do
         echo "$(cat "${PLUGINS_DIR}/${shasums}"  | grep "${ext_zip}" | cut -d' ' -f1) ${ext_zip}" | sha256sum -c -w -
         popd
     fi
-    unzip "${PLUGINS_DIR}/${ext_zip}" -d "${DEPLOYMENT_DIR}/$ext_name"
+    tmp_dir=$(mktemp -d)
+    unzip "${PLUGINS_DIR}/${ext_zip}" -d $tmp_dir
+    rsync -avh --delete --itemize-changes ${tmp_dir}/ "${DEPLOYMENT_DIR}/$ext_name"
 done
