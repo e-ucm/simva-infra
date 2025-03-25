@@ -118,6 +118,22 @@ return array(
         * Using 'deny' is currently not supported as it will disable the theme editor preview and probably file upload.
         */
         'x_frame_options' => 'allow',
+
+        /**
+        * @var $force_ssl string - forces LimeSurvey to run through HTTPS or to block HTTPS
+        *   'on' =  force SSL/HTTPS to be on (This will cause LimeSurvey
+        *       to fail in SSL is turned off)
+        *   Any other string value = do nothing (default)
+        *
+        * DO NOT turn on secure unless you are sure SSL/HTTPS is working and
+        * that you have a current, working, valid certificate. If you are
+        * unsure whether your server has a valid certificate, just add 's'
+        * to the http part of your normal LimeSurvey URL.
+        *   e.g. https://your.domain.org/limesurvey/admin/admin.php
+        * If LimeSurvey comes up as normal, then everything is fine. If you
+        * get a page not found error or permission denied error then
+        */
+        'force_ssl' => 'on', // DO not turn on unless you are sure your server supports SSL/HTTPS
     ),
 );
 /* End of file config.php */
