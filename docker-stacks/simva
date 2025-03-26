@@ -1090,6 +1090,8 @@ function setExecutable() {
                 setExecutable_scripts_from_folder ${folder}
                 folder="${HooksFolder}/after-start.d"
                 setExecutable_scripts_from_folder ${folder}
+                folder="${SIMVA_HOME}/${stack}/etc/entrypoint.d"
+                setExecutable_scripts_from_folder ${folder}
             ;;
             "stop")
                 folder="${HooksFolder}/before-stop.d"
@@ -1150,6 +1152,8 @@ function setExecutable() {
             folder="${HooksFolder}/before-start.d"
             setExecutable_scripts_from_folder ${folder}
             folder="${HooksFolder}/after-start.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${SIMVA_HOME}/etc/entrypoint.d"
             setExecutable_scripts_from_folder ${folder}
         ;;
         "stop")

@@ -1,9 +1,3 @@
-if [ ! -e "/usr/local/share/ca-certificates/internal-CA.crt" ]; then
-  cp /var/lib/simva/ca/rootCA.pem "/usr/local/share/ca-certificates/internal-CA.crt";
-  update-ca-certificates;
-  cat /etc/ca-certificates.conf;
-fi;
-
 admin_username=$(echo ${SIMVA_USER:-admin} | tr '[:upper:]' '[:lower:]');
 json="{\"username\":\"${admin_username}\",\"password\":\"${SIMVA_PASSWORD:-password}\"}";
 
