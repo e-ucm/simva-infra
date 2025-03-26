@@ -11,9 +11,13 @@ if [[ -e "${SIMVA_DATA_HOME}/keycloak/.initialized" ]]; then
     if [[ -e "$exportinProgressFile" ]]; then
             echo "Migration in progress. Exporting realm..."
             # Check if the container is running
-            keycloakContainer=$("${SIMVA_HOME}/bin/check-docker-running.sh")
-            echo $keycloakContainer
-            if [ ! $keycloakContainer = "" ]; then
+            source "${SIMVA_HOME}/bin/check-docker-running.sh"
+            set +e
+            _check_docker_running
+            ret=$?
+            set -e
+            echo $ret
+            if [ $ret = 0 ]; then
                 echo "Keycloak container is running. Launching export of users..."
                 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
                     ${SIMVA_HOME}/bin/purge-folder-contents.sh "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/"
