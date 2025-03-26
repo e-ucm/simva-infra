@@ -5,23 +5,22 @@ set -euo pipefail
 : ${KEYCLOAK_LOGIN_ON:=false}
 
 function __keycloak_login() {
-    if [[ ${KEYCLOAK_LOGIN_ON} == false ]]; then 
-        if [[ ! -f "${SIMVA_TRUSTSTORE_FILE}" ]]; then
-            if [[ -f "${SIMVA_ROOT_CA_FILE}" ]]; then
-                keytool -importcert -trustcacerts -noprompt \
-                    -storepass "${SIMVA_TRUSTSTORE_PASSWORD}" \
-                    -alias "${SIMVA_TRUSTSTORE_CA_ALIAS}" \
-                    -keystore "${SIMVA_TRUSTSTORE_FILE}" \
-                    -file "${SIMVA_ROOT_CA_FILE}"
-            fi
+    if [[ ${KEYCLOAK_LOGIN_ON} = true ]]; then return; fi;
+    if [[ ! -f "${SIMVA_TRUSTSTORE_FILE}" ]]; then
+        if [[ -f "${SIMVA_ROOT_CA_FILE}" ]]; then
+            keytool -importcert -trustcacerts -noprompt \
+                -storepass "${SIMVA_TRUSTSTORE_PASSWORD}" \
+                -alias "${SIMVA_TRUSTSTORE_CA_ALIAS}" \
+                -keystore "${SIMVA_TRUSTSTORE_FILE}" \
+                -file "${SIMVA_ROOT_CA_FILE}"
         fi
-
-        if [[ -f "${SIMVA_TRUSTSTORE_FILE}" ]]; then
-            "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config truststore --trustpass ${SIMVA_TRUSTSTORE_PASSWORD} "/root/.keycloak/certs/$(basename "${SIMVA_TRUSTSTORE_FILE}")"
-        fi
-        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config credentials --server "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" --realm "master" --user ${SIMVA_KEYCLOAK_ADMIN_USER} --password ${SIMVA_KEYCLOAK_ADMIN_PASSWORD}
-        export KEYCLOAK_LOGIN_ON=true
     fi
+
+    if [[ -f "${SIMVA_TRUSTSTORE_FILE}" ]]; then
+        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config truststore --trustpass ${SIMVA_TRUSTSTORE_PASSWORD} "/root/.keycloak/certs/$(basename "${SIMVA_TRUSTSTORE_FILE}")"
+    fi
+    "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config credentials --server "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" --realm "master" --user ${SIMVA_KEYCLOAK_ADMIN_USER} --password ${SIMVA_KEYCLOAK_ADMIN_PASSWORD}
+    export KEYCLOAK_LOGIN_ON=true
 }
 
 function __list_keycloak_resources() {
@@ -290,32 +289,31 @@ function __add_or_update_role() {
     __add_or_update_keycloak_resource "roles" "name" "name" "name" $localFolder $dockerFolder
     for file in $localFolder/*; do
         composite=$(jq -c -r ".composite // false" "$file")
-        if [[ $composite == "true" ]]; then 
-            rolename=$(jq -c -r ".name" "$file")
-            composites=$(jq -c -r '.composites.realm // [] | join(" ")' "$file")  # Ensure empty array if not found
-            roles=""
-            for compose in $composites; do
-                composedRole=$(__get_role_from_exact "name" "$compose")
-                roles+="--rolename $compose "
+        if [[ "$composite" != "true" ]]; then continue; fi;
+        rolename=$(jq -c -r ".name" "$file")
+        composites=$(jq -c -r '.composites.realm // [] | join(" ")' "$file")  # Ensure empty array if not found
+        roles=""
+        for compose in $composites; do
+            composedRole=$(__get_role_from_exact "name" "$compose")
+            roles+="--rolename $compose "
+        done
+        echo "$roles"
+        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --rname $rolename $roles
+        clients=$(jq -c -r '.composites.client // { "defaultClient": [] } | to_entries[] | "\(.key)=\(.value)"' "$file")
+        for client in $clients; do
+            clientid=$(echo "$client" | cut -d'=' -f1)     # Extract the clientid
+            roles=$(echo "$client" | cut -d'=' -f2)        # Extract the rest as the role
+            echo "Processing client: $clientid"
+            roleTable=$(echo "$roles" | jq -c -r '. // [] | join(" ")')
+            clientRoles=""
+            for role in $roleTable; do
+                clientRoles+="--rolename $role "
             done
-            echo "$roles"
-            "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --rname $rolename $roles
-            clients=$(jq -c -r '.composites.client // { "defaultClient": [] } | to_entries[] | "\(.key)=\(.value)"' "$file")
-            for client in $clients; do
-                clientid=$(echo "$client" | cut -d'=' -f1)     # Extract the clientid
-                roles=$(echo "$client" | cut -d'=' -f2)        # Extract the rest as the role
-                echo "Processing client: $clientid"
-                roleTable=$(echo "$roles" | jq -c -r '. // [] | join(" ")')
-                clientRoles=""
-                for role in $roleTable; do
-                    clientRoles+="--rolename $role "
-                done
-                if [[ ! $clientRoles == "" ]]; then 
-                    echo $clientRoles
-                    "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --rname $rolename --cclientid $clientid $clientRoles
-                fi
-            done
-        fi
+            if [[ ! $clientRoles == "" ]]; then 
+                echo $clientRoles
+                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --rname $rolename --cclientid $clientid $clientRoles
+            fi
+        done
     done
     role=$(__get_role_from_exact "name" "default-roles-${SIMVA_SSO_REALM}")
     echo $role
