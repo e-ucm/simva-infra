@@ -16,6 +16,9 @@ services:
     environment:
       ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
       PROFILING_FOLDER: /home/node/profiling
+      CLINIC_APP: ${SIMVA_CLINIC_APP:-doctor}
+      CLINIC_TIMEOUT_TIME: ${SIMVA_CLINIC_TIMEOUT_TIME:-1h}
+      NO_INSIGHT: true
     volumes:
       - ${SIMVA_API_GIT_REPO}:/home/node/app/
       - ${SIMVA_DATA_HOME}/simva/simva-api-profiling:/home/node/profiling
@@ -27,6 +30,9 @@ services:
     environment:
       ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
       PROFILING_FOLDER: /home/node/profiling
+      CLINIC_APP: ${SIMVA_CLINIC_APP:-doctor}
+      CLINIC_TIMEOUT_TIME: ${SIMVA_CLINIC_TIMEOUT_TIME:-1h}
+      NO_INSIGHT: true
     volumes:
       - ${SIMVA_FRONT_GIT_REPO}:/home/node/app/
       - ${SIMVA_DATA_HOME}/simva/simva-front-profiling:/home/node/profiling
@@ -38,6 +44,9 @@ services:
     environment:
       ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
       PROFILING_FOLDER: /home/node/profiling
+      CLINIC_APP: ${SIMVA_CLINIC_APP:-doctor}
+      CLINIC_TIMEOUT_TIME: ${SIMVA_CLINIC_TIMEOUT_TIME:-1h}
+      NO_INSIGHT: true
     volumes:
       - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO}:/home/node/app/
       - ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling:/home/node/profiling
