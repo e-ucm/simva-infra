@@ -13,9 +13,6 @@ if [[ ! -e "${SIMVA_DATA_HOME}/simva/.initialized" ]]; then
     RUNCHECKOUTCODE=true
 fi
 if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then
-    chmod -R 777 ${SIMVA_DATA_HOME}/simva/simva-api-profiling
-    chmod -R 777 ${SIMVA_DATA_HOME}/simva/simva-front-profiling
-    chmod -R 777 ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling
     if [[ $SIMVA_DEVELOPMENT_LOCAL = "true" ]]; then
         echo "SIMVA is in local development environment, no checkout as code is local."
         RUNCHECKOUTCODE=false

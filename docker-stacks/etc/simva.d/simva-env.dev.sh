@@ -104,8 +104,8 @@ export SIMVA_SOCKET_PROXY_LOG_LEVEL="info"
 export SIMVA_ENABLE_DEBUG_PROFILING="false"
 #doctor, flame, bubbleprof, heapprofiler
 export SIMVA_CLINIC_APP="doctor"
-export SIMVA_CLINIC_TIMEOUT_TIME="2h"
-export SIMVA_CLINIC_SCRIPT_WAIT_TIME="15" #In seconds
+#timeout : s - seconds (default) / m - minutes / h - hours / d - days
+export SIMVA_CLINIC_TIMEOUT_TIME="20m"
 
 ####################################################################
 ######## Authentification username and password (TO MODIFY) ########
