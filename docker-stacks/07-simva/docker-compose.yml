@@ -52,7 +52,8 @@ services:
       #EXTERNAL URL
       EXTERNAL_URL: "https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       #SIMVA API (SELF)
-      SIMVA_API_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_DATA_API_HOST: "${SIMVA_SIMVA_API_DATA_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_API_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api-service}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_API_PORT: "${SIMVA_SIMVA_API_PORT:-443}"
       SIMVA_API_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
       ADMIN_USERNAME: "${SIMVA_API_ADMIN_USERNAME:-admin}"
@@ -132,27 +133,149 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/home/node/logs:rw
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/storage:/storage
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/root/.npm/_logs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-api.sh:/home/node/entrypoint.d/docker-startup.sh
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-certificate.sh:/home/node/entrypoint.d/docker-certificate.sh
     depends_on:
       - mongodb
-    hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api-service}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api-service}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api-service}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       kafka_services:
         aliases:
-          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api-service}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.simva-api.loadbalancer.server.port=${SIMVA_SIMVA_API_PORT:-443}"
-      - "traefik.http.routers.simva-api.rule=Host(`${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.simva-api.rule=Host(`${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api-service}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+
+  simva-api-data:
+    << : *default-opts
+    command: ['bash', '/home/node/entrypoint.d/docker-startup.sh']
+    stdin_open: true
+    tty: true
+    environment:
+      #LOG
+      LOG_LEVEL: "info"
+      LOG_FOLDER: "/home/node/logs"
+      #WAIT TIME FOR KEYCLOAK AVAILABILITY
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
+      MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
+      #DEBUG
+      DEBUG: "${SIMVA_DEBUG:-true}"
+      #NODE
+      NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
+      NODE_EXTRA_CA_CERTS: "/var/lib/simva/ca/rootCA.pem"
+      #EXTERNAL URL
+      EXTERNAL_URL: "https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      #SIMVA API DATA (SELF)
+      SIMVA_API_HOST: "${SIMVA_SIMVA_API_DATA_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_API_PORT: "${SIMVA_SIMVA_API_PORT:-443}"
+      SIMVA_API_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
+      ADMIN_USERNAME: "${SIMVA_API_ADMIN_USERNAME:-admin}"
+      ADMIN_EMAIL: "${SIMVA_API_ADMIN_USERNAME:-admin}@${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      ADMIN_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD:-password}"
+      MAX_UPLOAD_FILE_SIZE: "${SIMVA_MAX_UPLOAD_FILE_SIZE:-33554432}"
+      #MONGO DB
+      MONGO_HOST: "${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      MONGO_DB: "${SIMVA_API_MONGO_DB:-/simva}"
+      LTI_MONGO_DB: "${SIMVA_API_LTI_MONGO_DB:-/lti_simva}"
+      #KAFKA
+      KAFKA_HOST: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      KAFKA_PORT: "9092"
+      #MINIO
+      MINIO_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
+      MINIO_API_URL: "${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      MINIO_SSL: "true"
+      MINIO_PORT: "443"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
+      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
+      MINIO_BUCKET: "${SIMVA_TRACES_BUCKET_NAME:-traces}"
+      MINIO_TOPICS_DIR: "${SIMVA_SINK_TOPICS_DIR:-kafka-topics}"
+      MINIO_TRACES_TOPIC: "${SIMVA_TRACES_TOPIC:-traces}"
+      MINIO_OUTPUTS_DIR: "${SIMVA_SINK_OUTPUTS_DIR:-outputs}"
+      MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces.json}"
+      MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME : "${SIMVA_MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME:-1h}" 
+      #LIMESURVEY
+      LIMESURVEY_HOST: "${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      LIMESURVEY_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
+      LIMESURVEY_PORT: "443"
+      LIMESURVEY_EXTERNAL: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
+      LIMESURVEY_ADMIN_USER: "${SIMVA_LIMESURVEY_ADMIN_USER:-admin}"
+      LIMESURVEY_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-secret}"
+      LIMESURVEY_SECRET: "${SIMVA_LIMESURVEY_WEBHOOK_API_TOKEN:-secret}"
+      LIMESURVEY_HEADER_NAME: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_NAME:-X-Signature-SHA256}"
+      LIMESURVEY_HEADER_PREFIX: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_PREFIX:-}"
+      #SSO KEYCLOAK
+      SSO_ENABLED: "true"
+      SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      SSO_CLIENT_ID: "${SIMVA_SIMVA_CLIENT_ID:-simva}"
+      SSO_CLIENT_SECRET: "${SIMVA_SIMVA_CLIENT_SECRET:-secret}"
+      SSO_STUDENT_ALLOWED_ROLE: "${SIMVA_STUDENT_ALLOWED_ROLE:-true}"
+      SSO_TEACHING_ASSISTANT_ALLOWED_ROLE: "${SIMVA_TEACHING_ASSISTANT_ALLOWED_ROLE:-true}"
+      SSO_TEACHER_ALLOWED_ROLE: "${SIMVA_TEACHER_ALLOWED_ROLE:-true}"
+      SSO_RESEARCHER_ALLOWED_ROLE: "${SIMVA_RESEARCHER_ALLOWED_ROLE:-true}"
+      SSO_SSL_REQUIRED: "external"
+      SSO_PUBLIC_CLIENT: "false"
+      SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
+      SSO_PORT: "443"
+      SSO_ADMIN_USER: "${SIMVA_ADMINISTRATOR_USER:-administrator}"
+      SSO_ADMIN_PASSWORD: "${SIMVA_ADMINISTRATOR_PASSWORD:-administrator}"
+      #A2
+      A2_HOST: "${SIMVA_A2_HOST:-a2}"
+      A2_PROTOCOL: "http"
+      A2_PORT: "3000"
+      A2_ADMIN_USER: "${SIMVA_A2_ADMIN_USER:-root}"
+      A2_ADMIN_PASSWORD: "${SIMVA_A2_ADMIN_PASSWORD:-password}"
+      A2_EXTERNAL: "https://${SIMVA_ANALYTICS_HOST_SUBDOMAIN:-analytics}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      #ANALYTICS BACKEND
+      ANALYTICSBACKEND_API: "${SIMVA_A2_ANALYTICSBACKEND_API:-/api/proxy/gleaner}"
+      #LTI
+      LTI_PLATFORM_CLIENT_ID: "${SIMVA_LTI_PLATFORM_CLIENT_ID:-lti_platform}"
+      LTI_PLATFORM_SIGNING_KEY: "${SIMVA_LTI_PLATFORM_CLIENT_SECRET:-secret}"
+      LTI_PLATFORM_DB_NAME: "${SIMVA_API_LTI_MONGO_DB:-/lti_simva}"
+      LTI_PLATFORM_DB_USER:  "${SIMVA_LTI_PLATFORM_DB_USER:-root}"
+      LTI_PLATFORM_DB_PASSWORD: "${SIMVA_LTI_PLATFORM_DB_PASSWORD:-password}"
+      #STORAGE
+      SIMVA_STORAGE_PATH: "${SIMVA_STORAGE_LOCAL_PATH:-/storage}/"
+      #SHLINK
+      SHLINK_SERVER_HOST: ${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}
+      SHLINK_PORT: ${SIMVA_SHLINK_PORT:-443}
+      SHLINK_PROTOCOL: ${SIMVA_SHLINK_EXTERNAL_PROTOCOL:-https}
+      SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-data-logs:/home/node/logs:rw
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva${SIMVA_STORAGE_LOCAL_PATH:-/storage}:${SIMVA_STORAGE_LOCAL_PATH:-/storage}
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-api.sh:/home/node/entrypoint.d/docker-startup.sh
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-certificate.sh:/home/node/entrypoint.d/docker-certificate.sh
+    depends_on:
+      - mongodb
+    hostname: ${SIMVA_SIMVA_API_DATA_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_SIMVA_API_DATA_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_SIMVA_API_DATA_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      kafka_services:
+        aliases:
+          - ${SIMVA_SIMVA_API_DATA_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.simva-api-data.loadbalancer.server.port=${SIMVA_SIMVA_API_PORT:-443}"
+      - "traefik.http.routers.simva-api-data.rule=Host(`${SIMVA_SIMVA_API_DATA_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
   simva-front:
     << : *default-opts
@@ -193,7 +316,8 @@ services:
       SSO_SSL_REQUIRED: "external"
       SSO_PUBLIC_CLIENT: "false"
       #SIMVA API
-      SIMVA_API_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_DATA_API_HOST: "${SIMVA_SIMVA_API_DATA_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_API_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api-service}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_API_PORT: "${SIMVA_SIMVA_API_PORT:-443}"
       SIMVA_API_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
       #LIMESURVEY
@@ -272,7 +396,7 @@ services:
       MINIO_OUTPUTS_DIR: "${SIMVA_SINK_OUTPUTS_DIR:-outputs}"
       MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces.json}"
       #SIMVA API
-      SIMVA_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api-service}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
       SIMVA_PORT: "${SIMVA_SIMVA_API_PORT:-443}"
       SIMVA_USER: "${SIMVA_API_ADMIN_USERNAME:-admin}"

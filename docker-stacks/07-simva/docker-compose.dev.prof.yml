@@ -22,6 +22,17 @@ services:
       NO_INSIGHT: true
     volumes:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-profiling:/home/node/app/.clinic
+  simva-api-data:
+    build: ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}
+    restart: no
+    environment:
+      ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
+      PROFILING_FOLDER: /home/node/app/.clinic
+      CLINIC_APP: ${SIMVA_CLINIC_APP:-doctor}
+      CLINIC_TIMEOUT_TIME: ${SIMVA_CLINIC_TIMEOUT_TIME:-20m}
+      NO_INSIGHT: true
+    volumes:
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-data-profiling:/home/node/app/.clinic
   simva-front:
     build: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}
     restart: no
