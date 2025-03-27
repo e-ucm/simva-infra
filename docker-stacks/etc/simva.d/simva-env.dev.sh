@@ -105,6 +105,7 @@ export SIMVA_ENABLE_DEBUG_PROFILING="false"
 #doctor, flame, bubbleprof, heapprofiler
 export SIMVA_CLINIC_APP="doctor"
 export SIMVA_CLINIC_TIMEOUT_TIME="2h"
+export SIMVA_CLINIC_SCRIPT_WAIT_TIME="15" #In seconds
 
 ####################################################################
 ######## Authentification username and password (TO MODIFY) ########

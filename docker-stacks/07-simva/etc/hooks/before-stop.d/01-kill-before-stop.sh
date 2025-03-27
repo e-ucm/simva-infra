@@ -12,7 +12,6 @@ container_list="simva-trace-allocator simva-front simva-api"
 
 for container_name in $container_list; do
     export RUN_IN_CONTAINER_NAME=$container_name
-    docker compose kill -s SIGINT $RUN_IN_CONTAINER_NAME 
     isStopped="false"
     while [[ $isStopped = "false" ]]; do
         # Check if the container is running        
@@ -24,9 +23,11 @@ for container_name in $container_list; do
         if [ $ret != 0 ]; then
             isStopped="true";
             echo "$RUN_IN_CONTAINER_NAME stopped."
-        else 
-            echo "$RUN_IN_CONTAINER_NAME not stopped. Wait 10 seconds"
-            sleep 10;
+        else
+            docker compose exec -it $container_name ps -ef --forest
+            docker compose kill -s SIGINT $container_name
+            echo "$container_name not stopped. Wait ${SIMVA_CLINIC_SCRIPT_WAIT_TIME} seconds"
+            sleep ${SIMVA_CLINIC_SCRIPT_WAIT_TIME};
         fi;
     done
 done

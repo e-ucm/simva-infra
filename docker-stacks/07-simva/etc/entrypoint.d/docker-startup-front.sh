@@ -4,7 +4,7 @@ cd /home/node/app
 echo "${NODE_ENV:-production}"
 if [[ "${NODE_ENV:-production}" == "development" ]]; then
   if [[ "${ENABLE_DEBUG_PROFILING:-false}" == "true" ]]; then
-    CLINIC_ARGS="--dest ${PROFILING_FOLDER} --name ${CLINIC_APP}-report-$(date +%s)" timeout --signal=SIGINT ${CLINIC_TIMEOUT_TIME} npm run dev:clinic:${CLINIC_APP}
+    exec clinic ${CLINIC_APP} --dest ${PROFILING_FOLDER} --name ${CLINIC_APP}-report-$(date +%s) -- node ./bin/www
   else
     npm run dev
   fi
