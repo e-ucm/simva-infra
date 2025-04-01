@@ -1,0 +1,40 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+services:
+  simva-api:
+    build: ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}
+    restart: no
+    environment:
+      ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
+      PROFILING_FOLDER: /home/node/app/.clinic
+      CLINIC_APP: ${SIMVA_CLINIC_APP:-doctor}
+      CLINIC_TIMEOUT_TIME: ${SIMVA_CLINIC_TIMEOUT_TIME:-20m}
+      NO_INSIGHT: true
+  simva-front:
+    build: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}
+    restart: no
+    environment:
+      ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
+      PROFILING_FOLDER: /home/node/app/.clinic
+      CLINIC_APP: ${SIMVA_CLINIC_APP:-doctor}
+      CLINIC_TIMEOUT_TIME: ${SIMVA_CLINIC_TIMEOUT_TIME:-20m}
+      NO_INSIGHT: true
+  simva-trace-allocator:
+    build: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}
+    restart: no
+    environment:
+      ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
+      PROFILING_FOLDER: /home/node/app/.clinic
+      CLINIC_APP: ${SIMVA_CLINIC_APP:-doctor}
+      CLINIC_TIMEOUT_TIME: ${SIMVA_CLINIC_TIMEOUT_TIME:-20m}
+      NO_INSIGHT: true

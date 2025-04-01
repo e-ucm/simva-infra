@@ -124,7 +124,6 @@ services:
       SHLINK_PORT: ${SIMVA_SHLINK_PORT:-443}
       SHLINK_PROTOCOL: ${SIMVA_SHLINK_EXTERNAL_PROTOCOL:-https}
       SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
-    restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
@@ -212,7 +211,6 @@ services:
       SHLINK_PORT: ${SIMVA_SHLINK_PORT:-443}
       SHLINK_PROTOCOL: ${SIMVA_SHLINK_EXTERNAL_PROTOCOL:-https}
       SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
-    restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
@@ -283,7 +281,6 @@ services:
       SIMVA_KAFKA_BROKER: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092"
       SIMVA_KAFKA_GROUPID: "${SIMVA_TRACE_ALLOCATOR_KAFKA_GROUP_ID:-simva_trace_allocator}"
       SIMVA_KAFKA_MINIO_TOPIC: "${SIMVA_MINIO_EVENTS_TOPIC:-minio-events}"
-    restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
