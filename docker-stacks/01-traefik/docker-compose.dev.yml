@@ -34,8 +34,7 @@ services:
         aliases:
           - ${SIMVA_WHOAMI_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}
           - ${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}
-          - ${SIMVA_PHPMYADMIN_KC_HOST_SUBDOMAIN:-phpmyadmin-kc}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
-          - ${SIMVA_PHPMYADMIN_LS_HOST_SUBDOMAIN:-phpmyadmin-ls}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+          - ${SIMVA_PHPMYADMIN_HOST_SUBDOMAIN:-phpmyadmin}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
           - ${SIMVA_KAFKA_UI_HOST_SUBDOMAIN:-kafka-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
           - ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
           - ${SIMVA_MONGO_UI_HOST_SUBDOMAIN:-simva-mongo-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
