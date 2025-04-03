@@ -24,7 +24,7 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initializedRemoteControl" ]]; then
     "${SIMVA_HOME}/bin/run-command.sh" bash -c "echo '}' >> $REMOTE_FILE_PATH"
 
     # Step 5: Optional - Restart the Docker container if necessary
-    docker compose restart $CONTAINER_NAME
+    docker compose restart $RUN_IN_CONTAINER_NAME
     ${SIMVA_HOME}/bin/wait-available.sh "Limesurvey" "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/admin/authentication/sa/login" "true" "false";
 
     echo "New function added to the file and container restarted (if applicable)."
