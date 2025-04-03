@@ -13,9 +13,9 @@ function __docker_run_command()
     local specific_user=$1
     shift;
     if [[ ! ${specific_user} == "" ]]; then
-        docker compose exec --user $specific_user -T ${container_name} "$@"
+        docker compose exec --user $specific_user -it ${container_name} "$@"
     else 
-        docker compose exec -T ${container_name} "$@"
+        docker compose exec -it ${container_name} "$@"
     fi
 }
 

@@ -70,11 +70,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+export RUN_IN_CONTAINER=true
+export RUN_IN_CONTAINER_NAME=$KAFKA_CONTAINER_NAME
+
 # Get the current offset
-output=$(docker compose exec -it $KAFKA_CONTAINER_NAME \
-      kafka-consumer-groups \
-      --bootstrap-server $BOOTSTRAP_SERVER \
-      --describe --group $CONSUMER_GROUP);
+output=$("${SIMVA_HOME}/bin/run-command.sh" kafka-consumer-groups --bootstrap-server $BOOTSTRAP_SERVER --describe --group $CONSUMER_GROUP);
 
 # Parse the output to get the offsets for the specified topic
 parsed=$(echo "$output" | grep "$TOPIC" | grep $TOPIC | tr -s ' ');

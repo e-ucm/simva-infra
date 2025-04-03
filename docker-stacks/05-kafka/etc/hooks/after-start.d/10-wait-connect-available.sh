@@ -10,6 +10,9 @@ fi
 
 ${SIMVA_HOME}/bin/wait-available.sh "Minio" "https://${SIMVA_MINIO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/minio/health/live" "true" "false";
 
+export RUN_IN_CONTAINER=true
+export RUN_IN_CONTAINER_NAME="connect"
+
 mc_max_retries=${SIMVA_MAX_RETRIES}
 wait_time=${SIMVA_WAIT_TIME};
 count=${mc_max_retries};
@@ -17,7 +20,7 @@ done="ko";
 while [ $count -gt 0 ] && [ "$done" != "ok" ]; do
     echo 1>&2 "Checking kafka connect: $((${mc_max_retries}-$count+1)) pass";
     set +e
-    docker compose exec connect curl -f -sS http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/
+    "${SIMVA_HOME}/bin/run-command.sh" curl -f -sS http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/
     ret=$?;
     set -e
     if [ $ret -eq 0 ]; then
