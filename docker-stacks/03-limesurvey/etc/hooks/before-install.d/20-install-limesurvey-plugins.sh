@@ -33,16 +33,10 @@ for key in "${!plugins[@]}"; do
     unzip "${PLUGINS_DIR}/${ext_zip}" -d $tmp_dir
     rsync -avh --delete --itemize-changes ${tmp_dir}/ "${DEPLOYMENT_DIR}/$ext_name"
     if [[ $ext_name = "SurveyGuardian" ]]; then 
-        if [[ ! -e ${UPLOAD_DIR}/ ]]; then
-            mkdir ${UPLOAD_DIR}/
+        if [[ ! -e "${UPLOAD_DIR}/$ext_name/assets/survey-tables/" ]]; then
+            mkdir -p "${UPLOAD_DIR}/$ext_name/assets/survey-tables/"
         fi
-        if [[ ! -e "${UPLOAD_DIR}/$ext_name" ]]; then
-            mkdir "${UPLOAD_DIR}/$ext_name"
-        fi
-        if [[ ! -e "${UPLOAD_DIR}/$ext_name/assets" ]]; then
-            mkdir "${UPLOAD_DIR}/$ext_name/assets"
-        fi
-        rsync -avh --delete --itemize-changes ${tmp_dir}/assets "${UPLOAD_DIR}/$ext_name/assets"
+        rsync -avh --delete --exclude "${UPLOAD_DIR}/$ext_name/assets/survey-tables" --itemize-changes "${DEPLOYMENT_DIR}/$ext_name/assets" "${UPLOAD_DIR}/$ext_name";
     fi
 done
 

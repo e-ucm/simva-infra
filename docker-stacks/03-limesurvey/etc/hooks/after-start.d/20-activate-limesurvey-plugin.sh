@@ -54,11 +54,19 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
         fi
     fi
     
-    echo "Inserting plugin $SURVEYGUARDIAN_PLUGIN_NAME into the plugins table..."
-    "${SIMVA_HOME}/bin/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
-    USE $DB_NAME;
-    INSERT INTO \`plugins\` (name, plugin_type, active, priority, version)
-    VALUES ('$SURVEYGUARDIAN_PLUGIN_NAME', 'user', 1, 0, '$SURVEYGUARDIAN_PLUGIN_VERSION');
-    "
-    echo "Plugin $SURVEYGUARDIAN_PLUGIN_NAME has been installed and its settings have been added!"
+    SurveyGuardian=$("${SIMVA_HOME}/bin/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
+        USE $DB_NAME;
+        SELECT id FROM \`plugins\` WHERE name='$SURVEYGUARDIAN_PLUGIN_NAME' AND active=1 and version='$SURVEYGUARDIAN_PLUGIN_VERSION';");
+    echo $SurveyGuardian;
+    if [[ ! $SurveyGuardian == *"id"* ]]; then 
+        echo "Inserting plugin $SURVEYGUARDIAN_PLUGIN_NAME into the plugins table..."
+        "${SIMVA_HOME}/bin/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
+        USE $DB_NAME;
+        INSERT INTO \`plugins\` (name, plugin_type, active, priority, version)
+        VALUES ('$SURVEYGUARDIAN_PLUGIN_NAME', 'user', 1, 0, '$SURVEYGUARDIAN_PLUGIN_VERSION');
+        "
+        echo "Plugin $SURVEYGUARDIAN_PLUGIN_NAME has been installed and its settings have been added!"
+    else 
+        echo "Plugin $SURVEYGUARDIAN_PLUGIN_NAME settings have already been added!"
+    fi
 fi
