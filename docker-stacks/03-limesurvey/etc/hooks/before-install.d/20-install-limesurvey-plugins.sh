@@ -33,10 +33,19 @@ for key in "${!plugins[@]}"; do
     unzip "${PLUGINS_DIR}/${ext_zip}" -d $tmp_dir
     rsync -avh --delete --itemize-changes ${tmp_dir}/ "${DEPLOYMENT_DIR}/$ext_name"
     if [[ $ext_name = "SurveyGuardian" ]]; then 
-        if [[ ! -e "${UPLOAD_DIR}/$ext_name/assets/survey-tables/" ]]; then
+        if [[ ! -e "${UPLOAD_DIR}/$ext_name/assets/" ]]; then
+            mkdir -p "${UPLOAD_DIR}/$ext_name/assets/"
+        fi
+        if [[ -e "${UPLOAD_DIR}/$ext_name/assets/survey-tables/" ]]; then
+            mv ${UPLOAD_DIR}/$ext_name/assets/survey-tables/* "${UPLOAD_DIR}/$ext_name/survey-tables/" 
+        fi
+
+        rsync -avh --delete --itemize-changes "${DEPLOYMENT_DIR}/$ext_name/assets" "${UPLOAD_DIR}/$ext_name";
+        if [[ -e "${UPLOAD_DIR}/$ext_name/survey-tables/" ]]; then
+            mv ${UPLOAD_DIR}/$ext_name/survey-tables/* "${UPLOAD_DIR}/$ext_name/assets/survey-tables/" 
+        else 
             mkdir -p "${UPLOAD_DIR}/$ext_name/assets/survey-tables/"
         fi
-        rsync -avh --delete --exclude "${UPLOAD_DIR}/$ext_name/assets/survey-tables" --itemize-changes "${DEPLOYMENT_DIR}/$ext_name/assets" "${UPLOAD_DIR}/$ext_name";
     fi
 done
 
