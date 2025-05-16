@@ -25,6 +25,10 @@ services:
       traefik_services:
         aliases:
           - ${SIMVA_TMON_HOST_DASHBOARD_SUBDOMAIN:-tmon}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    environment:
+      REQUESTS_CA_BUNDLE: "/root/.tmon/certs/ca/rootCA.pem"
+    volumes:
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/root/.tmon/certs/:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.tmon.loadbalancer.server.port=8050"
