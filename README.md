@@ -10,62 +10,11 @@ In fact, SGs present new opportunities to apply stealth assessment techniques fo
 Moreover, SGs effectiveness should be measured for different reasons like any other educational tool. Traditionally, this is measured through experiments which involve pre- and post-tests. These tests are usually conducted on paper or electronically. The issue is that these tests are ultimately isolated from the learning experience itself.
 
 These challenges highlight the need for a tool that simplifies the assessment process and enables comprehensive management of the collected information. ***SIMVA*** tool addresses these challenges by offering integrated solutions. It facilitates the application of Game Learning Analytics (GLA) in Serious Games (SGs), enabling the developers and the researchers to validate the effectiveness of these games. The following table shows how ***SIMVA*** addressed these challenges.
-
-<table border="1">
-      <tr>
-          <th>Phase</th>
-          <th>Challenge</th>
-          <th>Solution <i>SIMVA</i> provides</th>
-      </tr>
- 
-      <tr>
-         <td>Before the experiments</td>
-         <td>
-             <ul>
-              <li>The lack of formal validation, or performed outside the game </li>
-              <li>Managing surveys</li>
-              <li>Managing users and providing anonymous identifiers to users</li>
-             </ul> 
-         </td>
-         <td><ul>
-              <li>Simplifying & supporting experimental design</li>
-              <li>LimeSurvey encapsulation</li>
-              <li>MToken generation for users in keycloak</li>
-             </ul> </td>
-      </tr>
- 
-       <tr>
-         <td>During the experiments, for example Pretest-Game-Postest</td>
-         <td>
-             <ul>
-              <li>Collecting and storing surveys data</li>
-              <li>Collecting and storing interactions traces data</li>
-              <li>Relating those different data types to each user</li>
-              <li>Teachers lack control when applying games in classes</li>
-             </ul> 
-         </td>
-         <td><ul>
-              <li>Survey data is stored in LimeSurvey database</li>
-              <li>Trace data backup are stored in Minio as xAPI-SG format</li>
-              <li>Using the same user token in the study process</li>
-               <li>Support GLA remotely to conduct experiments in broader settings</li>
-             </ul> </td>
-      </tr>
-
-        <tr>
-         <td>After the experiments</td>
-         <td>
-             <ul>
-              <li>Access of all data collected from different data sources</li>
-              <li>Analysis of all data collected from different data sources</li>
-             </ul> 
-         </td>
-         <td><ul>
-              <li>Data can be downloaded in the study page for the researcher</li>
-              <li>TMon:  Default analysis and visualisation web tool for xAPI-SG data</li>
-       </ul> </td>
-      </tr>
-</table>
+| Phase  | Challenge | Solution ***SIMVA*** provides |
+| ------------- | ------------- | ------------- |
+| Before the experiments  | - The lack of formal validation, or performed outside the game</br> - Managing surveys</br> - Managing users and providing anonymous identifiers to users|- Simplifying & supporting experimental design</br> - LimeSurvey encapsulation</br> - Token generation for users in keycloak|
+| During the experiments, for example Pretest-Game-Postest  | - Collecting and storing surveys data</br> - Collecting and storing interactions traces data</br> -Relating those different data types to each user</br> - Teachers lack control when applying games in classes|- Survey data is stored in LimeSurvey database</br> - Trace data backup are stored in Minio as xAPI-SG format</br> - Using the same user token in the study process</br> - Support GLA remotely to conduct experiments in broader settings|
+| After the experiments  | - Access of all data collected from different data sources</br> - Analysis of all data collected from different data sources</br>|- Data can be downloaded in the study page for the researcher</br> - TMon:  Default analysis and visualisation web tool for xAPI-SG data</br>|
 
 This repository allows you to launch a complete ***SIMVA*** environment. 
 
