@@ -1,34 +1,88 @@
-# SIMple VAlidation (SIMVA)
+# ***SIMVA*** INFRASTRUCTURE WIKI
+
+# ***SIM***ple ***VA***lidation (***SIMVA***)
 [![SIMVA](https://raw.githubusercontent.com/e-ucm/simva-infra/master/.github/logo.svg?sanitize=true)](https://github.com/e-ucm/simva/)
 
-SIMVA is a tool that helps Serious Games (SGs) developers / researchers to validate the efectiveness of SGs and to facilitate the application of Serious Games Learning Analytics in SGs.
+Serious Games (SGs) are electronic games designed with purposes exceeding entertainment, such as providing knowledge, upgrading skills, and raising awareness. However, conducting such games without the ability to capture and manage data from them is worthless. Hence, there is a need for a technology with the ability to collect and manage these data in order to provide meaningful insights to different stakeholders. Therefore, it is crucial to apply Game Learning Analytics (GLA) to these games, which enables the collection, analysis, and visualization of data derived from players' in-game interactions.
 
-Like any other educational tool, the traditional way of evaluating the effectiveness of the tool is through experiments that require a pre-post tests. Usually this is is done on paper or, in the best case scenario, electronically, but in the end these tests are disconected from the experiments themselves.
+In fact, SGs present new opportunities to apply stealth assessment techniques for evaluating player performance, typically by analyzing  players interaction data. However, potential difficulties may arise,  including the data collection process itself, user management and the analysis of the data collected. 
 
-Moreover, SGs open new oportunities of applying a *stealth assessment* approach to evaluate players' performance. Usually this approach is implemented based on analytics that are gathered during the gameplay.
+Moreover, SGs effectiveness should be measured for different reasons like any other educational tool. Traditionally, this is measured through experiments which involve pre- and post-tests. These tests are usually conducted on paper or electronically. The issue is that these tests are ultimately isolated from the learning experience itself.
 
-To be precise, SIMVA tool aims to simplify the possible issues:
- - Before the experiments:
-   - Managing users & surveys
-   - Providing anonymous identifiers to users
- - During the experiments:
- - Pretest-Game-Postest
-   - Collecting and storing surveys and traces data (xAPI-SG)
-   - Relating different data from users (GLA, tests)
- - After the experiments:
-    - Simplifying downloading and analysis of all data collected
+These challenges highlight the need for a tool that simplifies the assessment process and enables comprehensive management of the collected information. ***SIMVA*** tool addresses these challenges by offering integrated solutions. It facilitates the application of Game Learning Analytics (GLA) in Serious Games (SGs), enabling the developers and the researchers to validate the effectiveness of these games. The following table shows how ***SIMVA*** addressed these challenges.
 
-This respository allows you to to launch a complete SIMVA environment.
+<table border="1">
+      <tr>
+          <th>Phase</th>
+          <th>Challenge</th>
+          <th>Solution <i>SIMVA</i> provides</th>
+      </tr>
+ 
+      <tr>
+         <td>Before the experiments</td>
+         <td>
+             <ul>
+              <li>The lack of formal validation, or performed outside the game </li>
+              <li>Managing surveys</li>
+              <li>Managing users and providing anonymous identifiers to users</li>
+             </ul> 
+         </td>
+         <td><ul>
+              <li>Simplifying & supporting experimental design</li>
+              <li>LimeSurvey encapsulation</li>
+              <li>MToken generation for users in keycloak</li>
+             </ul> </td>
+      </tr>
+ 
+       <tr>
+         <td>During the experiments, for example Pretest-Game-Postest</td>
+         <td>
+             <ul>
+              <li>Collecting and storing surveys data</li>
+              <li>Collecting and storing interactions traces data</li>
+              <li>Relating those different data types to each user</li>
+              <li>Teachers lack control when applying games in classes</li>
+             </ul> 
+         </td>
+         <td><ul>
+              <li>Survey data is stored in LimeSurvey database</li>
+              <li>Trace data backup are stored in Minio as xAPI-SG format</li>
+              <li>Using the same user token in the study process</li>
+               <li>Support GLA remotely to conduct experiments in broader settings</li>
+             </ul> </td>
+      </tr>
+
+        <tr>
+         <td>After the experiments</td>
+         <td>
+             <ul>
+              <li>Access of all data collected from different data sources</li>
+              <li>Analysis of all data collected from different data sources</li>
+             </ul> 
+         </td>
+         <td><ul>
+              <li>Data can be downloaded in the study page for the researcher</li>
+              <li>TMon:  Default analysis and visualisation web tool for xAPI-SG data</li>
+       </ul> </td>
+      </tr>
+</table>
+
+This repository allows you to launch a complete ***SIMVA*** environment. 
 
 ## Instructions
+### Requirements (OS):
 
+* **Linux natively**: Follow step 1, then the steps from 4 to 6.
+* **Windows** with the latest version of <a href="https://www.ucm.es/" target="_blank">Vagrant</a>  and the latest version of <a href="https://www.virtualbox.org/" target="_blank">VirtualBox</a>  (tested with 6.0): Follow the steps from 1 to 6.
+* **Mac** with the latest version of <a href="https://www.ucm.es/" target="_blank">Vagrant</a>  and the latest version of <a href="https://www.virtualbox.org/" target="_blank">VirtualBox</a>  (tested with 6.0): Follow the steps from 1 to 6.
+
+### Steps:
 1. Clone this repository
-2. Verify that you have latest [Vagrant](https://vagrantup.com) and  [VirtualBox](https://www.virtualbox.org/) (tested with 6.0)
-3. Open a terminal in the cloned directory and run `vagrant up`
+2. Open a terminal in the cloned directory and run `vagrant up`
 > Note: The first time you run this command it will take a long time because Vagrant needs to download, aprovision and install the base required software.
-4. run `vagrant ssh` to get inside VM
-5. run `cd docker-stacks`
-6. run `./simva install`
+3. run `vagrant ssh` to get inside VM
+4. run `cd docker-stacks`
+5. run `./simva install`
 > Note: The first time you run this command it will take a long time because it is required to download all docker images required for SIMVA.
 6. run `./simva start` to start all containers.
 > Note: The first time you run this command it will take a long time because all componentes need to initialize.
