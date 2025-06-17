@@ -51,6 +51,16 @@ plugins:
     header_name: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_NAME}"
     header_prefix: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_PREFIX}"
     debug: "${isdev}"
+  xapitracker:
+    baseUrlLRC: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/admin/remotecontrol"
+    usernameLRC: "${SIMVA_LIMESURVEY_ADMIN_USER}"
+    passwordLRC: "${SIMVA_LIMESURVEY_ADMIN_PASSWORD}"
+    actorhomepage: "https://${SIMVA_EXTERNAL_DOMAIN}"
+    lrsendpoint: "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/limesurvey-completion-webhooks"
+    api_token: "${SIMVA_LIMESURVEY_WEBHOOK_API_TOKEN}"
+    header_name: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_NAME}"
+    header_prefix: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_PREFIX}"
+    debug: "${isdev}"
   oauth2:
     keycloak_realm_url: "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/realms/${SIMVA_SSO_REALM}"
     client_id: "${SIMVA_LIMESURVEY_CLIENT_ID}"

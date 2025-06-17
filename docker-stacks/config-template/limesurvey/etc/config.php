@@ -76,6 +76,22 @@ return array(
             'hidden' => ['sAuthToken'],
             'sBug' => '{{ .plugins.webhooks.debug }}'
         ],
+        'XAPITrackerSettings' => [
+            'sBug' => '{{ .plugins.xapitracker.debug }}',
+            'fixed' => [
+                'baseUrlLRC' => '{{ .plugins.xapitracker.baseUrlLRC }}',
+                'usernameLRC' => '{{ .plugins.xapitracker.usernameLRC }}',
+                'passwordLRC' => '{{ .plugins.xapitracker.passwordLRC }}',
+                'actorHomepage' => '{{ .plugins.xapitracker.actorhomepage }}',
+                #'studylrsendpoint' => true,
+                #'lrsEndpoint' => '{{ .plugins.xapitracker.lrsendpoint }}',
+                #'sToken' => '{{ .plugins.xapitracker.api_token }}',
+                #'sHeaderSignatureName' => '{{ .plugins.xapitracker.header_name }}',
+                #'sHeaderSignaturePrefix' => '{{ .plugins.xapitracker.header_prefix }}',
+                'sId'=> '',
+            ],
+            'hidden' => ['sToken', 'usernameLRC', 'passwordLRC'],
+        ],
 		'AuthOAuth2Settings' => [
 			'fixed' => [
 				'client_id' => '{{ .plugins.oauth2.client_id }}',
