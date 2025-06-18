@@ -3,4 +3,6 @@
 .initialized
 .initializedSSL
 .initializedRemoteControl
+.initializedRemoteControl-Update_plugin_settings
+.initializedSSL
 plugins
