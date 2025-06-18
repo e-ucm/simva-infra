@@ -11,7 +11,8 @@ ${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/limesurvey/.initialized"\
     "${SIMVA_DATA_HOME}/limesurvey/.externaldomain"\
     "${SIMVA_DATA_HOME}/limesurvey/.version"\
-    "${SIMVA_DATA_HOME}/limesurvey/.initializedRemoteControl"
+    "${SIMVA_DATA_HOME}/limesurvey/.initializedRemoteControl" \
+    "${SIMVA_DATA_HOME}/limesurvey/.initializedSSL"
 
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "ls_maria_db_data"
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "ls_maria_db_backup_data"
