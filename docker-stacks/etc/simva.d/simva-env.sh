@@ -275,14 +275,10 @@ export SIMVA_MINIO_CLIENT_ID="minio"
 
 # TMon Dashboard ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_TMON_CLIENT_ID="tmon"
-#export SIMVA_TMON_CLIENT_SECRET="secret"
-
-# TMon ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_TMON_CLIENT_ID="tmon"
 export SIMVA_TMON_CLIENT_SECRET="secret"
 
 # Keycloak Client ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_KEYCLOAK_CLIENT_CLIENT_ID="keycloak_client"
+export SIMVA_KEYCLOAK_CLIENT_CLIENT_ID="keycloak-client"
 export SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET="secret"
 
 ####################################################################
