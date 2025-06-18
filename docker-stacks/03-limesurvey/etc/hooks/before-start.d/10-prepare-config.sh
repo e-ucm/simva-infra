@@ -57,7 +57,7 @@ plugins:
     passwordLRC: "${SIMVA_LIMESURVEY_ADMIN_PASSWORD}"
     actorhomepage: "https://${SIMVA_EXTERNAL_DOMAIN}"
     surveylrsendpoint: "true"
-    oAuthType: "oAuth2"
+    oAuthType: "oauth2"
     usernameOAuth: "${SIMVA_LRSMANAGER_USER}"
     passwordOAuth: "${SIMVA_LRSMANAGER_PASSWORD}"
     keycloak_realm_url: "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/realms/${SIMVA_SSO_REALM}"
