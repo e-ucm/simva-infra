@@ -44,6 +44,7 @@ branch="dev"
 export SIMVA_API_GIT_REF=$branch
 export SIMVA_FRONT_GIT_REF=$branch
 export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
+export SIMVA_LIMESURVEY_DOCKER_GIT_REF="remotecontrol-patch"
 base_for_simva_repos="${SIMVA_DATA_HOME}/simva"
 [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_simva_repos="${SIMVA_HOME}/../.."
 if [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]]; then
@@ -53,6 +54,10 @@ else
 fi
 export SIMVA_FRONT_GIT_REPO="${base_for_simva_repos}/simva-front"
 export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-allocator"
+
+base_for_limesurvey_repos="${SIMVA_DATA_HOME}/limesurvey"
+[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_limesurvey_repos="${SIMVA_HOME}/../.."
+export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/docker-limesurvey"
 
 # SIMVA Load Balancer IPs
 export SIMVA_DEV_LOAD_BALANCER="false"

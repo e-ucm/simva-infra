@@ -167,6 +167,10 @@ if [ ! -d /home/vagrant/t-mon ]; then
   git clone https://github.com/e-ucm/t-mon.git
   chown -R vagrant:vagrant t-mon
 fi
+if [ ! -d /home/vagrant/docker-limesurvey ]; then
+  git clone https://github.com/e-ucm/docker-limesurvey.git
+  chown -R vagrant:vagrant docker-limesurvey
+fi
 ls /home/vagrant/
 
 # Copy the host gitconfig to vagrant home
