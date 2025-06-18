@@ -19,7 +19,7 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
     DB_PASSWORD=$SIMVA_LIMESURVEY_MYSQL_PASSWORD
     
     if [[ ${SIMVA_LIMESURVEY_VERSION%.*} > 5 ]]; then
-        declare -A plugins=(["LimeSurveyWebhook"]=${SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION} ["AuthOAuth2"]=${SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION});
+        declare -A plugins=(["LimeSurveyWebhook"]=${SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION} ["AuthOAuth2"]=${SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION} ["LimeSurveyXAPITracker"]=${SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION});
         for key in "${!plugins[@]}"; do
             ext_name=$key
             ext_version=${plugins[$key]}

@@ -292,6 +292,10 @@ export SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET="secret"
 export SIMVA_ADMINISTRATOR_USER="administrator"
 export SIMVA_ADMINISTRATOR_PASSWORD="administrator"
 
+# LRS MANAGER Username and password FOR KEYCLOAK
+export SIMVA_LRSMANAGER_USER="mylrsmanager"
+export SIMVA_LRSMANAGER_PASSWORD="password"
+
 ########################################################
 # Uncomment password if you want to set up for those template users
 # else it is generated automatically by script
