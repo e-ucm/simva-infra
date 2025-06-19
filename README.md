@@ -2,14 +2,20 @@
 
 # ***SIM***ple ***VA***lidation (***SIMVA***)
 [![SIMVA](https://raw.githubusercontent.com/e-ucm/simva-infra/master/.github/logo.svg?sanitize=true)](https://github.com/e-ucm/simva/)
+Serious Games (SGs) are digital games designed for different purposes other than entertainment including providing knowledge, upgrading skills, and raising awareness. In fact, SGs were successfully implemented in different domains such as in military, business, medicine, schools, etc. Also, SGs present new opportunities to apply stealth assessment techniques for evaluating player performance, typically by analyzing  players interaction data.
 
-Serious Games (SGs) are electronic games designed with purposes exceeding entertainment, such as providing knowledge, upgrading skills, and raising awareness. However, conducting such games without the ability to capture and manage data from them is worthless. Hence, there is a need for a technology with the ability to collect and manage these data in order to provide meaningful insights to different stakeholders. Therefore, it is crucial to apply Game Learning Analytics (GLA) to these games, which enables the collection, analysis, and visualization of data derived from players' in-game interactions.
+Applying Game Learning Analytics (GLA) to these games enables the collection of, analysis and visualization of data derived from players' in-game interactions. However, when conducting such games, it is not enough to only collect game interaction data. In other words, SGs effectiveness should be measured too. This is because, in most SGs there are different stakeholders involved. 
 
-In fact, SGs present new opportunities to apply stealth assessment techniques for evaluating player performance, typically by analyzing  players interaction data. However, potential difficulties may arise,  including the data collection process itself, user management and the analysis of the data collected. 
+Traditionally, the effectiveness is measured through experiments which involve pre- and post-tests. These tests are usually conducted on paper or electronically. The issue is that these tests are ultimately isolated from the learning experience itself.
 
-Moreover, SGs effectiveness should be measured for different reasons like any other educational tool. Traditionally, this is measured through experiments which involve pre- and post-tests. These tests are usually conducted on paper or electronically. The issue is that these tests are ultimately isolated from the learning experience itself.
+In general, with SGs there is a need to collect data from several resources during the different stages of the experiment. Which raises several challenges including user management, data collection and analysis. 
 
-These challenges highlight the need for a tool that simplifies the assessment process and enables comprehensive management of the collected information. ***SIMVA*** tool addresses these challenges by offering integrated solutions. It facilitates the application of Game Learning Analytics (GLA) in Serious Games (SGs), enabling the developers and the researchers to validate the effectiveness of these games. The following table shows how ***SIMVA*** addressed these challenges.
+Thus, there is a need for a tool that simplifies the assessment and enables comprehensive management of the collected information. SIMVA tool addresses these challenges by offering integrated solutions. 
+
+***SIMVA*** tool facilitates the application of Game Learning Analytics (GLA) in Serious Games (SGs), enabling the developers and the researchers to validate the effectiveness of these games. Also, it provides meaningful insights to different stakeholders which enables them to make the right decisions.
+
+The following table shows in detail these challenges and the solutions provided by ***SIMVA***.
+
 | Phase  | Challenge | Solution ***SIMVA*** provides |
 | ------------- | ------------- | ------------- |
 | Before the experiments  | - The lack of formal validation, or performed outside the game</br> - Managing surveys</br> - Managing users and providing anonymous identifiers to users|- Simplifying & supporting experimental design</br> - LimeSurvey encapsulation</br> - Token generation for users in keycloak|
