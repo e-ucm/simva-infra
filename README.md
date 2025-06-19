@@ -7,7 +7,7 @@ Serious Games (SGs) are digital games designed for different purposes other than
 
 Applying Game Learning Analytics (GLA) to these games enables the collection of, analysis and visualization of data derived from players' in-game interactions. However, when conducting such games, it is not enough to only collect game interaction data. In other words, SGs effectiveness should be measured too. This is because, in most SGs there are different stakeholders involved. 
 
-Traditionally, the effectiveness is measured through experiments which involve pre- and post-tests. These tests are usually conducted on paper or electronically. The issue is that these tests are ultimately isolated from the learning experience itself.
+Traditionally, educational tools effectiveness is measured through experiments which involve pre- and post-tests. These tests are usually conducted on paper or electronically. The issue is that these tests are ultimately isolated from the learning experience itself.
 
 In general, with SGs there is a need to collect data from several resources during the different stages of the experiment. Which raises several challenges including user management, data collection and analysis. 
 
