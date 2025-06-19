@@ -2,6 +2,7 @@
 
 # ***SIM***ple ***VA***lidation (***SIMVA***)
 [![SIMVA](https://raw.githubusercontent.com/e-ucm/simva-infra/master/.github/logo.svg?sanitize=true)](https://github.com/e-ucm/simva/)
+
 Serious Games (SGs) are digital games designed for different purposes other than entertainment including providing knowledge, upgrading skills, and raising awareness. In fact, SGs were successfully implemented in different domains such as in military, business, medicine, schools, etc. Also, SGs present new opportunities to apply stealth assessment techniques for evaluating player performance, typically by analyzing  players interaction data.
 
 Applying Game Learning Analytics (GLA) to these games enables the collection of, analysis and visualization of data derived from players' in-game interactions. However, when conducting such games, it is not enough to only collect game interaction data. In other words, SGs effectiveness should be measured too. This is because, in most SGs there are different stakeholders involved. 
