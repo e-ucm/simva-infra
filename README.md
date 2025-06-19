@@ -11,7 +11,7 @@ Traditionally, the effectiveness is measured through experiments which involve p
 
 In general, with SGs there is a need to collect data from several resources during the different stages of the experiment. Which raises several challenges including user management, data collection and analysis. 
 
-Thus, there is a need for a tool that simplifies the assessment and enables comprehensive management of the collected information. SIMVA tool addresses these challenges by offering integrated solutions. 
+Thus, there is a need for a tool that simplifies the assessment and enables a comprehensive management of the collected information. SIMVA tool addresses these challenges by offering integrated solutions. 
 
 ***SIMVA*** tool facilitates the application of Game Learning Analytics (GLA) in Serious Games (SGs), enabling the developers and the researchers to validate the effectiveness of these games. Also, it provides meaningful insights to different stakeholders which enables them to make the right decisions.
 
