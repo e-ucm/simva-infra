@@ -5,7 +5,7 @@
 
 Serious Games (SGs) are digital games designed for different purposes other than entertainment. For example, SGs can be designed to provide knowledge, upgrade skills, or raise awareness. In fact, SGs were successfully implemented in different domains such as in military, business, medicine, schools, etc. Also, SGs present new opportunities to apply stealth assessment techniques for evaluating player's performance, typically by analyzing  player's interaction data.
 
-Applying Game Learning Analytics (GLA) to these games enables the collection of, analysis and visualization of data derived from players' in-game interactions. However, when conducting such games, it is not enough to only collect game interaction data. In other words, SGs effectiveness should be measured too. This is because, in most SGs there are different stakeholders involved. 
+Applying Game Learning Analytics (GLA) to these games enables the collection, analysis and visualization of data derived from player's in-game interactions. However, when conducting such games, it is not enough to only collect game interaction data. In other words, SGs effectiveness should be measured too. This is because, in most SGs there are different stakeholders involved. 
 
 Traditionally, educational tools effectiveness is measured through experiments which involve pre- and post-tests. These tests are usually conducted on paper or electronically. The issue is that these tests are ultimately isolated from the learning experience itself.
 
