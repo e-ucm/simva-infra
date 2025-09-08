@@ -1,0 +1,145 @@
+Vagrant.configure("2") do |config|
+  # Use the Ubuntu 18.04 box
+  config.vm.box = "ubuntu/jammy64"
+  #config.vm.disk :disk, size: "100GB", primary: true
+  config.disksize.size = '40GB'
+  
+  config.vbguest.auto_update = false
+
+  # Disable the default /vagrant synced folder
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  
+  # Auto-detect parent folder of this Vagrantfile
+  parent_folder = File.expand_path("..", __dir__)
+  # Use the parent folder's name as the mount point
+  mount_point = "/" + File.basename(parent_folder)
+  #Example: share current folder with the VM using SMB
+  config.vm.synced_folder parent_folder, mount_point,
+        type: "virtualbox",        # VirtualBox shared folder
+        owner: "vagrant",          # Optional: set guest owner
+        group: "vagrant",          # Optional: set guest group
+        mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
+  config.vm.synced_folder File.expand_path("../../simva", __dir__), "/simva",
+        type: "virtualbox",        # VirtualBox shared folder
+        owner: "vagrant",          # Optional: set guest owner
+        group: "vagrant",          # Optional: set guest group
+        mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
+  config.vm.synced_folder File.expand_path("../../simva-front", __dir__), "/simva-front",
+        type: "virtualbox",        # VirtualBox shared folder
+        owner: "vagrant",          # Optional: set guest owner
+        group: "vagrant",          # Optional: set guest group
+        mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
+  config.vm.synced_folder File.expand_path("../../simva-trace-allocator", __dir__), "/simva-trace-allocator",
+        type: "virtualbox",        # VirtualBox shared folder
+        owner: "vagrant",          # Optional: set guest owner
+        group: "vagrant",          # Optional: set guest group
+        mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
+  config.vm.synced_folder File.expand_path("../../t-mon", __dir__), "/t-mon",
+        type: "virtualbox",        # VirtualBox shared folder
+        owner: "vagrant",          # Optional: set guest owner
+        group: "vagrant",          # Optional: set guest group
+        mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
+
+  # --- Read hostnames from external file ---
+  adapter_file = File.join(File.dirname(__FILE__), "adapter_name.txt")
+  adapters = []
+  if File.exist?(adapter_file)
+    adapters = File.readlines(adapter_file).map(&:strip).reject(&:empty?)
+  else
+    puts "Warning: adapter_name.txt not found. No host entries will be added."
+  end
+  adapter_name = adapters.shift || "VirtualBox Host-Only Ethernet Adapter" # Optional: the name of the host-only adapter
+
+  # Set the VM name in Hyper-V Manager
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "SIMVA-INFRA"
+    vb.cpus = 8
+    vb.memory = 8192
+
+    vb.customize ["modifyvm", :id, "--nic2", "hostonly"]
+    vb.customize ["modifyvm", :id, "--hostonlyadapter2", adapter_name]
+    vb.customize ["modifyvm", :id, "--cableconnected2", "on"]
+  end
+
+  config.vm.boot_timeout = 500
+  # Provision VM automatically with a shell script
+  config.vm.provision "shell" do |s|
+      s.path= "helpers/installation.sh"
+  end
+
+  # Network settings
+  # --- Read external IP from external file ---
+  simva_vm_ip_file = File.join(File.dirname(__FILE__), "external_ip.txt")
+  simva_vm_ips = []
+  if File.exist?(simva_vm_ip_file)
+    simva_vm_ips = File.readlines(simva_vm_ip_file).map(&:strip).reject(&:empty?)
+  else
+    puts "Warning: external_ip.txt not found. Default external_ip will be used."
+  end
+  
+  simva_vm_ip = simva_vm_ips.shift || "192.168.253.2"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    #!/bin/bash
+    echo "Mounted parent folder is available at: #{mount_point}"
+    echo "Hello from VM!"
+    # Example: list files from shared folder
+    ls -l #{mount_point}
+    # Example: run a script from the shared folder
+    if [ -f #{mount_point}/docker-stacks/simva ]; then
+      echo "Running simva from #{mount_point}..."
+      dos2unix #{mount_point}/docker-stacks/simva
+      #{mount_point}/docker-stacks/simva install
+    fi
+    # Ensure host-only interface is up with the IP from file
+    # Extract network from VM IP (e.g., 192.168.253.3 -> 192.168.253.0/24)
+    #NETBASE=$(echo #{simva_vm_ip} | awk -F. '{print $1"."$2"."$3".0/24"}')
+    #IFNAME=$(ip -o addr show | awk '/#{simva_vm_ip}/ {print $2}' | head -n1)
+    #if [ -z "$IFNAME" ]; then
+    #  echo "Assigning host-only IP #{simva_vm_ip} to interface enp0s8..."
+    #  sudo ip addr add #{simva_vm_ip}/24 dev enp0s8 || true
+    #  sudo ip link set enp0s8 up
+    #else
+    #  echo "Host-only interface $IFNAME already has IP #{simva_vm_ip}"
+    #fi
+    ## Firewall rules for host-only network using dynamic subnet
+    #echo "Applying firewall rules for host-only network #NETBASE..."
+    #sudo ufw allow from $NETBASE to any port 80
+    #sudo ufw allow from $NETBASE to any port 443
+    #sudo ufw reload || true
+  SHELL
+  
+  # NAT (default) gives internet access
+  # Private network gives host ↔ VM access
+  config.vm.network "private_network", ip: simva_vm_ip, adapter: 2
+
+  # --- Read hostnames from external file ---
+  hostnames_file = File.join(File.dirname(__FILE__), "hostnames.txt")
+  hostnames = []
+  if File.exist?(hostnames_file)
+    hostnames = File.readlines(hostnames_file).map(&:strip).reject(&:empty?)
+  else
+    puts "Warning: hostnames.txt not found. No host entries will be added."
+  end
+
+  # Set first hostname as main VM hostname
+  main_hostname = hostnames.shift || "traefik.external.test"
+  config.vm.hostname = main_hostname
+
+  # Hostmanager plugin configuration
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true   # modifies /etc/hosts on the HOST machine
+  config.hostmanager.manage_guest = true  # modifies /etc/hosts inside the VM
+  config.hostmanager.ignore_private_ip = false
+  config.hostmanager.include_offline = true
+  config.hostmanager.ip_resolver = proc do |vm, resolving_vm|
+    simva_vm_ip  # VM static IP
+  end
+
+   # --- Add remaining hostnames as aliases ---
+  config.hostmanager.aliases = hostnames unless hostnames.empty?
+
+  # Forward Port for Docker
+  config.vm.network "forwarded_port", guest: 80, host: 8888, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 443, host: 8443, host_ip: "127.0.0.1"
+end

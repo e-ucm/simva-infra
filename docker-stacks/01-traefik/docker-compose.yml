@@ -77,7 +77,7 @@ services:
           [http.middlewares.dashboardAuth.basicAuth]
             # admin:password
             users = [
-              "${SIMVA_TRAEFIK_DASHBOARD_USER:?Traefik dashboard username must be configured}:${SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD:?Traefik dashboard password must be configured}"
+              "${SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD:?Traefik dashboard password must be configured}"
             ]
           [http.middlewares.secHeaders.headers]
             contentTypeNosniff = true
