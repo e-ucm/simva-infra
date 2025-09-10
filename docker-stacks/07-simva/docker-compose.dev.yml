@@ -13,66 +13,25 @@ x-default-opts:
 services:
   simva-api:
     build: ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}
-    environment:
-      ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
-      PROFILING_FOLDER: /home/node/profiling
+    restart: unless-stopped
     volumes:
-      - ${SIMVA_API_GIT_REPO}:/home/node/app/
-      - ${SIMVA_DATA_HOME}/simva/simva-api-profiling:/home/node/profiling
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}:/home/node/app/
       - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9229:9229"
   simva-front:
     build: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}
-    environment:
-      ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
-      PROFILING_FOLDER: /home/node/profiling
+    restart: unless-stopped
     volumes:
-      - ${SIMVA_FRONT_GIT_REPO}:/home/node/app/
-      - ${SIMVA_DATA_HOME}/simva/simva-front-profiling:/home/node/profiling
+      - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}:/home/node/app/
       - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9230:9229"
   simva-trace-allocator:
     build: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}
-    environment:
-      ENABLE_DEBUG_PROFILING: ${SIMVA_ENABLE_DEBUG_PROFILING:-false}
-      PROFILING_FOLDER: /home/node/profiling
+    restart: unless-stopped
     volumes:
-      - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO}:/home/node/app/
-      - ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling:/home/node/profiling
+      - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}:/home/node/app/
       - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9231:9229"
-  mongodb:
-    << : *default-opts
-    image: ${SIMVA_MONGODB_IMAGE:-mongo}:${SIMVA_MONGODB_VERSION:-4.2.8}
-    networks:
-      traefik_services:
-        aliases:
-          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-  mongoku:
-    << : *default-opts
-    image: ${SIMVA_MONGOKU_UI_IMAGE:-huggingface/mongoku}:${SIMVA_MONGOKU_UI_VERSION:-latest}
-    depends_on:
-      - mongodb
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_HOME}/bin/wait-available.sh:/bin/wait-available.sh:ro
-    entrypoint: bash -c "/bin/wait-available.sh 'Mongo DB' '${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}:27017' 'false' 'false' && /app/docker-run.sh"
-    environment:
-      MONGOKU_DEFAULT_HOST: "mongodb://${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}:27017"
-      SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
-      SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-15}
-    networks:
-      default:
-        aliases:
-          - ${SIMVA_MONGO_UI_HOST_SUBDOMAIN:-simva-mongo-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-      traefik_services:
-        aliases:
-          - ${SIMVA_MONGO_UI_HOST_SUBDOMAIN:-simva-mongo-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.mongoku.loadbalancer.server.port=3100"
-      - "traefik.http.routers.mongoku.rule=Host(`${SIMVA_MONGO_UI_HOST_SUBDOMAIN:-simva-mongo-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.mongoku.middlewares=dashboardAuth@file"

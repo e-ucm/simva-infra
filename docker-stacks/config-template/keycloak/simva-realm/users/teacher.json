@@ -12,10 +12,8 @@
     },
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "uma_authorization", "teacher", "offline_access" ],
-    "clientRoles" : {
-      "account" : [ "view-profile", "manage-account" ]
-    },
+    "realmRoles" : [ "teacher" ],
+    "clientRoles" : {},
     "notBefore" : 0,
     "groups" : [ ]
 }

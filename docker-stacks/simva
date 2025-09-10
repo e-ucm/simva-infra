@@ -1090,6 +1090,8 @@ function setExecutable() {
                 setExecutable_scripts_from_folder ${folder}
                 folder="${HooksFolder}/after-start.d"
                 setExecutable_scripts_from_folder ${folder}
+                folder="${SIMVA_HOME}/${stack}/etc/entrypoint.d"
+                setExecutable_scripts_from_folder ${folder}
             ;;
             "stop")
                 folder="${HooksFolder}/before-stop.d"
@@ -1151,6 +1153,8 @@ function setExecutable() {
             setExecutable_scripts_from_folder ${folder}
             folder="${HooksFolder}/after-start.d"
             setExecutable_scripts_from_folder ${folder}
+            folder="${SIMVA_HOME}/etc/entrypoint.d"
+            setExecutable_scripts_from_folder ${folder}
         ;;
         "stop")
             folder="${HooksFolder}/before-stop.d"
@@ -1186,6 +1190,7 @@ function build() {
     local stack=${1}
     shift
 
+    export COMPOSE_BAKE=true
     docker_compose_stacks "${stack}" "${wait_time}" build  --no-cache --pull $@
 }
 

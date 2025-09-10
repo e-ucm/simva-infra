@@ -92,23 +92,6 @@ services:
       bash -c '
         # Add extra jar files to all storage plugins
         cp -a /usr/share/simva/kafka-connect-storage-common/* /usr/share/java/kafka-connect-storage-common;
-        if [[ -e "$${SIMVA_CA_FILE}" ]]; then
-          echo 1>&2 "Check if $${SIMVA_CA_FILE} is already imported into $${JDK_TRUSTORE}";
-          keytool -list -keystore $${JDK_TRUSTORE} -storepass "$${JDK_TRUSTORE_PASSWORD}" -alias "$${SIMVA_CA_ALIAS}" >/dev/null 2>&1;
-          ca_already_imported=$$?;
-          if [[ $${ca_already_imported} -ne 0 ]]; then
-            echo 1>&2 "Not imported, importing ...";
-            launch_bash_options=$$-
-            set +e
-            keytool -importcert -trustcacerts -noprompt -keystore $${JDK_TRUSTORE} -storepass "$${JDK_TRUSTORE_PASSWORD}" -file "$${SIMVA_CA_FILE}" -alias "$${SIMVA_CA_ALIAS}" >/dev/null 2>&1;
-            if [[ $$launch_bash_options =~ e ]]; then
-              set -e
-            fi
-            echo 1>&2 "$${SIMVA_CA_FILE} imported";
-          else
-            echo 1>&2 "$${SIMVA_CA_FILE} already imported";
-          fi;
-        fi
         # Run
         exec /etc/confluent/docker/run;
       '
@@ -169,6 +152,7 @@ services:
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/connect/kafka-connect-storage-common:/usr/share/simva/kafka-connect-storage-common
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/connect:/usr/share/simva
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/usr/share/simva/ca
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-rootCA.sh:/usr/share/entrypoint.d/docker-startup.sh
     depends_on:
       - zk1
       - kafka1

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 export SIMVA_DEVELOPMENT_LOCAL="false"
 export SIMVA_DEBUG="true"
-export SIMVA_ENABLE_DEBUG_PROFILING="false"
 
 #########################################
 # Generate self signed TLS certificates #
@@ -97,6 +96,16 @@ export SIMVA_SOCKET_PROXY_LOG_LEVEL="info"
 # Traefik info #
 ################
 [[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_TRAEFIK_EXTRA_CSP_POLICY=" report-uri https://${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN:-csp-reporter}.${SIMVA_EXTERNAL_DOMAIN}/report-violation; report-to https://${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN:-csp-reporter}.${SIMVA_EXTERNAL_DOMAIN}/report-violation;"
+
+
+########################
+# Profiling Node Debug #
+########################
+export SIMVA_ENABLE_DEBUG_PROFILING="false"
+#doctor, flame, bubbleprof, heapprofiler
+export SIMVA_CLINIC_APP="doctor"
+#timeout : s - seconds (default) / m - minutes / h - hours / d - days
+export SIMVA_CLINIC_TIMEOUT_TIME="20m"
 
 ####################################################################
 ######## Authentification username and password (TO MODIFY) ########

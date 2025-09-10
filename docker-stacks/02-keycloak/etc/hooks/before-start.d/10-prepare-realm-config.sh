@@ -28,6 +28,8 @@ function generate_realm_data() {
         touch "${STACK_CONF}/simva-env.sh"
     fi
     
+    events_activated=$([ "$SIMVA_ENVIRONMENT" == "development" ] && echo "true" || echo "false")
+    
     limesurvey_client_id=$(get_or_generate_username "limesurvey" "${STACK_CONF}/simva-env.sh")
     limesurvey_client_secret=$(get_or_generate_password "limesurvey" "${STACK_CONF}/simva-env.sh")
 
@@ -63,6 +65,8 @@ smtpServer:
   auth: "${SIMVA_MAIL_AUTH}"
   user: "${SIMVA_MAIL_USER}"
   password: "${SIMVA_MAIL_PASSWORD}"
+events: 
+  enabled: "${events_activated}"
 clients:
   limesurvey:
     baseUrl: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"

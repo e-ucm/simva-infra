@@ -10,9 +10,8 @@
     "email" :  "{{ .users.administrator.username }}@{{ .clients.simva.externalDomain }}",
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "uma_authorization", "administrator", "offline_access" ],
+    "realmRoles" : [ "administrator" ],
     "clientRoles" : {
-      "account" : [ "view-profile", "manage-account" ],
       "realm-management" : [
         "view-clients",
         "view-events",

@@ -56,12 +56,16 @@ services:
       #SIMVA Realm theme
       - KC_SPI_THEME_DEFAULT=simva
       - KC_SIMVA_FRONT_URL=${SIMVA_EXTERNAL_PROTOCOL:-https}://${SIMVA_EXTERNAL_DOMAIN:-external.test}
-      - SIMVA_API_URL=${SIMVA_EXTERNAL_PROTOCOL:-https}://${SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      - SIMVA_API_URL=${SIMVA_EXTERNAL_PROTOCOL:-https}://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
       - SIMVA_API_ADMIN_USERNAME=${SIMVA_API_ADMIN_USERNAME:-admin}
       - SIMVA_API_ADMIN_PASSWORD=${SIMVA_API_ADMIN_PASSWORD:-password}
       - KEYCLOAK_TOKEN_URL=https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/protocol/openid-connect/token
       - KEYCLOAK_CLIENT_CLIENT_ID=${SIMVA_KEYCLOAK_CLIENT_CLIENT_ID:-keycloak-client}
       - KEYCLOAK_CLIENT_CLIENT_SECRET=${SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET:-secret}
+      - JDK_TRUSTORE=/usr/lib/jvm/java-21-openjdk-21.0.6.0.7-1.el9.x86_64/lib/security/cacerts
+      - JDK_TRUSTORE_PASSWORD=changeit
+      - SIMVA_CA_ALIAS=simvaCA
+      - SIMVA_CA_FILE=/root/.keycloak/certs/ca/rootCA.pem
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/keycloak/providers
@@ -70,6 +74,7 @@ services:
       - ${SIMVA_CONFIG_TEMPLATE_HOME:-/home/vagrant/docker-stacks/config-template}/keycloak/simva-realm/:/opt/keycloak/data/simva-realm/:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/:/opt/keycloak/data/export/:rw
       - ${SIMVA_TLS_HOME?TLS home folder required}:/root/.keycloak/certs/:ro
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-rootCA.sh:/root/.keycloak/entrypoint.d/docker-startup.sh
     depends_on:
       - mariadb
     restart: unless-stopped

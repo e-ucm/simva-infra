@@ -10,10 +10,8 @@
     "email" :  "{{ .users.student.username }}@{{ .clients.simva.externalDomain }}",
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "student", "uma_authorization", "offline_access" ],
-    "clientRoles" : {
-      "account" : [ "view-profile", "manage-account" ]
-    },
+    "realmRoles" : [ "student" ],
+    "clientRoles" : {},
     "notBefore" : 0,
     "groups" : [ ]
 }

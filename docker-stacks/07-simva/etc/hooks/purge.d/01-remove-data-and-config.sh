@@ -10,9 +10,6 @@ ${SIMVA_HOME}/bin/purge-folder-contents.sh \
     "${SIMVA_DATA_HOME}/simva/simva-api-logs" \
     "${SIMVA_DATA_HOME}/simva/simva-front-logs" \
     "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-logs" \
-    "${SIMVA_DATA_HOME}/simva/simva-api-profiling" \
-    "${SIMVA_DATA_HOME}/simva/simva-front-profiling" \
-    "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling" \
     "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-data"
 
 ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
