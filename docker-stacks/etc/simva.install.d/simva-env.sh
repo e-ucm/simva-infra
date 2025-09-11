@@ -43,6 +43,7 @@ export SIMVA_MINIO_MC_VERSION="RELEASE.2025-02-04T04-57-50Z"
 export SIMVA_KAFKA_IMAGE="confluentinc/cp-kafka"
 export SIMVA_KAFKA_CONNECT_IMAGE="cnfldemos/kafka-connect-datagen"
 export SIMVA_KAFKA_VERSION="7.8.0"
+export SIMVA_KAFKA_CONNECT_VERSION="0.6.7-8.0.0" #0.6.4-7.6.0
 
 export SIMVA_SIMVA_IMAGE="eucm/simva-api"
 export SIMVA_SIMVA_VERSION="0.0.1"

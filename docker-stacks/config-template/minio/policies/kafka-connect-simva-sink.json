@@ -32,6 +32,17 @@
           }
        },
        {
+            "Sid": "AllowBucketLocationAndListingInBucket",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<<SIMVA_TRACES_BUCKET_NAME>>"
+            ]
+       },
+       {
           "Sid":"AllowAllS3ActionsInSinkFolder",
           "Effect":"Allow",
           "Action":[
