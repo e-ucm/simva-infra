@@ -3,7 +3,7 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 if [[ ! -e ""${SIMVA_ROOT_CA_FILE}"" ]]; then
-    if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" =="true" ]]; then
+    if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
         mkdir "${SIMVA_TLS_HOME}/ca"
         mkcert -install
         chmod a+r "${SIMVA_ROOT_CA_KEY_FILE}"

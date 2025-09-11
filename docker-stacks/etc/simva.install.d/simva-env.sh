@@ -86,29 +86,57 @@ if [[ $SIMVA_SHLINK_EXTERNAL_DOMAIN == "" ]]; then
     export SIMVA_SHLINK_EXTERNAL_DOMAIN="${SIMVA_SHLINK_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
 fi
 
-
-################
-# Traefik info #
-################
+########################
+# Traefik certificates #
+########################
 # Traefik: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
 # example: foo.crt,bar.crt
-export SIMVA_SSL_ROOT_CAS="${SIMVA_TLS_HOME}/ca/isrgrootx1.pem"
-export SIMVA_ROOT_CA_FILE="${SIMVA_TLS_HOME}/ca/rootCA.pem"
-export SIMVA_ROOT_CA_KEY_FILE="${SIMVA_TLS_HOME}/ca/rootCA-key.pem"
+export SIMVA_SSL_ROOT_CAS_FILENAME="isrgrootx1.pem"
+export SIMVA_ROOT_CA_FILENAME="rootCA.pem"
+export SIMVA_ROOT_CA_KEY_FILENAME="rootCA-key.pem"
 
-export SIMVA_DHPARAM_FILE="${SIMVA_TLS_HOME}/dhparam.pem"
+export SIMVA_DHPARAM_FILENAME="dhparam.pem"
+export SIMVA_TRUSTSTORE_FILENAME="truststore.jks"
 
-export SIMVA_LIMESURVEY_FULLCHAIN_CERT_FILE="${SIMVA_TLS_HOME}/limesurvey-fullchain.pem"
-export SIMVA_LIMESURVEY_KEY_FILE="${SIMVA_TLS_HOME}/limesurvey-key.pem"
-export SIMVA_LIMESURVEY_CERT_FILE="${SIMVA_TLS_HOME}/limesurvey.pem"
-export SIMVA_LIMESURVEY_CERT_CRS_FILE="${SIMVA_TLS_HOME}/limesurvey.csr"
+export SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME="traefik-fullchain.pem"
+export SIMVA_TRAEFIK_KEY_FILENAME="traefik-key.pem"
+export SIMVA_TRAEFIK_CERT_FILENAME="traefik.pem"
 
-export SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE="${SIMVA_TLS_HOME}/traefik-fullchain.pem"
-export SIMVA_TRAEFIK_KEY_FILE="${SIMVA_TLS_HOME}/traefik-key.pem"
-export SIMVA_TRAEFIK_CERT_FILE="${SIMVA_TLS_HOME}/traefik.pem"
+export SIMVA_ROOT_CA="${SIMVA_TLS_HOME}/ca"
+export SIMVA_SSL_ROOT_CAS="${SIMVA_ROOT_CA}/${SIMVA_SSL_ROOT_CAS_FILENAME}"
+export SIMVA_ROOT_CA_FILE="${SIMVA_ROOT_CA}/${SIMVA_ROOT_CA_FILENAME}"
+export SIMVA_ROOT_CA_KEY_FILE="${SIMVA_ROOT_CA}/${SIMVA_ROOT_CA_KEY_FILENAME}"
+export SIMVA_DHPARAM_FILE="${SIMVA_TLS_HOME}/${SIMVA_DHPARAM_FILENAME}"
+export SIMVA_TRUSTSTORE_FILE="${SIMVA_TLS_HOME}/${SIMVA_TRUSTSTORE_FILENAME}"
 
-export SIMVA_TRUSTSTORE_FILE="${SIMVA_TLS_HOME}/truststore.jks"
+export SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE="${SIMVA_TLS_HOME}/${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME}"
+export SIMVA_TRAEFIK_KEY_FILE="${SIMVA_TLS_HOME}/${SIMVA_TRAEFIK_KEY_FILENAME}"
+export SIMVA_TRAEFIK_CERT_FILE="${SIMVA_TLS_HOME}/${SIMVA_TRAEFIK_CERT_FILENAME}"
+
+#########################
+# Keycloak certificates #
+#########################
+# Keycloak: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
+# Authorities when using a self-signed TLS certificate
+# example: foo.crt,bar.crt
+export SIMVA_KEYCLOAK_CERT_FILENAME="keycloak.p12"
+export SIMVA_KEYCLOAK_CERT_FILE="${SIMVA_TLS_HOME}/${SIMVA_KEYCLOAK_CERT_FILENAME}"
+
+###########################
+# Limesurvey certificates #
+###########################
+# Limesurvey: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
+# Authorities when using a self-signed TLS certificate
+# example: foo.crt,bar.crt
+export SIMVA_LIMESURVEY_FULLCHAIN_CERT_FILENAME="limesurvey-fullchain.pem"
+export SIMVA_LIMESURVEY_KEY_FILENAME="limesurvey-key.pem"
+export SIMVA_LIMESURVEY_CERT_FILENAME="limesurvey.pem"
+export SIMVA_LIMESURVEY_CERT_CRS_FILENAME="limesurvey.csr"
+export SIMVA_LIMESURVEY_FULLCHAIN_CERT_FILE="${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_FULLCHAIN_CERT_FILENAME}"
+export SIMVA_LIMESURVEY_KEY_FILE="${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_KEY_FILENAME}"
+export SIMVA_LIMESURVEY_CERT_FILE="${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_CERT_FILENAME}"
+export SIMVA_LIMESURVEY_CERT_CRS_FILE="${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_CERT_CRS_FILENAME}"
 
 ##########################################
 # Checking time for container availabled #

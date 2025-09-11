@@ -64,6 +64,8 @@ services:
       - KEYCLOAK_CLIENT_CLIENT_SECRET=${SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET:-secret}
       - JDK_TRUSTORE=/usr/lib/jvm/java-21-openjdk-21.0.6.0.7-1.el9.x86_64/lib/security/cacerts
       - JDK_TRUSTORE_PASSWORD=changeit
+      - KC_HTTPS_KEY_STORE=/root/.keycloak/certs/${SIMVA_KEYCLOAK_CERT_FILENAME}
+      - KC_HTTPS_KEY_STORE_PASSWORD=changeit
       - SIMVA_CA_ALIAS=simvaCA
       - SIMVA_CA_FILE=/root/.keycloak/certs/ca/rootCA.pem
     volumes:
