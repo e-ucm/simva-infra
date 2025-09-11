@@ -8,6 +8,9 @@ if [[ ! -d "${EXTENSIONS_DIR}" ]]; then
 fi
 
 DEPLOYMENT_DIR="${SIMVA_DATA_HOME}/keycloak/deployments"
+if [[ ! -d "${DEPLOYMENT_DIR}" ]]; then
+    mkdir "${DEPLOYMENT_DIR}"
+fi
 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -gt 25 ]]; then
     # (tested in Keycloak 26.1.3)
     SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme-v2 es.e-ucm.simva.keycloak.custom-token-auth-spi"

@@ -33,9 +33,6 @@ function generate_realm_data() {
     limesurvey_client_id=$(get_or_generate_username "limesurvey" "${STACK_CONF}/simva-env.sh")
     limesurvey_client_secret=$(get_or_generate_password "limesurvey" "${STACK_CONF}/simva-env.sh")
 
-    minio_client_id=$(get_or_generate_username "minio" "${STACK_CONF}/simva-env.sh")
-    minio_client_secret=$(get_or_generate_password "minio" "${STACK_CONF}/simva-env.sh")
-
     simva_client_id=$(get_or_generate_username "simva" "${STACK_CONF}/simva-env.sh")
     simva_client_secret=$(get_or_generate_password "simva" "${STACK_CONF}/simva-env.sh")
 
@@ -74,10 +71,6 @@ clients:
     clientId: "${limesurvey_client_id}"
     secret: "${limesurvey_client_secret}"
     certificate: "${limesurvey_cert//-----END CERTIFICATE-----/}"
-  minio:
-    baseUrl: "https://${SIMVA_MINIO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
-    clientId: "${minio_client_id}"
-    secret: "${minio_client_secret}"
   simva:
     externalDomain: "${SIMVA_EXTERNAL_DOMAIN}"
     baseUrl: "https://${SIMVA_EXTERNAL_DOMAIN}"

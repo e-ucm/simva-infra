@@ -4,9 +4,13 @@ set -euo pipefail
 
 if [[ ! -e ""${SIMVA_ROOT_CA_FILE}"" ]]; then
     if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
-        mkdir "${SIMVA_TLS_HOME}/ca"
+        if [[ ! -d "${SIMVA_TLS_HOME}/ca" ]]; then
+            mkdir "${SIMVA_TLS_HOME}/ca"
+        fi
         mkcert -install
-        chmod a+r "${SIMVA_ROOT_CA_KEY_FILE}"
+        cp "$(mkcert -CAROOT)/rootCA.pem" /simva-infra/docker-stacks/config/tls/ca/
+        cp "$(mkcert -CAROOT)/rootCA-key.pem" /simva-infra/docker-stacks/config/tls/ca/
+        #chmod a+r "${SIMVA_ROOT_CA_KEY_FILE}"
         chmod a+r "${SIMVA_ROOT_CA_FILE}"
     else 
         echo "Please insert your ${SIMVA_ROOT_CA_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
