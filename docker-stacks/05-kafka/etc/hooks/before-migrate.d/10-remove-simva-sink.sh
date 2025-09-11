@@ -14,6 +14,5 @@ done
  ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
       "${SIMVA_DATA_HOME}/kafka/minio-events-topics-created"
 
-${SIMVA_HOME}/bin/purge-folder-contents.sh \
-    "${SIMVA_DATA_HOME}/kafka/data/kafka1/data" \
-    "${SIMVA_DATA_HOME}/kafka/data/zoo1"
+"${SIMVA_HOME}/bin/volumectl.sh" delete "kafka_data"
+"${SIMVA_HOME}/bin/volumectl.sh" delete "zoo_data"

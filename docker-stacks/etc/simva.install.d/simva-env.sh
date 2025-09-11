@@ -22,39 +22,48 @@ export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 # DOCKER Images #
 #################
 # Images versions
-
+#TRAEFIK
 export SIMVA_TRAEFIK_IMAGE="traefik"
 export SIMVA_TRAEFIK_VERSION="2.11.3"
 
+#KEYCLOAK SSO
 export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"
 export SIMVA_KEYCLOAK_VERSION="26.1.3"
-
+#SQL DB
 export SIMVA_MARIADB_IMAGE="mariadb"
 export SIMVA_MARIADB_VERSION="10.4.13"
 
+#LIMESURVEY
 export SIMVA_LIMESURVEY_IMAGE="eucm/limesurvey"
 export SIMVA_LIMESURVEY_VERSION="4.3.15-4"
 
+#MINIO
 export SIMVA_MINIO_IMAGE="minio/minio"
 export SIMVA_MINIO_VERSION="RELEASE.2025-02-28T09-55-16Z"
 export SIMVA_MINIO_MC_IMAGE="minio/mc"
 export SIMVA_MINIO_MC_VERSION="RELEASE.2025-02-04T04-57-50Z"
 
+#KAFKA
 export SIMVA_KAFKA_IMAGE="confluentinc/cp-kafka"
-export SIMVA_KAFKA_CONNECT_IMAGE="cnfldemos/kafka-connect-datagen"
 export SIMVA_KAFKA_VERSION="7.8.0"
+#KAFKA CONNECT AND CONNECT S3 PLUGIN
+export SIMVA_KAFKA_CONNECT_IMAGE="cnfldemos/kafka-connect-datagen"
 export SIMVA_KAFKA_CONNECT_VERSION="0.6.7-8.0.0" #0.6.4-7.6.0
+export SIMVA_CONFLUENCE_CONNECT_S3_REPO="confluentinc/kafka-connect-s3"
+export SIMVA_CONFLUENCE_CONNECT_S3_VERSION="11.0.1"
 
+#SIMVA
 export SIMVA_SIMVA_IMAGE="eucm/simva-api"
 export SIMVA_SIMVA_VERSION="0.0.1"
 export SIMVA_SIMVA_TRACE_ALLOCATOR_IMAGE="eucm/simva-trace-allocator"
 export SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION="0.0.1"
 export SIMVA_SIMVA_FRONT_IMAGE="eucm/simva-front"
 export SIMVA_SIMVA_FRONT_VERSION="0.0.1"
-
+#NO SQL DB
 export SIMVA_MONGODB_IMAGE="mongo"
 export SIMVA_MONGODB_VERSION="4.2.8"
 
+#LOGS
 export SIMVA_DOZZLE_IMAGE="amir20/dozzle"
 export SIMVA_DOZZLE_VERSION="8.10.3"
 

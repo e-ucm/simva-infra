@@ -81,4 +81,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.zoonavigator.loadbalancer.server.port=9000"
       - "traefik.http.routers.zoonavigator.rule=Host(`${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.zoonavigator.middlewares=dashboardAuth@file"
+      - "traefik.http.routers.zoonavigator.middlewares=dashboardAuth@file,secHeaders@file"

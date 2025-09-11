@@ -32,4 +32,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.shlink-admin.loadbalancer.server.port=8080"
       - "traefik.http.routers.shlink-admin.rule=Host(`${SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.shlink-admin.middlewares=dashboardAuth@file"
+      - "traefik.http.routers.shlink-admin.middlewares=dashboardAuth@file,secHeaders@file"

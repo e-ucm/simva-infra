@@ -69,7 +69,7 @@ services:
       KAFKA_HEAP_OPTS: "-Xms512m -Xmx512m"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/kafka1/data:/var/lib/kafka/data
+      - kafka_data:/var/lib/kafka/data
     depends_on:
       - zk1
     hostname: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
@@ -164,3 +164,11 @@ services:
       traefik_services:
         aliases:
           - connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+volumes:
+  kafka_data:
+    external: true
+  zoo_data:
+    external: true
+  zoo_datalog:
+    external: true

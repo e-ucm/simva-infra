@@ -21,7 +21,7 @@ services:
     image: ${SIMVA_SHLINK_IMAGE:-ghcr.io/shlinkio/shlink}:${SIMVA_SHLINK_VERSION:-stable}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-    #  - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/shlink:/data/db
+      - shlink_db:/data/db
     environment:
       DEFAULT_DOMAIN: ${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}
       IS_HTTPS_ENABLED: true
@@ -39,3 +39,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.shlink.loadbalancer.server.port=8080"
       - "traefik.http.routers.shlink.rule=Host(`${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}`)"
+      - "traefik.http.routers.shlink.middlewares=secHeaders@file"
+
+volumes:
+  shlink_db:
+    external: true

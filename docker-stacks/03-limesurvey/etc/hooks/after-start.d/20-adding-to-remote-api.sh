@@ -15,7 +15,7 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initializedRemoteControl" ]]; then
     "${SIMVA_HOME}/bin/run-command.sh" bash -c  "sed -i '\$s/^[[:space:]]*}//; \$d' $REMOTE_FILE_PATH"
 
     # Step 2: Copy the file containing the new function to the container
-    docker compose cp $STACK_HOME/patch/$NEW_FUNCTION_FILE_NAME $CONTAINER_NAME:/tmp/
+    docker compose cp $STACK_HOME/patch/$NEW_FUNCTION_FILE_NAME $RUN_IN_CONTAINER_NAME:/tmp/
 
     # Step 3: Append the new function from the copied file to the target file inside the container
     "${SIMVA_HOME}/bin/run-command.sh" bash -c "cat /tmp/$NEW_FUNCTION_FILE_NAME >> $REMOTE_FILE_PATH"
