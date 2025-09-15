@@ -54,7 +54,7 @@ services:
       - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-240}
       # Master Realm + Admin user
       - KC_REALM_NAME=master
-      - KEYCLOAK_ADMIN=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
+      - KEYCLOAK_ADMIN=admin_tmp
       - KEYCLOAK_ADMIN_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       #SIMVA Realm theme
       - KC_SPI_THEME_DEFAULT=simva

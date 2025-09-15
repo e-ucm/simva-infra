@@ -2,3 +2,4 @@ deployments
 .version
 .externaldomain
 .initialized
+master_admin_user_created
