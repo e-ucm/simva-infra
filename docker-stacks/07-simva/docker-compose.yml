@@ -150,6 +150,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.simva-api.loadbalancer.server.port=${SIMVA_SIMVA_API_PORT:-443}"
       - "traefik.http.routers.simva-api.rule=Host(`${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.simva-api.middlewares=secHeaders@file"
 
   simva-front:
     << : *default-opts
@@ -231,6 +232,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.simva-front.loadbalancer.server.port=3050"
       - "traefik.http.routers.simva-front.rule=Host(`${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.simva-front.middlewares=secHeaders@file"
 
   simva-trace-allocator:
     << : *default-opts

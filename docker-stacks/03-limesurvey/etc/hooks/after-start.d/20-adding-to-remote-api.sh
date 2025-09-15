@@ -25,7 +25,7 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initializedRemoteControl" ]]; then
 
     # Step 5: Optional - Restart the Docker container if necessary
     docker compose restart $RUN_IN_CONTAINER_NAME
-    ${SIMVA_HOME}/bin/wait-available.sh "Limesurvey" "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/admin/authentication/sa/login" "true" "false";
+    ${SIMVA_HOME}/bin/wait-available.sh "Limesurvey" "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/admin/authentication/sa/login" "true" "$SIMVA_ROOT_CA_FILE";
 
     echo "New function added to the file and container restarted (if applicable)."
     touch "${SIMVA_DATA_HOME}/limesurvey/.initializedRemoteControl"

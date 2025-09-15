@@ -47,4 +47,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.kafka-ui.loadbalancer.server.port=8080"
       - "traefik.http.routers.kafka-ui.rule=Host(`${SIMVA_KAFKA_UI_HOST_SUBDOMAIN:-kafka-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.kafka-ui.middlewares=dashboardAuth@file,secHeaders@file"
+      - "traefik.http.routers.kafka-ui.middlewares=basicAuthPlusHeaders@file"

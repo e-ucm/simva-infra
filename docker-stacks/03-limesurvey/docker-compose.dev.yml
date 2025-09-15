@@ -40,4 +40,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.ls-phpmyadmin.loadbalancer.server.port=80"
       - "traefik.http.routers.ls-phpmyadmin.rule=Host(`${SIMVA_PHPMYADMIN_LS_HOST_SUBDOMAIN:-phpmyadmin-ls}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.ls-phpmyadmin.middlewares=dashboardAuth@file"
+      - "traefik.http.routers.ls-phpmyadmin.middlewares=basicAuthPlusHeaders@file"

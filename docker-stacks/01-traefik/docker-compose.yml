@@ -77,12 +77,35 @@ services:
           [http.middlewares.dashboardAuth.basicAuth]
             # admin:password
             users = [
-              "${SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD:?Traefik dashboard password must be configured}"
+              "${SIMVA_TRAEFIK_DASHBOARD_HASHED_HTPASSWD_PASSWORD:?Traefik dashboard password must be configured}"
             ]
+          
           [http.middlewares.secHeaders.headers]
+            # Redirect HTTP to HTTPS
+            sslRedirect = true
+
+            # Forward TLS info to backend
+            [http.middlewares.secHeaders.headers.sslProxyHeaders]
+              X-Forwarded-Proto = "https"
+              X-Forwarded-Host = "{host}"
+
+            # Pass client certificate info to Client
+            [http.middlewares.secHeaders.headers.customRequestHeaders]
+              X-Client-Cert = "{sslClientCert}"
+              X-Client-Verify = "{sslClientVerify}"
+              X-Client-Subject-DN = "{sslClientSubjectDN}"
+
+            # Security headers
+            frameDeny = false
             contentTypeNosniff = true
             customFrameOptionsValue = "ALLOW-FROM https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-            contentSecurityPolicy = "frame-src 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none'; ${SIMVA_TRAEFIK_EXTRA_CSP_POLICY}"
+            contentSecurityPolicy = "frame-src 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none'; ${SIMVA_TRAEFIK_EXTRA_CSP_POLICY}"          
+            
+          # ----------------------
+          # Combined middleware for apps that need BasicAuth + headers
+          # ----------------------
+          [http.middlewares.basicAuthPlusHeaders.chain]
+            middlewares = ["dashboardAuth", "secHeaders"]
         EOF
         exec /entrypoint.sh "$$@"
     command:
