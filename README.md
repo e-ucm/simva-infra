@@ -9,9 +9,9 @@ Applying Game Learning Analytics (GLA) to these games enables the collection, an
 
 Traditionally, educational tools effectiveness is measured through mock sessions which involve pre- and post-surveys. These surveys are usually conducted on paper or electronically. The issue is that these surveys are ultimately isolated from the learning experience itself.
 
-To conclude, with SGs there is a need to collect data from several resources during the different stages of an experimental session. Also, there is a need to map these data for each user in order to give meaningful insights (user’s pre-assessment results, user’s in-game interaction data and user’s post-assessment results). Which raises several challenges in user management, data collection and analysis. 
+To conclude, with SGs there is a need to collect data from several resources during the different stages of a mock session. Also, there is a need to map these data for each user in order to give meaningful insights (user’s pre-survey results, user’s in-game interaction data and user’s post-survey results). Which raises several challenges in user management, data collection and analysis. 
 
-Thus, there is a need for a tool that simplifies the assessment and enables a comprehensive management of the collected information. ***SIMVA*** tool addresses these challenges by offering integrated solutions. 
+Thus, there is a need for a tool that simplifies the assessment with pre and post surveys and enables a comprehensive management of the collected information. ***SIMVA*** tool addresses these challenges by offering integrated solutions. 
 
 ***SIMVA*** tool facilitates the application of Game Learning Analytics (GLA) in Serious Games (SGs), enabling the developers and the researchers to validate the effectiveness of these games. Also, it provides meaningful insights to different stakeholders which enables them to make the right decisions.
 
