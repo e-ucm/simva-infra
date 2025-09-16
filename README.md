@@ -7,7 +7,7 @@ Serious Games (SGs) are digital games designed for different purposes other than
 
 Applying Game Learning Analytics (GLA) to these games enables the collection, analysis and visualization of data derived from player's in-game interactions. However, when conducting such games, it is not enough to only collect game interaction data. In other words, SGs effectiveness should be measured too. This is because, in most SGs there are different stakeholders involved. 
 
-Traditionally, educational tools effectiveness is measured through experimental sessions which involve pre- and post-surveys. These surveys are usually conducted on paper or electronically. The issue is that these surveys are ultimately isolated from the learning experience itself.
+Traditionally, educational tools effectiveness is measured through mock sessions which involve pre- and post-surveys. These surveys are usually conducted on paper or electronically. The issue is that these surveys are ultimately isolated from the learning experience itself.
 
 To conclude, with SGs there is a need to collect data from several resources during the different stages of an experimental session. Also, there is a need to map these data for each user in order to give meaningful insights (user’s pre-assessment results, user’s in-game interaction data and user’s post-assessment results). Which raises several challenges in user management, data collection and analysis. 
 
@@ -19,9 +19,9 @@ The following table shows in detail these challenges and the solutions provided 
 
 | Phase  | Challenge | Solution ***SIMVA*** provides |
 | ------------- | ------------- | ------------- |
-| Before the session  | - The lack of formal validation, or performed outside the game</br> - Managing surveys</br> - Managing users and providing anonymous identifiers to users|- Simplifying & supporting experimental design</br> - LimeSurvey encapsulation</br> - Token generation for users in keycloak|
-| During the session, for example PreSurvey-GamePlay-PostSurvey  | - Collecting and storing surveys data</br> - Collecting and storing interactions traces data</br> -Relating those different data types to each user</br> - Teachers lack control when applying games in classes|- Survey data is stored in LimeSurvey database</br> - Trace data backup are stored in Minio as xAPI-SG format</br> - Using the same user token in the study process</br> - Support GLA remotely to conduct experiments in broader settings|
-| After the session  | - Access of all data collected from different data sources</br> - Analysis of all data collected from different data sources</br>|- Data can be downloaded from a visual dashboard</br> - TMon:  Default analysis and visualisation web tool for xAPI-SG data</br>|
+| Before the mock session  | - The lack of formal validation, or performed outside the game</br> - Managing surveys</br> - Managing users and providing anonymous identifiers to users|- Simplifying & supporting experimental design</br> - LimeSurvey encapsulation</br> - Token generation for users in keycloak|
+| During the mock session, for example PreSurvey-GamePlay-PostSurvey  | - Collecting and storing surveys data</br> - Collecting and storing interactions traces data</br> -Relating those different data types to each user</br> - Teachers lack control when applying games in classes|- Survey data is stored in LimeSurvey database</br> - Trace data backup are stored in Minio as xAPI-SG format</br> - Using the same user token in the study process</br> - Support GLA remotely to conduct experiments in broader settings|
+| After the mock session  | - Access of all data collected from different data sources</br> - Analysis of all data collected from different data sources</br>|- Data can be downloaded from a visual dashboard</br> - TMon:  Default analysis and visualisation web tool for xAPI-SG data</br>|
 
 This repository allows you to launch a complete ***SIMVA*** environment. 
 
