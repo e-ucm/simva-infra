@@ -189,7 +189,7 @@ function __update_realm_with_params() {
     fi
 
     __keycloak_login
-    "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh update "realms/$SIMVA_SSO_REALM" $@
+    "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh update "realms/$SIMVA_SSO_REALM" "$@"
 }
 
 function __update_client_scope() {

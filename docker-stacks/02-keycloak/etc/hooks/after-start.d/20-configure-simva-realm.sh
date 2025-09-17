@@ -21,10 +21,11 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
             rm -f $migrationinProgressFile
         fi;
     fi;
-    
+
     if [[ ! -e "${SIMVA_CONFIG_HOME}/keycloak/.migration" ]]; then 
         source "${STACK_HOME}/etc/hooks/helpers.d/keycloak-functions.sh"
         source "${SIMVA_HOME}/bin/get-or-generate.sh"
+        __keycloak_login
 
         events_activated=$([ "$SIMVA_ENVIRONMENT" == "development" ] && echo "true" || echo "false")
 
@@ -33,10 +34,17 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
             -s adminEventsEnabled=${events_activated} \
             -s adminEventsDetailsEnabled=${events_activated}
         
+        lang=$(echo "en,$SIMVA_LOCALE" | jq -c -R 'split(",") | unique')
+        __update_realm_with_params -s internationalizationEnabled=true \
+            -s supportedLocales="$lang" \
+            -s defaultLocale=en
+
+        csp="base-uri 'self'; frame-src 'self'; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN}; object-src 'none';"
+        __update_realm_with_params -s "browserSecurityHeaders.contentSecurityPolicy=$csp"
+
         __add_or_update_role "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/roles" "/opt/keycloak/data/simva-realm-filled/roles"
         __add_or_update_user "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/users" "/opt/keycloak/data/simva-realm-filled/users"
 
-        __keycloak_login
         # Update users config
         users="student teaching_assistant teacher researcher administrator"
         conf_file="${STACK_CONF}/realm-data.users.yml"

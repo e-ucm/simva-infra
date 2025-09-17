@@ -1363,7 +1363,7 @@
     "referrerPolicy": "strict-origin-when-cross-origin",
     "xRobotsTag": "none",
     "xFrameOptions": "SAMEORIGIN",
-    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self' {{ .clients.simva.baseUrl }}; object-src 'none';",
     "xXSSProtection": "1; mode=block",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
@@ -1701,9 +1701,12 @@
       }
     ]
   },
-  "internationalizationEnabled": false,
+  "internationalizationEnabled": true,
   "supportedLocales": [
-    ""
+    "pt-BR",
+    "en",
+    "fr",
+    "es"
   ],
   "authenticationFlows": [
     {
