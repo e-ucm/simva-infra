@@ -42,4 +42,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.mongoku.loadbalancer.server.port=3100"
       - "traefik.http.routers.mongoku.rule=Host(`${SIMVA_MONGO_UI_HOST_SUBDOMAIN:-simva-mongo-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.mongoku.middlewares=basicAuthPlusHeaders@file"
+      - "traefik.http.routers.mongoku.middlewares=dashboardAuth@file"

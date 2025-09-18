@@ -43,4 +43,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.logs.loadbalancer.server.port=8080"
       - "traefik.http.routers.logs.rule=Host(`${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.logs.middlewares=basicAuthPlusHeaders@file"
+      - "traefik.http.routers.logs.middlewares=dashboardAuth@file"

@@ -37,7 +37,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
       - "traefik.http.routers.portainer.rule=Host(`${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.portainer.middlewares=basicAuthPlusHeaders@file"
+      - "traefik.http.routers.portainer.middlewares=dashboardAuth@file"
 
 volumes:
   portainer-logs:

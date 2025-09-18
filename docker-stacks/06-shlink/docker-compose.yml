@@ -39,7 +39,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.shlink.loadbalancer.server.port=8080"
       - "traefik.http.routers.shlink.rule=Host(`${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}`)"
-      - "traefik.http.routers.shlink.middlewares=secHeaders@file"
 
 volumes:
   shlink_db:

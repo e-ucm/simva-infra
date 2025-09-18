@@ -94,6 +94,3 @@ services:
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
       # Router
       - "traefik.http.routers.keycloak.rule=Host(`${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.keycloak.middlewares=secHeaders@file"
-      #- "traefik.http.routers.keycloak.entrypoints=websecure"
-      #- "traefik.http.routers.keycloak.tls=true"

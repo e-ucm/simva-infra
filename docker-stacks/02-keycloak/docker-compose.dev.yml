@@ -26,7 +26,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.mail.loadbalancer.server.port=80"
       - "traefik.http.routers.mail.rule=Host(`${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.mail.middlewares=basicAuthPlusHeaders@file"
+      - "traefik.http.routers.mail.middlewares=dashboardAuth@file"
       
   phpmyadmin:
     << : *default-opts
@@ -49,4 +49,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.kc-phpmyadmin.loadbalancer.server.port=80"
       - "traefik.http.routers.kc-phpmyadmin.rule=Host(`${SIMVA_PHPMYADMIN_KC_HOST_SUBDOMAIN:-phpmyadmin-kc}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.kc-phpmyadmin.middlewares=basicAuthPlusHeaders@file"
+      - "traefik.http.routers.kc-phpmyadmin.middlewares=dashboardAuth@file"
