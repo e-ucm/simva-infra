@@ -2,3 +2,4 @@ csp-reporter
 .version
 .externaldomain
 .initialized
+rootca-sha256sums

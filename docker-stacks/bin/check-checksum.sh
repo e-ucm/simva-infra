@@ -6,7 +6,7 @@ _check_checksum() {
     folder=$1
     sha256sumfile="$2"
     sha256sumNewfile="${sha256sumfile}-new"
-    # Calculate checksums of package.json and package-lock.json
+    # Calculate checksum(s)
     pushd $1 > /dev/null 2>&1
     sha256sum $3 > ${sha256sumNewfile}
     newSha=$(cat ${sha256sumNewfile})
@@ -19,7 +19,7 @@ _check_checksum() {
     fi
     echo $oldSha
     echo $newSha
-    # If checksums do not verify -> rebuild dependencies
+    # If checksums do not verify -> return 1 else return 0
     if [[ ! ${newSha} == ${oldSha} ]]; then
         echo "DIFFERENTS"
         cp ${sha256sumNewfile} ${sha256sumfile}
