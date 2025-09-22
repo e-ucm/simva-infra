@@ -55,6 +55,6 @@ else
                     mc ready simva-minio &&
                     $code &&
                     mc --debug mb simva-minio/${SIMVA_TRACES_BUCKET_NAME}"
-        #touch "${SIMVA_DATA_HOME}/minio/minio-initialized";
+        touch "${SIMVA_DATA_HOME}/minio/minio-initialized";
     fi
 fi
