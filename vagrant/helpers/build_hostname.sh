@@ -31,6 +31,7 @@ if [[ $SIMVA_ENVIRONMENT == "development" ]]; then
     echo "IN DEV"
     if [[ ! -f "$ENV_DEV_PATH" ]]; then
         echo "Error: $ENV_DEV_PATH not found!"
+        exit 1
     else 
         source "$ENV_DEV_PATH"
     fi
@@ -49,6 +50,9 @@ echo "${SIMVA_HOST_EXTERNAL_IP}" >> "$OUTPUT_EXTERNAL_IP_FILE"
 # --- Build hostnames ---
 > "$OUTPUT_FILE"  # empty the file
 echo "${SIMVA_TRAEFIK_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" >> "$OUTPUT_FILE"
+if [[ $SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN == "false" ]]; then
+  echo "${SIMVA_SHLINK_EXTERNAL_DOMAIN}" >> "$OUTPUT_FILE"
+fi
 echo "${SIMVA_EXTERNAL_DOMAIN}" >> "$OUTPUT_FILE"
 
 for var in $(compgen -v | grep '^SIMVA_.*_HOST_SUBDOMAIN$'); do
