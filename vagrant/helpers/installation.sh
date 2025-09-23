@@ -64,6 +64,22 @@ else
   echo "Docker already installed."
 fi
 
+# --- nodejs ---
+if ! command -v node >/dev/null 2>&1; then
+  echo "Installing nodeJS..."
+  sudo apt install nodejs
+else
+  echo "NodeJS already installed."
+fi
+
+# --- NPM ---
+if ! command -v npm >/dev/null 2>&1; then
+  echo "Installing NPM..."
+  sudo apt install npm
+else
+  echo "NPM already installed."
+fi
+
 # --- mkcert installation ---
 if ! command -v mkcert >/dev/null 2>&1; then
   echo "🔧 Installing mkcert..."
@@ -121,3 +137,7 @@ echo "mkcert : $(mkcert -version || true)"
 echo "sha256sum : $(sha256sum --version || true)"
 
 echo "dos2unix : $(dos2unix --version || true)"
+
+echo "node : $(node -v || true)"
+
+echo "npm : $(npm -v|| true)"

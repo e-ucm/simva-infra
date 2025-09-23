@@ -1,0 +1,43 @@
+{
+	"folders": [
+		{
+			"path": "/home/vagrant/"
+		}
+	],
+	"launch": {
+		// Use IntelliSense to learn about possible attributes.
+		// Hover to view descriptions of existing attributes.
+		// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+		"version": "0.2.0",
+		"configurations": [
+		
+			{
+				"type": "node",
+				"request": "attach",
+				"name": "Attach to remote Back",
+				"address": "127.0.0.1", // <- remote address here
+				"port": 9229,
+				"localRoot": "${workspaceFolder}/simva",
+				"remoteRoot": "/app"
+			},
+			{
+				"type": "node",
+				"request": "attach",
+				"name": "Attach to remote Front",
+				"address": "127.0.0.1", // <- remote address here
+				"port": 9230,
+				"localRoot": "${workspaceFolder}/simva-front",
+				"remoteRoot": "/app"
+			},
+			{
+				"type": "node",
+				"request": "attach",
+				"name": "Attach to remote Trace Allocator",
+				"address": "127.0.0.1", // <- remote address here
+				"port": 9231,
+				"localRoot": "${workspaceFolder}/simva-trace-allocator",
+				"remoteRoot": "/app"
+			}
+		]
+	}
+}
