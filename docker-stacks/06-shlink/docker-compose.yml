@@ -21,7 +21,8 @@ services:
     image: ${SIMVA_SHLINK_IMAGE:-ghcr.io/shlinkio/shlink}:${SIMVA_SHLINK_VERSION:-stable}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - shlink_db:/data/db
+      - shlink_db:/etc/shlink/data
+      - shlink_config:/etc/shlink/config
     environment:
       DEFAULT_DOMAIN: ${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}
       IS_HTTPS_ENABLED: true
@@ -42,4 +43,6 @@ services:
 
 volumes:
   shlink_db:
+    external: true
+  shlink_config:
     external: true

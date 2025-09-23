@@ -158,8 +158,6 @@ volumes:
     external: true
   ls_maria_db_backup_data:
     external: true
-  ls_etc:
-    external: true
   ls_upload:
     external: true
   ls_tmp:

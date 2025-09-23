@@ -19,7 +19,7 @@ function __keycloak_login() {
     if [[ -f "${SIMVA_TRUSTSTORE_FILE}" ]]; then
         "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config truststore --trustpass ${SIMVA_TRUSTSTORE_PASSWORD} "/root/.keycloak/certs/$(basename "${SIMVA_TRUSTSTORE_FILE}")"
     fi
-    admin_user_file="$SIMVA_DATA_HOME/keycloak/master_admin_user_created"
+    admin_user_file="$SIMVA_DATA_HOME/keycloak/.master_admin_user_created"
     if [[ -f $admin_user_file ]]; then 
         echo "Admin user already exists. Connecting with this user..."
     else 

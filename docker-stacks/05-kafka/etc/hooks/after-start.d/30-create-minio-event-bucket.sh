@@ -5,14 +5,14 @@ set -euo pipefail
 export RUN_IN_CONTAINER=true
 export RUN_IN_CONTAINER_NAME="kafka1"
 
-if [ ! -e "${SIMVA_DATA_HOME}/kafka/minio-events-topics-created" ]; then
+if [ ! -e "${SIMVA_DATA_HOME}/kafka/.minio-events-topics-created" ]; then
   set +e
   "${SIMVA_HOME}/bin/run-command.sh" kafka-topics --create --topic "minio-events" --partitions 1 --replication-factor 1 --bootstrap-server http://kafka1.${SIMVA_INTERNAL_DOMAIN}:19092
   retPost=$?
   echo $retPost
   set -e;
   if [[ $retPost -eq 0 ]]; then
-    touch "${SIMVA_DATA_HOME}/kafka/minio-events-topics-created"
+    touch "${SIMVA_DATA_HOME}/kafka/.minio-events-topics-created"
   fi
 fi
 

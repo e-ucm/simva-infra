@@ -13,7 +13,7 @@ ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/keycloak/.initialized" \
     "${SIMVA_DATA_HOME}/keycloak/.externaldomain" \
     "${SIMVA_DATA_HOME}/keycloak/.version" \
-    "${SIMVA_DATA_HOME}/keycloak/master_admin_user_created"
+    "${SIMVA_DATA_HOME}/keycloak/.master_admin_user_created"
 
 "${SIMVA_HOME}/bin/volumectl.sh" delete "kc_maria_db_data"
 "${SIMVA_HOME}/bin/volumectl.sh" delete "kc_maria_db_backup_data"

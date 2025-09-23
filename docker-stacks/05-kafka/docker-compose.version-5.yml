@@ -168,7 +168,3 @@ services:
 volumes:
   kafka_data:
     external: true
-  zoo_data:
-    external: true
-  zoo_datalog:
-    external: true

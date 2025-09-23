@@ -7,7 +7,6 @@ ${SIMVA_HOME}/bin/purge-folder-contents.sh \
     "${SIMVA_DATA_HOME}/kafka/connect/extensions" \
     "${SIMVA_DATA_HOME}/kafka/connect/kafka-connect-storage-common" \
     "${SIMVA_DATA_HOME}/kafka/data/backup" \
-    "${SIMVA_DATA_HOME}/kafka/data/kafka1/data" \
     "${SIMVA_DATA_HOME}/kafka/data/zoo1"
 
 ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
@@ -15,10 +14,7 @@ ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/kafka/.externaldomain" \
     "${SIMVA_DATA_HOME}/kafka/.version" \
     "${SIMVA_DATA_HOME}/kafka/storageformatted" \
-    "${SIMVA_DATA_HOME}/kafka/clusterid" \
-    "${SIMVA_DATA_HOME}/kafka/minio-events-topics-created" \
-    "${SIMVA_DATA_HOME}/minio/minio-events-initialized"
+    "${SIMVA_DATA_HOME}/kafka/.clusterid" \
+    "${SIMVA_DATA_HOME}/kafka/.minio-events-topics-created"
 
 "${SIMVA_HOME}/bin/volumectl.sh" delete "kafka_data"
-"${SIMVA_HOME}/bin/volumectl.sh" delete "zoo_data"
-"${SIMVA_HOME}/bin/volumectl.sh" delete "zoo_datalog"
