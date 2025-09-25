@@ -29,8 +29,8 @@ for folder in "${!folders_volumes[@]}"; do
             directoryMod="775"
             # Files -> 664 (rw-rw-r--)
             fileMod="664"
-        fiE
-        "${SIMVA_HOME}/bin/volumectl.sh" exec "volume" "/volume_data" "
+        fi
+        "${SIMVA_HOME}/bin/volumectl.sh" exec "$volume" "/volume_data" "
             # Set ownership recursively
             chown -R $ownership /volume_data;
 

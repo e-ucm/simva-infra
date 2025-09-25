@@ -24,7 +24,7 @@ services:
     image: ${SIMVA_MONGODB_IMAGE:-mongo}:${SIMVA_MONGODB_VERSION:-4.2.8}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - simva-mongodb-data:/data/db
+      - simva_mongodb_data:/data/db
     hostname: ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -304,7 +304,7 @@ services:
           - simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
 volumes:
-  simva-mongodb-data:
+  simva_mongodb_data:
     external: true
   simva_trace_allocator_data:
     external: true
