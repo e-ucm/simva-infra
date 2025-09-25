@@ -40,15 +40,21 @@ Vagrant.configure("2") do |config|
         group: "vagrant",          # Optional: set guest group
         mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
 
-  # --- Read hostnames from external file ---
-  adapter_file = File.join(File.dirname(__FILE__), "adapter_name.txt")
-  adapters = []
-  if File.exist?(adapter_file)
-    adapters = File.readlines(adapter_file).map(&:strip).reject(&:empty?)
+   # --- Read os from external file ---
+  os_file = File.join(File.dirname(__FILE__), "os.txt")
+  os = []
+  if File.exist?(os_file)
+    os = File.readlines(os_file).map(&:strip).reject(&:empty?)
   else
-    puts "Warning: adapter_name.txt not found. No host entries will be added."
+    puts "Warning: os.txt not found."
   end
-  adapter_name = adapters.shift || "VirtualBox Host-Only Ethernet Adapter" # Optional: the name of the host-only adapter
+
+  os_name = os.shift || "WINDOWS"
+  if os_name == "WINDOWS"
+      adapter_name= "VirtualBox Host-Only Ethernet Adapter" # WINDOWS
+  else
+      adapter_name= "vboxnet0" # Linux/macOS
+  end
 
   # Set the VM name in Hyper-V Manager
   config.vm.provider "virtualbox" do |vb|
@@ -63,7 +69,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.boot_timeout = 500
   # Provision VM automatically with a shell script
-  config.vm.provision "shell" do |s|
+  config.vm.provision "shell", run: "always" do |s|
       s.path= "helpers/installation.sh"
   end
 
@@ -89,7 +95,7 @@ Vagrant.configure("2") do |config|
     if [ -f #{mount_point}/docker-stacks/simva ]; then
       echo "Running simva from #{mount_point}..."
       dos2unix #{mount_point}/docker-stacks/simva
-      #{mount_point}/docker-stacks/simva install
+      #{mount_point}/docker-stacks/simva install 00-network 01-traefik 09-logs 02-keycloak
     fi
   SHELL
   

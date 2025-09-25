@@ -67,7 +67,7 @@ fi
 # --- nodejs ---
 if ! command -v node >/dev/null 2>&1; then
   echo "Installing nodeJS..."
-  sudo apt install nodejs
+  sudo apt install -y nodejs
 else
   echo "NodeJS already installed."
 fi
@@ -75,7 +75,7 @@ fi
 # --- NPM ---
 if ! command -v npm >/dev/null 2>&1; then
   echo "Installing NPM..."
-  sudo apt install npm
+  sudo apt install -y npm
 else
   echo "NPM already installed."
 fi

@@ -2,7 +2,7 @@ param(
     [switch]$Stop,
     [switch]$Reload,
     [switch]$VSCode,
-    [switch]$NoProvision
+    [switch]$Provision
 )
 
 # --- Auto-detect VM name from Vagrantfile ---
@@ -20,36 +20,13 @@ try {
     $VmName = "default"
 }
 
-# Start a background job to monitor the VM and clean up
-$scriptBlock = {
-    param($VmName)
-    while ($true) {
-        Start-Sleep -Seconds 5
-        # Check if VM is running
-        $status = vagrant status --machine-readable | ForEach-Object {
-            ($_ -split ",")[3]
-        } | Select-String "running"
-
-        if ($status) {
-            Write-Host "Stopping VM '$VmName'..."
-            vagrant halt
-            Write-Host "VM stopped."
-        }
-    }
-}
-
 # Start VM
 $status = vagrant status --machine-readable | ForEach-Object {
     ($_ -split ",")[3]
 }
 Write-Host $status;
-if($NoProvision) {
-    $provisionText=""
-} else {
-    $provisionText="--provision"
-}
 if($Stop) {
-    if ($status -eq "running") {
+    if($status -eq "running") {
         Write-Host "Stopping VM '$VmName'..."
         vagrant halt
         ./helpers/install-rootCA-machine.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem" -Remove
@@ -59,33 +36,41 @@ if($Stop) {
         Write-Host "Already stopped VM '$VmName'"
     }
     exit 0
-} elseif($Reload) {
-    Write-Host "Reloading VM '$VmName'..."
+} else {
     bash ./helpers/build_hostname.sh
     ./helpers/adapter_ip.ps1
-    Start-Job -ScriptBlock $scriptBlock -ArgumentList $VmName | Out-Null
-    if ($status -eq "running") {
-        vagrant reload $provisionText
+    if($Reload) {
+        Write-Host "Reloading VM '$VmName'..."
+        if ($status -eq "running") {
+            if($Provision) {
+                vagrant reload --provision
+            } else {
+                vagrant reload
+            }
+        } else {
+            if($Provision) {
+                vagrant up --provider virtualbox --provision
+            } else {
+                vagrant up --provider virtualbox
+            }
+        }
+        Write-Host "VM Reloaded."
     } else {
-        vagrant up --provider virtualbox $provisionText
+        if ($status -eq "running") {
+            Write-Host "Already started VM '$VmName'."
+        } else {
+            Write-Host "Starting VM '$VmName'..."
+            if($Provision) {
+                vagrant up --provider virtualbox --provision
+            } else {
+                vagrant up --provider virtualbox
+            }
+            Write-Host "VM started."
+        }
     }
-    ./helpers/install-rootCA-machine.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem"
-    ./helpers/install-rootCA-user.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem"
-    Write-Host "VM Reloaded."
-} else {
-    if ($status -eq "running") {
-        Write-Host "Already started VM '$VmName'."
-    } else {
-        Write-Host "Starting VM '$VmName'..."
-        bash ./helpers/build_hostname.sh
-        ./helpers/adapter_ip.ps1
-        Start-Job -ScriptBlock $scriptBlock -ArgumentList $VmName | Out-Null
-        vagrant up --provider virtualbox $provisionText
-        Write-Host "VM started."
-    }
-    ./helpers/install-rootCA-machine.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem"
-    ./helpers/install-rootCA-user.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem"
 }
+./helpers/install-rootCA-machine.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem"
+./helpers/install-rootCA-user.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem"
 if($VSCode) {
     # SSH CONFIG for  VM
     # Path to your SSH config (for VS Code Remote-SSH)

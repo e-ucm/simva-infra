@@ -1,15 +1,30 @@
-#!/bin/bash
-HOSTONLY_IP="192.168.253.1"      # Host-side IP of host-only adapter
-NETMASK="255.255.255.0"
-HOST_IF="vboxnet0"               # VirtualBox host-only adapter name
+#!/usr/bin/env bash
+set -e
 
-# --- 1. Create host-only adapter if missing ---
-EXISTS=$(VBoxManage.exe list hostonlyifs | grep -c "$HOST_IF")
-if [ "$EXISTS" -eq 0 ]; then
-  echo "Creating host-only adapter $HOST_IF..."
-  VBoxManage.exe hostonlyif create
-  VBoxManage.exe hostonlyif ipconfig "$HOST_IF" --ip "$HOSTONLY_IP" --netmask "$NETMASK"
+# Detect OS
+OS="$(uname -s)"
+
+if [[ "$OS" == "Linux" || "$OS" == "Darwin" ]]; then
+    ADAPTER="vboxnet0"
 else
-  echo "Host-only adapter $HOST_IF exists, configuring IP..."
-  VBoxManage.exe hostonlyif ipconfig "$HOST_IF" --ip "$HOSTONLY_IP" --netmask "$NETMASK"
+    echo "This script is for Linux/macOS only. Use the PowerShell version on Windows."
+    exit 1
 fi
+
+# Check if adapter exists
+if ! VBoxManage list hostonlyifs | grep -q "$ADAPTER"; then
+    echo "Creating $ADAPTER..."
+    VBoxManage hostonlyif create
+fi
+
+# Configure IP
+VBoxManage hostonlyif ipconfig "$ADAPTER" --ip 192.168.56.1 --netmask 255.255.255.0
+
+echo "$ADAPTER ready on 192.168.56.1"
+
+# Start VM
+vagrant up
+
+# Get VM IP (assuming adapter 2 is private network)
+vagrant ssh -c "ip -4 addr show | grep '192.168.56' | awk '{print \$2}'"
+$OS > "os.txt"
