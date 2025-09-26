@@ -67,17 +67,13 @@ fi
 # --- nodejs ---
 if ! command -v node >/dev/null 2>&1; then
   echo "Installing nodeJS..."
+  # 2. Add NodeSource repo for Node.js 20.x (LTS)
+  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+
+  # 3. Install Node.js (includes npm)
   sudo apt install -y nodejs
 else
-  echo "NodeJS already installed."
-fi
-
-# --- NPM ---
-if ! command -v npm >/dev/null 2>&1; then
-  echo "Installing NPM..."
-  sudo apt install -y npm
-else
-  echo "NPM already installed."
+  echo "NodeJS and npm already installed."
 fi
 
 # --- mkcert installation ---
