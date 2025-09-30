@@ -4,6 +4,23 @@ param(
     [switch]$Provision
 )
 
+$VBoxVersion = Get-CommandVersion "VBoxManage"
+$VagrantVersion = Get-CommandVersion "vagrant"
+
+if ($VBoxVersion) {
+    Write-Host "✅ VBoxManage installed — Version: $VBoxVersion"
+} else {
+    Write-Host "❌ VBoxManage not found. Instal it before!"
+    return
+}
+
+if ($VagrantVersion) {
+    Write-Host "✅ Vagrant installed — Version: $VagrantVersion"
+} else {
+    Write-Host "❌ Vagrant not found. Install it before!"
+    return
+}
+
 # --- Auto-detect VM name from Vagrantfile ---
 try {
     $vagrantfile = Get-Content -Path "./Vagrantfile" -Raw
@@ -36,7 +53,7 @@ if($Stop) {
     }
     exit 0
 } else {
-    bash ./helpers/build_hostname.sh
+    ./helpers/build_hostname.ps1
     ./helpers/adapter_ip.ps1
     if($Reload) {
         Write-Host "Reloading VM '$VmName'..."

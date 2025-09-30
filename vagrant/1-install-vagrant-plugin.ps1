@@ -1,19 +1,28 @@
 # Start Powershell as administrator
 $requiredPlugins = @(
-    @{ Name = "vagrant-vbguest"; Version = "0.32.0" },  # pinned
-    @{ Name = "vagrant-disksize"; Version = "0.1.3" }     # latest
-    @{ Name = "vagrant-hostmanager"; Version = "1.8.10" }  # latest
+    @{ Name = "vagrant-vbguest"; Version = "0.32.0" },        # VB Guest Additions
+    @{ Name = "vagrant-disksize"; Version = "0.1.3" }         # Disk size
+    @{ Name = "vagrant-hostmanager"; Version = "1.8.10" }     # hosts file management
 )
 
 # Function to check if a plugin exists
 function Test-VagrantPluginInstalled($pluginName, $pluginVersion) {
-    if ($pluginVersion) {
-        $installed = vagrant plugin list | Select-String "^$pluginName\s+\($pluginVersion\)"
-    } else {
-        $installed = vagrant plugin list | Select-String "^$pluginName\s+\("
+    $pluginList = $(vagrant plugin list);
+
+    foreach ($line in $pluginList) {
+        if ($line -match "^\s*$pluginName\s*\(([^,]+)") {
+            Write-Output "Installed plugin: $pluginName"
+            $installedVersion = $matches[1].Trim()
+            Write-Output "Installed version: $installedVersion"
+            if (-not $pluginVersion -or $installedVersion -eq $pluginVersion) {
+                return $true
+            }
+        }
     }
-    return $null -ne $installed
+    return $false
 }
+
+
 
 foreach ($plugin in $requiredPlugins) {
     if (-not (Test-VagrantPluginInstalled $plugin.Name $plugin.Version)) {

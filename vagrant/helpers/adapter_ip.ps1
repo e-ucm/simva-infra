@@ -1,5 +1,5 @@
 # Windows host-only adapter name
-$adapter = "VirtualBox Host-Only Ethernet Adapter"
+$adapter="VirtualBox Host-Only Ethernet Adapter"
 
 # Check if adapter exists
 $found = & VBoxManage list hostonlyifs | Select-String $adapter
@@ -14,4 +14,4 @@ if (-not $found) {
 
 Write-Host "$adapter ready on 192.168.56.1"
 
-"WINDOWS" > "os.txt"
+Set-Content -Path "os.txt" -Value "WINDOWS"
