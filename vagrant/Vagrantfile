@@ -19,26 +19,6 @@ Vagrant.configure("2") do |config|
         owner: "vagrant",          # Optional: set guest owner
         group: "vagrant",          # Optional: set guest group
         mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
-  config.vm.synced_folder File.expand_path("../../simva", __dir__), "/home/vagrant/simva",
-        type: "virtualbox",        # VirtualBox shared folder
-        owner: "vagrant",          # Optional: set guest owner
-        group: "vagrant",          # Optional: set guest group
-        mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
-  config.vm.synced_folder File.expand_path("../../simva-front", __dir__), "/home/vagrant/simva-front",
-        type: "virtualbox",        # VirtualBox shared folder
-        owner: "vagrant",          # Optional: set guest owner
-        group: "vagrant",          # Optional: set guest group
-        mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
-  config.vm.synced_folder File.expand_path("../../simva-trace-allocator", __dir__), "/home/vagrant/simva-trace-allocator",
-        type: "virtualbox",        # VirtualBox shared folder
-        owner: "vagrant",          # Optional: set guest owner
-        group: "vagrant",          # Optional: set guest group
-        mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
-  config.vm.synced_folder File.expand_path("../../t-mon", __dir__), "/home/vagrant/t-mon",
-        type: "virtualbox",        # VirtualBox shared folder
-        owner: "vagrant",          # Optional: set guest owner
-        group: "vagrant",          # Optional: set guest group
-        mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
 
    # --- Read os from external file ---
   os_file = File.join(File.dirname(__FILE__), "os.txt")
@@ -87,6 +67,28 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     #!/bin/bash
+    cd /home/vagrant/
+    if [ ! -f /home/vagrant/simva ]; then
+      git clone https://github.com/e-ucm/simva.git
+      chown -R vagrant:vagrant simva
+    fi
+    if [ ! -f /home/vagrant/simva-front ]; then
+      git clone https://github.com/e-ucm/simva-front.git
+      chown -R vagrant:vagrant simva-front
+    fi
+    if [ ! -f /home/vagrant/simva-trace-allocator ]; then
+      git clone https://github.com/e-ucm/simva-trace-allocator.git
+      chown -R vagrant:vagrant simva-trace-allocator
+    fi
+    if [ ! -f /home/vagrant/t-mon ]; then
+      git clone https://github.com/e-ucm/t-mon.git
+      chown -R vagrant:vagrant t-mon
+    fi
+    ls /home/vagrant/
+  SHELL
+
+  config.vm.provision "shell", inline: <<-SHELL
+    #!/bin/bash
     echo "Mounted parent folder is available at: #{mount_point}"
     echo "Hello from VM!"
     # Example: list files from shared folder
@@ -95,7 +97,7 @@ Vagrant.configure("2") do |config|
     if [ -f #{mount_point}/docker-stacks/simva ]; then
       echo "Running simva from #{mount_point}..."
       dos2unix #{mount_point}/docker-stacks/simva
-      #{mount_point}/docker-stacks/simva install 00-network 01-traefik 09-logs 02-keycloak
+      #{mount_point}/docker-stacks/simva install
     fi
   SHELL
   
@@ -132,7 +134,7 @@ Vagrant.configure("2") do |config|
   # Forward Port for Docker
   config.vm.network "forwarded_port", guest: 80, host: 8888, host_ip: "127.0.0.1"
   config.vm.network "forwarded_port", guest: 443, host: 8443, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 9229, host: 9229, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 9230, host: 9230, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 9231, host: 9231, host_ip: "127.0.0.1"
+  #config.vm.network "forwarded_port", guest: 9229, host: 9229, host_ip: "127.0.0.1"
+  #config.vm.network "forwarded_port", guest: 9230, host: 9230, host_ip: "127.0.0.1"
+  #config.vm.network "forwarded_port", guest: 9231, host: 9231, host_ip: "127.0.0.1"
 end

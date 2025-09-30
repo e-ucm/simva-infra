@@ -1,9 +1,4 @@
 # Start Powershell as administrator
-
-# Refresh environment variables
-Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1";
-refreshenv
-
 $requiredPlugins = @(
     @{ Name = "vagrant-vbguest"; Version = "0.32.0" },  # pinned
     @{ Name = "vagrant-disksize"; Version = "0.1.3" }     # latest
