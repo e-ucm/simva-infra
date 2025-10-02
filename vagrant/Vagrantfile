@@ -4,7 +4,11 @@ Vagrant.configure("2") do |config|
   #config.vm.disk :disk, size: "100GB", primary: true
   config.disksize.size = '40GB'
   
-  config.vbguest.auto_update = false
+  # Optional: auto-update Guest Additions on every vagrant up
+  config.vbguest.auto_update = true
+
+  # Optional: suppress prompts
+  config.vbguest.no_remote = true
 
   # Disable the default /vagrant synced folder
   config.vm.synced_folder ".", "/vagrant", disabled: true
@@ -30,10 +34,10 @@ Vagrant.configure("2") do |config|
   end
 
   os_name = os.shift || "WINDOWS"
-  if os_name == "WINDOWS"
-      adapter_name= "VirtualBox Host-Only Ethernet Adapter" # WINDOWS
-  else
+  if os_name == "Linux" or os_name == "Darwin"
       adapter_name= "vboxnet0" # Linux/macOS
+  else
+      adapter_name= "VirtualBox Host-Only Ethernet Adapter" # WINDOWS
   end
 
   # Set the VM name in Hyper-V Manager
@@ -42,9 +46,9 @@ Vagrant.configure("2") do |config|
     vb.cpus = 8
     vb.memory = 8192
 
-    vb.customize ["modifyvm", :id, "--nic2", "hostonly"]
-    vb.customize ["modifyvm", :id, "--hostonlyadapter2", adapter_name]
-    vb.customize ["modifyvm", :id, "--cableconnected2", "on"]
+    #vb.customize ["modifyvm",:id,"--nic2","hostonly"]
+    #vb.customize ["modifyvm",:id,"--hostonlyadapter2",adapter_name]
+    #vb.customize ["modifyvm",:id,"--cableconnected2","on"]
   end
 
   config.vm.boot_timeout = 500
@@ -103,7 +107,7 @@ Vagrant.configure("2") do |config|
   
   # NAT (default) gives internet access
   # Private network gives host ↔ VM access
-  config.vm.network "private_network", ip: simva_vm_ip, adapter: 2
+  config.vm.network "private_network", ip: simva_vm_ip #, adapter: 2
 
   # --- Read hostnames from external file ---
   hostnames_file = File.join(File.dirname(__FILE__), "hostnames.txt")

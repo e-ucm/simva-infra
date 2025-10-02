@@ -4,13 +4,18 @@ param(
     [switch]$Provision
 )
 
+function Get-CommandVersion($cmd) {
+    $result = & $cmd --version 2>$null
+    if ($LASTEXITCODE -eq 0) { return $result.Trim() }
+    return $null
+}
 $VBoxVersion = Get-CommandVersion "VBoxManage"
 $VagrantVersion = Get-CommandVersion "vagrant"
 
 if ($VBoxVersion) {
     Write-Host "✅ VBoxManage installed — Version: $VBoxVersion"
 } else {
-    Write-Host "❌ VBoxManage not found. Instal it before!"
+    Write-Host "❌ VBoxManage not found. InstalL it before!"
     return
 }
 
@@ -54,7 +59,7 @@ if($Stop) {
     exit 0
 } else {
     ./helpers/build_hostname.ps1
-    ./helpers/adapter_ip.ps1
+    #./helpers/adapter_ip.ps1
     if($Reload) {
         Write-Host "Reloading VM '$VmName'..."
         if ($status -eq "running") {
