@@ -46,9 +46,9 @@ Vagrant.configure("2") do |config|
     vb.cpus = 8
     vb.memory = 8192
 
-    #vb.customize ["modifyvm",:id,"--nic2","hostonly"]
-    #vb.customize ["modifyvm",:id,"--hostonlyadapter2",adapter_name]
-    #vb.customize ["modifyvm",:id,"--cableconnected2","on"]
+    vb.customize ["modifyvm",:id,"--nic2","hostonly"]
+    vb.customize ["modifyvm",:id,"--cableconnected2","on"]
+    #vb.customize ["modifyvm",:id,"--hostonlyadapter2",adapter_name]    
   end
 
   config.vm.boot_timeout = 500
@@ -107,7 +107,7 @@ Vagrant.configure("2") do |config|
   
   # NAT (default) gives internet access
   # Private network gives host ↔ VM access
-  config.vm.network "private_network", ip: simva_vm_ip #, adapter: 2
+  config.vm.network "private_network", ip: simva_vm_ip, adapter: 2
 
   # --- Read hostnames from external file ---
   hostnames_file = File.join(File.dirname(__FILE__), "hostnames.txt")
@@ -132,7 +132,7 @@ Vagrant.configure("2") do |config|
     simva_vm_ip  # VM static IP
   end
 
-   # --- Add remaining hostnames as aliases ---
+  # --- Add remaining hostnames as aliases ---
   config.hostmanager.aliases = hostnames unless hostnames.empty?
 
   # Forward Port for Docker
