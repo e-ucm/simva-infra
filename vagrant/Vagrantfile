@@ -4,12 +4,13 @@ Vagrant.configure("2") do |config|
   #config.vm.disk :disk, size: "100GB", primary: true
   config.disksize.size = '40GB'
   
-  # Optional: auto-update Guest Additions on every vagrant up
-  config.vbguest.auto_update = true
-
-  # Optional: suppress prompts
-  config.vbguest.no_remote = true
-
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    config.vbguest.auto_update = false
+    config.vbguest.no_install = true
+    # Optional: suppress prompts
+    config.vbguest.no_remote = true
+  end
+  
   # Disable the default /vagrant synced folder
   config.vm.synced_folder ".", "/vagrant", disabled: true
   
@@ -17,28 +18,13 @@ Vagrant.configure("2") do |config|
   parent_folder = File.expand_path("..", __dir__)
   # Use the parent folder's name as the mount point
   mount_point = "/home/vagrant/" + File.basename(parent_folder)
+
   #Example: share current folder with the VM using SMB
   config.vm.synced_folder parent_folder, mount_point,
         type: "virtualbox",        # VirtualBox shared folder
         owner: "vagrant",          # Optional: set guest owner
         group: "vagrant",          # Optional: set guest group
         mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
-
-   # --- Read os from external file ---
-  os_file = File.join(File.dirname(__FILE__), "os.txt")
-  os = []
-  if File.exist?(os_file)
-    os = File.readlines(os_file).map(&:strip).reject(&:empty?)
-  else
-    puts "Warning: os.txt not found."
-  end
-
-  os_name = os.shift || "WINDOWS"
-  if os_name == "Linux" or os_name == "Darwin"
-      adapter_name= "vboxnet0" # Linux/macOS
-  else
-      adapter_name= "VirtualBox Host-Only Ethernet Adapter" # WINDOWS
-  end
 
   # Set the VM name in Hyper-V Manager
   config.vm.provider "virtualbox" do |vb|
@@ -47,8 +33,7 @@ Vagrant.configure("2") do |config|
     vb.memory = 8192
 
     vb.customize ["modifyvm",:id,"--nic2","hostonly"]
-    vb.customize ["modifyvm",:id,"--cableconnected2","on"]
-    #vb.customize ["modifyvm",:id,"--hostonlyadapter2",adapter_name]    
+    vb.customize ["modifyvm",:id,"--cableconnected2","on"] 
   end
 
   config.vm.boot_timeout = 500
@@ -56,18 +41,16 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", run: "always" do |s|
       s.path= "helpers/installation.sh"
   end
-
-  # Network settings
-  # --- Read external IP from external file ---
-  simva_vm_ip_file = File.join(File.dirname(__FILE__), "external_ip.txt")
-  simva_vm_ips = []
-  if File.exist?(simva_vm_ip_file)
-    simva_vm_ips = File.readlines(simva_vm_ip_file).map(&:strip).reject(&:empty?)
-  else
-    puts "Warning: external_ip.txt not found. Default external_ip will be used."
-  end
   
-  simva_vm_ip = simva_vm_ips.shift || "192.168.253.2"
+  simva_vm_ip = ENV['VBOX_EXTERNAL_IP'] || "192.168.253.2"
+
+  config.vm.provision "shell",
+  run: "always",
+  inline: <<-SHELL
+    echo "Updating netplan with IP: #{simva_vm_ip}"
+    sudo sed -i "s/^\\s*-\\s*[0-9\\.\\/]\\+$/      - #{simva_vm_ip}\\/24/" /etc/netplan/50-vagrant.yaml
+    sudo netplan apply
+  SHELL
 
   config.vm.provision "shell", inline: <<-SHELL
     #!/bin/bash
