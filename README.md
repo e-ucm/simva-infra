@@ -23,15 +23,29 @@ This respository allows you to to launch a complete SIMVA environment.
 ## Instructions
 
 1. Clone this repository
-2. Verify that you have latest [Vagrant](https://vagrantup.com) and  [VirtualBox](https://www.virtualbox.org/) (tested with 6.0)
-3. Open a terminal in the cloned directory and run `vagrant up`
+1. Change the git branch to 'vagrant' branch.
+1. Open a Powershell 7 terminal in the cloned directory and change directory to vagrant directory using command `cd ./vagrant`.
+1. Verify that you have latest [Vagrant](https://vagrantup.com) and  [VirtualBox](https://www.virtualbox.org/) (tested with 6.0) or install them running `./1-install-virtualbox-vagrant.ps1`.
+1. Run `./2-run-vagrant-image.ps1 -Provision`
 > Note: The first time you run this command it will take a long time because Vagrant needs to download, aprovision and install the base required software.
-4. run `vagrant ssh` to get inside VM
-5. run `cd docker-stacks`
-6. run `./simva install`
-> Note: The first time you run this command it will take a long time because it is required to download all docker images required for SIMVA.
-6. run `./simva start` to start all containers.
+1. Inside VM, run `cd ./simva-infra/docker-stacks/ && sudo su` and run `./simva start` to start all containers.
 > Note: The first time you run this command it will take a long time because all componentes need to initialize.
+
+## Local development connect to simva server
+
+You can use VSCode running `./3-run-vscode-vagrant.ps1` to launch VSCode Server.
+
+## Stopping and reloading the VM 
+
+Run `./2-run-vagrant-image.ps1 -Stop` to stop the VM and Run `./2-run-vagrant-image.ps1 -Reload` to reload the VM
+
+## Notes
+
+By default Vagrant maps the following ports:
+- 8080 (host) -> 80 (guest)
+- 8443 (host) -> 443 (guest)
+
+To simplify things you may want to apply the following instructions in order to map to regular ports using the OS firewall / capabilities.
 
 # Acknowledgements
 

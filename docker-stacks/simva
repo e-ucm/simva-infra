@@ -39,9 +39,9 @@ function sourceBackupEnvFile() {
 }
 
 function sourceEnvFile() {
-    setExecutable_scripts_from_folder "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
-    setExecutable_scripts_from_folder "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh"
-    setExecutable_scripts_from_folder "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.sh"
+    dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
+    dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh"
+    dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.sh"
     if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
         source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
     fi
