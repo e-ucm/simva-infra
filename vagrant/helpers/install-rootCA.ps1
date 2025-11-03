@@ -20,14 +20,12 @@ $fingerprint = $cert.Thumbprint.ToUpper()
 Write-Output "📌 Fingerprint of provided RootCA: $fingerprint"
 
 # Check if it's already in the Root store
-$existing = Get-ChildItem -Path Cert:\CurrentUser\Root | Where-Object { $_.Thumbprint -eq $fingerprint }
+$existing = Get-ChildItem -Path Cert:\LocalMachine\Root | Where-Object { $_.Thumbprint -eq $fingerprint }
 
 if ($Remove) {
     if ($existing) {
         Write-Output "🗑 Removing RootCA from Windows Root store..."
-        Start-Process -FilePath "certutil.exe" `
-            -ArgumentList @("-user","-delstore", "Root", "`"$fingerprint`"") `
-            -Verb RunAs -Wait
+        Remove-Item -Path "Cert:\LocalMachine\Root\$fingerprint" -Force
         Write-Output "✅ RootCA removed from Windows Root store."
     } else {
         Write-Output "⚠️ RootCA not found in Windows Root store, nothing to remove."
@@ -38,9 +36,8 @@ else {
         Write-Output "✅ RootCA already installed in Windows Root store."
     } else {
         Write-Output "📥 Installing RootCA into Windows Root store..."
-        Start-Process -FilePath "certutil.exe" `
-            -ArgumentList @("-user", "-addstore", "Root", "`"$certPath`"") `
-            -Verb RunAs -Wait
+        # Import the certificate to the Trusted Root Certification Authorities store
+        Import-Certificate -FilePath $certPath -CertStoreLocation Cert:\LocalMachine\Root
         Write-Output "✅ Installed in Windows Root store."
     }
 }

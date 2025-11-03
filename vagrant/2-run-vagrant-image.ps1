@@ -92,8 +92,7 @@ if($Stop) {
     if($status -eq "running") {
         Write-Host "Stopping VM '$VmName'..."
         vagrant halt
-        ./helpers/install-rootCA-machine.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem" -Remove
-        ./helpers/install-rootCA-user.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem" -Remove
+        ./helpers/install-rootCA.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem" -Remove
         Write-Host "VM stopped."
     } else {
         Write-Host "Already stopped VM '$VmName'"
@@ -132,8 +131,7 @@ if($Stop) {
         }
     }
 }
-./helpers/install-rootCA-machine.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem"
-./helpers/install-rootCA-user.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem"
+./helpers/install-rootCA.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem"
 # SSH into VM
 vagrant ssh
 exit 0
