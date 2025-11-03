@@ -54,7 +54,6 @@ else {
         Write-Output "📥 Installing RootCA into Windows Root store..."
         # Import the certificate to the Trusted Root Certification Authorities store
         if($isAdmin) {
-
             Import-Certificate -FilePath "$certPath" -CertStoreLocation Cert:\LocalMachine\Root
         } else {
             # Convert to absolute path
