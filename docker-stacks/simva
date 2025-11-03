@@ -114,6 +114,16 @@ function main() {
             stop ${DEFAULT_WAIT_TIME} ${@%/}
             exit 0
         ;;
+        "backup")
+            check_docker_launched
+            backup ${DEFAULT_WAIT_TIME} "true" ${@%/}
+            exit 0
+        ;;
+        "restore")
+            check_docker_launched
+            backup ${DEFAULT_WAIT_TIME} "true" ${@%/}
+            exit 0
+        ;;
         "restart")
             check_docker_launched
             stop ${DEFAULT_WAIT_TIME} ${@%/}
@@ -553,6 +563,10 @@ OPERATION one of the following:
     stop:
         Gracefully stop all containers, so that no data is lost; you can then inspect
         their data in ./data, or restart them.
+    backup:
+        backup the database of the container external volume
+    restore:
+        restore the database into the container external volume
     restart:
         Gracefully stop all containers and start them again.
     setExecutable:
