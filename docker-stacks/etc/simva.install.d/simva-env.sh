@@ -29,6 +29,7 @@ export SIMVA_TRAEFIK_VERSION="2.11.3"
 #KEYCLOAK SSO
 export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"
 export SIMVA_KEYCLOAK_VERSION="26.1.3"
+
 #SQL DB
 export SIMVA_MARIADB_IMAGE="mariadb"
 export SIMVA_MARIADB_VERSION="10.4.13"
@@ -64,8 +65,8 @@ export SIMVA_MONGODB_IMAGE="mongo"
 export SIMVA_MONGODB_VERSION="4.2.8"
 
 #LOGS
-export SIMVA_DOZZLE_IMAGE="amir20/dozzle"
-export SIMVA_DOZZLE_VERSION="8.10.3"
+export SIMVA_LOGS_IMAGE="amir20/dozzle"
+export SIMVA_LOGS_VERSION="8.10.3"
 
 #Git reference tag version release branch
 export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.2.0"
