@@ -116,12 +116,12 @@ function main() {
         ;;
         "backup")
             check_docker_launched
-            backup ${DEFAULT_WAIT_TIME} "true" ${@%/}
+            backup ${DEFAULT_WAIT_TIME} ${@%/}
             exit 0
         ;;
         "restore")
             check_docker_launched
-            backup ${DEFAULT_WAIT_TIME} "true" ${@%/}
+            restore ${DEFAULT_WAIT_TIME} ${@%/}
             exit 0
         ;;
         "restart")
@@ -317,9 +317,19 @@ function execute_before_hooks() {
             folder="${folder}/before-stop.d"
             run_scripts_from_folder ${folder}
         ;;
+        "restore")
+            folder="${folder}/before-restore.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "backup")
+            folder="${folder}/before-backup.d"
+            run_scripts_from_folder ${folder}
+        ;;
     esac
 
     for stack in ${stacks}; do
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
         local old_path=$PATH
@@ -367,6 +377,14 @@ function execute_before_hooks() {
                 folder="${folder}/before-stop.d"
                 run_scripts_from_folder ${folder}
             ;;
+            "restore")
+                folder="${folder}/before-restore.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "backup")
+                folder="${folder}/before-backup.d"
+                run_scripts_from_folder ${folder}
+            ;;
         esac
 
         unset COMPOSE_FILE
@@ -387,6 +405,8 @@ function execute_after_hooks() {
     fi
 
     for stack in ${stacks}; do
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
         local old_path=$PATH
@@ -432,6 +452,14 @@ function execute_after_hooks() {
             ;;
             "stop")
                 folder="${folder}/after-stop.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "restore")
+                folder="${folder}/restore.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "backup")
+                folder="${folder}/backup.d"
                 run_scripts_from_folder ${folder}
             ;;
         esac
@@ -490,6 +518,14 @@ function execute_after_hooks() {
             folder="${folder}/after-stop.d"
             run_scripts_from_folder ${folder}
         ;;
+        "restore")
+            folder="${folder}/restore.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "backup")
+            folder="${folder}/backup.d"
+            run_scripts_from_folder ${folder}
+        ;;
     esac
 
 }
@@ -499,6 +535,8 @@ function docker_compose_stacks() {
     local waiting_time=${2}
     shift 2
     for stack in ${stacks}; do
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
         local old_path=$PATH
@@ -624,6 +662,8 @@ function install() {
     echo "external_domain: $external_domain"
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         setExecutable ${phase} ${stack}
         execute_before_hooks ${phase} ${stack}
         docker_compose_stacks "${stack}" "${wait_time}" "pull"
@@ -660,6 +700,8 @@ function uninstall() {
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     for stack in ${reverse_stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
         setExecutable ${phase} ${stack}
         execute_before_hooks ${phase} ${stack}
         docker_compose_stacks "${stack}" "${wait_time}" "down -v"
@@ -715,6 +757,9 @@ function upgrade() {
     setExecutable ${phase} ${stacks}
 
     for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         echo "Upgrade ${stack} started"
         execute_before_hooks "migrate" ${stack}
         execute_before_hooks ${phase} ${stack}
@@ -824,6 +869,9 @@ function changeConfig() {
     setExecutable "migrate" ${stacks}
     setExecutable ${phase} ${stacks}
     for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         execute_before_hooks "migrate" ${stack}
         execute_before_hooks ${phase} ${stack}
         install "${wait_time}" "true" "${stack}"
@@ -850,6 +898,9 @@ function migrateDomain() {
     fi
     local phase="migrateDomain"
     for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         setExecutable "migrate" ${stack}
         setExecutable ${phase} ${stack}
         execute_before_hooks "migrate" ${stack}
@@ -858,6 +909,56 @@ function migrateDomain() {
         start "${wait_time}" "false" ${stack}
         stop "${wait_time}" ${stack}
         execute_after_hooks "migrate" ${stack}
+        execute_after_hooks ${phase} ${stack}
+    done 
+}
+
+# migrate to a new External Domain for each stack
+function backup() {
+    echo "Backup Data : $@"
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    local phase="backup"
+    for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
+        setExecutable ${phase} ${stack}
+        execute_before_hooks ${phase} ${stack}
+        execute_after_hooks ${phase} ${stack}
+    done 
+}
+
+# migrate to a new External Domain for each stack
+function restore() {
+    echo "Restore Data : $@"
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time";
+        exit 1;
+    fi
+    local wait_time=${1}
+    shift
+
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    local phase="restore"
+    for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
+        setExecutable ${phase} ${stack}
+        execute_before_hooks ${phase} ${stack}
         execute_after_hooks ${phase} ${stack}
     done 
 }
@@ -879,6 +980,9 @@ function purge() {
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     for stack in ${reverse_stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         setExecutable ${phase} ${stack}
         execute_before_hooks ${phase} ${stack}
         docker_compose_stacks "${stack}" "${wait_time}" "down -v"
@@ -924,7 +1028,9 @@ function start() {
     setExecutable ${phase} ${stacks}
     execute_before_hooks ${phase} ${stacks}
     for stack in ${stacks}; do
-        STACK_HOME="${SIMVA_HOME}/${stack}"
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         local stack_name="${stack##*-}"
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
             previous_wait_time=$wait_time;
@@ -981,6 +1087,9 @@ function start() {
         docker image prune -f
     done
     for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         execute_after_hooks ${phase} ${stack}
         local stack_name="${stack##*-}"
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
@@ -1009,7 +1118,9 @@ function stop() {
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
     setExecutable ${phase} ${reverse_stacks}
     for stack in ${reverse_stacks}; do
-        STACK_HOME="${SIMVA_HOME}/${stack}"
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         local stack_name="${stack##*-}"
         stack_name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
         local var_name="SIMVA_${stack_name_uppercase}_VERSION"
@@ -1058,6 +1169,9 @@ function setExecutable() {
         stacks=$@
     fi
     for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
         HooksFolder="${SIMVA_HOME}/${stack}/etc/hooks"
         folder="${HooksFolder}/helpers.d"
         setExecutable_scripts_from_folder ${folder}
@@ -1116,6 +1230,14 @@ function setExecutable() {
                 folder="${HooksFolder}/before-stop.d"
                 setExecutable_scripts_from_folder ${folder}
                 folder="${HooksFolder}/after-stop.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
+            "backup")
+                folder="${HooksFolder}/backup.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
+            "restore")
+                folder="${HooksFolder}/restore.d"
                 setExecutable_scripts_from_folder ${folder}
             ;;
         esac
@@ -1181,6 +1303,14 @@ function setExecutable() {
             folder="${HooksFolder}/after-stop.d"
             setExecutable_scripts_from_folder ${folder}
         ;;
+        "backup")
+            folder="${HooksFolder}/backup.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+        "restore")
+            folder="${HooksFolder}/restore.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
     esac
     folder="${SIMVA_HOME}/bin/"
     setExecutable_scripts_from_folder ${folder}
@@ -1195,7 +1325,10 @@ function log() {
     fi
     local stack=${1}
     shift
-
+    
+    export STACK_HOME="${SIMVA_HOME}/${stack}"
+    export CURRENT_STACK="${stack}"
+    export STACK_NAME="${stack##*-}"
     docker_compose_stacks "${stack}" "${wait_time}" logs -f --tail 100 $@
 }
 
@@ -1208,13 +1341,15 @@ function build() {
     fi
     local stack=${1}
     shift
-
+    
+    export STACK_HOME="${SIMVA_HOME}/${stack}"
+    export CURRENT_STACK="${stack}"
+    export STACK_NAME="${stack##*-}"
     export COMPOSE_BAKE=true
-    docker_compose_stacks "${stack}" "${wait_time}" build  --no-cache --pull $@
+    docker_compose_stacks "${CURRENT_STACK}" "${wait_time}" build  --no-cache --pull $@
 }
 
 # entrypoint
 require_root
 check_dependencies
 main $@
-
