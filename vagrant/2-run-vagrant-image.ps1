@@ -101,6 +101,7 @@ if($Stop) {
 } else {
     ./helpers/build_hostname.ps1
     ./helpers/adapter_ip.ps1
+    ./helpers/set_to_local_dev.ps1
     if($Reload) {
         Write-Host "Reloading VM '$VmName'..."
         if ($status -eq "running") {
