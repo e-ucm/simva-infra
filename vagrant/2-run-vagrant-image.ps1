@@ -4,6 +4,29 @@ param(
     [switch]$Provision
 )
 
+# Check the OS
+Write-Host "Checking OS..."
+
+if ($IsWindows) {
+    Write-Host "OS : Windows"
+    Write-Host "Windows detected."
+}
+elseif ($IsLinux) {
+    Write-Host "OS : Linux"
+    Write-Host "Linux detected. Use Bash script (2-run-vagrant-image.sh)."
+    exit 1
+}
+elseif ($IsMacOS) {
+    Write-Host "OS : MacOS"
+    Write-Host "MacOS detected."
+    Write-Host "Linux detected. Use Bash script (2-run-vagrant-image.sh)."
+    exit 1
+} else {
+    Write-Host "OS : Unknown"
+    Write-Host "Unknown OS detected. Use Bash script (2-run-vagrant-image.sh)."
+    exit 1
+}
+
 function Get-CommandVersion($cmd) {
     $result = & $cmd --version 2>$null
     if ($LASTEXITCODE -eq 0) { return $result.Trim() }

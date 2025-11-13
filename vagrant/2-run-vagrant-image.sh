@@ -4,18 +4,36 @@
 
 STOP=false
 RELOAD=false
+PROVISION=false
 for arg in "$@"; do
     case $arg in
-        --stop)
+        --stop|-s)
         STOP=true
         shift
         ;;
-        --reload)
+        --reload|-r)
         RELOAD=true
+        shift
+        ;;
+        --provision|-p)
+        PROVISION=true
         shift
         ;;
     esac
 done
+
+# Check the OS
+echo "OS : $OSTYPE"
+if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || grep -qi microsoft /proc/version 2>/dev/null; then
+    echo "Windows detected. Use Powershell script (2-run-vagrant-image.ps1)."
+    exit 1
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    echo "Linux detected."
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "MacOS detected."
+else
+    echo "Unknown OS detected."
+fi
 
 # Function to get the version of a command
 get_command_version() {
@@ -144,12 +162,16 @@ if $STOP; then
     fi
 elif $RELOAD; then
     echo "Reloading VM '$VM_NAME'..."
-    vagrant reload "$VM_NAME"
+    if $PROVISION; then
+        vagrant reload --provider virtualbox --provision
+    else 
+        vagrant reload --provider virtualbox
+    fi
     # Call the root CA removal script
-    ./helpers/install-rootCA.sh --certPath "../docker-stacks/config/tls/ca/rootCA.pem"
+    ./helpers/install-rootCA.sh --certPath "../docker-stacks/config/tls/ca/rootCA.pem" --remove
     echo "VM reloaded."
     # SSH into VM
-    vagrant ssh "$VM_NAME"
+    vagrant ssh
 else
     if [[ $STATUS  == "running" ]]; then
         echo "VM '$VM_NAME' is already running."
@@ -159,10 +181,15 @@ else
         ./helpers/adapter_ip.sh
         ./helpers/set_to_local_dev.sh
         monitor_vm "$VM_NAME" &  # Start monitoring in background
-        vagrant up --provider virtualbox --provision
+        if $PROVISION; then
+            vagrant up --provider virtualbox --provision
+        else 
+            vagrant up --provider virtualbox
+        fi
+        # Call the root CA installation script
         ./helpers/install-rootCA.sh --certPath "../docker-stacks/config/tls/ca/rootCA.pem"
         echo "VM started."
     fi
     # SSH into VM
-    vagrant ssh "$VM_NAME"
+    vagrant ssh
 fi

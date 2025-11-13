@@ -32,7 +32,7 @@ if ($Remove) {
         if($isAdmin) {
             Remove-Item -Path "Cert:\LocalMachine\Root\$fingerprint" -Force
         } else {
-            $cmd="Remove-Item -Path 'Cert:\LocalMachine\Root\$fingerprint' -Force"
+            $cmd = 'Remove-Item -Path "Cert:\LocalMachine\Root\' + $fingerprint + '" -Force'
             Start-Process powershell.exe -Verb RunAs -ArgumentList @(
                 "-NoProfile",
                 "-ExecutionPolicy", "Bypass",

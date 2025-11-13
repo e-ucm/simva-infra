@@ -25,23 +25,6 @@ Vagrant.configure("2") do |config|
         owner: "vagrant",          # Optional: set guest owner
         group: "vagrant",          # Optional: set guest group
         mount_options: ["dmode=775","fmode=775"]  # Optional: permissions
-  
-  host_gitconfig = File.expand_path("~/.gitconfig")
-  config.vm.provision "file", source: host_gitconfig, destination: "/home/vagrant/.gitconfig.host"
-
-  config.vm.provision "shell", run: "always", inline: <<-SHELL
-    # Copy the host gitconfig to vagrant home
-    if [ -f /home/vagrant/.gitconfig.host ]; then
-      cp /home/vagrant/.gitconfig.host /home/vagrant/.gitconfig
-    fi
-
-    # Replace core.editor line with 'code --wait'
-    if [ -f /home/vagrant/.gitconfig ]; then
-      sed -i 's#editor = .*#editor = code --wait#' /home/vagrant/.gitconfig
-      chown vagrant:vagrant /home/vagrant/.gitconfig
-      chmod 644 /home/vagrant/.gitconfig
-    fi
-  SHELL
 
   # Set the VM name in Hyper-V Manager
   config.vm.provider "virtualbox" do |vb|
@@ -54,41 +37,21 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.boot_timeout = 500
+
+  simva_vm_ip = ENV['VBOX_EXTERNAL_IP'] || "192.168.253.2"
+
+  host_gitconfig = File.expand_path("~/.gitconfig")
+  config.vm.provision "file", source: host_gitconfig, destination: "/home/vagrant/.gitconfig.host"
+  
   # Provision VM automatically with a shell script
   config.vm.provision "shell", run: "always" do |s|
       s.path= "helpers/installation.sh"
   end
-  
-  simva_vm_ip = ENV['VBOX_EXTERNAL_IP'] || "192.168.253.2"
 
-  config.vm.provision "shell",
-  run: "always",
-  inline: <<-SHELL
+  config.vm.provision "shell", run: "always", inline: <<-SHELL
     echo "Updating netplan with IP: #{simva_vm_ip}"
     sudo sed -i "s/^\\s*-\\s*[0-9\\.\\/]\\+$/      - #{simva_vm_ip}\\/24/" /etc/netplan/50-vagrant.yaml
     sudo netplan apply
-  SHELL
-
-  config.vm.provision "shell", inline: <<-SHELL
-    #!/bin/bash
-    cd /home/vagrant/
-    if [ ! -f /home/vagrant/simva ]; then
-      git clone https://github.com/e-ucm/simva.git
-      chown -R vagrant:vagrant simva
-    fi
-    if [ ! -f /home/vagrant/simva-front ]; then
-      git clone https://github.com/e-ucm/simva-front.git
-      chown -R vagrant:vagrant simva-front
-    fi
-    if [ ! -f /home/vagrant/simva-trace-allocator ]; then
-      git clone https://github.com/e-ucm/simva-trace-allocator.git
-      chown -R vagrant:vagrant simva-trace-allocator
-    fi
-    if [ ! -f /home/vagrant/t-mon ]; then
-      git clone https://github.com/e-ucm/t-mon.git
-      chown -R vagrant:vagrant t-mon
-    fi
-    ls /home/vagrant/
   SHELL
 
   config.vm.provision "shell", inline: <<-SHELL

@@ -137,3 +137,34 @@ echo "dos2unix : $(dos2unix --version || true)"
 echo "node : $(node -v || true)"
 
 echo "npm : $(npm -v|| true)"
+
+ls /home/vagrant/
+cd /home/vagrant/
+if [ ! -d /home/vagrant/simva ]; then
+  git clone https://github.com/e-ucm/simva.git
+  chown -R vagrant:vagrant simva
+fi
+if [ ! -d /home/vagrant/simva-front ]; then
+  git clone https://github.com/e-ucm/simva-front.git
+  chown -R vagrant:vagrant simva-front
+fi
+if [ ! -d /home/vagrant/simva-trace-allocator ]; then
+  git clone https://github.com/e-ucm/simva-trace-allocator.git
+  chown -R vagrant:vagrant simva-trace-allocator
+fi
+if [ ! -d /home/vagrant/t-mon ]; then
+  git clone https://github.com/e-ucm/t-mon.git
+  chown -R vagrant:vagrant t-mon
+fi
+ls /home/vagrant/
+
+# Copy the host gitconfig to vagrant home
+if [ -f /home/vagrant/.gitconfig.host ]; then
+  cp /home/vagrant/.gitconfig.host /home/vagrant/.gitconfig
+fi
+# Replace core.editor line with 'code --wait'
+if [ -f /home/vagrant/.gitconfig ]; then
+  sed -i 's#editor = .*#editor = code --wait#' /home/vagrant/.gitconfig
+  chown vagrant:vagrant /home/vagrant/.gitconfig
+  chmod 644 /home/vagrant/.gitconfig
+fi
