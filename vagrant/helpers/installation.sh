@@ -6,8 +6,6 @@ echo "Updating packages..."
 sudo apt-get update -y
 sudo apt-get upgrade -y
 
-set -e
-
 echo "=== Checking and installing dependencies ==="
 
 # --- Java (OpenJDK 11) ---
@@ -55,15 +53,16 @@ fi
 # --- Docker ---
 if ! command -v docker >/dev/null 2>&1; then
   echo "Installing Docker CE..."
-  curl -fsSL https://get.docker.com -o get-docker.sh
-  sudo sh get-docker.sh
-  rm get-docker.sh
+  sudo apt-get install docker-ce=5:28.5.2-1~ubuntu.22.04~jammy docker-ce-cli=5:28.5.2-1~ubuntu.22.04~jammy containerd.io docker-buildx-plugin docker-compose-plugin
+  #curl -fsSL https://get.docker.com -o get-docker.sh
+  #sudo sh get-docker.sh
+  #rm get-docker.sh
   # Allow vagrant user to run docker without sudo
   sudo usermod -aG docker $USER
 else
   echo "Docker already installed."
 fi
-sudo apt-get install docker-ce=5:28.5.2-1~ubuntu.22.04~jammy docker-ce-cli=5:28.5.2-1~ubuntu.22.04~jammy containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-mark hold docker-ce docker-ce-cli
 
 # --- nodejs ---
 if ! command -v node >/dev/null 2>&1; then
