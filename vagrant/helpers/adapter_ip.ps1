@@ -30,4 +30,3 @@ $content -replace '^export SIMVA_HOST_EXTERNAL_IP=".*"', "export SIMVA_HOST_EXTE
 # Save to file (for logging or debugging)
 Set-Content -Path "hostonly_ip.txt" -Value $ip
 Set-Content -Path "external_ip.txt" -Value $newIp
-Set-Content -Path "os.txt" -Value "WINDOWS"

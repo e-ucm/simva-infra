@@ -32,4 +32,3 @@ fi
 # Save to files for logging/debugging
 echo "$ip" > hostonly_ip.txt
 echo "$newIp" > external_ip.txt
-echo "LINUX" > os.txt   # Change as needed
