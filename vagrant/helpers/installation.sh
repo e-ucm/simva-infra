@@ -11,7 +11,6 @@ echo "=== Checking and installing dependencies ==="
 # --- Java (OpenJDK 11) ---
 if ! java -version 2>&1 | grep -q "11."; then
   echo "Installing OpenJDK 11..."
-  sudo apt-get update -y
   sudo apt-get install -y openjdk-11-jdk gnupg2 ca-certificates lsb-release software-properties-common
 else
   echo "OpenJDK 11 already installed."
