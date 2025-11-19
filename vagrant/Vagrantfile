@@ -38,7 +38,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.boot_timeout = 500
 
-  simva_vm_ip = ENV['VBOX_EXTERNAL_IP'] || "192.168.253.2"
+  simva_vm_ip = ENV['VBOX_EXTERNAL_IP'] || "172.30.0.1"
 
   host_gitconfig = File.expand_path("~/.gitconfig")
   config.vm.provision "file", source: host_gitconfig, destination: "/home/vagrant/.gitconfig.host"
