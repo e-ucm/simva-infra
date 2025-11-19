@@ -30,7 +30,7 @@ export SIMVA_TLS_GENERATE_SELF_SIGNED="false"
 export SIMVA_SERVICE_NETWORK="traefik_services"
 
 #Simva External IP
-export SIMVA_HOST_EXTERNAL_IP="192.168.253.2"
+export SIMVA_HOST_EXTERNAL_IP="172.30.0.1"
 
 # Network interface used by the shared network "traefik_services"
 export SIMVA_NETWORK_INTERFACE="simva0"
