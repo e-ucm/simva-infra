@@ -178,7 +178,7 @@ else
     else
         echo "Starting VM '$VM_NAME'..."
         ./helpers/build_hostname.sh
-        ./helpers/adapter_ip.sh
+        source ./helpers/adapter_ip.sh
         ./helpers/set_to_local_dev.sh
         monitor_vm "$VM_NAME" &  # Start monitoring in background
         if $PROVISION; then
