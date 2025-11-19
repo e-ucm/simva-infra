@@ -2,11 +2,6 @@
 export SIMVA_DEVELOPMENT_LOCAL="true"
 export SIMVA_DEBUG="true"
 
-#########################################
-# Generate self signed TLS certificates #
-#########################################
-export SIMVA_TLS_GENERATE_SELF_SIGNED="true"
-
 ###########################################
 # Images versions and SIMVA Git reference #
 ###########################################

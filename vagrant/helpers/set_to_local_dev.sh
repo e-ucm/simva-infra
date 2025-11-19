@@ -31,4 +31,5 @@ update_or_add_export() {
 }
 
 update_or_add_export "$simvaenvFile" "SIMVA_ENVIRONMENT" "development"
+update_or_add_export "$simvaenvFile" "SIMVA_TLS_GENERATE_SELF_SIGNED" "true"
 update_or_add_export "$simvadevenvFile" "SIMVA_DEVELOPMENT_LOCAL" "true"
