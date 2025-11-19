@@ -143,6 +143,7 @@ export SIMVA_TRUSTSTORE_SHLINK_FILE="${SIMVA_TLS_HOME}/${SIMVA_TRUSTSTORE_SHLINK
 #########################
 # Keycloak certificates #
 #########################
+export SIMVA_KEYCLOAK_TMP_ADMIN_USER="admin_tmp"
 # Keycloak: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
 # example: foo.crt,bar.crt
