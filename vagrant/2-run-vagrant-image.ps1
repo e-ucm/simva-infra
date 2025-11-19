@@ -1,7 +1,9 @@
 param(
     [switch]$Stop,
     [switch]$Reload,
-    [switch]$Provision
+    [switch]$Provision,
+    [int]$Memory,
+    [int]$CPU
 )
 
 # Check the OS
@@ -122,6 +124,14 @@ if($Stop) {
     }
     exit 0
 } else {
+    if(!$Memory) {
+        $Memory=4096
+    }
+    [System.Environment]::SetEnvironmentVariable("VBOX_MEMORY", $Memory, "Process")
+    if(!$CPU) {
+        $CPU=8
+    }
+    [System.Environment]::SetEnvironmentVariable("VBOX_CPU", $CPU, "Process")
     ./helpers/build_hostname.ps1
     ./helpers/adapter_ip.ps1
     ./helpers/set_to_local_dev.ps1

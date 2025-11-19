@@ -19,6 +19,9 @@ Vagrant.configure("2") do |config|
   # Use the parent folder's name as the mount point
   mount_point = "/home/vagrant/" + File.basename(parent_folder)
 
+  simva_vm_memory = ENV['VBOX_MEMORY'] || 8192
+  simva_vm_cpu = ENV['VBOX_CPU'] || 8
+
   #Example: share current folder with the VM using SMB
   config.vm.synced_folder parent_folder, mount_point,
         type: "virtualbox",        # VirtualBox shared folder
@@ -29,8 +32,8 @@ Vagrant.configure("2") do |config|
   # Set the VM name in Hyper-V Manager
   config.vm.provider "virtualbox" do |vb|
     vb.name = "SIMVA-INFRA-VAGRANT"
-    vb.cpus = 8
-    vb.memory = 8192
+    vb.cpus = simva_vm_cpu
+    vb.memory = simva_vm_memory
 
     vb.customize ["modifyvm",:id,"--nic2","hostonly"]
     vb.customize ["modifyvm",:id,"--cableconnected2","on"] 

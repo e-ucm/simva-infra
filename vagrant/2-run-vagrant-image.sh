@@ -5,6 +5,8 @@
 STOP=false
 RELOAD=false
 PROVISION=false
+MEMORY=4096
+CPU=8
 for arg in "$@"; do
     case $arg in
         --stop|-s)
@@ -19,8 +21,25 @@ for arg in "$@"; do
         PROVISION=true
         shift
         ;;
+        --memory|-m)
+        shift
+        MEMORY=$1
+        shift
+        ;;
+        --cpu|-c)
+        shift
+        CPU=$1
+        shift
+        ;;
     esac
 done
+
+# Set environment variables for the current process
+export VBOX_MEMORY="$MEMORY"
+export VBOX_CPU="$CPU"
+
+echo "VBOX_MEMORY set to $VBOX_MEMORY"
+echo "VBOX_CPU set to $VBOX_CPU"
 
 # Check the OS
 echo "OS : $OSTYPE"
