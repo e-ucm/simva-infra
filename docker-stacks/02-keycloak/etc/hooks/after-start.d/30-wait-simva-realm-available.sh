@@ -4,6 +4,6 @@ set -euo pipefail
 
 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
   if [[ ! -e "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/.exportinprogress" ]]; then 
-    ${SIMVA_HOME}/bin/wait-available.sh "Keycloak SIMVA REALM" "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration" "true" "false";
+    ${SIMVA_HOME}/bin/wait-available.sh "Keycloak SIMVA REALM" "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration" "true" "$SIMVA_ROOT_CA_FILE";
   fi
 fi

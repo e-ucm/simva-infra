@@ -3,11 +3,19 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 if [[ ! -e ""${SIMVA_ROOT_CA_FILE}"" ]]; then
-    if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" =="true" ]]; then
-        mkdir "${SIMVA_TLS_HOME}/ca"
+    if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
+        if [[ ! -d "${SIMVA_TLS_HOME}/ca" ]]; then
+            mkdir "${SIMVA_TLS_HOME}/ca"
+        fi
+        if [[ ! -d "${SIMVA_TLS_HOME}/ca/backup" ]]; then
+            mkdir "${SIMVA_TLS_HOME}/ca/backup"
+        fi
         mkcert -install
-        chmod a+r "${SIMVA_ROOT_CA_KEY_FILE}"
+        cp "$(mkcert -CAROOT)/rootCA.pem" ${SIMVA_TLS_HOME}/ca/
+        cp "$(mkcert -CAROOT)/rootCA-key.pem" ${SIMVA_TLS_HOME}/ca/
         chmod a+r "${SIMVA_ROOT_CA_FILE}"
+        cp "${SIMVA_TLS_HOME}/ca/rootCA.pem" ${SIMVA_TLS_HOME}/ca/backup/
+        cp "${SIMVA_TLS_HOME}/ca/rootCA-key.pem" ${SIMVA_TLS_HOME}/ca/backup/
     else 
         echo "Please insert your ${SIMVA_ROOT_CA_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
         exit 1;
@@ -47,6 +55,39 @@ if [[ ! -e "${SIMVA_TRUSTSTORE_FILE}" ]]; then
         -keystore ${SIMVA_TRUSTSTORE_FILE} \
         -alias ${SIMVA_TRUSTSTORE_CA_ALIAS}  \
         -file ${SIMVA_ROOT_CA_FILE}
+fi
+
+if [[ $SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN  == "false" ]]; then 
+    if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
+        if [[ ! -e "${SIMVA_TRAEFIK_SHLINK_CERT_FILE}" ]]; then
+            mkcert \
+                -cert-file "${SIMVA_TRAEFIK_SHLINK_CERT_FILE}" \
+                -key-file "${SIMVA_TRAEFIK_SHLINK_KEY_FILE}" \
+                    "${SIMVA_SHLINK_EXTERNAL_DOMAIN}" \
+                    "localhost" \
+                    "127.0.0.1" \
+                    "${SIMVA_HOST_EXTERNAL_IP}"
+            chmod a+r "${SIMVA_TRAEFIK_SHLINK_KEY_FILE}"
+            chmod a+r "${SIMVA_TRAEFIK_SHLINK_CERT_FILE}"
+        fi
+    else
+        echo "Please insert your ${SIMVA_TRAEFIK_SHLINK_CERT_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
+        exit 1;
+    fi
+    
+    if [[ ! -e "${SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILE}" ]]; then
+        cp "${SIMVA_TRAEFIK_SHLINK_CERT_FILE}" "${SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILE}"
+        cat "${SIMVA_ROOT_CA_FILE}" >> "${SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILE}"
+        chmod a+r "${SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILE}"
+    fi 
+
+    if [[ ! -e "${SIMVA_TRUSTSTORE_SHLINK_FILE}" ]]; then
+        keytool -importcert -trustcacerts -noprompt \
+            -storepass ${SIMVA_TRUSTSTORE_PASSWORD} \
+            -keystore ${SIMVA_TRUSTSTORE_SHLINK_FILE} \
+            -alias ${SIMVA_TRUSTSTORE_CA_ALIAS}  \
+            -file ${SIMVA_ROOT_CA_FILE}
+    fi
 fi
 
 if [[ ! -e "${SIMVA_DHPARAM_FILE}" ]]; then

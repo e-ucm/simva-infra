@@ -51,7 +51,7 @@ services:
       - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-240}
       # Master Realm + Admin user
       - KC_REALM_NAME=master
-      - KC_BOOTSTRAP_ADMIN_USERNAME=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
+      - KC_BOOTSTRAP_ADMIN_USERNAME=${SIMVA_KEYCLOAK_TMP_ADMIN_USER:-admin_tmp}
       - KC_BOOTSTRAP_ADMIN_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       #SIMVA Realm theme
       - KC_SPI_THEME_DEFAULT=simva
@@ -64,6 +64,8 @@ services:
       - KEYCLOAK_CLIENT_CLIENT_SECRET=${SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET:-secret}
       - JDK_TRUSTORE=/usr/lib/jvm/java-21-openjdk-21.0.6.0.7-1.el9.x86_64/lib/security/cacerts
       - JDK_TRUSTORE_PASSWORD=changeit
+      - KC_HTTPS_KEY_STORE=/root/.keycloak/certs/${SIMVA_KEYCLOAK_CERT_FILENAME}
+      - KC_HTTPS_KEY_STORE_PASSWORD=changeit
       - SIMVA_CA_ALIAS=simvaCA
       - SIMVA_CA_FILE=/root/.keycloak/certs/ca/rootCA.pem
     volumes:
@@ -88,6 +90,7 @@ services:
           - ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
+      # Service
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      # Router
       - "traefik.http.routers.keycloak.rule=Host(`${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.keycloak.middlewares=secHeaders@file"

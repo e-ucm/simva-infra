@@ -8,13 +8,7 @@
         "norole",
         "offline_access",
         "uma_authorization"
-      ],
-      "client": {
-        "account": [
-          "view-profile",
-          "manage-account"
-        ]
-      }
+      ]
     },
     "clientRole": false,
     "containerId": "{{ .clients.simva.realmId }}",

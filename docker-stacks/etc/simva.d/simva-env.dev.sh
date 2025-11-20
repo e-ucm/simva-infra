@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
-export SIMVA_DEVELOPMENT_LOCAL="false"
+export SIMVA_DEVELOPMENT_LOCAL="true"
 export SIMVA_DEBUG="true"
-
-#########################################
-# Generate self signed TLS certificates #
-#########################################
-export SIMVA_TLS_GENERATE_SELF_SIGNED="true"
 
 ###########################################
 # Images versions and SIMVA Git reference #
@@ -114,6 +109,6 @@ export SIMVA_CLINIC_TIMEOUT_TIME="20m"
 export SIMVA_JUPYTER_PASSWORD="password"
 
 # Portainer admin password
-export SIMVA_PORTAINER_ADMIN_PASSWORD="password"
+export SIMVA_PORTAINER_ADMIN_PASSWORD="password1234"
 
 

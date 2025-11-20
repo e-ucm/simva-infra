@@ -33,7 +33,6 @@ services:
       fi;
       exec sleep inf;'
     volumes:
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio:/data
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/minio/policies:/policies:ro
       # Add extra CA (for self-signed certificates)

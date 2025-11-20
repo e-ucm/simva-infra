@@ -54,7 +54,7 @@ services:
       - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-240}
       # Master Realm + Admin user
       - KC_REALM_NAME=master
-      - KEYCLOAK_ADMIN=${SIMVA_KEYCLOAK_ADMIN_USER:-admin}
+      - KEYCLOAK_ADMIN=${SIMVA_KEYCLOAK_TMP_ADMIN_USER:-admin_tmp}
       - KEYCLOAK_ADMIN_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       #SIMVA Realm theme
       - KC_SPI_THEME_DEFAULT=simva
@@ -93,4 +93,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
       - "traefik.http.routers.keycloak.rule=Host(`${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.keycloak.middlewares=secHeaders@file"

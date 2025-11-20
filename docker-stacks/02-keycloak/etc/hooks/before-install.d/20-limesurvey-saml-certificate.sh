@@ -16,7 +16,7 @@ if [[ ! -e "${SIMVA_LIMESURVEY_CERT_FILE}" ]]; then
     #mkcert -install \
     #    -cert-file ${SIMVA_LIMESURVEY_CERT_FILE} \
     #    -csr ${SIMVA_LIMESURVEY_CERT_CRS_FILE}
-fi;
+fi
 if  [[ ! -e "${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT}" ]]; then
     export CAROOT="${SIMVA_TLS_HOME}/ca"
     cp ${SIMVA_LIMESURVEY_CERT_FILE} ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT}

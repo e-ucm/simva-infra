@@ -11,3 +11,5 @@ ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/traefik/.initialized" \
     "${SIMVA_DATA_HOME}/traefik/.externaldomain" \
     "${SIMVA_DATA_HOME}/traefik/.version"
+
+rm -rf "${SIMVA_TLS_HOME}/ca"

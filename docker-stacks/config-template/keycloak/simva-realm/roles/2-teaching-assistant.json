@@ -5,7 +5,13 @@
     "composites": {
       "realm": [
         "student"
-      ]
+      ],
+      "client": {
+        "account": [
+          "view-profile",
+          "manage-account"
+        ]
+      }
     },
     "clientRole": false,
     "containerId": "{{ .clients.simva.realmId }}",

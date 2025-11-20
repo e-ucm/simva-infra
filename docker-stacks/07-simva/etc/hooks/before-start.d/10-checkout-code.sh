@@ -7,15 +7,6 @@ RUNBUILDCODE=false
 CHECKLOCALDEPLOYMENT=false
 if [[ ! -e "${SIMVA_DATA_HOME}/simva/.initialized" ]]; then
     echo "SIMVA it is not initialized, initializing checkout code."
-    chmod -R 777 ${SIMVA_DATA_HOME}/simva/simva-api-logs
-    chmod -R 777 ${SIMVA_DATA_HOME}/simva/simva-front-logs
-    chmod -R 777 ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-logs
-    mkdir -p ${SIMVA_DATA_HOME}/simva/simva-api-profiling
-    chmod -R 777 ${SIMVA_DATA_HOME}/simva/simva-api-profiling
-    mkdir -p ${SIMVA_DATA_HOME}/simva/simva-front-profiling
-    chmod -R 777 ${SIMVA_DATA_HOME}/simva/simva-front-profiling
-    mkdir -p ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling
-    chmod -R 777 ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling
     RUNCHECKOUTCODE=true
 fi
 if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then

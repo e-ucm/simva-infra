@@ -57,7 +57,7 @@ services:
       #KAFKA_HEAP_OPTS: "-Xms512m -Xmx512m"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/kafka1/data:/var/lib/kafka/data:rw
+      - kafka_data:/var/lib/kafka/data:rw
     hostname: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -74,12 +74,12 @@ services:
     << : *default-opts
     image: ${SIMVA_KAFKA_CONNECT_IMAGE:-cnfldemos/kafka-connect-datagen}:${SIMVA_KAFKA_CONNECT_VERSION:-0.6.4-7.6.0}
     command: >
-      bash -c '
-        confluent-hub install --no-prompt confluentinc/kafka-connect-s3:latest
+      bash -c "
+        confluent-hub install --no-prompt ${SIMVA_CONFLUENCE_CONNECT_S3_REPO:-confluentinc/kafka-connect-s3}:${SIMVA_CONFLUENCE_CONNECT_S3_VERSION:-11.0.1}
         # Add extra jar files to all storage plugins
         cp -a /usr/share/simva/kafka-connect-storage-common/* /usr/share/confluent-hub-components/confluentinc-kafka-connect-s3/lib/;
         # Run
-        exec /etc/confluent/docker/run;'
+        exec /etc/confluent/docker/run;"
     environment:
       KAFKA_VERSION: ${SIMVA_KAFKA_VERSION:-7.8.0}
       # Bootstrap options
@@ -144,3 +144,7 @@ services:
       traefik_services:
         aliases:
           - connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+volumes:
+  kafka_data:
+    external: true

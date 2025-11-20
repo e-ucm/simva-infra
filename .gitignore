@@ -1,4 +1,3 @@
-.vagrant
 docker-stacks/data/.simva-initialized
 docker-stacks/bin/gomplate
 docker-stacks/config/container-tools/wait-for
