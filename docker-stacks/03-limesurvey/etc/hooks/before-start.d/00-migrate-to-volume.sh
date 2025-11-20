@@ -17,8 +17,8 @@ done
 
 if [[ -d "${SIMVA_DATA_HOME}/limesurvey/mariadb" ]]; then 
   "${SIMVA_HOME}/bin/volumectl.sh" exec "ls_maria_db_data" "/volume_data" "
-    # Set ownership recursively
-    chown -R mysql:mysql /volume_data;
+    # Set ownership recursively (mysql:mysql - 999:ping)
+    chown -R 999:ping /volume_data;
 
     # Top-level volume directory (rwxr-xr-x)
     chmod 755 /volume_data;
@@ -50,8 +50,8 @@ fi
 
 if [[ -d "${SIMVA_DATA_HOME}/limesurvey/data/tmp" ]]; then 
   "${SIMVA_HOME}/bin/volumectl.sh" exec "ls_tmp" "/ls_tmp" "
-    # Set ownership recursively
-    chown -R www-data:www-data /ls_tmp;
+    # Set ownership recursively (wwww-data:wwww-data - 33:33)
+    chown -R 33:33 /ls_tmp;
 
     # Directories -> 755 (rwxr-xr-x)
     find /ls_tmp -type d -print0 | xargs -0 chmod 755;
@@ -64,8 +64,8 @@ fi
 
 if [[ -d "${SIMVA_DATA_HOME}/limesurvey/data/upload" ]]; then 
   "${SIMVA_HOME}/bin/volumectl.sh" exec "ls_upload" "/ls_upload" "
-    # Set ownership recursively
-    chown -R www-data:www-data /ls_upload;
+    # Set ownership recursively (wwww-data:wwww-data - 33:33)
+    chown -R 33:33 /ls_upload;
 
     # Directories -> 755 (rwxr-xr-x)
     find /ls_upload -type d -print0 | xargs -0 chmod 755;

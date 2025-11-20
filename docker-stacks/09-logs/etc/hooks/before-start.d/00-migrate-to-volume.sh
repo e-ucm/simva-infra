@@ -15,8 +15,8 @@ done
 
 if [[ -d "${SIMVA_DATA_HOME}/logs/portainer" ]]; then 
 #  "${SIMVA_HOME}/bin/volumectl.sh" exec "portainer-logs" "/portainer-logs" "
-#    # Set ownership recursively
-#    chown -R appuser:appuser /portainer-logs;
+#    # Set ownership recursively (appuser:appuser - 1000:1000)
+#    chown -R 1000:1000 /portainer-logs;
 #
 #    # Directories -> 755 (rwxr-xr-x)
 #    find /portainer-logs -type d -print0 | xargs -0 chmod 755;

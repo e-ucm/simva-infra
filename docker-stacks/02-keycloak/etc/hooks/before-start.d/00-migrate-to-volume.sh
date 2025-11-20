@@ -15,8 +15,8 @@ done
 
 if [[ -d "${SIMVA_DATA_HOME}/keycloak/mariadb" ]]; then 
   "${SIMVA_HOME}/bin/volumectl.sh" exec "kc_maria_db_data" "/volume_data" "
-    # Set ownership recursively
-    chown -R mysql:mysql /volume_data;
+    # Set ownership recursively (mysql:mysql - 999:ping)
+    chown -R 999:ping /volume_data;
 
     # Top-level volume directory (rwxr-xr-x)
     chmod 755 /volume_data;

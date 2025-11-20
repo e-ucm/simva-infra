@@ -14,8 +14,8 @@ done
 
 if [[ -d "${SIMVA_DATA_HOME}/kafka/data/kafka1/data" ]]; then 
   "${SIMVA_HOME}/bin/volumectl.sh" exec "kafka_data" "/kafka_data" "
-    # Set ownership recursively
-    chown -R appuser:appuser /kafka_data;
+    # Set ownership recursively (appuser:appuser - 1000:1000)
+    chown -R 1000:1000 /kafka_data;
 
     # Directories -> 755 (rwxr-xr-x)
     find /kafka_data -type d -print0 | xargs -0 chmod 755;

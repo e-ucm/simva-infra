@@ -18,13 +18,13 @@ for folder in "${!folders_volumes[@]}"; do
 
     if [[ -d "$folder" ]]; then 
         if [[ $volume == "simva_mongodb_data" ]]; then 
-            ownership="mongodb:mongodb"
+            ownership="999:999" #"mongodb:mongodb" // "999:999" 
             # Directories -> 700 (rwx------)
             directoryMod="700"
             # Files -> 600 (rw-------)
             fileMod="600"
         else
-            ownership="node:node"
+            ownership="1000:1000" ##"node:node" // "1000:1000"
             # Directories -> 775 (drwxrwxr-x)
             directoryMod="775"
             # Files -> 664 (rw-rw-r--)
