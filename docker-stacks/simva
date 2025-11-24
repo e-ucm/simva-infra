@@ -56,7 +56,7 @@ function sourceEnvFile() {
 }
 
 sourceEnvFile
-DEPENDENCIES="find mkcert jq docker sha256sum curl git keytool htpasswd" # keytool to install via java-11-openjdk-devel
+DEPENDENCIES="find mkcert jq docker sha256sum curl git keytool htpasswd unzip dos2unix" # keytool to install via java-11-openjdk-devel
 DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME}"
 
 function getValueFromBackupFile() {
@@ -933,10 +933,14 @@ function backup() {
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
         export STACK_NAME="${stack##*-}"
-        setExecutable ${phase} ${stack}
-        execute_before_hooks ${phase} ${stack}
-        execute_after_hooks ${phase} ${stack}
-    done 
+        if [[ -f "${SIMVA_DATA_HOME}/${STACK_NAME}/.version" ]]; then 
+            setExecutable ${phase} ${stack}
+            execute_before_hooks ${phase} ${stack}
+            execute_after_hooks ${phase} ${stack}
+            cp "${SIMVA_DATA_HOME}/${STACK_NAME}/.externaldomain" "${SIMVA_HOME}/backup/${STACK_NAME}/.externaldomain"
+            cp "${SIMVA_DATA_HOME}/${STACK_NAME}/.version" "${SIMVA_HOME}/backup/${STACK_NAME}/.version"
+        fi
+    done
 }
 
 # migrate to a new External Domain for each stack
@@ -958,9 +962,13 @@ function restore() {
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
         export STACK_NAME="${stack##*-}"
-        setExecutable ${phase} ${stack}
-        execute_before_hooks ${phase} ${stack}
-        execute_after_hooks ${phase} ${stack}
+        if [[ -f "${SIMVA_HOME}/backup/${STACK_NAME}/.externaldomain" ]]; then 
+            setExecutable ${phase} ${stack}
+            execute_before_hooks ${phase} ${stack}
+            execute_after_hooks ${phase} ${stack}
+            cp "${SIMVA_HOME}/backup/${STACK_NAME}/.externaldomain" "${SIMVA_DATA_HOME}/${STACK_NAME}/.externaldomain" 
+            cp "${SIMVA_HOME}/backup/${STACK_NAME}/.version" "${SIMVA_DATA_HOME}/${STACK_NAME}/.version" 
+        fi
     done 
 }
 
@@ -1049,10 +1057,13 @@ function start() {
                 echo "new_external_domain: $new_external_domain"            
                 echo "A new external domain has been detected in simva-env.sh for stack $stack_name."
                 echo "A backup of your data is advised before migrate domain."
+                echo "A backup of your data will be done automatically before migrate domain."
                 if [[ $MIGRATEDOMAINCONFIRMED == "FALSE" ]]; then
                     read -p "Are you sure you want to migrate to this external domain ? (Y/N): " externalDomainConfirm && [[ $externalDomainConfirm == [yY] || $externalDomainConfirm == [yY][eE][sS] ]] || exit 1
                     export MIGRATEDOMAINCONFIRMED=$externalDomainConfirm
                 fi;
+                backup $wait_time $stack
+                echo "Backup done."
                 echo "Migrate domain of $stack_name..."
                 migrateDomain "${wait_time}" $stack
                 echo $new_external_domain > "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain"
@@ -1075,7 +1086,10 @@ function start() {
                     echo "new_version: $new_version"
                     echo "A new version has been detected in simva-env.sh for stack $stack_name."
                     echo "A backup of your data is advised before upgrade."
+                    echo "A backup of your data will be done automatically before upgrade."
                     read -p "Are you sure you want to upgrade to this version ? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+                    backup $wait_time $stack
+                    echo "Backup done."
                     echo "Upgrading $stack_name version..."
                     upgrade "${wait_time}" $stack
                 fi;
