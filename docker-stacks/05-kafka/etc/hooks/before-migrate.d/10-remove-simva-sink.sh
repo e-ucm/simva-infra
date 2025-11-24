@@ -14,5 +14,6 @@ done
  ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
       "${SIMVA_DATA_HOME}/kafka/.minio-events-topics-created"
 
+"${SIMVA_HOME}/simva" uninstall $CURRENT_STACK
 "${SIMVA_HOME}/bin/volumectl.sh" delete "kafka_data"
 "${SIMVA_HOME}/bin/volumectl.sh" delete "zoo_data"

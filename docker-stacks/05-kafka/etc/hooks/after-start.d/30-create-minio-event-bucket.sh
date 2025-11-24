@@ -49,7 +49,9 @@ if [[ -n "$adminInfo" ]]; then
         echo "Creating event listener"
         "${SIMVA_HOME}/bin/run-command.sh" /bin/sh -c "/usr/bin/mc --debug admin config set simva-minio/ notify_kafka:minio-file-upload brokers=\"kafka1.${SIMVA_INTERNAL_DOMAIN}:19092\" topic=\"${SIMVA_MINIO_EVENTS_TOPIC}\";"
         echo "Event listener created"
+        export RUN_IN_FLAG_UI=true;
         "${SIMVA_HOME}/bin/run-command.sh" /bin/sh -c "/usr/bin/mc --debug admin service restart simva-minio/"
+        export RUN_IN_FLAG_UI=false;
         "${SIMVA_HOME}/bin/run-command.sh" /bin/sh -c "/usr/bin/mc ready simva-minio"
     fi
     info=$("${SIMVA_HOME}/bin/run-command.sh" /bin/sh -c "/usr/bin/mc admin info --json simva-minio/");

@@ -16,11 +16,32 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
             echo "Migration in progress. Importing realm..."
             realmFile="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/${SIMVA_SSO_REALM}-realm.json" 
             if [[ -e "$realmFile" ]]; then
-                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kc.sh import --dir "/opt/keycloak/data/export/" --override true --optimized
+                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kc.sh import --file /opt/keycloak/data/export/${SIMVA_SSO_REALM}-realm.json --override true --optimized
             fi;
-            rm -f $migrationinProgressFile
+            source "${STACK_HOME}/etc/hooks/helpers.d/keycloak-functions.sh"
+            __keycloak_login
+            __add_or_update_role "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/roles" "/opt/keycloak/data/simva-realm-filled/roles"
+            tmp_user_folder="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/tmp"
+            if [[ -d "${tmp_user_folder}" ]]; then 
+                rm -rf "${tmp_user_folder}"
+            fi 
+            for f in ${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/${SIMVA_SSO_REALM}-users-*.json; do
+                echo "⏳ Importing file $f..."
+                mkdir "${tmp_user_folder}"
+                while read -r user_json; do
+                    user_id=$(echo "$user_json" | jq -r '.id' | sed 's/[^A-Za-z0-9._-]/_/g')
+                    user_name=$(echo "$user_json" | jq -r '.username')
+                    echo "$user_json" > "$tmp_user_folder/usr-${user_id}.json"
+                    echo "User ${user_name} copied into file ${tmp_user_folder}/usr-${user_id}.json"
+                done < <(jq -c '.users[]' "$f")
+                __add_or_update_user "${tmp_user_folder}" "/opt/keycloak/data/export/tmp"
+                tmp_user_folder="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/tmp"
+                rm -rf "${tmp_user_folder}"
+                echo "File $f Imported !"
+            done
+            ${SIMVA_HOME}/bin/purge-file-if-exist.sh $migrationinProgressFile
         fi;
-    fi;
+    fi
 
     if [[ ! -e "${SIMVA_CONFIG_HOME}/keycloak/.migration" ]]; then 
         source "${STACK_HOME}/etc/hooks/helpers.d/keycloak-functions.sh"
@@ -41,7 +62,8 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
 
         csp="base-uri 'self'; frame-src 'self'; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN}; object-src 'none';"
         __update_realm_with_params -s "browserSecurityHeaders.contentSecurityPolicy=$csp"
-
+        
+        __keycloak_login
         __add_or_update_role "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/roles" "/opt/keycloak/data/simva-realm-filled/roles"
         __add_or_update_user "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/users" "/opt/keycloak/data/simva-realm-filled/users"
 
@@ -70,6 +92,7 @@ EOF
         __add_or_update_client_scope "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/clients-scopes/saml" "/opt/keycloak/data/simva-realm/clients-scopes/saml"
         __add_or_update_client_scope "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/clients-scopes/policy-role" "/opt/keycloak/data/simva-realm/clients-scopes/policy-role"
         
+        __keycloak_login
         __add_or_update_client "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/clients" "/opt/keycloak/data/simva-realm-filled/clients"
     fi
 else

@@ -768,6 +768,7 @@ function upgrade() {
         local stack_name="${stack##*-}"
         echo "Processing $stack_name versions..."
         if [[ -e "$version_file" ]]; then 
+            dos2unix $version_file
             local stack_name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
             local var_name="SIMVA_${stack_name_uppercase}_VERSION"
             local new_version=${!var_name}
