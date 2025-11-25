@@ -39,7 +39,7 @@ for file in ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling/*.html; do
 done
 popd
 
-${SIMVA_HOME}/bin/purge-folder-contents.sh \
+${SIMVA_BIN_HOME}/purge-folder-contents.sh \
     ${SIMVA_DATA_HOME}/simva/simva-api-profiling/ \
     ${SIMVA_DATA_HOME}/simva/simva-front-profiling/ \
     ${SIMVA_DATA_HOME}/simva/simva-trace-allocator-profiling/

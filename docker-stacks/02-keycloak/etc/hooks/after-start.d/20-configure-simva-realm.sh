@@ -8,7 +8,7 @@ export RUN_IN_CONTAINER_NAME="keycloak"
 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then 
     if [[ ! -e "${SIMVA_DATA_HOME}/keycloak/.initialized" ]]; then 
         echo "SIMVA is not initialized. Importing realm..." 
-        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kc.sh import --file "/opt/keycloak/data/simva-realm-filled/simva-realm-full.json" --override false --optimized
+        "${SIMVA_BIN_HOME}/run-command.sh" /opt/keycloak/bin/kc.sh import --file "/opt/keycloak/data/simva-realm-filled/simva-realm-full.json" --override false --optimized
     else
         echo "SIMVA is initialized." 
         migrationinProgressFile="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/.migrationinprogress"
@@ -16,9 +16,9 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
             echo "Migration in progress. Importing realm..."
             realmFile="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/${SIMVA_SSO_REALM}-realm.json" 
             if [[ -e "$realmFile" ]]; then
-                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kc.sh import --file /opt/keycloak/data/export/${SIMVA_SSO_REALM}-realm.json --override true --optimized
+                "${SIMVA_BIN_HOME}/run-command.sh" /opt/keycloak/bin/kc.sh import --file /opt/keycloak/data/export/${SIMVA_SSO_REALM}-realm.json --override true --optimized
             fi;
-            source "${STACK_HOME}/etc/hooks/helpers.d/keycloak-functions.sh"
+            source "${HELPERS_STACK_HOME}/keycloak-functions.sh"
             __keycloak_login
             __add_or_update_role "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/roles" "/opt/keycloak/data/simva-realm-filled/roles"
             tmp_user_folder="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/tmp"
@@ -39,13 +39,13 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
                 rm -rf "${tmp_user_folder}"
                 echo "File $f Imported !"
             done
-            ${SIMVA_HOME}/bin/purge-file-if-exist.sh $migrationinProgressFile
+            ${SIMVA_BIN_HOME}/purge-file-if-exist.sh $migrationinProgressFile
         fi;
     fi
 
     if [[ ! -e "${SIMVA_CONFIG_HOME}/keycloak/.migration" ]]; then 
-        source "${STACK_HOME}/etc/hooks/helpers.d/keycloak-functions.sh"
-        source "${SIMVA_HOME}/bin/get-or-generate.sh"
+        source "${HELPERS_STACK_HOME}/keycloak-functions.sh"
+        source "${SIMVA_BIN_HOME}/get-or-generate.sh"
         __keycloak_login
 
         events_activated=$([ "$SIMVA_ENVIRONMENT" == "development" ] && echo "true" || echo "false")
@@ -84,7 +84,7 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
     password: "${user_password}"
 EOF
             echo "Setting password for username ${user_username}"
-            "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh set-password -r ${SIMVA_SSO_REALM} --username $user_username --new-password $user_password
+            "${SIMVA_BIN_HOME}/run-command.sh" /opt/keycloak/bin/kcadm.sh set-password -r ${SIMVA_SSO_REALM} --username $user_username --new-password $user_password
             echo "Setting password for username ${user_username} done"
         done
         

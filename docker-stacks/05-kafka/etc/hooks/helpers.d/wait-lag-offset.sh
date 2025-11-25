@@ -72,7 +72,7 @@ done
 canStop=false;
 while [[ $canStop == false ]]; do
   
-  outputparsed=$("${STACK_HOME}/etc/hooks/helpers.d/get-consumer-group-properties.sh" -c $CONSUMER_GROUP -t $TOPIC)
+  outputparsed=$("${HELPERS_STACK_HOME}/get-consumer-group-properties.sh" -c $CONSUMER_GROUP -t $TOPIC)
   echo $outputparsed
   if [[ -e "$outputparsed" ]]; then
     current_offset=$(echo "$outputparsed" | cut -d ' ' -f 4)

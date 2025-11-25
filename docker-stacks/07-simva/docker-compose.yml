@@ -286,7 +286,7 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - simva_trace_allocator_logs:/home/node/logs:rw
       - simva_trace_allocator_data:${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-/data}
-      - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-trace-allocator.sh:/home/node/entrypoint.d/docker-startup.sh
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-certificate.sh:/home/node/entrypoint.d/docker-certificate.sh
     depends_on:

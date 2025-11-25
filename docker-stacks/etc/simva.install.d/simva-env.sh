@@ -8,11 +8,17 @@ export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05
 #############################
 export SIMVA_HOME="${SIMVA_PROJECT_DIR}"
 
+export SIMVA_BIN_HOME="${SIMVA_HOME}/bin"
+
+export SIMVA_BACKUP_HOME="${SIMVA_HOME}/backup"
+
 export SIMVA_DATA_HOME="${SIMVA_HOME}/data"
 
 export SIMVA_CONFIG_HOME="${SIMVA_HOME}/config"
 
 export SIMVA_CONFIG_TEMPLATE_HOME="${SIMVA_HOME}/config-template"
+
+export SIMVA_ETC_HOME="${SIMVA_HOME}/etc"
 
 export SIMVA_TLS_HOME="${SIMVA_CONFIG_HOME}/tls"
 

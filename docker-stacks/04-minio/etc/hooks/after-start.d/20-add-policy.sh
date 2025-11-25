@@ -14,14 +14,14 @@ if [[ -e "$SIMVA_DATA_HOME/minio/.migration-in-progress-fs-to-xl" ]]; then
                         mc config host add simva-minio-mig "http://${SIMVA_MINIO_HOST_SUBDOMAIN}-mig.${SIMVA_INTERNAL_DOMAIN}:9000" ${SIMVA_MINIO_ACCESS_KEY} ${SIMVA_MINIO_SECRET_KEY} &&
                         mc ready simva-minio-mig &&
                         mc mirror simva-minio-mig/${SIMVA_TRACES_BUCKET_NAME} simva-minio/${SIMVA_TRACES_BUCKET_NAME}"
-        format=$(${SIMVA_HOME}/bin/volumectl.sh exec "minio_data" "/vol" cat "/vol/.minio.sys/format.json")
+        format=$(${SIMVA_BIN_HOME}/volumectl.sh exec "minio_data" "/vol" cat "/vol/.minio.sys/format.json")
         format=$(echo $format | jq '.format')
         echo $format
         touch "${SIMVA_DATA_HOME}/minio/.minio-migrated";
     fi
 else
     if [ ! -e "${SIMVA_DATA_HOME}/minio/.minio-initialized" ]; then
-        format=$(${SIMVA_HOME}/bin/volumectl.sh exec "minio_data" "/vol" cat "/vol/.minio.sys/format.json")
+        format=$(${SIMVA_BIN_HOME}/volumectl.sh exec "minio_data" "/vol" cat "/vol/.minio.sys/format.json")
         format=$(echo $format | jq '.format')
         echo $format
         if [[ $format == '"fs"' ]]; then

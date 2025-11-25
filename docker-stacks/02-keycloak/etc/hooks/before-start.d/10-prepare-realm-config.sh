@@ -2,7 +2,7 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-source ${SIMVA_HOME}/bin/get-or-generate.sh
+source ${SIMVA_BIN_HOME}/get-or-generate.sh
 
 # Oneline certificate
 limesurvey_cert=$(sed '1d; $d;:a;N;$!ba;s/\n//g' "${SIMVA_LIMESURVEY_CERT_FILE}")
@@ -116,7 +116,7 @@ function configure_realm_file() {
     fi
     local environment="${1}"
     
-    ${SIMVA_HOME}/bin/purge-folder-contents.sh "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/"
+    ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/"
 
     gomplate -c ".=file://${STACK_CONF}/realm-data.${environment}.yml" \
         -f "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/simva-realm-full.json" \
