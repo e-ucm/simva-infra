@@ -25,6 +25,9 @@ export RUN_IN_AS_SPECIFIC_USER="root"
 # Check if the container is running
 source "${SIMVA_HOME}/bin/check-docker-running.sh"
 
+"${SIMVA_HOME}/simva" start 00-network
+export RUN_IN_CONTAINER_NAME="keycloak"
+_stop_docker_container_if_running
 export RUN_IN_CONTAINER_NAME="mariadb"
 _start_docker_container_if_not_running
 export RUN_IN_CONTAINER_NAME="mariadb-backup"
