@@ -2,99 +2,11 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-if [[ ! -e ""${SIMVA_ROOT_CA_FILE}"" ]]; then
-    if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
-        if [[ ! -d "${SIMVA_TLS_HOME}/ca" ]]; then
-            mkdir "${SIMVA_TLS_HOME}/ca"
-        fi
-        if [[ ! -d "${SIMVA_TLS_HOME}/ca/backup" ]]; then
-            mkdir "${SIMVA_TLS_HOME}/ca/backup"
-        fi
-        mkcert -install
-        cp "$(mkcert -CAROOT)/rootCA.pem" ${SIMVA_TLS_HOME}/ca/
-        cp "$(mkcert -CAROOT)/rootCA-key.pem" ${SIMVA_TLS_HOME}/ca/
-        chmod a+r "${SIMVA_ROOT_CA_FILE}"
-        cp "${SIMVA_TLS_HOME}/ca/rootCA.pem" ${SIMVA_TLS_HOME}/ca/backup/
-        cp "${SIMVA_TLS_HOME}/ca/rootCA-key.pem" ${SIMVA_TLS_HOME}/ca/backup/
-    else 
-        echo "Please insert your ${SIMVA_ROOT_CA_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
-        exit 1;
-    fi
-fi
-
-if [[ ! -e "${SIMVA_TRAEFIK_CERT_FILE}" ]]; then
-    if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
-        mkcert \
-            -cert-file "${SIMVA_TRAEFIK_CERT_FILE}" \
-            -key-file "${SIMVA_TRAEFIK_KEY_FILE}" \
-                "${SIMVA_TRAEFIK_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}" \
-                "*.${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}" \
-                "*.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}" \
-                "*.${SIMVA_EXTERNAL_DOMAIN}" \
-                "${SIMVA_EXTERNAL_DOMAIN}" \
-                "localhost" \
-                "127.0.0.1" \
-                "${SIMVA_HOST_EXTERNAL_IP}"
-        chmod a+r "${SIMVA_TRAEFIK_KEY_FILE}"
-        chmod a+r "${SIMVA_TRAEFIK_CERT_FILE}"
-    else 
-        echo "Please insert your ${SIMVA_TRAEFIK_CERT_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
-        exit 1;
-    fi
-fi 
-
-if [[ ! -e "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE}" ]]; then
-    cp "${SIMVA_TRAEFIK_CERT_FILE}" "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE}"
-    cat "${SIMVA_ROOT_CA_FILE}" >> "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE}"
-    chmod a+r "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE}"
-fi 
-
-if [[ ! -e "${SIMVA_TRUSTSTORE_FILE}" ]]; then
-    keytool -importcert -trustcacerts -noprompt \
-        -storepass ${SIMVA_TRUSTSTORE_PASSWORD} \
-        -keystore ${SIMVA_TRUSTSTORE_FILE} \
-        -alias ${SIMVA_TRUSTSTORE_CA_ALIAS}  \
-        -file ${SIMVA_ROOT_CA_FILE}
-fi
-
-if [[ $SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN  == "false" ]]; then 
-    if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
-        if [[ ! -e "${SIMVA_TRAEFIK_SHLINK_CERT_FILE}" ]]; then
-            mkcert \
-                -cert-file "${SIMVA_TRAEFIK_SHLINK_CERT_FILE}" \
-                -key-file "${SIMVA_TRAEFIK_SHLINK_KEY_FILE}" \
-                    "${SIMVA_SHLINK_EXTERNAL_DOMAIN}" \
-                    "localhost" \
-                    "127.0.0.1" \
-                    "${SIMVA_HOST_EXTERNAL_IP}"
-            chmod a+r "${SIMVA_TRAEFIK_SHLINK_KEY_FILE}"
-            chmod a+r "${SIMVA_TRAEFIK_SHLINK_CERT_FILE}"
-        fi
-    else
-        echo "Please insert your ${SIMVA_TRAEFIK_SHLINK_CERT_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
-        exit 1;
-    fi
-    
-    if [[ ! -e "${SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILE}" ]]; then
-        cp "${SIMVA_TRAEFIK_SHLINK_CERT_FILE}" "${SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILE}"
-        cat "${SIMVA_ROOT_CA_FILE}" >> "${SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILE}"
-        chmod a+r "${SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILE}"
-    fi 
-
-    if [[ ! -e "${SIMVA_TRUSTSTORE_SHLINK_FILE}" ]]; then
-        keytool -importcert -trustcacerts -noprompt \
-            -storepass ${SIMVA_TRUSTSTORE_PASSWORD} \
-            -keystore ${SIMVA_TRUSTSTORE_SHLINK_FILE} \
-            -alias ${SIMVA_TRUSTSTORE_CA_ALIAS}  \
-            -file ${SIMVA_ROOT_CA_FILE}
-    fi
-fi
-
-if [[ ! -e "${SIMVA_DHPARAM_FILE}" ]]; then
-    if [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
-        openssl dhparam -out "${SIMVA_DHPARAM_FILE}" 2048
-    else 
-        echo "Please insert your ${SIMVA_DHPARAM_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
-        exit 1;
-    fi
-fi
+"${HELPERS_STACK_HOME}/01-install-rootCA.sh"
+"${HELPERS_STACK_HOME}/02-install-wildcard-certificate.sh"
+"${HELPERS_STACK_HOME}/03-install-fullchain.sh"
+"${HELPERS_STACK_HOME}/04-install-trustore.sh"
+"${HELPERS_STACK_HOME}/02bis-install-shlink-wildcard-certificate.sh"
+"${HELPERS_STACK_HOME}/03bis-install-shlink-fullchain.sh"
+"${HELPERS_STACK_HOME}/04bis-install-shlink-trustore.sh"
+"${HELPERS_STACK_HOME}/05-install-dhparam.sh"
