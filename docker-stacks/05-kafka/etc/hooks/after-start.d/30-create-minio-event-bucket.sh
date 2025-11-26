@@ -43,15 +43,17 @@ if [[ -n "$adminInfo" ]]; then
     if [[ -n $fileUploadArn ]]; then
         echo "Found. Removing existing notification config..."
         "${SIMVA_BIN_HOME}/run-command.sh" /bin/sh -c "/usr/bin/mc event rm --force simva-minio/${SIMVA_TRACES_BUCKET_NAME}"
+        export RUN_IN_FLAG_UI=true
         "${SIMVA_BIN_HOME}/run-command.sh" /bin/sh -c "/usr/bin/mc --debug admin service restart simva-minio/"
+        export RUN_IN_FLAG_UI=false
         "${SIMVA_BIN_HOME}/run-command.sh" /bin/sh -c "/usr/bin/mc ready simva-minio"
     else 
         echo "Creating event listener"
         "${SIMVA_BIN_HOME}/run-command.sh" /bin/sh -c "/usr/bin/mc --debug admin config set simva-minio/ notify_kafka:minio-file-upload brokers=\"kafka1.${SIMVA_INTERNAL_DOMAIN}:19092\" topic=\"${SIMVA_MINIO_EVENTS_TOPIC}\";"
         echo "Event listener created"
-        export RUN_IN_FLAG_UI=true;
+        export RUN_IN_FLAG_UI=true
         "${SIMVA_BIN_HOME}/run-command.sh" /bin/sh -c "/usr/bin/mc --debug admin service restart simva-minio/"
-        export RUN_IN_FLAG_UI=false;
+        export RUN_IN_FLAG_UI=false
         "${SIMVA_BIN_HOME}/run-command.sh" /bin/sh -c "/usr/bin/mc ready simva-minio"
     fi
     info=$("${SIMVA_BIN_HOME}/run-command.sh" /bin/sh -c "/usr/bin/mc admin info --json simva-minio/");
