@@ -6,7 +6,7 @@ backup_data() {
     # Input path
     target="$1"
     local output_folder=$2
-    local last_backup_timestamp=$3  # date
+    local last_backup_timestamp="${3:-}"  # date
     local compress="${4:-false}"  # optional: true|false, default false
     local first_depth="${5:-false}"  # optional: true|false, default false
 
@@ -39,7 +39,7 @@ backup_data() {
 
         # Create timestamped subfolder    
         if [[ -z $last_backup_timestamp ]]; then
-            last_backup_timestamp="$(date +"%Y-%m-%d_%H-%M-%S")"
+            last_backup_timestamp="$(date +"%Y-%m-%d_%H-%M-%S.%3N_%Z")"
         fi
         OLD_DIR="$output_folder/old_${last_backup_timestamp}"
         mkdir -p "$OLD_DIR"
@@ -56,7 +56,7 @@ backup_data() {
             tar -czvf "$output_path" -C "$target" $(find "$target" -maxdepth 1 -type f -printf "%f\n")
         else
             # Full folder compress
-            tar -czvf "$output_path" "$target"
+            tar -czvf "$output_path" -C "$target" .
         fi
     else
         # Non-compressed backup
@@ -77,7 +77,7 @@ restore_data() {
     local input="$1"
     target="$2"
     local extract="${3:-false}"  # optional: true|false, default false
-
+    local first_depth="${4:-false}"  # optional: true|false, default false
     # Check if the user provided an argument
     if [[ -z "$target" || -z "$input" ]]; then
         echo "Usage: $0 <input> <target> [extract]"
@@ -97,13 +97,28 @@ restore_data() {
     BASENAME=$(basename "$target")
     local input_file="${BASENAME}";
     if [[ $extract == "true" ]]; then
-        DEPTH=$(echo "$target" | awk -F/ '{print NF-1}')
-        echo "DEPTH : $DEPTH";
-        STRIP_COUNT=$((DEPTH))
-        # Restore the backup
-        tar --strip-components=$STRIP_COUNT -xzvf "$input/$input_file.tar.gz" -C "$target"
+        # Non-compressed backup
+        if [[ $first_depth == "true" ]]; then
+            # Remove only files in top folder (no recursive delete)
+            find "$target" -maxdepth 1 -type f -delete
+            tar -xzvf "$input/$input_file.tar.gz" -C "$target"
+        else 
+            # Remove full folder and recreate
+            rm -rf "$target"
+            mkdir -p "$target"
+            tar -xzvf "$input/$input_file.tar.gz" -C "$target"
+        fi 
     else 
-        cp "$input/$input_file" "$target"
+        if [[ $first_depth == "true" ]]; then
+            # Remove only files in top folder (no recursive delete)
+            find "$target" -maxdepth 1 -type f -delete
+            cp -r "$input/$input_file" "$target"
+        else
+            # Remove full folder and recreate
+            rm -rf "$target"
+            mkdir -p "$target"
+            cp -r "$input/$input_file" "$target"
+        fi
     fi
     
     echo "Backup restored: $input_file"

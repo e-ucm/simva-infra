@@ -20,11 +20,11 @@ usage() {
 backup_volume() {
   local volume=$1
   local output_folder=$2
-  local output_file=${3:-"${volume}.tar.gz"}
-  local last_backup_timestamp="${4:-}"  # date
-
+  local last_backup_timestamp="${3:-}"  # date
+  local output_file="${4:-"${volume}.tar.gz"}"
+  
   if [[ $last_backup_timestamp == "" ]]; then
-    last_backup_timestamp="$(date +"%Y-%m-%d_%H-%M-%S")"
+    last_backup_timestamp="$(date +"%Y-%m-%d_%H-%M-%S.%3N_%Z")"
   fi
 
   if ! docker volume inspect "$volume" >/dev/null 2>&1; then

@@ -963,7 +963,7 @@ function backup() {
             backup_data "${SIMVA_DATA_HOME}/${STACK_NAME}" $BACKUP_DATA_DIR $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp") true true
             echo "✅ Backup completed: $BACKUP_DATA_DIR"
         fi
-        echo "$(date +"%Y-%m-%d_%H-%M-%S")" > "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp"
+        echo "$(date +"%Y-%m-%d_%H-%M-%S.%3N_%Z")" > "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp"
     done
 }
 
@@ -1000,7 +1000,7 @@ function restore() {
             fi
             BACKUP_DATA_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/datafiles"
             if [[ -d "${BACKUP_DATA_DIR}" ]]; then 
-                restore_data $BACKUP_DATA_DIR "${SIMVA_DATA_HOME}/${STACK_NAME}" true
+                restore_data $BACKUP_DATA_DIR "${SIMVA_DATA_HOME}/${STACK_NAME}" true true
                 echo "✅ Backup $BACKUP_DATA_DIR restored!"
             fi
         fi
