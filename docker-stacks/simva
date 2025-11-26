@@ -942,7 +942,10 @@ function backup() {
         export CURRENT_STACK="${stack}"
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
-        if [[ ! -f "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp" ]]; then 
+        if [[ ! -d "${SIMVA_BACKUP_HOME}/${STACK_NAME}" ]]; then
+            mkdir -p "${SIMVA_BACKUP_HOME}/${STACK_NAME}"
+        fi
+        if [[ ! -f "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp" ]]; then
             echo "NO_TIMESTAMP" > "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp"
         fi
         if [[ ! -f "${SIMVA_DATA_HOME}/${STACK_NAME}/.externaldomain" ]]; then 
