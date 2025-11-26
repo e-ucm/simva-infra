@@ -14,7 +14,7 @@ _stop_docker_container_if_running
 
 echo "💾 Creating new backup..."
 BACKUP_VOLUME="shlink_db"
-"${SIMVA_BIN_HOME}/volumectl.sh" backup $BACKUP_VOLUME "$BACKUP_DIR/$BACKUP_VOLUME"
+"${SIMVA_BIN_HOME}/volumectl.sh" backup $BACKUP_VOLUME "$BACKUP_DIR/$BACKUP_VOLUME" $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp")
 BACKUP_CONFIG_VOLUME="shlink_config"
-"${SIMVA_BIN_HOME}/volumectl.sh" backup $BACKUP_CONFIG_VOLUME "$BACKUP_DIR/$BACKUP_CONFIG_VOLUME"
+"${SIMVA_BIN_HOME}/volumectl.sh" backup $BACKUP_CONFIG_VOLUME "$BACKUP_DIR/$BACKUP_CONFIG_VOLUME" $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp")
 echo "✅ Backup completed!"

@@ -942,25 +942,28 @@ function backup() {
         export CURRENT_STACK="${stack}"
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
-        if [[ -f "${SIMVA_DATA_HOME}/${STACK_NAME}/.externaldomain" ]]; then 
-            setExecutable ${phase} ${stack}
-            execute_before_hooks ${phase} ${stack}
-            execute_after_hooks ${phase} ${stack}
-            source "${SIMVA_BIN_HOME}/backup-restore.sh"
-            sourceEnvFile
-            if [[ -d "${SIMVA_CONFIG_HOME}/${STACK_NAME}" ]]; then 
-                BACKUP_CONFIG_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/config"
-                backup "${SIMVA_CONFIG_HOME}/${STACK_NAME}" $BACKUP_CONFIG_DIR true
-                echo "✅ Backup completed: $BACKUP_CONFIG_DIR"
-            fi
-            if [[ -d "${SIMVA_DATA_HOME}/${STACK_NAME}" ]]; then 
-                BACKUP_DATA_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/datafiles"
-                backup "${SIMVA_DATA_HOME}/${STACK_NAME}" $BACKUP_DATA_DIR true true
-                echo "✅ Backup completed: $BACKUP_DATA_DIR"
-            fi
-            #cp "${SIMVA_DATA_HOME}/${STACK_NAME}/.externaldomain" "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.externaldomain"
-            #cp "${SIMVA_DATA_HOME}/${STACK_NAME}/.version" "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.version"
+        if [[ ! -f "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp" ]]; then 
+            echo "NO_TIMESTAMP" > "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp"
         fi
+        if [[ ! -f "${SIMVA_DATA_HOME}/${STACK_NAME}/.externaldomain" ]]; then 
+            install "${wait_time}" "true" $CURRENT_STACK;
+        fi 
+        setExecutable ${phase} ${stack}
+        execute_before_hooks ${phase} ${stack}
+        execute_after_hooks ${phase} ${stack}
+        source "${SIMVA_BIN_HOME}/backup-restore.sh"
+        sourceEnvFile
+        if [[ -d "${SIMVA_CONFIG_HOME}/${STACK_NAME}" ]]; then 
+            BACKUP_CONFIG_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/config"
+            backup_data "${SIMVA_CONFIG_HOME}/${STACK_NAME}" $BACKUP_CONFIG_DIR $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp") true
+            echo "✅ Backup completed: $BACKUP_CONFIG_DIR"
+        fi
+        if [[ -d "${SIMVA_DATA_HOME}/${STACK_NAME}" ]]; then 
+            BACKUP_DATA_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/datafiles"
+            backup_data "${SIMVA_DATA_HOME}/${STACK_NAME}" $BACKUP_DATA_DIR $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp") true true
+            echo "✅ Backup completed: $BACKUP_DATA_DIR"
+        fi
+        echo "$(date +"%Y-%m-%d_%H-%M-%S")" > "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp"
     done
 }
 
@@ -984,7 +987,7 @@ function restore() {
         export CURRENT_STACK="${stack}"
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
-        if [[ -f "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.externaldomain" ]]; then 
+        if [[ -f "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp" ]]; then 
             setExecutable ${phase} ${stack}
             execute_before_hooks ${phase} ${stack}
             execute_after_hooks ${phase} ${stack}
@@ -992,16 +995,14 @@ function restore() {
             sourceEnvFile
             BACKUP_CONFIG_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/config"
             if [[ -d "${BACKUP_CONFIG_DIR}" ]]; then 
-                restore $BACKUP_CONFIG_DIR "${SIMVA_CONFIG_HOME}/${STACK_NAME}" true
+                restore_data $BACKUP_CONFIG_DIR "${SIMVA_CONFIG_HOME}/${STACK_NAME}" true
                 echo "✅ Backup $BACKUP_CONFIG_DIR restored!"
             fi
             BACKUP_DATA_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/datafiles"
             if [[ -d "${BACKUP_DATA_DIR}" ]]; then 
-                restore $BACKUP_DATA_DIR "${SIMVA_DATA_HOME}/${STACK_NAME}" true
+                restore_data $BACKUP_DATA_DIR "${SIMVA_DATA_HOME}/${STACK_NAME}" true
                 echo "✅ Backup $BACKUP_DATA_DIR restored!"
             fi
-            #cp "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.externaldomain" "${SIMVA_DATA_HOME}/${STACK_NAME}/.externaldomain" 
-            #cp "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.version" "${SIMVA_DATA_HOME}/${STACK_NAME}/.version" 
         fi
     done 
 }

@@ -21,6 +21,11 @@ backup_volume() {
   local volume=$1
   local output_folder=$2
   local output_file=${3:-"${volume}.tar.gz"}
+  local last_backup_timestamp="${4:-}"  # date
+
+  if [[ $last_backup_timestamp == "" ]]; then
+    last_backup_timestamp="$(date +"%Y-%m-%d_%H-%M-%S")"
+  fi
 
   if ! docker volume inspect "$volume" >/dev/null 2>&1; then
     echo "❌ Volume '$volume' does not exist."
@@ -32,7 +37,7 @@ backup_volume() {
       echo "📦 Previous backup detected at $output_path"
 
       # Create timestamped subfolder
-      OLD_DIR="$output_folder/old_$(date +%Y%m%d_%H%M%S)"
+      OLD_DIR="$output_folder/old_${last_backup_timestamp}"
       mkdir -p "$OLD_DIR"
 
       # Move old backup

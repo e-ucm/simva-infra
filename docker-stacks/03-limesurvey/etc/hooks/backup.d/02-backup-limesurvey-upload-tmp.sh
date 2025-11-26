@@ -12,7 +12,7 @@ _stop_docker_container_if_running
 
 echo "💾 Creating new backup..."
 BACKUP_UPLOAD="ls_upload"
-"${SIMVA_HOME}/bin/volumectl.sh" backup $BACKUP_UPLOAD "$BACKUP_DIR/$BACKUP_UPLOAD"
+"${SIMVA_HOME}/bin/volumectl.sh" backup $BACKUP_UPLOAD "$BACKUP_DIR/$BACKUP_UPLOAD" $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp")
 BACKUP_TMP="ls_tmp"
-"${SIMVA_HOME}/bin/volumectl.sh" backup $BACKUP_TMP "$BACKUP_DIR/$BACKUP_TMP"
+"${SIMVA_HOME}/bin/volumectl.sh" backup $BACKUP_TMP "$BACKUP_DIR/$BACKUP_TMP" $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp")
 echo "✅ Backup completed!"

@@ -10,10 +10,11 @@ BACKUP_FILE="keycloak.sql"
 # If a previous backup exists
 previousBackupPath="$BACKUP_DIR/$BACKUP_FILE.tar.gz"
 if [[ -f "$previousBackupPath" ]]; then
+    last_backup_timestamp=$(cat "${SIMVA_BACKUP_HOME}/keycloak/.timestamp")
     echo "📦 Previous backup detected at $previousBackupPath"
 
     # Create timestamped subfolder
-    OLD_DIR="$BACKUP_DIR/old_$(date +"%Y-%m-%d_%H-%M-%S")"
+    OLD_DIR="$BACKUP_DIR/old_${last_backup_timestamp}"
     mkdir -p "$OLD_DIR"
 
     # Move old backup

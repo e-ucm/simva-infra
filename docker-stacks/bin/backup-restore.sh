@@ -2,16 +2,17 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-backup() {
+backup_data() {
     # Input path
     target="$1"
     local output_folder=$2
-    local compress="${3:-false}"  # optional: true|false, default false
-    local first_depth="${4:-false}"  # optional: true|false, default false
+    local last_backup_timestamp=$3  # date
+    local compress="${4:-false}"  # optional: true|false, default false
+    local first_depth="${5:-false}"  # optional: true|false, default false
 
     # Check if the user provided an argument
     if [[ -z "$target" || -z $output_folder ]]; then
-        echo "Usage: $0 <file-or-folder> <output-folder> [compress] [first_depth]"
+        echo "Usage: $0 <file-or-folder> <output-folder> [timestamp] [compress] [first_depth]"
         exit 1
     fi
 
@@ -36,8 +37,11 @@ backup() {
     if [[ -e "$output_path" ]]; then
         echo "📦 Previous backup detected at $output_path"
 
-        # Create timestamped subfolder
-        OLD_DIR="$output_folder/old_$(date +%Y%m%d_%H%M%S)"
+        # Create timestamped subfolder    
+        if [[ -z $last_backup_timestamp ]]; then
+            last_backup_timestamp="$(date +"%Y-%m-%d_%H-%M-%S")"
+        fi
+        OLD_DIR="$output_folder/old_${last_backup_timestamp}"
         mkdir -p "$OLD_DIR"
 
         # Move old backup
@@ -68,7 +72,7 @@ backup() {
     echo "Backup created: $output_file"
 }
 
-restore() {
+restore_data() {
     # Input path
     local input="$1"
     target="$2"

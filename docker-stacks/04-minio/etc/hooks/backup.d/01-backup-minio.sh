@@ -14,5 +14,5 @@ export RUN_IN_CONTAINER_NAME="minio"
 _stop_docker_container_if_running
 
 echo "💾 Creating new backup..."
-"${SIMVA_BIN_HOME}/volumectl.sh" backup $BACKUP_VOLUME "$BACKUP_DIR/$BACKUP_VOLUME" #TODO ONLY COMPACTED DATA
+"${SIMVA_BIN_HOME}/volumectl.sh" backup $BACKUP_VOLUME "$BACKUP_DIR/$BACKUP_VOLUME" $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp") #TODO ONLY COMPACTED DATA
 echo "✅ Backup completed!"
