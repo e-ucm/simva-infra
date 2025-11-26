@@ -25,8 +25,7 @@ backup_data() {
     # Ensure output folder exists
     mkdir -p "$output_folder" || { echo "❌ Failed to create output directory '$output_folder'"; return 1; }
     # Get the absolute name and parent directory
-    BASENAME=$(basename "$target")
-    local backup_already_present=false;
+    BASENAME=$(basename "$target");
     local output_file="${BASENAME}";
     if [[ $compress == "true" ]]; then
         output_path="$output_folder/$output_file.tar.gz"
@@ -41,8 +40,10 @@ backup_data() {
         if [[ -z $last_backup_timestamp ]]; then
             last_backup_timestamp="$(date +"%Y-%m-%d_%H-%M-%S.%3N_%Z")"
         fi
-        OLD_DIR="$output_folder/old_${last_backup_timestamp}"
-        mkdir -p "$OLD_DIR"
+        OLD_DIR="$output_folder/../old/${last_backup_timestamp}/$(basename "$output_folder")"
+        if [[ ! -e "$OLD_DIR" ]]; then
+            mkdir -p "$OLD_DIR"
+        fi
 
         # Move old backup
         mv "$output_path" "$OLD_DIR/"

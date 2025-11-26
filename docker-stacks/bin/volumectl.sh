@@ -37,8 +37,10 @@ backup_volume() {
       echo "📦 Previous backup detected at $output_path"
 
       # Create timestamped subfolder
-      OLD_DIR="$output_folder/old_${last_backup_timestamp}"
-      mkdir -p "$OLD_DIR"
+      OLD_DIR="$output_folder/../old/${last_backup_timestamp}/$(basename "$output_folder")"
+      if [[ ! -e "$OLD_DIR" ]]; then
+        mkdir -p "$OLD_DIR"
+      fi
 
       # Move old backup
       mv "$output_path" "$OLD_DIR/"

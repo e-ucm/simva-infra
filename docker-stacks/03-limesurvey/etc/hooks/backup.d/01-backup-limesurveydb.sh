@@ -4,18 +4,21 @@ set -euo pipefail
 
 "${HELPERS_STACK_HOME}/migrate-to-volume.sh"
 
-BACKUP_DIR="${SIMVA_BACKUP_HOME}/limesurvey/db"
+BACKUP_DIR="${SIMVA_BACKUP_HOME}/limesurvey"
+MIGRATION_DIR_NAME="db"
 BACKUP_FILE="limesurvey.sql"
 
 # If a previous backup exists
-previousBackupPath="$BACKUP_DIR/$BACKUP_FILE.tar.gz"
+previousBackupPath="$BACKUP_DIR/$MIGRATION_DIR_NAME/$BACKUP_FILE.tar.gz"
 if [[ -f "$previousBackupPath" ]]; then
     last_backup_timestamp=$(cat "${SIMVA_BACKUP_HOME}/limesurvey/.timestamp")
     echo "📦 Previous backup detected at $previousBackupPath"
 
     # Create timestamped subfolder
-    OLD_DIR="$BACKUP_DIR/old_${last_backup_timestamp}"
-    mkdir -p "$OLD_DIR"
+    OLD_DIR="$BACKUP_DIR/old/${last_backup_timestamp}/${MIGRATION_DIR_NAME}"
+    if [[ ! -d "$OLD_DIR" ]]; then
+        mkdir -p "$OLD_DIR"
+    fi
 
     # Move old backup
     mv "$previousBackupPath" "$OLD_DIR/"
@@ -37,6 +40,6 @@ export RUN_IN_CONTAINER_NAME="mariadb-backup"
 _start_docker_container_if_not_running
 "${SIMVA_BIN_HOME}/run-command.sh" bash -c "/container-tools/wait-for-it.sh -h mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN} -p 3306 -t ${SIMVA_WAIT_TIMEOUT}"
 "${SIMVA_BIN_HOME}/run-command.sh" bash -c "mysqldump --all-databases -h'mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}' -uroot -p'${SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD}' > '/dump/$BACKUP_FILE'"
-"${SIMVA_BIN_HOME}/volumectl.sh" copyvl "ls_maria_db_backup_data" $BACKUP_DIR $BACKUP_FILE $BACKUP_FILE true
+"${SIMVA_BIN_HOME}/volumectl.sh" copyvl "ls_maria_db_backup_data" "$BACKUP_DIR/${MIGRATION_DIR_NAME}" $BACKUP_FILE $BACKUP_FILE true
 "${SIMVA_BIN_HOME}/run-command.sh" bash -c "rm -rf '/dump/$BACKUP_FILE'"
 echo "✅ Backup completed: $BACKUP_FILE"
