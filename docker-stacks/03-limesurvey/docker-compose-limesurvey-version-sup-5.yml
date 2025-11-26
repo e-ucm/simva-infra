@@ -44,6 +44,7 @@ services:
       - /var/www/html/upload/themes/survey  # Exclude themes survey folder
       - /var/www/html/upload/admintheme # Exclude admintheme folder
       - ls_tmp:/var/www/html/tmp
+      - /var/www/html/tmp/assets  # Exclude assets folder
       - ${SIMVA_TLS_HOME?TLS home folder required}:/root/.limesurvey/certs/:ro
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${STACK_HOME:-/home/vagrant/docker-stacks/03-limesurvey}/etc/entrypoint.d/:/entrypoint
