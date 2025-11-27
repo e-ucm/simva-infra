@@ -68,7 +68,7 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
         __add_or_update_user "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/users" "/opt/keycloak/data/simva-realm-filled/users"
 
         # Update users config
-        users="student teaching_assistant teacher researcher administrator"
+        users="student teaching_assistant teacher researcher administrator lrsmanager"
         conf_file="${STACK_CONF}/realm-data.users.yml"
         if [[ -e ${conf_file} ]]; then
             rm -rf ${conf_file}
