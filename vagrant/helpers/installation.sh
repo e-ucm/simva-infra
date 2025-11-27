@@ -2,6 +2,13 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
+# FIX NETWORK Errors
+sudo systemctl stop systemd-resolved
+sudo systemctl disable systemd-resolved
+sudo rm -f /etc/resolv.conf
+echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee /etc/resolv.conf
+sudo systemctl restart systemd-networkd
+
 echo "Updating packages..."
 sudo apt-get update -y
 sudo apt-get upgrade -y
@@ -150,28 +157,42 @@ echo "unzip : $(unzip -v || true)"
 echo "npm : $(npm -v|| true)"
 
 ls /home/vagrant/
-cd /home/vagrant/
+dos2unix /home/vagrant/simva-infra/docker-stacks/etc/simva.install.d/simva-env.sh
+dos2unix /home/vagrant/simva-infra/docker-stacks/etc/simva.d/simva-env.sh
+dos2unix /home/vagrant/simva-infra/docker-stacks/etc/simva.d/simva-env.dev.sh
+export SIMVA_PROJECT_DIR="/home/vagrant/simva-infra"
+source /home/vagrant/simva-infra/docker-stacks/etc/simva.d/simva-env.sh
+source /home/vagrant/simva-infra/docker-stacks/etc/simva.install.d/simva-env.sh
+source /home/vagrant/simva-infra/docker-stacks/etc/simva.d/simva-env.dev.sh
 if [ ! -d /home/vagrant/simva ]; then
-  git clone https://github.com/e-ucm/simva.git
-  chown -R vagrant:vagrant simva
+  mkdir -p /home/vagrant/simva
+  git clone --depth 1 --branch ${SIMVA_API_GIT_REF} https://github.com/e-ucm/simva.git /home/vagrant/simva
+  chown -R vagrant:vagrant /home/vagrant/simva
 fi
 if [ ! -d /home/vagrant/simva-front ]; then
-  git clone https://github.com/e-ucm/simva-front.git
-  chown -R vagrant:vagrant simva-front
+  mkdir -p /home/vagrant/simva-front
+  git clone --depth 1 --branch ${SIMVA_FRONT_GIT_REF} https://github.com/e-ucm/simva-front.git /home/vagrant/simva-front
+  chown -R vagrant:vagrant /home/vagrant/simva-front
 fi
 if [ ! -d /home/vagrant/simva-trace-allocator ]; then
-  git clone https://github.com/e-ucm/simva-trace-allocator.git
-  chown -R vagrant:vagrant simva-trace-allocator
+  mkdir -p /home/vagrant/simva-trace-allocator
+  git clone --depth 1 --branch ${SIMVA_TRACE_ALLOCATOR_GIT_REF} https://github.com/e-ucm/simva-trace-allocator.git /home/vagrant/simva-trace-allocator
+  chown -R vagrant:vagrant /home/vagrant/simva-trace-allocator
 fi
 if [ ! -d /home/vagrant/t-mon ]; then
-  git clone https://github.com/e-ucm/t-mon.git
-  chown -R vagrant:vagrant t-mon
+  mkdir -p /home/vagrant/t-mon
+  git clone --depth 1 --branch "master" https://github.com/e-ucm/t-mon.git /home/vagrant/t-mon
+  chown -R vagrant:vagrant /home/vagrant/t-mon
 fi
 if [ ! -d /home/vagrant/docker-limesurvey ]; then
-  git clone https://github.com/e-ucm/docker-limesurvey.git
-  chown -R vagrant:vagrant docker-limesurvey
+  mkdir -p /home/vagrant/docker-limesurvey
+  git clone --depth 1 --branch ${SIMVA_LIMESURVEY_DOCKER_GIT_REF} https://github.com/e-ucm/docker-limesurvey.git /home/vagrant/docker-limesurvey
+  chown -R vagrant:vagrant /home/vagrant/docker-limesurvey
 fi
 ls /home/vagrant/
+
+#Make the simva script executation
+dos2unix ${SIMVA_PROJECT_DIR}/docker-stacks/simva
 
 # Copy the host gitconfig to vagrant home
 if [ -f /home/vagrant/.gitconfig.host ]; then
