@@ -8,8 +8,9 @@ if [[ ! -d "${PLUGINS_DIR}" ]]; then
 fi
 
 DEPLOYMENT_DIR="${SIMVA_DATA_HOME}/limesurvey/data/plugins"
+UPLOAD_DIR="${SIMVA_DATA_HOME}/limesurvey/data/upload/plugins"
 
-declare -A plugins=(["LimeSurveyWebhook"]=${SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION} ["AuthOAuth2"]=${SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION} ["LimeSurveyXAPITracker"]=${SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION});
+declare -A plugins=(["LimeSurveyWebhook"]=${SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION} ["AuthOAuth2"]=${SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION} ["LimeSurveyXAPITracker"]=${SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION} ["SurveyGuardian"]=${SIMVA_LIMESURVEY_SURVEYGUARDIAN_PLUGIN_VERSION});
 
 for key in "${!plugins[@]}"; do
     ext_name=$key
@@ -31,4 +32,21 @@ for key in "${!plugins[@]}"; do
     tmp_dir=$(mktemp -d)
     unzip "${PLUGINS_DIR}/${ext_zip}" -d $tmp_dir
     rsync -avh --delete --itemize-changes ${tmp_dir}/ "${DEPLOYMENT_DIR}/$ext_name"
+    if [[ $ext_name = "SurveyGuardian" ]]; then 
+        if [[ ! -e "${UPLOAD_DIR}/$ext_name/assets/" ]]; then
+            mkdir -p "${UPLOAD_DIR}/$ext_name/assets/"
+        fi
+        if [[ -e "${UPLOAD_DIR}/$ext_name/assets/survey-tables/" ]]; then
+            mv ${UPLOAD_DIR}/$ext_name/assets/survey-tables/* "${UPLOAD_DIR}/$ext_name/survey-tables/" 
+        fi
+
+        rsync -avh --delete --itemize-changes "${DEPLOYMENT_DIR}/$ext_name/assets" "${UPLOAD_DIR}/$ext_name";
+        if [[ -e "${UPLOAD_DIR}/$ext_name/survey-tables/" ]]; then
+            mv ${UPLOAD_DIR}/$ext_name/survey-tables/* "${UPLOAD_DIR}/$ext_name/assets/survey-tables/" 
+        else 
+            mkdir -p "${UPLOAD_DIR}/$ext_name/assets/survey-tables/"
+        fi
+    fi
 done
+
+

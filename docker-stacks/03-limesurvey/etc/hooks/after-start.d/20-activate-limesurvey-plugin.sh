@@ -19,7 +19,7 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
     DB_PASSWORD=$SIMVA_LIMESURVEY_MYSQL_PASSWORD
     
     if [[ ${SIMVA_LIMESURVEY_VERSION%.*} > 5 ]]; then
-        declare -A plugins=(["LimeSurveyWebhook"]=${SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION} ["AuthOAuth2"]=${SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION} ["LimeSurveyXAPITracker"]=${SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION});
+        declare -A plugins=(["LimeSurveyWebhook"]=${SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION} ["AuthOAuth2"]=${SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION} ["LimeSurveyXAPITracker"]=${SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION} ["SurveyGuardian"]=${SIMVA_LIMESURVEY_SURVEYGUARDIAN_PLUGIN_VERSION});
         for key in "${!plugins[@]}"; do
             ext_name=$key
             ext_version=${plugins[$key]}
@@ -52,5 +52,21 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
                 WHERE name = 'AuthSAML';    
             "
         fi
+    fi
+    
+    SurveyGuardian=$("${SIMVA_HOME}/bin/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
+        USE $DB_NAME;
+        SELECT id FROM \`plugins\` WHERE name='$SURVEYGUARDIAN_PLUGIN_NAME' AND active=1 and version='$SURVEYGUARDIAN_PLUGIN_VERSION';");
+    echo $SurveyGuardian;
+    if [[ ! $SurveyGuardian == *"id"* ]]; then 
+        echo "Inserting plugin $SURVEYGUARDIAN_PLUGIN_NAME into the plugins table..."
+        "${SIMVA_HOME}/bin/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
+        USE $DB_NAME;
+        INSERT INTO \`plugins\` (name, plugin_type, active, priority, version)
+        VALUES ('$SURVEYGUARDIAN_PLUGIN_NAME', 'user', 1, 0, '$SURVEYGUARDIAN_PLUGIN_VERSION');
+        "
+        echo "Plugin $SURVEYGUARDIAN_PLUGIN_NAME has been installed and its settings have been added!"
+    else 
+        echo "Plugin $SURVEYGUARDIAN_PLUGIN_NAME settings have already been added!"
     fi
 fi
