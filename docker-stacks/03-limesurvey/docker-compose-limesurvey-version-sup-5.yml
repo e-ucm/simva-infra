@@ -18,7 +18,6 @@ networks:
 services:
   limesurvey:
     << : *default-opts
-    image: ${SIMVA_LIMESURVEY_IMAGE:-martialblog/limesurvey}:${SIMVA_LIMESURVEY_VERSION:-6-apache}
     entrypoint: ["/entrypoint/limesurvey.sh"]
     command: ["apache2-foreground"]
     environment:
