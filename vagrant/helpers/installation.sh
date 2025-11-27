@@ -5,8 +5,15 @@ set -euo pipefail
 # FIX NETWORK Errors
 sudo systemctl stop systemd-resolved
 sudo systemctl disable systemd-resolved
+if [ -f "/etc/resolv.conf.backup" ]; then
+  echo "/etc/resolv.conf.backup already exists, skipping backup."
+else
+  echo "Backing up /etc/resolv.conf to /etc/resolv.conf.backup"
+  cp /etc/resolv.conf /etc/resolv.conf.backup || true
+fi
 sudo rm -f /etc/resolv.conf
-echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee /etc/resolv.conf
+echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1\nnameserver 9.9.9.9" | sudo tee /etc/resolv.conf
+sudo chattr +i /etc/resolv.conf
 sudo systemctl restart systemd-networkd
 
 echo "Updating packages..."
