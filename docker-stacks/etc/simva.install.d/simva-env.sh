@@ -1,7 +1,7 @@
 ################
 # SIMVA STACKS #
 ################
-export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 07-simva 08-anaconda 09-logs"
+export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 07-simva 08-tmon 09-logs"
 
 #############################
 # SIMVA installation folder #
@@ -68,6 +68,10 @@ export SIMVA_SIMVA_FRONT_VERSION="0.0.1"
 #NO SQL DB
 export SIMVA_MONGODB_IMAGE="mongo"
 export SIMVA_MONGODB_VERSION="4.2.8"
+
+#TMON
+export SIMVA_TMON_IMAGE="eucm/t-mon"
+export SIMVA_TMON_VERSION="0.0.1"
 
 #LOGS
 export SIMVA_LOGS_IMAGE="amir20/dozzle"

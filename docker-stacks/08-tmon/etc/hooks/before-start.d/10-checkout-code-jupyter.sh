@@ -3,13 +3,9 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 SIMVA_TMON_GIT_REPO_URL=https://github.com/e-ucm/t-mon.git
-SIMVA_TMON_GIT_REF=${SIMVA_TMON_GIT_REF:-master}
+SIMVA_TMON_GIT_REF=${SIMVA_TMON_ANACONDA_GIT_REF:-master-jupyter-notebook}
 
 RUNCHECKOUTCODE=false
-if [[ ! -e "${SIMVA_DATA_HOME}/simva/.initialized" ]]; then
-    echo "SIMVA it is not initialized, initializing checkout code."
-    RUNCHECKOUTCODE=true
-fi
 if [[ "${SIMVA_ENVIRONMENT}" == "development" ]] ; then
     echo "SIMVA is in development environment, launch checkout code."
     RUNCHECKOUTCODE=true

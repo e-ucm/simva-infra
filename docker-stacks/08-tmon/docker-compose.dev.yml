@@ -16,6 +16,13 @@ networks:
     external: true
 
 services:
+  tmon-app:
+    build: ${SIMVA_TMON_GIT_REPO:-/home/vagrant/docker-stacks/data/tmon/tmon}
+    environment:
+      - DASH_DEBUG=true
+    volumes:
+      - ${SIMVA_TMON_GIT_REPO}:/app
+
   anaconda:
     << : *default-opts
     image: ${SIMVA_ANACONDA_IMAGE:-continuumio/anaconda3}:${SIMVA_ANACONDA_VERSION:-2024.02-1}

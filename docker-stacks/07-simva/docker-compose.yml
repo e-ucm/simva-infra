@@ -215,6 +215,11 @@ services:
       SHLINK_PORT: ${SIMVA_SHLINK_PORT:-443}
       SHLINK_PROTOCOL: ${SIMVA_SHLINK_EXTERNAL_PROTOCOL:-https}
       SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
+      #TMON
+      TMON_HOST: "${SIMVA_TMON_HOST_DASHBOARD_SUBDOMAIN:-tmon}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      TMON_PROTOCOL: "https"
+      TMON_PORT: "443"
+      TMON_MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces.json}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
