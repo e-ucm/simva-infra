@@ -76,6 +76,25 @@ return array(
             'hidden' => ['sAuthToken'],
             'sBug' => '{{ .plugins.webhooks.debug }}'
         ],
+        'XAPITrackerSettings' => [
+            'sBug' => '{{ .plugins.xapitracker.debug }}',
+            'fixed' => [
+                'baseUrlLRC' => '{{ .plugins.xapitracker.baseUrlLRC }}',
+                'usernameLRC' => '{{ .plugins.xapitracker.usernameLRC }}',
+                'passwordLRC' => '{{ .plugins.xapitracker.passwordLRC }}',
+                'actorHomepage' => '{{ .plugins.xapitracker.actorhomepage }}',
+                'surveylrsendpoint' => '{{ .plugins.xapitracker.surveylrsendpoint }}',
+                'lrsEndpoint' => '',
+                'oAuthType' => '{{ .plugins.xapitracker.oAuthType }}',
+                'usernameOAuth' => '{{ .plugins.xapitracker.usernameOAuth }}',
+                'passwordOAuth' => '{{ .plugins.xapitracker.passwordOAuth }}',
+                'OAuth2TokenEndpoint' => '{{ .plugins.xapitracker.keycloak_realm_url }}/protocol/openid-connect/token',
+                'OAuth2LogoutEndpoint' => '{{ .plugins.xapitracker.keycloak_realm_url }}/protocol/openid-connect/logout',
+                'OAuth2ClientId' => '{{ .plugins.xapitracker.OAuth2ClientId }}',
+                'sId'=> '',
+            ],
+            'hidden' => ['sToken', 'usernameLRC', 'passwordLRC', 'usernameOAuth', 'passwordOAuth'],
+        ],
 		'AuthOAuth2Settings' => [
 			'fixed' => [
 				'client_id' => '{{ .plugins.oauth2.client_id }}',

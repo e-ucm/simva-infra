@@ -51,6 +51,18 @@ plugins:
     header_name: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_NAME}"
     header_prefix: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_PREFIX}"
     debug: "${isdev}"
+  xapitracker:
+    baseUrlLRC: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/admin/remotecontrol"
+    usernameLRC: "${SIMVA_LIMESURVEY_ADMIN_USER}"
+    passwordLRC: "${SIMVA_LIMESURVEY_ADMIN_PASSWORD}"
+    actorhomepage: "https://${SIMVA_EXTERNAL_DOMAIN}"
+    surveylrsendpoint: "true"
+    oAuthType: "oauth2"
+    usernameOAuth: "${SIMVA_LRSMANAGER_USER}"
+    passwordOAuth: "${SIMVA_LRSMANAGER_PASSWORD}"
+    keycloak_realm_url: "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/realms/${SIMVA_SSO_REALM}"
+    OAuth2ClientId: "simva-plugin"
+    debug: "${isdev}"
   oauth2:
     keycloak_realm_url: "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/realms/${SIMVA_SSO_REALM}"
     client_id: "${SIMVA_LIMESURVEY_CLIENT_ID}"

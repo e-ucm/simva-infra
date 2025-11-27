@@ -7,7 +7,7 @@ export RUN_IN_CONTAINER=true
 export RUN_IN_AS_SPECIFIC_USER="root"
 export RUN_IN_CONTAINER_NAME="limesurvey"
 
-"${SIMVA_BIN_HOME}/run-command.sh" bash -c 'echo "if[[ ! -e /etc/ssl/certs/rootCA-simva.pem ]]; then cp /root/.limesurvey/ca/rootCA.pem /etc/ssl/certs/rootCA-simva.pem fi;"'
+"${SIMVA_BIN_HOME}/run-command.sh" bash -c 'echo "if[[ ! -e /etc/ssl/certs/rootCA-simva.pem ]]; then cp /root/.limesurvey/certs/ca/rootCA.pem /etc/ssl/certs/rootCA-simva.pem fi;"'
 
 if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initializedSSL" ]]; then 
     # Step 1: Update cainfo in php.ini
