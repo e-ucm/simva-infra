@@ -55,15 +55,11 @@ Vagrant.configure("2") do |config|
     echo "Updating netplan with IP: #{simva_vm_ip}"
     sudo sed -i "s/^\\s*-\\s*[0-9\\.\\/]\\+$/      - #{simva_vm_ip}\\/24/" /etc/netplan/50-vagrant.yaml
     sudo netplan apply
-  SHELL
 
-  config.vm.provision "shell", inline: <<-SHELL
-    #!/bin/bash
     echo "Mounted parent folder is available at: #{mount_point}"
-    echo "Hello from VM!"
     # Example: list files from shared folder
     ls -l #{mount_point}
-    # Example: run a script from the shared folder
+    # run simva script from the shared folder
     if [ -f #{mount_point}/docker-stacks/simva ]; then
       echo "Running simva from #{mount_point}..."
       dos2unix #{mount_point}/docker-stacks/simva

@@ -63,22 +63,20 @@ else
   echo "unzip already available."
 fi
 
-
 # --- Docker ---
 if ! command -v docker >/dev/null 2>&1; then
   echo "Installing Docker CE..."
-  sudo apt-get install -y docker-ce=5:28.5.2-1~ubuntu.22.04~jammy docker-ce-cli=5:28.5.2-1~ubuntu.22.04~jammy containerd.io docker-buildx-plugin docker-compose-plugin
-  #curl -fsSL https://get.docker.com -o get-docker.sh
-  #sudo sh get-docker.sh
-  #rm get-docker.sh
+  curl -fsSL https://get.docker.com -o get-docker.sh
+  sudo sh get-docker.sh 
+  rm get-docker.sh
   # Allow vagrant user to run docker without sudo
   sudo usermod -aG docker $USER
 else
   echo "Docker already installed."
-  echo "Downgrade to version 5:28.5.2-1 that is working."
-  sudo apt-get install -y --allow-downgrades --allow-change-held-packages docker-ce=5:28.5.2-1~ubuntu.22.04~jammy docker-ce-cli=5:28.5.2-1~ubuntu.22.04~jammy containerd.io docker-buildx-plugin docker-compose-plugin
-  sudo apt-mark hold docker-ce docker-ce-cli
 fi
+echo "Downgrade to version 5:28.5.2-1 that is working."
+sudo apt-get install -y --allow-downgrades --allow-change-held-packages docker-ce=5:28.5.2-1~ubuntu.22.04~jammy docker-ce-cli=5:28.5.2-1~ubuntu.22.04~jammy containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-mark hold docker-ce docker-ce-cli
 
 # --- nodejs ---
 if ! command -v node >/dev/null 2>&1; then

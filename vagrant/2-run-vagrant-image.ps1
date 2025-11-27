@@ -1,7 +1,6 @@
 param(
     [switch]$Stop,
     [switch]$Reload,
-    [switch]$Provision,
     [int]$Memory,
     [int]$CPU
 )
@@ -138,29 +137,19 @@ if($Stop) {
     if($Reload) {
         Write-Host "Reloading VM '$VmName'..."
         if ($status -eq "running") {
-            if($Provision) {
-                vagrant reload --provision
-            } else {
-                vagrant reload
-            }
+            vagrant reload
         } else {
-            if($Provision) {
-                vagrant up --provider virtualbox --provision
-            } else {
-                vagrant up --provider virtualbox
-            }
+            vagrant up --provider virtualbox
         }
         Write-Host "VM Reloaded."
     } else {
         if ($status -eq "running") {
             Write-Host "Already started VM '$VmName'."
+            vagrant provision
+            Write-Host "VM provisioned."
         } else {
             Write-Host "Starting VM '$VmName'..."
-            if($Provision) {
-                vagrant up --provider virtualbox --provision
-            } else {
-                vagrant up --provider virtualbox
-            }
+            vagrant up --provider virtualbox
             Write-Host "VM started."
         }
     }
