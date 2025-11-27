@@ -8,7 +8,7 @@ export RUN_IN_CONTAINER_NAME="connect"
 connector_name=$(jq '.name' "${SIMVA_CONFIG_TEMPLATE_HOME}/kafka/connect/simva-sink.json" -r)
 
 set +e
-"${SIMVA_HOME}/bin/run-command.sh" curl -f -sS \
+"${SIMVA_BIN_HOME}/run-command.sh" curl -f -sS \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json' \
   http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} >/dev/null 2>&1
@@ -47,7 +47,7 @@ set +e
 if [[ $ret -eq 0 ]]; then 
   connector_name=$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
   echo "DELETE"
-  "${SIMVA_HOME}/bin/run-command.sh" curl \
+  "${SIMVA_BIN_HOME}/run-command.sh" curl \
       --request DELETE \
       http://connect.${SIMVA_INTERNAL_DOMAIN}:8083/connectors/${connector_name} #>/dev/null 2>&1
     retDelete=$?
@@ -55,7 +55,7 @@ if [[ $ret -eq 0 ]]; then
 fi 
 
 echo "POST"
-"${SIMVA_HOME}/bin/run-command.sh" curl -f -sS \
+"${SIMVA_BIN_HOME}/run-command.sh" curl -f -sS \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json' \
   --request POST \

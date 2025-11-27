@@ -39,7 +39,7 @@ services:
       - minio_mig_data:/data
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
-      - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available.sh:/bin/wait-available.sh:ro
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh:ro
     environment:
       MINIO_ROOT_USER: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_BROWSER_REDIRECT_URL: "http://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-mig.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9001"
@@ -87,7 +87,7 @@ services:
 # (https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html#install-certificates-from-third-party-cas)
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
-      - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available.sh:/bin/wait-available.sh:ro
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh:ro
     environment:
       MINIO_ROOT_USER: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_BROWSER_REDIRECT_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"

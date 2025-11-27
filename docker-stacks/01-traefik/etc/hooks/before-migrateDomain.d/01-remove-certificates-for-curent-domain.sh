@@ -1,4 +1,4 @@
-${SIMVA_HOME}/bin/purge-file-if-exist.sh \
+${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
     "${SIMVA_TRAEFIK_CERT_FILE}" \
     "${SIMVA_TRAEFIK_KEY_FILE}" \
     "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE}" \

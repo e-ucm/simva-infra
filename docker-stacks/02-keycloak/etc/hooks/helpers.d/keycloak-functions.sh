@@ -19,26 +19,94 @@ function __keycloak_login() {
     if [[ -f "${SIMVA_TRUSTSTORE_FILE}" ]]; then
         "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config truststore --trustpass ${SIMVA_TRUSTSTORE_PASSWORD} "/root/.keycloak/certs/$(basename "${SIMVA_TRUSTSTORE_FILE}")"
     fi
+
     admin_user_file="$SIMVA_DATA_HOME/keycloak/.master_admin_user_created"
-    if [[ -f $admin_user_file ]]; then 
-        echo "Admin user already exists. Connecting with this user..."
-    else 
-        echo "Creating Admin user..."
-        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config credentials --server "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" --realm master --user ${SIMVA_KEYCLOAK_TMP_ADMIN_USER} --password ${SIMVA_KEYCLOAK_ADMIN_PASSWORD}
-        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh create users -r master -s username=${SIMVA_KEYCLOAK_ADMIN_USER} -s enabled=true
-        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh set-password -r master --username ${SIMVA_KEYCLOAK_ADMIN_USER} --new-password ${SIMVA_KEYCLOAK_ADMIN_PASSWORD}
-        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r master --uusername ${SIMVA_KEYCLOAK_ADMIN_USER} --rolename admin
-        user=$("${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh get users -r master -q username=${SIMVA_KEYCLOAK_TMP_ADMIN_USER} --fields id)
-        userId=$(echo $user | jq -r '.[0].id')
-        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh delete users/$userId -r master
+    echo "--- Checking Keycloak admin user status ---"
+
+    if [[ -f "$admin_user_file" ]]; then
+        echo "Admin user already persisted previously."
+    else
+        set +e
+        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config credentials \
+        --server "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" \
+        --realm master --user "${SIMVA_KEYCLOAK_TMP_ADMIN_USER}" \
+        --password "${SIMVA_KEYCLOAK_ADMIN_PASSWORD}"
+        ret=$?
+        set -e
+        echo $ret
+        if [[ $ret != 0 ]]; then
+            set +e
+            "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config credentials \
+                --server "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" \
+                --realm "master" --user "${SIMVA_KEYCLOAK_ADMIN_USER}" \
+                --password "${SIMVA_KEYCLOAK_ADMIN_PASSWORD}"
+            ret=$?
+            set -e
+            echo $ret
+            if [[ $ret != 0 ]]; then
+                echo "Either temp admin '${SIMVA_KEYCLOAK_TMP_ADMIN_USER}' user and admin '${SIMVA_KEYCLOAK_ADMIN_USER}' user can't connect to Keycloak with the current password '${SIMVA_KEYCLOAK_ADMIN_PASSWORD}'."
+                echo "Please update your simva-env.sh with the correct password configuration. Exiting..."
+                exit 1
+            else 
+                echo "Admin user already exists in Keycloak, persisting."
+            fi
+        else 
+            echo "Checking if admin user exists in Keycloak..."
+
+            admin_user_present=$(
+            "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh get users \
+                -r master -q username="${SIMVA_KEYCLOAK_ADMIN_USER}" --fields id 2>/dev/null
+            )
+
+            if echo "$admin_user_present" | grep -q '"id"'; then
+                echo "Admin user already exists in Keycloak."
+            else
+                echo "Admin user doesn't exist. Creating through TMP admin login..."
+                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh create users \
+                    -r master -s username="${SIMVA_KEYCLOAK_ADMIN_USER}" -s enabled=true
+                echo "Admin user created."
+                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles \
+                    -r master --username "${SIMVA_KEYCLOAK_ADMIN_USER}" --rolename admin
+            fi
+
+            "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh set-password \
+                -r master --username "${SIMVA_KEYCLOAK_ADMIN_USER}" \
+                --new-password "${SIMVA_KEYCLOAK_ADMIN_PASSWORD}"
+
+            # Delete the temporary admin user
+            tmp_user_json=$(
+            "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh get users \
+                -r master -q username="${SIMVA_KEYCLOAK_TMP_ADMIN_USER}" --fields id 2>/dev/null
+            )
+            # Extract first user id safely
+            tmp_user_id=$(echo "$tmp_user_json" | jq -r '.[0].id // empty')
+
+            if [[ -n "$tmp_user_id" ]]; then
+                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh delete \
+                    -r master "users/${tmp_user_id}"
+                echo "Temporary admin removed."
+            else
+                echo "No temporary admin user found."
+            fi
+            echo "Admin user successfully created and persisted!"
+        fi
         touch "$admin_user_file"
-        echo "Admin user created !"
     fi
-    "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config credentials --server "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" --realm "master" --user ${SIMVA_KEYCLOAK_ADMIN_USER} --password ${SIMVA_KEYCLOAK_ADMIN_PASSWORD}
+
+    # Now always login using the actual admin
+    echo "--- Logging into Keycloak with the final admin ---"
+    "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config credentials \
+        --server "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" \
+        --realm "master" --user "${SIMVA_KEYCLOAK_ADMIN_USER}" \
+        --password "${SIMVA_KEYCLOAK_ADMIN_PASSWORD}"
+
     export KEYCLOAK_LOGIN_ON=true
+
+    echo "Keycloak admin login OK!"
 }
 
 function __list_keycloak_resources() {
+    __keycloak_login
     if [[ $# -lt 1 ]]; then
         echo "keycloak resource path expected";
         exit 1;
@@ -302,6 +370,7 @@ function __add_or_update_role() {
     shift 1
 
     __add_or_update_keycloak_resource "roles" "name" "name" "name" $localFolder $dockerFolder
+    __keycloak_login
     for file in $localFolder/*; do
         composite=$(jq -c -r ".composite // false" "$file")
         if [[ "$composite" != "true" ]]; then continue; fi;
@@ -313,6 +382,7 @@ function __add_or_update_role() {
             roles+="--rolename $compose "
         done
         echo "$roles"
+        __keycloak_login
         "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --rname $rolename $roles
         clients=$(jq -c -r '.composites.client // { "defaultClient": [] } | to_entries[] | "\(.key)=\(.value)"' "$file")
         for client in $clients; do
@@ -326,6 +396,7 @@ function __add_or_update_role() {
             done
             if [[ ! $clientRoles == "" ]]; then 
                 echo $clientRoles
+                __keycloak_login
                 "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --rname $rolename --cclientid $clientid $clientRoles
             fi
         done
@@ -466,7 +537,11 @@ function __add_or_update_user() {
             composedRole=$(__get_role_from_exact "name" "$role")
             roles+="--rolename $role "
         done
-        "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --uusername $username $roles
+        if [[ ! $roles == "" ]]; then 
+            echo $roles
+            __keycloak_login
+            "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --uusername $username $roles
+        fi
         clients=$(jq -c -r '.clientRoles // { "defaultClient": [] } | to_entries[] | "\(.key)=\(.value)"' "$file")
         for client in $clients; do
             clientid=$(echo "$client" | cut -d'=' -f1)     # Extract the clientid
@@ -479,6 +554,7 @@ function __add_or_update_user() {
             done
             if [[ ! $clientRoles == "" ]]; then 
                 echo $clientRoles
+                __keycloak_login
                 "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles -r ${SIMVA_SSO_REALM} --uusername $username --cclientid $clientid $clientRoles
             fi
         done

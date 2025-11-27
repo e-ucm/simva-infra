@@ -1,11 +1,11 @@
-${SIMVA_HOME}/bin/purge-folder-contents.sh \
+${SIMVA_BIN_HOME}/purge-folder-contents.sh \
     "${SIMVA_DATA_HOME}/keycloak/extensions" \
     "${SIMVA_DATA_HOME}/keycloak/deployments" \
     "${SIMVA_DATA_HOME}/keycloak/kcadm" \
     "${SIMVA_CONFIG_HOME}/keycloak/simva-realm" \
     "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export"
 
-${SIMVA_HOME}/bin/purge-file-if-exist.sh \
+${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
     "${SIMVA_CONFIG_HOME}/keycloak/simva-env.sh" \
     "${SIMVA_CONFIG_HOME}/keycloak/realm-data.dev.yml" \
     "${SIMVA_CONFIG_HOME}/keycloak/realm-data.prod.yml" \
@@ -17,5 +17,5 @@ ${SIMVA_HOME}/bin/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/keycloak/simva-realm-export\.exportinprogress" \
     "${SIMVA_DATA_HOME}/keycloak/.migration"
 
-"${SIMVA_HOME}/bin/volumectl.sh" delete "kc_maria_db_data"
-"${SIMVA_HOME}/bin/volumectl.sh" delete "kc_maria_db_backup_data"
+"${SIMVA_BIN_HOME}/volumectl.sh" delete "kc_maria_db_data"
+"${SIMVA_BIN_HOME}/volumectl.sh" delete "kc_maria_db_backup_data"

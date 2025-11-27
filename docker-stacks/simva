@@ -56,7 +56,7 @@ function sourceEnvFile() {
 }
 
 sourceEnvFile
-DEPENDENCIES="find mkcert jq docker sha256sum curl git keytool htpasswd" # keytool to install via java-11-openjdk-devel
+DEPENDENCIES="find mkcert jq docker sha256sum curl git keytool htpasswd unzip dos2unix" # keytool to install via java-11-openjdk-devel
 DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME}"
 
 function getValueFromBackupFile() {
@@ -274,7 +274,7 @@ function version_gt () {
 function execute_before_hooks() {
     local phase=${1}
     shift
-    local folder="${SIMVA_HOME}/etc/hooks"
+    local folder="${SIMVA_ETC_HOME}/hooks"
     local stacks="${SIMVA_STACKS}"
     if [[ $# -gt 0 ]]; then
         stacks=$@
@@ -332,6 +332,7 @@ function execute_before_hooks() {
         export STACK_NAME="${stack##*-}"
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         local old_path=$PATH
         export PATH=$PATH:${STACK_HOME}/bin
         pushd ${STACK_HOME} >/dev/null 2>&1
@@ -398,7 +399,7 @@ function execute_before_hooks() {
 function execute_after_hooks() {
     local phase=${1}
     shift
-    local folder="${SIMVA_HOME}/etc/hooks"
+    local folder="${SIMVA_ETC_HOME}/hooks"
     local stacks="${SIMVA_STACKS}"
     if [[ $# -gt 0 ]]; then
         stacks=$@
@@ -409,6 +410,7 @@ function execute_after_hooks() {
         export STACK_NAME="${stack##*-}"
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         local old_path=$PATH
         export PATH=$PATH:${STACK_HOME}/bin
         pushd ${STACK_HOME} >/dev/null 2>&1
@@ -471,7 +473,7 @@ function execute_after_hooks() {
         export PATH=${old_path}
     done
 
-    folder="${SIMVA_HOME}/etc/hooks"
+    folder="${SIMVA_ETC_HOME}/hooks"
     case "${phase}" in
         "install")
             folder="${folder}/after-install.d"
@@ -539,6 +541,7 @@ function docker_compose_stacks() {
         export STACK_NAME="${stack##*-}"
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         local old_path=$PATH
         export PATH=$PATH:${STACK_HOME}/bin
         pushd ${STACK_HOME} >/dev/null 2>&1
@@ -664,6 +667,7 @@ function install() {
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
         export STACK_NAME="${stack##*-}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         setExecutable ${phase} ${stack}
         execute_before_hooks ${phase} ${stack}
         docker_compose_stacks "${stack}" "${wait_time}" "pull"
@@ -702,6 +706,7 @@ function uninstall() {
     for stack in ${reverse_stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         setExecutable ${phase} ${stack}
         execute_before_hooks ${phase} ${stack}
         docker_compose_stacks "${stack}" "${wait_time}" "down -v"
@@ -760,6 +765,7 @@ function upgrade() {
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
         export STACK_NAME="${stack##*-}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         echo "Upgrade ${stack} started"
         execute_before_hooks "migrate" ${stack}
         execute_before_hooks ${phase} ${stack}
@@ -768,6 +774,7 @@ function upgrade() {
         local stack_name="${stack##*-}"
         echo "Processing $stack_name versions..."
         if [[ -e "$version_file" ]]; then 
+            dos2unix $version_file
             local stack_name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
             local var_name="SIMVA_${stack_name_uppercase}_VERSION"
             local new_version=${!var_name}
@@ -872,6 +879,7 @@ function changeConfig() {
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
         export STACK_NAME="${stack##*-}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         execute_before_hooks "migrate" ${stack}
         execute_before_hooks ${phase} ${stack}
         install "${wait_time}" "true" "${stack}"
@@ -900,6 +908,7 @@ function migrateDomain() {
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
         setExecutable "migrate" ${stack}
         setExecutable ${phase} ${stack}
@@ -931,11 +940,34 @@ function backup() {
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
+        if [[ ! -d "${SIMVA_BACKUP_HOME}/${STACK_NAME}" ]]; then
+            mkdir -p "${SIMVA_BACKUP_HOME}/${STACK_NAME}"
+        fi
+        if [[ ! -f "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp" ]]; then
+            echo "NO_TIMESTAMP" > "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp"
+        fi
+        if [[ ! -f "${SIMVA_DATA_HOME}/${STACK_NAME}/.externaldomain" ]]; then 
+            install "${wait_time}" "true" $CURRENT_STACK;
+        fi 
         setExecutable ${phase} ${stack}
         execute_before_hooks ${phase} ${stack}
         execute_after_hooks ${phase} ${stack}
-    done 
+        source "${SIMVA_BIN_HOME}/backup-restore.sh"
+        sourceEnvFile
+        if [[ -d "${SIMVA_CONFIG_HOME}/${STACK_NAME}" ]]; then 
+            BACKUP_CONFIG_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/config"
+            backup_data "${SIMVA_CONFIG_HOME}/${STACK_NAME}" $BACKUP_CONFIG_DIR $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp") true
+            echo "✅ Backup completed: $BACKUP_CONFIG_DIR"
+        fi
+        if [[ -d "${SIMVA_DATA_HOME}/${STACK_NAME}" ]]; then 
+            BACKUP_DATA_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/datafiles"
+            backup_data "${SIMVA_DATA_HOME}/${STACK_NAME}" $BACKUP_DATA_DIR $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp") true true
+            echo "✅ Backup completed: $BACKUP_DATA_DIR"
+        fi
+        echo "$(date +"%Y-%m-%d_%H-%M-%S.%3N_%Z")" > "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp"
+    done
 }
 
 # migrate to a new External Domain for each stack
@@ -956,10 +988,25 @@ function restore() {
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
-        setExecutable ${phase} ${stack}
-        execute_before_hooks ${phase} ${stack}
-        execute_after_hooks ${phase} ${stack}
+        if [[ -f "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp" ]]; then 
+            setExecutable ${phase} ${stack}
+            execute_before_hooks ${phase} ${stack}
+            execute_after_hooks ${phase} ${stack}
+            source "${SIMVA_BIN_HOME}/backup-restore.sh"
+            sourceEnvFile
+            BACKUP_CONFIG_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/config"
+            if [[ -d "${BACKUP_CONFIG_DIR}" ]]; then 
+                restore_data $BACKUP_CONFIG_DIR "${SIMVA_CONFIG_HOME}/${STACK_NAME}" true
+                echo "✅ Backup $BACKUP_CONFIG_DIR restored!"
+            fi
+            BACKUP_DATA_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/datafiles"
+            if [[ -d "${BACKUP_DATA_DIR}" ]]; then 
+                restore_data $BACKUP_DATA_DIR "${SIMVA_DATA_HOME}/${STACK_NAME}" true true
+                echo "✅ Backup $BACKUP_DATA_DIR restored!"
+            fi
+        fi
     done 
 }
 
@@ -982,6 +1029,7 @@ function purge() {
     for stack in ${reverse_stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
         setExecutable ${phase} ${stack}
         execute_before_hooks ${phase} ${stack}
@@ -1030,6 +1078,7 @@ function start() {
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
         local stack_name="${stack##*-}"
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
@@ -1048,10 +1097,13 @@ function start() {
                 echo "new_external_domain: $new_external_domain"            
                 echo "A new external domain has been detected in simva-env.sh for stack $stack_name."
                 echo "A backup of your data is advised before migrate domain."
+                echo "A backup of your data will be done automatically before migrate domain."
                 if [[ $MIGRATEDOMAINCONFIRMED == "FALSE" ]]; then
                     read -p "Are you sure you want to migrate to this external domain ? (Y/N): " externalDomainConfirm && [[ $externalDomainConfirm == [yY] || $externalDomainConfirm == [yY][eE][sS] ]] || exit 1
                     export MIGRATEDOMAINCONFIRMED=$externalDomainConfirm
                 fi;
+                backup $wait_time $stack
+                echo "Backup done."
                 echo "Migrate domain of $stack_name..."
                 migrateDomain "${wait_time}" $stack
                 echo $new_external_domain > "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain"
@@ -1074,7 +1126,10 @@ function start() {
                     echo "new_version: $new_version"
                     echo "A new version has been detected in simva-env.sh for stack $stack_name."
                     echo "A backup of your data is advised before upgrade."
+                    echo "A backup of your data will be done automatically before upgrade."
                     read -p "Are you sure you want to upgrade to this version ? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+                    backup $wait_time $stack
+                    echo "Backup done."
                     echo "Upgrading $stack_name version..."
                     upgrade "${wait_time}" $stack
                 fi;
@@ -1090,6 +1145,7 @@ function start() {
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
         export STACK_NAME="${stack##*-}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         execute_after_hooks ${phase} ${stack}
         local stack_name="${stack##*-}"
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
@@ -1120,6 +1176,7 @@ function stop() {
     for stack in ${reverse_stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
         local stack_name="${stack##*-}"
         stack_name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
@@ -1171,6 +1228,7 @@ function setExecutable() {
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
         HooksFolder="${SIMVA_HOME}/${stack}/etc/hooks"
         folder="${HooksFolder}/helpers.d"
@@ -1242,7 +1300,7 @@ function setExecutable() {
             ;;
         esac
     done;
-    HooksFolder="${SIMVA_HOME}/etc/hooks"
+    HooksFolder="${SIMVA_ETC_HOME}/hooks"
     folder="${HooksFolder}/helpers.d"
     setExecutable_scripts_from_folder ${folder}
     case "${phase}" in
@@ -1294,7 +1352,7 @@ function setExecutable() {
             setExecutable_scripts_from_folder ${folder}
             folder="${HooksFolder}/after-start.d"
             setExecutable_scripts_from_folder ${folder}
-            folder="${SIMVA_HOME}/etc/entrypoint.d"
+            folder="${SIMVA_ETC_HOME}/entrypoint.d"
             setExecutable_scripts_from_folder ${folder}
         ;;
         "stop")
@@ -1312,7 +1370,7 @@ function setExecutable() {
             setExecutable_scripts_from_folder ${folder}
         ;;
     esac
-    folder="${SIMVA_HOME}/bin/"
+    folder="${SIMVA_BIN_HOME}/"
     setExecutable_scripts_from_folder ${folder}
 }
 
@@ -1328,6 +1386,7 @@ function log() {
     
     export STACK_HOME="${SIMVA_HOME}/${stack}"
     export CURRENT_STACK="${stack}"
+    export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
     export STACK_NAME="${stack##*-}"
     docker_compose_stacks "${stack}" "${wait_time}" logs -f --tail 100 $@
 }
@@ -1344,6 +1403,7 @@ function build() {
     
     export STACK_HOME="${SIMVA_HOME}/${stack}"
     export CURRENT_STACK="${stack}"
+    export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
     export STACK_NAME="${stack##*-}"
     export COMPOSE_BAKE=true
     docker_compose_stacks "${CURRENT_STACK}" "${wait_time}" build  --no-cache --pull $@

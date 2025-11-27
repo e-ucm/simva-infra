@@ -18,7 +18,7 @@ SIMVA_INFRA_FOLDER=$(dirname "$0")/
 tmp_dir=$(mktemp -d)
 echo $tmp_dir
 git clone --depth 1 --branch ${SIMVA_INFRA_GIT_REF} ${SIMVA_INFRA_GIT_REPO_URL} ${tmp_dir}
-rsync_opts="--exclude docker-stacks/data --exclude docker-stacks/config --exclude docker-stacks/etc/simva.d  --exclude docker-stacks/etc/simva.install.d/backup"
+rsync_opts="--exclude docker-stacks/backup --exclude docker-stacks/data --exclude docker-stacks/config --exclude docker-stacks/etc/simva.d  --exclude docker-stacks/etc/simva.install.d/backup"
 echo $rsync_opts
 if [[ $# -gt 1 ]]; then
     chown -R $2 $tmp_dir

@@ -1,3 +1,0 @@
-LIMESURVEY
-5-apache
-6-apache

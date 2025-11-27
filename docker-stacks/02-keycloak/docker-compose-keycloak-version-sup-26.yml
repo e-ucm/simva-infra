@@ -68,6 +68,9 @@ services:
       - KC_HTTPS_KEY_STORE_PASSWORD=changeit
       - SIMVA_CA_ALIAS=simvaCA
       - SIMVA_CA_FILE=/root/.keycloak/certs/ca/rootCA.pem
+      - KC_TRANSACTION_XA_TIMEOUT=600
+      - KC_TRANSACTION_XA_TIMEOUT_ENABLED=true
+
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/keycloak/providers

@@ -25,7 +25,7 @@ services:
       - mongodb
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_HOME}/bin/wait-available.sh:/bin/wait-available.sh:ro
+      - ${SIMVA_BIN_HOME}/wait-available.sh:/bin/wait-available.sh:ro
     entrypoint: bash -c "/bin/wait-available.sh 'Mongo DB' '${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}:27017' 'false' 'false' && /app/docker-run.sh"
     environment:
       MONGOKU_DEFAULT_HOST: "mongodb://${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}:27017"

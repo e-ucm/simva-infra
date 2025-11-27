@@ -1,0 +1,95 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+  limesurvey:
+    << : *default-opts
+    image: eucm/limesurvey:4.3.15-4 #4.6.3-2
+    entrypoint:
+      - '/bin/bash'
+      - '-c'
+      - '/container-tools/wait-for-it.sh -h $${LIMESURVEY_DB_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- /container-tools/wait-for-it.sh -h $${LIMESURVEY_SSO_HOST} -p 443 -t $${WAIT_TIMEOUT} -- /usr/bin/entrypoint $$@'
+    command:
+      - '--'
+      - '/usr/bin/server'
+      - 'start'
+    environment:
+      DEBUG: "${SIMVA_LIMESURVEY_DEBUG_ENTRYPOINT:-false}"
+      LIMESURVEY_DB_HOST: mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      LIMESURVEY_DB_NAME: ${SIMVA_LIMESURVEY_MYSQL_DATABASE:-limesurvey}
+      LIMESURVEY_DB_USER: ${SIMVA_LIMESURVEY_MYSQL_USER:-limesurvey}
+      LIMESURVEY_DB_PASSWORD: ${SIMVA_LIMESURVEY_MYSQL_PASSWORD:-password}
+      LIMESURVEY_ADMIN_USER: ${SIMVA_LIMESURVEY_ADMIN_USER:-admin}
+      LIMESURVEY_ADMIN_PASSWORD: ${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-secret}
+      LIMESURVEY_ADMIN_NAME: ${SIMVA_LIMESURVEY_ADMIN_NAME:-Simva Administrator}
+      LIMESURVEY_ADMIN_EMAIL: "${SIMVA_LIMESURVEY_ADMIN_EMAIL_USERNAME:-lime-dev}@${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      LIMESURVEY_SAML_PLUGIN_AUTH_SOURCE: "${SIMVA_LIMESURVEY_CLIENT_ID:-limesurvey}"
+      LIMESURVEY_SAML_PLUGIN_UID_MAPPING: "username"
+      SIMPLESAMLPHP_PATH: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}"
+      SIMPLESAMLPHP_SESSION_COOKIE_PATH: "/"
+      SIMPLESAMLPHP_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD:-password}"
+      SIMPLESAMLPHP_ENABLE_DEFAULT_VHOST: "true"
+      SIMPLESAMLPHP_INTERNAL_PROXY_HOSTNAME: "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      SIMPLESAMLPHP_ADMIN_PROTECT_INDEX_PAGE: "true"
+      MSMTP_HOST: "${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      MSMTP_FROM: "no-reply@${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMPLESAMLPHP_LOG_LEVEL: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_LOG_LEVEL:-INFO}"
+      SIMPLESAMLPHP_SP_NAME: "${SIMVA_LIMESURVEY_CLIENT_ID:-limesurvey}"
+      SIMPLESAMLPHP_SP_PRIVATE_KEY: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY:-example.key}
+      SIMPLESAMLPHP_SP_CERT: ${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT:-example.crt}
+      SIMPLESAMLPHP_SP_CERT_SUBJ: "${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_CERT_SUBJ:-/C=ES/ST=Madrid/L=Madrid/O=Universidad Complutense de Madrid/OU=e-UCM SIMVA/CN=${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}}"
+      SIMPLESAMLPHP_SP_IDP_ID: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}"
+      SIMPLESAMLPHP_SP_IDP_METADATA_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/protocol/saml/descriptor"
+      SIMPLESAMLPHP_SIGN_AUTHN_REQUESTS: "true"
+      SIMPLESAMLPHP_SIGN_LOGOUT_REQUESTS: "true"
+      SIMPLESAMLPHP_SIGN_REDIRECTS_REQUESTS: "true"
+      SIMPLESAMLPHP_ENCRYPTED_ASSERTIONS: "true"
+      LIMESURVEY_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}-data/config:/etc${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/etc${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH:-/simplesamlphp}/certs:ro
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/limesurvey/etc:/etc/limesurvey
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/limesurvey/data/plugins:/var/www/html/plugins
+      - ls_upload:/var/www/html/upload
+      - ls_tmp:/var/www/html/tmp
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -sS http://localhost:80 || exit 1"
+      interval: 60s
+      timeout: 20s
+      retries: 3
+    hostname: ${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.ls.loadbalancer.server.port=80"
+      - "traefik.http.routers.ls.rule=Host(`${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+
+volumes:
+  ls_upload:
+    external: true
+  ls_tmp:
+    external: true

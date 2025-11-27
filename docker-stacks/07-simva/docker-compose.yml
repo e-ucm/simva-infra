@@ -86,6 +86,10 @@ services:
       LIMESURVEY_EXTERNAL: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
       LIMESURVEY_ADMIN_USER: "${SIMVA_LIMESURVEY_ADMIN_USER:-admin}"
       LIMESURVEY_ADMIN_PASSWORD: "${SIMVA_LIMESURVEY_ADMIN_PASSWORD:-secret}"
+      LIMESURVEY_SECRET: "${SIMVA_LIMESURVEY_WEBHOOK_API_TOKEN:-secret}"
+      LIMESURVEY_HEADER_NAME: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_NAME:-X-Signature-SHA256}"
+      LIMESURVEY_HEADER_PREFIX: "${SIMVA_LIMESURVEY_WEBHOOK_HEADER_PREFIX:-}"
+      LIMESURVEY_VERSION_NUMBER: "${SIMVA_LIMESURVEY_VERSION_NUMBER:-5}"
       #SSO KEYCLOAK
       SSO_ENABLED: "true"
       SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
@@ -286,7 +290,7 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - simva_trace_allocator_logs:/home/node/logs:rw
       - simva_trace_allocator_data:${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-/data}
-      - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-trace-allocator.sh:/home/node/entrypoint.d/docker-startup.sh
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-certificate.sh:/home/node/entrypoint.d/docker-certificate.sh
     depends_on:

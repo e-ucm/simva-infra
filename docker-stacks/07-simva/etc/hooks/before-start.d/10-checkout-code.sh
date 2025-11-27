@@ -20,7 +20,7 @@ if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then
     fi
 fi
 
-source ${SIMVA_HOME}/bin/check-checksum.sh;
+source ${SIMVA_BIN_HOME}/check-checksum.sh;
 
 if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     SIMVA_API_GIT_REPO_URL=https://github.com/e-ucm/simva.git

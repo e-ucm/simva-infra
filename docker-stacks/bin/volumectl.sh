@@ -9,7 +9,7 @@ usage() {
   echo "  $0 restore <backup.tar.gz> <volume>"
   echo "  $0 migrate <local_dir> <volume>"
   echo "  $0 copyvl <volume> <local_dir> <volume_file> <local_file> [compress]"
-  echo "  $0 copylv <local_dir> <volume> <local_file> <volume_file> [extract]"
+  echo "  $0 copylv <local_dir> <volume> <local_file> <volume_file> <volume_dest> [extract]"
   echo "  $0 copyvv <volume> <new_volume>"
   echo "  $0 exec <volume> <volume_local_path> <command to execute>"
   echo "  $0 delete <volume>"
@@ -20,7 +20,12 @@ usage() {
 backup_volume() {
   local volume=$1
   local output_folder=$2
-  local output_file=${3:-"${volume}.tar.gz"}
+  local last_backup_timestamp="${3:-}"  # date
+  local output_file="${4:-"${volume}.tar.gz"}"
+  
+  if [[ $last_backup_timestamp == "" ]]; then
+    last_backup_timestamp="$(date +"%Y-%m-%d_%H-%M-%S.%3N_%Z")"
+  fi
 
   if ! docker volume inspect "$volume" >/dev/null 2>&1; then
     echo "❌ Volume '$volume' does not exist."
@@ -32,8 +37,10 @@ backup_volume() {
       echo "📦 Previous backup detected at $output_path"
 
       # Create timestamped subfolder
-      OLD_DIR="$output_folder/old_$(date +%Y%m%d_%H%M%S)"
-      mkdir -p "$OLD_DIR"
+      OLD_DIR="$output_folder/../old/${last_backup_timestamp}/$(basename "$output_folder")"
+      if [[ ! -e "$OLD_DIR" ]]; then
+        mkdir -p "$OLD_DIR"
+      fi
 
       # Move old backup
       mv "$output_path" "$OLD_DIR/"
