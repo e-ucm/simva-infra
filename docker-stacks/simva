@@ -1069,7 +1069,7 @@ function start() {
     local phase="start"
     for stack in ${stacks}; do
         local stack_name="${stack##*-}"
-        if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain" ]]; then
+        if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
             install "${wait_time}" "true" $stack;
         fi
     done
@@ -1138,6 +1138,9 @@ function start() {
             fi;
         fi;
         docker_compose_stacks "${stack}" "${wait_time}" "up -d --remove-orphans"
+        if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
+            wait_time=$previous_wait_time;
+        fi
         docker volume prune -f
         docker image prune -f
     done
@@ -1146,10 +1149,18 @@ function start() {
         export CURRENT_STACK="${stack}"
         export STACK_NAME="${stack##*-}"
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
+        if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
+            previous_max_retries=$SIMVA_MAX_RETRIES;
+            previous_simva_wait_time=$SIMVA_WAIT_TIME;
+            export SIMVA_MAX_RETRIES=$(($previous_max_retries*2));
+            export SIMVA_WAIT_TIME=$(($previous_simva_wait_time*2));
+            echo "${stack} it is not initialized, this launch will take longer than normal."
+        fi
         execute_after_hooks ${phase} ${stack}
         local stack_name="${stack##*-}"
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
-            wait_time=$previous_wait_time;
+            export SIMVA_MAX_RETRIES=$previous_max_retries;
+            export SIMVA_WAIT_TIME=$previous_simva_wait_time;
             touch "${SIMVA_DATA_HOME}/${stack_name}/.initialized"
         fi
     done;
