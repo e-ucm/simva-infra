@@ -81,7 +81,7 @@ restore_data() {
     local first_depth="${4:-false}"  # optional: true|false, default false
     # Check if the user provided an argument
     if [[ -z "$target" || -z "$input" ]]; then
-        echo "Usage: $0 <input> <target> [extract]"
+        echo "Usage: $0 <input> <target> [extract] [first_depth]"
         exit 1
     fi
 
