@@ -39,6 +39,7 @@ export SIMVA_PORTAINER_VERSION="latest"
 #Git reference branch
 export CSP_REPORTER_GIT_REF="master"
 
+export SIMVA_DEVELOPMENT_LOCAL="false"
 branch="dev"
 export SIMVA_API_GIT_REF=$branch
 export SIMVA_FRONT_GIT_REF=$branch
@@ -66,9 +67,8 @@ export SIMVA_WHOAMI_HOST_SUBDOMAIN="whoami"
 export SIMVA_NGINX_HOST_SUBDOMAIN="nginx"
 export SIMVA_WHOAMI_NGINX_HOST_SUBDOMAIN="nginx-whoami"
 export SIMVA_CSP_REPORTER_HOST_SUBDOMAIN="csp-reporter"
-#Limesurvey host
-export SIMVA_PHPMYADMIN_KC_HOST_SUBDOMAIN="phpmyadmin-kc"
-export SIMVA_PHPMYADMIN_LS_HOST_SUBDOMAIN="phpmyadmin-ls"
+#PHPMYADMIN host for Keycloak and Limesurvey
+export SIMVA_PHPMYADMIN_HOST_SUBDOMAIN="phpmyadmin"
 #KAFKA
 export SIMVA_KAFKA_UI_HOST_SUBDOMAIN="kafka-ui"
 export SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN="zoonavigator"

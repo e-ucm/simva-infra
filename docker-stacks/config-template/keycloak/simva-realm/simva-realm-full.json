@@ -1234,7 +1234,8 @@
             "access.token.claim": "true",
             "claim.name": "realm_access.roles",
             "jsonType.label": "String",
-            "multivalued": "true"
+            "multivalued": "true",
+            "userinfo.token.claim": "true"
           }
         },
         {
@@ -1256,7 +1257,8 @@
             "access.token.claim": "true",
             "claim.name": "resource_access.${client_id}.roles",
             "jsonType.label": "String",
-            "multivalued": "true"
+            "multivalued": "true",
+            "userinfo.token.claim": "true"
           }
         }
       ]

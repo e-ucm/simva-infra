@@ -1,4 +1,6 @@
 .version
 .externaldomain
 .initialized
+.initializedSSL
 .initializedRemoteControl
+plugins

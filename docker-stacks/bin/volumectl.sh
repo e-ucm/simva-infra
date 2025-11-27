@@ -9,7 +9,7 @@ usage() {
   echo "  $0 restore <backup.tar.gz> <volume>"
   echo "  $0 migrate <local_dir> <volume>"
   echo "  $0 copyvl <volume> <local_dir> <volume_file> <local_file> [compress]"
-  echo "  $0 copylv <local_dir> <volume> <local_file> <volume_file> [extract]"
+  echo "  $0 copylv <local_dir> <volume> <local_file> <volume_file> <volume_dest> [extract]"
   echo "  $0 copyvv <volume> <new_volume>"
   echo "  $0 exec <volume> <volume_local_path> <command to execute>"
   echo "  $0 delete <volume>"

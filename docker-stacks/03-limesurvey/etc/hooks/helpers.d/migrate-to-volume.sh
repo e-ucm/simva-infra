@@ -7,6 +7,7 @@ declare -A folders_volumes=(
   ["${SIMVA_DATA_HOME}/limesurvey/mariadb"]="ls_maria_db_data"
   ["${SIMVA_DATA_HOME}/limesurvey/mariadb-dump"]="ls_maria_db_backup_data"
   ["${SIMVA_DATA_HOME}/limesurvey/data/upload"]="ls_upload"
+  ["${SIMVA_CONFIG_HOME}/limesurvey/etc"]="ls_etc"
   ["${SIMVA_DATA_HOME}/limesurvey/data/tmp"]="ls_tmp"
 )
 
@@ -79,3 +80,22 @@ if [[ -d "${SIMVA_DATA_HOME}/limesurvey/data/upload" ]]; then
   rm -rf "${SIMVA_DATA_HOME}/limesurvey/data/upload"
 fi
 
+if [[ -d "${SIMVA_CONFIG_HOME}/limesurvey/etc" ]]; then
+  if [[ -f "${SIMVA_CONFIG_HOME}/limesurvey/etc/config.php" ]]; then
+    "${SIMVA_BIN_HOME}/volumectl.sh" copylv "${SIMVA_CONFIG_HOME}/limesurvey/etc" "ls_etc" "config.php" "config.php" false
+  fi
+  if [[ -f "${SIMVA_CONFIG_HOME}/limesurvey/etc/security.php" ]]; then
+    "${SIMVA_BIN_HOME}/volumectl.sh" copylv "${SIMVA_CONFIG_HOME}/limesurvey/etc" "ls_etc" "security.php" "security.php" false
+  fi
+  "${SIMVA_BIN_HOME}/volumectl.sh" exec "ls_etc" "/ls_etc" "
+    # Set ownership recursively
+    chown -R 33:33 /ls_etc;
+
+    # Directories -> 755 (rwxr-xr-x)
+    find /ls_etc -type d -print0 | xargs -0 chmod 755;
+
+    # Files -> 664 (rw-rw-r--)
+    find /ls_etc -type f -print0 | xargs -0 chmod 664;
+    ls -lia /ls_etc
+  "
+fi
