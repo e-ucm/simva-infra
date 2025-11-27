@@ -84,6 +84,7 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
     password: "${user_password}"
 EOF
             echo "Setting password for username ${user_username}"
+            __keycloak_login
             "${SIMVA_BIN_HOME}/run-command.sh" /opt/keycloak/bin/kcadm.sh set-password -r ${SIMVA_SSO_REALM} --username $user_username --new-password $user_password
             echo "Setting password for username ${user_username} done"
         done
