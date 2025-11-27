@@ -1,0 +1,17 @@
+{
+    "id" : "d22fe280-ad59-46ab-90a4-89049e9518a6",
+    "createdTimestamp" : 1592588089565,
+    "username" : "{{ .users.researcher.username }}",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Researcher",
+    "lastName" : "Researcher",
+    "email" :  "{{ .users.researcher.username }}@{{ .clients.simva.externalDomain }}",
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "researcher" ],
+    "clientRoles" : {},
+    "notBefore" : 0,
+    "groups" : [ ]
+  }

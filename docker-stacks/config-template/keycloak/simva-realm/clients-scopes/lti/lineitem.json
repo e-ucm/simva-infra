@@ -1,0 +1,10 @@
+{
+  "id": "3c64e095-0256-4b48-97de-ead68af607bf",
+  "name": "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
+  "description": "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
+  "protocol": "openid-connect",
+  "attributes": {
+    "include.in.token.scope": "true",
+    "display.on.consent.screen": "true"
+  }
+}

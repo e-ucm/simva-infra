@@ -3,7 +3,7 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 SIMVA_DOZZLE_PASSWORD_HASHED=$(echo -n $SIMVA_DOZZLE_PASSWORD | sha256sum | awk '{print $1}')
-config_contents=$(<"${SIMVA_CONFIG_HOME}/logs/dozzle-config-template/users.yml")
+config_contents=$(<"${SIMVA_CONFIG_TEMPLATE_HOME}/logs/dozzle-config/users.yml")
 echo "${config_contents}" \
     | sed  "s/<<SIMVA_DOZZLE_USERNAME>>/${SIMVA_DOZZLE_USERNAME}/g" \
     | sed  "s/<<SIMVA_DOZZLE_PASSWORD>>/${SIMVA_DOZZLE_PASSWORD_HASHED}/g" \

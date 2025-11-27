@@ -1,0 +1,99 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    external: true
+
+services:
+# XXX: Explore options to protect /admin
+# see: https://www.keycloak.org/docs/latest/server_admin/#admin-endpoints-and-console
+# XXX Improve healthcheck
+# see: https://issues.redhat.com/browse/KEYCLOAK-1578, https://github.com/thomasdarimont/keycloak-health-checks/
+  keycloak:
+    << : *default-opts
+    image: ${SIMVA_KEYCLOAK_IMAGE:-quay.io/keycloak/keycloak}:${SIMVA_KEYCLOAK_VERSION:-26.1.3}
+    entrypoint:
+      - '/bin/bash'
+      - '-c'
+      - '/container-tools/wait-for-it.sh -h $${KC_DB_URL_HOST} -p 3306 -t $${WAIT_TIMEOUT} -- /opt/keycloak/bin/kc.sh build && /opt/keycloak/bin/kc.sh start --optimized'
+    environment:
+      # Hostname
+      - KC_HOSTNAME=${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      # HTTP
+      - KC_HTTP_ENABLED=true
+      - KC_HTTP_HOST=0.0.0.0
+      - HTTP_ADDRESS_FORWARDING=true
+      # PROXY
+      - KC_PROXY_HEADERS=xforwarded
+      - PROXY_ADDRESS_FORWARDING=true
+      # Health and metrics
+      - KC_HEALTH_ENABLED=false
+      - KC_METRICS_ENABLED=false
+      # Log level
+      - KC_LOG_LEVEL=${SIMVA_SSO_LOG_LEVEL:-info}
+      # Database
+      - KC_DB=mariadb
+      - KC_DB_URL_HOST=mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      - KC_DB_URL_DATABASE=${SIMVA_KEYCLOAK_MYSQL_DATABASE:-keycloak}
+      - KC_DB_USER=${SIMVA_KEYCLOAK_MYSQL_USER:-keycloak}
+      - KC_DB_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_PASSWORD:-password}
+      # Wait Timeout for DB
+      - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-240}
+      # Master Realm + Admin user
+      - KC_REALM_NAME=master
+      - KC_BOOTSTRAP_ADMIN_USERNAME=${SIMVA_KEYCLOAK_TMP_ADMIN_USER:-admin_tmp}
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
+      #SIMVA Realm theme
+      - KC_SPI_THEME_DEFAULT=simva
+      - KC_SIMVA_FRONT_URL=${SIMVA_EXTERNAL_PROTOCOL:-https}://${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      - SIMVA_API_URL=${SIMVA_EXTERNAL_PROTOCOL:-https}://${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}
+      - SIMVA_API_ADMIN_USERNAME=${SIMVA_API_ADMIN_USERNAME:-admin}
+      - SIMVA_API_ADMIN_PASSWORD=${SIMVA_API_ADMIN_PASSWORD:-password}
+      - KEYCLOAK_TOKEN_URL=https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/protocol/openid-connect/token
+      - KEYCLOAK_CLIENT_CLIENT_ID=${SIMVA_KEYCLOAK_CLIENT_CLIENT_ID:-keycloak-client}
+      - KEYCLOAK_CLIENT_CLIENT_SECRET=${SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET:-secret}
+      - JDK_TRUSTORE=/usr/lib/jvm/java-21-openjdk-21.0.6.0.7-1.el9.x86_64/lib/security/cacerts
+      - JDK_TRUSTORE_PASSWORD=changeit
+      - KC_HTTPS_KEY_STORE=/root/.keycloak/certs/${SIMVA_KEYCLOAK_CERT_FILENAME}
+      - KC_HTTPS_KEY_STORE_PASSWORD=changeit
+      - SIMVA_CA_ALIAS=simvaCA
+      - SIMVA_CA_FILE=/root/.keycloak/certs/ca/rootCA.pem
+      - KC_TRANSACTION_XA_TIMEOUT=600
+      - KC_TRANSACTION_XA_TIMEOUT_ENABLED=true
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/keycloak/providers
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm/:/opt/keycloak/data/simva-realm-filled/:ro
+      - ${SIMVA_CONFIG_TEMPLATE_HOME:-/home/vagrant/docker-stacks/config-template}/keycloak/simva-realm/:/opt/keycloak/data/simva-realm/:ro
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/:/opt/keycloak/data/export/:rw
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/root/.keycloak/certs/:ro
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-rootCA.sh:/root/.keycloak/entrypoint.d/docker-startup.sh
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+    hostname: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      # Service
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      # Router
+      - "traefik.http.routers.keycloak.rule=Host(`${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"

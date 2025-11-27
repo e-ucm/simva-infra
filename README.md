@@ -34,14 +34,31 @@ This repository allows you to launch a complete ***SIMVA*** environment.
 
 ### Steps:
 1. Clone this repository
-2. Open a terminal in the cloned directory and run `vagrant up`
+1. Change the git branch to choosen branch.
+1. Open a terminal in the cloned directory and change directory to vagrant directory using command `cd ./vagrant`.
+1. Verify that you have latest [Vagrant](https://vagrantup.com) (✅ tested with Vagrant Version: Vagrant 2.4.9) and  [VirtualBox](https://www.virtualbox.org/) (✅ tested with VBoxManage Version: 7.2.2r170484) or install them running `./1-install-virtualbox-vagrant.ps1` in Windows or `./1-install-virtualbox-vagrant.sh` in Mac or Linux machine.
+1. Run `./2-run-vagrant-image.ps1 -Provision` in Windows or `./2-run-vagrant-image.sh --provision` in Mac or Linux machine.
 > Note: The first time you run this command it will take a long time because Vagrant needs to download, aprovision and install the base required software.
-3. run `vagrant ssh` to get inside VM
-4. run `cd docker-stacks`
-5. run `./simva install`
-> Note: The first time you run this command it will take a long time because it is required to download all docker images required for SIMVA.
-6. run `./simva start` to start all containers.
-> Note: The first time you run this command it will take a long time because all componentes need to initialize.
+> Note: You can configure the RAM and CPU of the VM corresponding of your own computer with the parameters : `--Memory <int> --CPU <int>` in Windows (by default : 8196=8Go and 8) or `--memory <int> --CPU <int>` in Mac or Linux machine (by default : 4096=4Go and 8).
+1. Inside VM, run `cd ./simva-infra/docker-stacks/ && sudo su` and run `./simva start` to start all containers.
+> Note: The first time you run this command it will take a long time because all components need to initialize.
+
+## Local development connect to simva server
+
+ To launch VSCode Server, you can use VSCode running `./3-run-vscode-vagrant.ps1` in Windows or `./3-run-vscode-vagrant.sh` in MacOS or Linux.
+
+## Stopping and reloading the VM 
+
+To stop the VM, run `./2-run-vagrant-image.ps1 -Stop` in Windows or `./2-run-vagrant-image.sh --stop` in MacOS or Linux .
+To reload the VM, Run `./2-run-vagrant-image.ps1 -Reload` in Windows or `./2-run-vagrant-image.sh --reload` in MacOS or Linux.
+
+## Notes
+
+By default Vagrant maps the following ports:
+- 8080 (host) -> 80 (guest)
+- 8443 (host) -> 443 (guest)
+
+To simplify things you may want to apply the following instructions in order to map to regular ports using the OS firewall / capabilities.
 
 # Acknowledgements
 

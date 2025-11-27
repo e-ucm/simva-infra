@@ -1,0 +1,48 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+  shlink:
+    << : *default-opts
+    image: ${SIMVA_SHLINK_IMAGE:-ghcr.io/shlinkio/shlink}:${SIMVA_SHLINK_VERSION:-stable}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - shlink_db:/etc/shlink/data
+      - shlink_config:/etc/shlink/config
+    environment:
+      DEFAULT_DOMAIN: ${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}
+      IS_HTTPS_ENABLED: true
+      TIMEZONE: ${SIMVA_TIMEZONE:-Europe/Madrid}
+      INITIAL_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
+    hostname: ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.shlink.loadbalancer.server.port=8080"
+      - "traefik.http.routers.shlink.rule=Host(`${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}`)"
+
+volumes:
+  shlink_db:
+    external: true
+  shlink_config:
+    external: true

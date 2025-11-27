@@ -21,7 +21,7 @@ networks:
 services:
   dozzle:
     << : *default-opts
-    image: ${SIMVA_DOZZLE_IMAGE:-amir20/dozzle}:${SIMVA_DOZZLE_VERSION:-latest}
+    image: ${SIMVA_LOGS_IMAGE:-amir20/dozzle}:${SIMVA_LOGS_VERSION:-8.10.3}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONFIG_HOME}/logs/dozzle-config/users.yml:/data/users.yml:ro

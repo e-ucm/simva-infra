@@ -1,0 +1,57 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    external: true
+  kafka_services:
+    name: "${SIMVA_KAFKA_NETWORK:-kafka_services}"
+
+## based on https://github.com/simplesteph/kafka-stack-docker-compose/blob/master/full-stack.yml
+services:
+  schema-registry:
+    << : *default-opts
+    image: ${SIMVA_KAFKA_SCHEMA_REGISTRY_IMAGE:-confluentinc/cp-schema-registry}:${SIMVA_KAFKA_VERSION:-7.8.0}
+    depends_on:
+      - kafka1
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    hostname: schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      kafka_services:
+        aliases:
+          - schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+  kafka-rest-proxy:
+    image: ${SIMVA_KAFKA_REST_IMAGE:-confluentinc/cp-kafka-rest}:${SIMVA_KAFKA_VERSION:-7.8.0}
+    environment:
+      KAFKA_REST_LISTENERS: http://0.0.0.0:8086/
+      KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085/
+      KAFKA_REST_HOST_NAME: kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092
+    depends_on:
+      - kafka1
+      - schema-registry
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    hostname: kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}

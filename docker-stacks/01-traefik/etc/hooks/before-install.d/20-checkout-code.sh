@@ -42,4 +42,3 @@ if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
     rsync -avh --delete --itemize-changes ${rsync_opts} ${tmp_dir}/ ${SIMVA_DATA_HOME}/traefik/csp-reporter/ > /dev/null 2>&1
     chmod -R 777 ${SIMVA_DATA_HOME}/traefik/csp-reporter/
 fi
-chmod -R 777 ${SIMVA_DATA_HOME}/traefik/csp-reporter

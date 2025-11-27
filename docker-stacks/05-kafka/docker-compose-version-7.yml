@@ -1,0 +1,150 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    external: true
+  kafka_services:
+    name: "${SIMVA_KAFKA_NETWORK:-kafka_services}"
+
+## based on https://github.com/simplesteph/kafka-stack-docker-compose/blob/master/full-stack.yml
+services:
+
+###
+### It is possible to use all conflueninc products during development if you just use 1 broker
+### https://docs.confluent.io/current/control-center/installation/licenses.html#developer-license
+###
+### So it is possible to use Confluentinc control center during development.
+
+# https://community.cloudera.com/t5/Support-Questions/Kafka-Best-Practices-KAFKA-JVM-PERFORMANCE-OPTS/td-p/207143
+# http://kafka.apache.org/documentation.html#java
+
+  kafka1:
+    << : *default-opts
+    image: ${SIMVA_KAFKA_IMAGE:-confluentinc/cp-kafka}:${SIMVA_KAFKA_VERSION:-7.8.0}
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://0.0.0.0:19092,LISTENER_DOCKER_EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092,LISTENER_DOCKER_EXTERNAL://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      #KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      #KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      #KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      #KAFKA_JMX_PORT: 9101
+      #KAFKA_JMX_HOSTNAME: kafka.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      # Replace CLUSTER_ID with a unique base64 UUID using "bin/kafka-storage.sh random-uuid"
+      # See https://docs.confluent.io/kafka/operations-tools/kafka-tools.html#kafka-storage-sh
+      CLUSTER_ID: "${KAFKA_CLUSTER_ID:-ITHASTOBEGENERATEDBEFORE}"
+      #KAFKA_BROKER_ID: 1
+      #KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      # WARN: this is for demo / dev purposes
+      #KAFKA_HEAP_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - kafka_data:/var/lib/kafka/data:rw
+    hostname: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      kafka_services:
+        aliases:
+          - kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+  connect:
+    << : *default-opts
+    image: ${SIMVA_KAFKA_CONNECT_IMAGE:-cnfldemos/kafka-connect-datagen}:${SIMVA_KAFKA_CONNECT_VERSION:-0.6.4-7.6.0}
+    command: >
+      bash -c "
+        confluent-hub install --no-prompt ${SIMVA_CONFLUENCE_CONNECT_S3_REPO:-confluentinc/kafka-connect-s3}:${SIMVA_CONFLUENCE_CONNECT_S3_VERSION:-11.0.1}
+        # Add extra jar files to all storage plugins
+        cp -a /usr/share/simva/kafka-connect-storage-common/* /usr/share/confluent-hub-components/confluentinc-kafka-connect-s3/lib/;
+        # Run
+        exec /etc/confluent/docker/run;"
+    environment:
+      KAFKA_VERSION: ${SIMVA_KAFKA_VERSION:-7.8.0}
+      # Bootstrap options
+      # NOTE: To avoid to change the sourcecode we modify the JDK truststore so the AWS S3 client can connect to minio using a self-signed certificate
+      JDK_TRUSTORE: "/usr/lib/jvm/java-11-zulu-openjdk-ca/lib/security/cacerts"
+      JDK_TRUSTORE_PASSWORD: "changeit"
+      SIMVA_CA_ALIAS: "simvaCA"
+      SIMVA_CA_FILE: "/usr/share/simva/ca/rootCA.pem"
+
+      # Kafka connect options
+      CONNECT_BOOTSTRAP_SERVERS: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092"
+      CONNECT_REST_PORT: 8083
+      CONNECT_LISTENERS: http://0.0.0.0:8083
+
+      CONNECT_GROUP_ID: "connect-cluster"
+      CONNECT_PRODUCER_CLIENT_ID: "connect-worker-producer"
+
+      CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: connect-status
+
+      CONNECT_REPLICATION_FACTOR: 1
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
+      CONNECT_PLUGIN_PATH: '/usr/share/java,/etc/kafka-connect/jars,/usr/share/confluent-hub-components'
+
+      # Reduce Connect memory utilization
+      KAFKA_HEAP_OPTS: "-Xms256M -Xmx512M"
+      # https://github.com/confluentinc/cp-demo/blob/${SIMVA_KAFKA_VERSION:-5.5.0}-post/docker-compose.yml
+      KAFKA_JVM_PERFORMANCE_OPTS: -server -XX:+UseG1GC -XX:GCTimeRatio=1
+                  -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20
+                  -XX:MaxGCPauseMillis=10000 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent
+                  -XX:MaxInlineLevel=15 -Djava.awt.headless=true
+
+      #CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      #CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      # kafka-connect plugins have their own classpath, so it is required to add manually extensions to storage
+      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/connect/kafka-connect-storage-common:/usr/share/simva/kafka-connect-storage-common
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/connect:/usr/share/simva
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/usr/share/simva/ca
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-rootCA.sh:/usr/share/entrypoint.d/docker-startup.sh
+    depends_on:
+      - kafka1
+      - schema-registry
+    hostname: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+volumes:
+  kafka_data:
+    external: true

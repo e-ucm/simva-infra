@@ -1,0 +1,83 @@
+[global]
+  checkNewVersion = false
+  sendAnonymousUsage = false
+
+[ping]
+  entryPoint = "ping"
+
+[api]
+  dashboard = true
+
+[providers]
+  [providers.file]
+    directory = "/etc/traefik/dynamic-config"
+    watch = true
+
+  [providers.docker]
+    exposedByDefault = false
+    watch = true
+    endpoint = "tcp://socket-proxy.{{ .Env.SIMVA_INTERNAL_DOMAIN }}:2375"
+    network = "{{ .Env.SIMVA_SERVICE_NETWORK }}"
+    defaultRule = "Host(`{{ "{{" }} .Name {{ "}}" }}.{{.Env.SIMVA_EXTERNAL_DOMAIN }}`)"
+
+# ---------------------------
+# Middlewares
+# ---------------------------
+[http.middlewares]
+  [http.middlewares.secHeaders.headers]
+    # ---------------------------
+    # Security headers
+    # ---------------------------
+    contentTypeNosniff = true
+
+    # ---------------------------
+    # Framing
+    # ---------------------------
+    frameDeny = false   # disabled because you’re using ALLOW-FROM and frame-ancestors in contentSecurityPolicy
+    customFrameOptionsValue = "ALLOW-FROM https://${SIMVA_EXTERNAL_DOMAIN:-external.test}" 
+
+    # ---------------------------
+    # CSP
+    # ---------------------------
+    contentSecurityPolicy = "frame-src 'self' https://{{.Env.SIMVA_EXTERNAL_DOMAIN }} https://*.{{.Env.SIMVA_EXTERNAL_DOMAIN }}; frame-ancestors 'self' https://{{.Env.SIMVA_EXTERNAL_DOMAIN }} https://*.{{.Env.SIMVA_EXTERNAL_DOMAIN }}; object-src 'none'; {{.Env.SIMVA_TRAEFIK_EXTRA_CSP_POLICY }}"
+
+# ---------------------------
+# EntryPoints
+# ---------------------------
+[entryPoints]
+    [entryPoints.ping]
+        address = ":8082"
+
+  [entryPoints.web]
+    address = ":80"
+    [entryPoints.web.http.redirections]
+      [entryPoints.web.http.redirections.entryPoint]
+        to = "websecure"
+        scheme = "https"
+        permanent = true
+    [entryPoints.web.forwardedHeaders]
+      trustedIPs = [ "{{ .Env.SIMVA_LOAD_BALANCER_IPS }}" ]
+
+  [entryPoints.websecure]
+    address = ":443"
+    [entryPoints.websecure.http.middlewares]
+      middlewares = ["secHeaders@file"]   # ✅ Global middleware
+    [entryPoints.websecure.http.tls]
+
+# ---------------------------
+# TLS + Transport
+
+# ---------------------------
+[serversTransport]
+  insecureSkipVerify = {{ .Env.SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY }}
+  rootcas = [ "{{ .Env.SIMVA_SSL_ROOT_CAS }}" ]
+
+# ---------------------------
+# Logging
+# ---------------------------
+[log]
+  level = "{{ .Env.SIMVA_TRAEFIK_LOG_LEVEL }}"
+  format = "json"
+
+[accesslog]
+  format = "json"

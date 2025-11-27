@@ -2,12 +2,19 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-minioDataFolder="${SIMVA_DATA_HOME}/minio"
-format=$(cat "$minioDataFolder/.minio.sys/format.json" | jq '.format')
-if [[ ! -e "$minioDataFolder/migration-in-progress-fs-to-xl" ]] && [[ $format == '"fs"' ]]; then
-    mkdir "$minioDataFolder-mig/"
-    touch "$minioDataFolder/migration-in-progress-fs-to-xl"
-    mv "$minioDataFolder/.minio.sys/" "$minioDataFolder-mig/"
-    mv "$minioDataFolder/${SIMVA_TRACES_BUCKET_NAME}/" "$minioDataFolder-mig/"
-    mv "$minioDataFolder/minio-initialized" "$minioDataFolder-mig/minio-initialized"
+# Define folders and corresponding volumes
+declare -A folders_volumes=(
+  ["${SIMVA_DATA_HOME}/minio"]="minio_data"
+)
+
+for folder in "${!folders_volumes[@]}"; do
+    volume="${folders_volumes[$folder]}"
+    "${SIMVA_BIN_HOME}/volumectl.sh" migrate "$folder" "$volume"
+done
+
+minioFolder="${SIMVA_DATA_HOME}/minio"
+format=$(${SIMVA_BIN_HOME}/volumectl.sh exec "minio_data" "/vol" cat "/vol/.minio.sys/format.json" | jq '.format')
+if [[ ! -e "$minioFolder/.migration-in-progress-fs-to-xl" ]] && [[ $format == '"fs"' ]]; then
+    touch "$minioFolder/.migration-in-progress-fs-to-xl"
+    "${SIMVA_BIN_HOME}/volumectl.sh" migrate "minio_data" "minio_mig_data"
 fi

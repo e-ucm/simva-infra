@@ -56,34 +56,6 @@ services:
       - '/bin/sh'
       - '-c'
       - |
-        mkdir -p /etc/traefik/dynamic-config;
-        cat << 'EOF' > /etc/traefik/dynamic-config/file-provider.toml
-        [[tls.certificates]]
-          certFile = "/etc/traefik/ssl/traefik-fullchain.pem"
-          keyFile = "/etc/traefik/ssl/traefik-key.pem"
-          stores = ["default"]
-
-        [tls.stores]
-          [tls.stores.default]
-            [tls.stores.default.defaultCertificate]
-              certFile = "/etc/traefik/ssl/traefik-fullchain.pem"
-              keyFile  = "/etc/traefik/ssl/traefik-key.pem"
-
-        [tls.options]
-          [tls.options.default]
-            minVersion = "VersionTLS12"
-
-        [http.middlewares]
-          [http.middlewares.dashboardAuth.basicAuth]
-            # admin:password
-            users = [
-              "${SIMVA_TRAEFIK_DASHBOARD_USER:?Traefik dashboard username must be configured}:${SIMVA_TRAEFIK_DASHBOARD_HASHED_PASSWORD:?Traefik dashboard password must be configured}"
-            ]
-          [http.middlewares.secHeaders.headers]
-            contentTypeNosniff = true
-            customFrameOptionsValue = "ALLOW-FROM https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-            contentSecurityPolicy = "frame-src 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN:-external.test} https://*.${SIMVA_EXTERNAL_DOMAIN:-external.test}; object-src 'none'; ${SIMVA_TRAEFIK_EXTRA_CSP_POLICY}"
-        EOF
         exec /entrypoint.sh "$$@"
     command:
       - "--"
@@ -107,14 +79,18 @@ services:
           - "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       traefik_services:
         aliases:
+          - "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}-lb.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
           - "${SIMVA_TRAEFIK_HOST_SUBDOMAIN:-traefik}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
           - "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-          - "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"  
           - "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-          - "${SIMVA_JUPYTER_HOST_SUBDOMAIN:-jupyter}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"  
+          - "${SIMVA_SHLINK_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN:-tmon}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       traefik_admin:
         aliases:
           - "socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}"

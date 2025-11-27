@@ -1,0 +1,19 @@
+{
+    "id" : "102f1cde-078c-4253-8d1c-25689602c773",
+    "createdTimestamp" : 1592586858577,
+    "username" :  "{{ .users.teacher.username }}",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "teacher",
+    "lastName" : "Teacher",
+    "email" :  "{{ .users.teacher.username }}@{{ .clients.simva.externalDomain }}",
+    "attributes" : {
+    },
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "teacher" ],
+    "clientRoles" : {},
+    "notBefore" : 0,
+    "groups" : [ ]
+}
