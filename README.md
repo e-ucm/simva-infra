@@ -1,27 +1,38 @@
-# SIMple VAlidation (SIMVA)
+# ***SIMVA*** INFRASTRUCTURE WIKI
+
+# ***SIM***ple ***VA***lidation (***SIMVA***)
 [![SIMVA](https://raw.githubusercontent.com/e-ucm/simva-infra/master/.github/logo.svg?sanitize=true)](https://github.com/e-ucm/simva/)
 
-SIMVA is a tool that helps Serious Games (SGs) developers / researchers to validate the efectiveness of SGs and to facilitate the application of Serious Games Learning Analytics in SGs.
+Serious Games (SGs) are digital games designed for different purposes other than entertainment. For example, SGs can be designed to provide knowledge, upgrade skills, or raise awareness. In fact, SGs were successfully implemented in different domains such as in military, business, medicine, schools, etc. Also, SGs present new opportunities to apply stealth assessment techniques for evaluating player's performance, typically by analyzing  player's interaction data.
 
-Like any other educational tool, the traditional way of evaluating the effectiveness of the tool is through experiments that require a pre-post tests. Usually this is is done on paper or, in the best case scenario, electronically, but in the end these tests are disconected from the experiments themselves.
+Applying Game Learning Analytics (GLA) to these games enables the collection, analysis and visualization of data derived from player's in-game interactions. However, when conducting such games, it is not enough to only collect game interaction data. In other words, SGs effectiveness should be measured too. This is because, in most SGs there are different stakeholders involved. 
 
-Moreover, SGs open new oportunities of applying a *stealth assessment* approach to evaluate players' performance. Usually this approach is implemented based on analytics that are gathered during the gameplay.
+Traditionally, educational tools effectiveness is measured through mock sessions which involve pre- and post-surveys. These surveys are usually conducted on paper or electronically. The issue is that these surveys are ultimately isolated from the learning experience itself.
 
-To be precise, SIMVA tool aims to simplify the possible issues:
- - Before the experiments:
-   - Managing users & surveys
-   - Providing anonymous identifiers to users
- - During the experiments:
- - Pretest-Game-Postest
-   - Collecting and storing surveys and traces data (xAPI-SG)
-   - Relating different data from users (GLA, tests)
- - After the experiments:
-    - Simplifying downloading and analysis of all data collected
+To conclude, with SGs there is a need to collect data from several resources during the different stages of a mock session. Also, there is a need to map these data for each user in order to give meaningful insights (user’s pre-survey results, user’s in-game interaction data and user’s post-survey results). Which raises several challenges in user management, data collection and analysis. 
 
-This respository allows you to to launch a complete SIMVA environment.
+Thus, there is a need for a tool that simplifies the assessment with pre and post surveys and enables a comprehensive management of the collected information. ***SIMVA*** tool addresses these challenges by offering integrated solutions. 
+
+***SIMVA*** tool facilitates the application of Game Learning Analytics (GLA) in Serious Games (SGs), enabling the developers and the researchers to validate the effectiveness of these games. Also, it provides meaningful insights to different stakeholders which enables them to make the right decisions.
+
+The following table shows in detail these challenges and the solutions provided by ***SIMVA***.
+
+| Phase  | Challenge | Solution ***SIMVA*** provides |
+| ------------- | ------------- | ------------- |
+| Before the mock session  | - The lack of formal validation, or performed outside the game</br> - Managing surveys</br> - Managing users and providing anonymous identifiers to users|- Simplifying & supporting experimental design</br> - LimeSurvey encapsulation</br> - Token generation for users in keycloak|
+| During the mock session, for example PreSurvey-GamePlay-PostSurvey  | - Collecting and storing surveys data</br> - Collecting and storing interactions traces data</br> -Relating those different data types to each user</br> - Teachers lack control when applying games in classes|- Surveys data is stored in LimeSurvey database</br> - Trace data backup are stored in Minio as xAPI-SG format</br> - Using the same user token during the whole mock session</br> - Support GLA remotely to conduct mock sessions in broader settings|
+| After the mock session  | - Access of all data collected from different data sources</br> - Analysis of all data collected from different data sources</br>|- Data can be downloaded from a visual dashboard</br> - TMon:  Default analysis and visualisation web tool for xAPI-SG data</br>|
+
+This repository allows you to launch a complete ***SIMVA*** environment. 
 
 ## Instructions
+### Requirements (OS):
 
+* **Linux natively**: Follow step 1, then the steps from 4 to 6.
+* **Windows** with the latest version of <a href="https://www.ucm.es/" target="_blank">Vagrant</a>  and the latest version of <a href="https://www.virtualbox.org/" target="_blank">VirtualBox</a>  (tested with 6.0): Follow the steps from 1 to 6.
+* **Mac** with the latest version of <a href="https://www.ucm.es/" target="_blank">Vagrant</a>  and the latest version of <a href="https://www.virtualbox.org/" target="_blank">VirtualBox</a>  (tested with 6.0): Follow the steps from 1 to 6.
+
+### Steps:
 1. Clone this repository
 1. Change the git branch to choosen branch.
 1. Open a terminal in the cloned directory and change directory to vagrant directory using command `cd ./vagrant`.
