@@ -15,6 +15,7 @@ if [[ ! -f "$previousBackupPath" ]]; then
     exit 1
 fi
 
+"${SIMVA_HOME}/simva" start 00-network
 echo "🕐 Restoring database from backup: $previousBackupPath"
 # Check if the container is running
 source "${SIMVA_BIN_HOME}/check-docker-running.sh"
