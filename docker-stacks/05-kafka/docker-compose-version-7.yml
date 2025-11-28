@@ -76,11 +76,11 @@ services:
     image: ${SIMVA_KAFKA_CONNECT_IMAGE:-cnfldemos/kafka-connect-datagen}:${SIMVA_KAFKA_CONNECT_VERSION:-0.6.4-7.6.0}
     command: >
       bash -c "
-        confluent-hub install --no-prompt ${SIMVA_CONFLUENCE_CONNECT_S3_REPO:-confluentinc/kafka-connect-s3}:${SIMVA_CONFLUENCE_CONNECT_S3_VERSION:-11.0.1}
+        confluent-hub install --no-prompt ${SIMVA_CONFLUENCE_CONNECT_S3_REPO:-confluentinc/kafka-connect-s3}:${SIMVA_CONFLUENCE_CONNECT_S3_VERSION:-11.0.1};
         # Add extra jar files to all storage plugins
         cp -a /usr/share/simva/kafka-connect-storage-common/* /usr/share/confluent-hub-components/confluentinc-kafka-connect-s3/lib/;
         # Run
-        exec /etc/confluent/docker/run;"
+        exec connect-distributed /etc/kafka/connect-distributed.properties"
     environment:
       KAFKA_VERSION: ${SIMVA_KAFKA_VERSION:-7.8.0}
       # Bootstrap options
@@ -115,10 +115,10 @@ services:
       CONNECT_REST_ADVERTISED_HOST_NAME: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
       CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
-      CONNECT_PLUGIN_PATH: '/usr/share/java,/etc/kafka-connect/jars,/usr/share/confluent-hub-components'
+      CONNECT_PLUGIN_PATH: '/usr/share/confluent-hub-components'
 
       # Reduce Connect memory utilization
-      KAFKA_HEAP_OPTS: "-Xms256M -Xmx512M"
+      KAFKA_HEAP_OPTS: "-Xms512M -Xmx1G"
       # https://github.com/confluentinc/cp-demo/blob/${SIMVA_KAFKA_VERSION:-5.5.0}-post/docker-compose.yml
       KAFKA_JVM_PERFORMANCE_OPTS: -server -XX:+UseG1GC -XX:GCTimeRatio=1
                   -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20
