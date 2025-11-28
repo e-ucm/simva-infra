@@ -55,16 +55,17 @@ export SIMVA_KAFKA_VERSION="7.8.0"
 #KAFKA CONNECT AND CONNECT S3 PLUGIN
 export SIMVA_KAFKA_CONNECT_IMAGE="cnfldemos/kafka-connect-datagen"
 export SIMVA_KAFKA_CONNECT_VERSION="0.6.7-8.0.0" #0.6.4-7.6.0
-export SIMVA_CONFLUENCE_CONNECT_S3_REPO="confluentinc/kafka-connect-s3"
-export SIMVA_CONFLUENCE_CONNECT_S3_VERSION="11.0.1"
 
 #SIMVA
 export SIMVA_SIMVA_IMAGE="eucm/simva-api"
 export SIMVA_SIMVA_VERSION="0.0.1"
+
 export SIMVA_SIMVA_TRACE_ALLOCATOR_IMAGE="eucm/simva-trace-allocator"
 export SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION="0.0.1"
+
 export SIMVA_SIMVA_FRONT_IMAGE="eucm/simva-front"
 export SIMVA_SIMVA_FRONT_VERSION="0.0.1"
+
 #NO SQL DB
 export SIMVA_MONGODB_IMAGE="mongo"
 export SIMVA_MONGODB_VERSION="4.2.8"
@@ -77,10 +78,17 @@ export SIMVA_TMON_VERSION="0.0.1"
 export SIMVA_LOGS_IMAGE="amir20/dozzle"
 export SIMVA_LOGS_VERSION="8.10.3"
 
-#Git reference tag version release branch
+#Git reference tag version release branch for Keycloak Extensions
 export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.2.0"
 export SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION="0.26"
+
+#Git reference tag version release branch for Kafka Extensions
 export SIMVA_KAFKA_EXTENSIONS_VERSION="1.0.0"
+#KAFKA CONNECT S3 PLUGIN
+export SIMVA_CONFLUENCE_CONNECT_S3_REPO="confluentinc/kafka-connect-s3"
+export SIMVA_CONFLUENCE_CONNECT_S3_VERSION="11.0.1"
+
+#Git reference tag version release branch for Limesurvey Plugins
 export SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION="1.5.0"
 export SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION="1.1.0"
 export SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION="1.0.0"
