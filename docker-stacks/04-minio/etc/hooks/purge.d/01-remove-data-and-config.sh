@@ -5,6 +5,8 @@ set -euo pipefail
 ${SIMVA_BIN_HOME}/purge-folder-contents.sh \
     "${SIMVA_CONFIG_HOME}/minio/policies"
 
+rm -rf "${SIMVA_CONFIG_HOME}/minio/.minio.sys"
+
 ${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/minio/.minio-initialized" \
     "${SIMVA_DATA_HOME}/minio/.minio-events-initialized" \

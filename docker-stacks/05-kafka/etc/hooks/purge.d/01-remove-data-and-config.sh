@@ -9,7 +9,8 @@ ${SIMVA_BIN_HOME}/purge-folder-contents.sh \
     "${SIMVA_DATA_HOME}/kafka/data/backup" \
     "${SIMVA_DATA_HOME}/kafka/data/zoo1"
 
-${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
+${SIMVA_BIN_HOME}/purge-file-if-exist.sh  \
+    "${SIMVA_CONFIG_HOME}/kafka/connect-distributed.properties" \
     "${SIMVA_DATA_HOME}/kafka/.initialized" \
     "${SIMVA_DATA_HOME}/kafka/.externaldomain" \
     "${SIMVA_DATA_HOME}/kafka/.version" \
