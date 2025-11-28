@@ -31,4 +31,5 @@ for key in "${!plugins[@]}"; do
     tmp_dir=$(mktemp -d)
     unzip "${PLUGINS_DIR}/${ext_zip}" -d $tmp_dir
     rsync -avh --delete --itemize-changes ${tmp_dir}/ "${DEPLOYMENT_DIR}/$ext_name"
+    chown -R 33:33 "${DEPLOYMENT_DIR}/$ext_name"
 done
