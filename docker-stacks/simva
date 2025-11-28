@@ -94,11 +94,6 @@ function main() {
             uninstall "1" ${@%/}
             exit 0
         ;;
-        "changeConfig")
-            check_docker_launched
-            changeConfig "1" ${@%/}
-            exit 0
-        ;;
         "purge")
             check_docker_launched
             purge "1" ${@%/}
@@ -138,14 +133,6 @@ function main() {
         "build")
             check_docker_launched
             build ${@%/}
-            exit 0
-        ;;
-        "setExecutable")
-            setExecutable "install" ${@%/}
-            setExecutable "uninstall" ${@%/}
-            setExecutable "purge" ${@%/}
-            setExecutable "start" ${@%/}
-            setExecutable "stop" ${@%/}
             exit 0
         ;;
         "help")
@@ -590,28 +577,23 @@ The system consists of several linked services, provided by docker containers.
 See ${SIMVA_PROJECT_URL} for details.
 
 OPERATION one of the following:
-
     install:
         Install SIMVA locally (download docker images, build required tools, etc.)
     uninstall:
-        Stop and remove containers, also remove docker volumes too.
-    changeConfig:
-        Migrate config of each stack
+        Stop and remove containers.
     purge:
-        Remove data from each stack
+        Remove data from each stack, also remove docker external volumes too
     start:
         Launch all containers by stages, waiting for dependencies to become available.
     stop:
         Gracefully stop all containers, so that no data is lost; you can then inspect
-        their data in ./data, or restart them.
+        their data in external volume, or restart them.
     backup:
-        backup the database of the container external volume
+        backup the data and database from the container external volume into a backup folder
     restore:
-        restore the database into the container external volume
+        restore the data and database into the container external volume from a backup folder
     restart:
         Gracefully stop all containers and start them again.
-    setExecutable:
-        Set executable all scripts before and after hooks 
     log <stack> [<other docker compose logs params>]:
         Show <stack> logs.
     build <stack> <docker compose build params>:
