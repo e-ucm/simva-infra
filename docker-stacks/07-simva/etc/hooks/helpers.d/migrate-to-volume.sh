@@ -2,14 +2,22 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
+simva_storage_data="${SIMVA_DATA_HOME}/simva/storage"
+if [[ -e "${SIMVA_DATA_HOME}/simva/simva-backup-storage" ]]; then
+    simva_storage_data="${SIMVA_DATA_HOME}/simva/simva-backup-storage"
+else if [[ -e "${SIMVA_DATA_HOME}/simva/storage" ]]; then
+    simva_storage_data="${SIMVA_DATA_HOME}/simva/storage"
+else 
+    simva_storage_data="${SIMVA_DATA_HOME}/simva/simva-backup-storage"
+fi
 # Define folders and corresponding volumes
 declare -A folders_volumes=(
     ["${SIMVA_DATA_HOME}/simva/simva-trace-allocator-data"]="simva_trace_allocator_data"
     ["${SIMVA_DATA_HOME}/simva/simva-trace-allocator-logs"]="simva_trace_allocator_logs"
     ["${SIMVA_DATA_HOME}/simva/simva-front-logs"]="simva_front_logs"
     ["${SIMVA_DATA_HOME}/simva/simva-api-logs"]="simva_api_logs"
-    ["${SIMVA_DATA_HOME}/simva/storage"]="simva_storage_data"
-    ["${SIMVA_DATA_HOME}/simva/mongodb-data"]="simva_mongodb_data"
+    ["${simva_storage_data}"]="simva_storage_data"
+    ["${SIMVA_DATA_HOME}/simva/mongo"]="simva_mongodb_data"
 )
 
 for folder in "${!folders_volumes[@]}"; do

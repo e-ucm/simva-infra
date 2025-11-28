@@ -1,6 +1,9 @@
 simva-api/
 simva-front/
 simva-trace-allocator/
+simva-api-profiling/
+simva-front-profiling/
+simva-trace-allocator-profiling/
 .version
 .externaldomain
 .initialized
