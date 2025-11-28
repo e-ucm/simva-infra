@@ -5,9 +5,9 @@ set -euo pipefail
 simva_storage_data="${SIMVA_DATA_HOME}/simva/storage"
 if [[ -e "${SIMVA_DATA_HOME}/simva/simva-backup-storage" ]]; then
     simva_storage_data="${SIMVA_DATA_HOME}/simva/simva-backup-storage"
-else if [[ -e "${SIMVA_DATA_HOME}/simva/storage" ]]; then
+elif [[ -e "${SIMVA_DATA_HOME}/simva/storage" ]]; then
     simva_storage_data="${SIMVA_DATA_HOME}/simva/storage"
-else 
+else
     simva_storage_data="${SIMVA_DATA_HOME}/simva/simva-backup-storage"
 fi
 # Define folders and corresponding volumes
