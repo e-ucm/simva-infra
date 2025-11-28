@@ -56,7 +56,8 @@ function sourceEnvFile() {
 }
 
 sourceEnvFile
-DEPENDENCIES="find mkcert jq docker sha256sum curl git keytool htpasswd unzip dos2unix" # keytool to install via java-11-openjdk-devel
+DEPENDENCIES="find mkcert jq docker sha256sum curl git keytool htpasswd unzip dos2unix" # keytool to install via java-11-openjdk-devel 
+                                                                                        # apache2-utils (to get htpasswd) on debian based systems
 DEFAULT_WAIT_TIME="${SIMVA_SCRIPT_WAIT_TIME}"
 
 function getValueFromBackupFile() {
