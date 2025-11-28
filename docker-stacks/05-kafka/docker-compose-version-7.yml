@@ -73,13 +73,16 @@ services:
 
   connect:
     << : *default-opts
-    image: ${SIMVA_KAFKA_CONNECT_IMAGE:-cnfldemos/kafka-connect-datagen}:${SIMVA_KAFKA_CONNECT_VERSION:-0.6.4-7.6.0}
+    image: ${SIMVA_KAFKA_CONNECT_IMAGE:-confluentinc/cp-kafka-connect-base}:${SIMVA_KAFKA_VERSION:-7.8.0}
     command: >
       bash -c "
         confluent-hub install --no-prompt ${SIMVA_CONFLUENCE_CONNECT_S3_REPO:-confluentinc/kafka-connect-s3}:${SIMVA_CONFLUENCE_CONNECT_S3_VERSION:-11.0.1};
         # Add extra jar files to all storage plugins
         cp -a /usr/share/simva/kafka-connect-storage-common/* /usr/share/confluent-hub-components/confluentinc-kafka-connect-s3/lib/;
-        # Run
+        echo '==== Kafka Connect Distributed worker configuration ====';
+        cat /etc/kafka/connect-distributed.properties;
+        echo '======================================================';
+        # Run Kafka Connect distributed worker
         exec connect-distributed /etc/kafka/connect-distributed.properties"
     environment:
       KAFKA_VERSION: ${SIMVA_KAFKA_VERSION:-7.8.0}
@@ -89,46 +92,11 @@ services:
       JDK_TRUSTORE_PASSWORD: "changeit"
       SIMVA_CA_ALIAS: "simvaCA"
       SIMVA_CA_FILE: "/usr/share/simva/ca/rootCA.pem"
-
-      # Kafka connect options
-      CONNECT_BOOTSTRAP_SERVERS: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092"
-      CONNECT_REST_PORT: 8083
-      CONNECT_LISTENERS: http://0.0.0.0:8083
-
-      CONNECT_GROUP_ID: "connect-cluster"
-      CONNECT_PRODUCER_CLIENT_ID: "connect-worker-producer"
-
-      CONNECT_CONFIG_STORAGE_TOPIC: connect-configs
-      CONNECT_OFFSET_STORAGE_TOPIC: connect-offsets
-      CONNECT_STATUS_STORAGE_TOPIC: connect-status
-
-      CONNECT_REPLICATION_FACTOR: 1
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
-
-      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
-      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-
-      CONNECT_REST_ADVERTISED_HOST_NAME: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
-      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
-      CONNECT_PLUGIN_PATH: '/usr/share/confluent-hub-components'
-
       # Reduce Connect memory utilization
       KAFKA_HEAP_OPTS: "-Xms512M -Xmx1G"
-      # https://github.com/confluentinc/cp-demo/blob/${SIMVA_KAFKA_VERSION:-5.5.0}-post/docker-compose.yml
-      KAFKA_JVM_PERFORMANCE_OPTS: -server -XX:+UseG1GC -XX:GCTimeRatio=1
-                  -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20
-                  -XX:MaxGCPauseMillis=10000 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent
-                  -XX:MaxInlineLevel=15 -Djava.awt.headless=true
-
-      #CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
-      #CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085"
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/connect-distributed.properties:/etc/kafka/connect-distributed.properties:ro
       # kafka-connect plugins have their own classpath, so it is required to add manually extensions to storage
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/connect/kafka-connect-storage-common:/usr/share/simva/kafka-connect-storage-common
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/kafka/connect:/usr/share/simva

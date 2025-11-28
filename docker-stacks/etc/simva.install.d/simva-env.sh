@@ -51,10 +51,8 @@ export SIMVA_MINIO_MC_VERSION="RELEASE.2025-02-04T04-57-50Z"
 
 #KAFKA
 export SIMVA_KAFKA_IMAGE="confluentinc/cp-kafka"
+export SIMVA_KAFKA_CONNECT_IMAGE="confluentinc/cp-kafka-connect-base"
 export SIMVA_KAFKA_VERSION="7.8.0"
-#KAFKA CONNECT AND CONNECT S3 PLUGIN
-export SIMVA_KAFKA_CONNECT_IMAGE="cnfldemos/kafka-connect-datagen"
-export SIMVA_KAFKA_CONNECT_VERSION="0.6.7-8.0.0" #0.6.4-7.6.0
 
 #SIMVA
 export SIMVA_SIMVA_IMAGE="eucm/simva-api"
