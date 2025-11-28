@@ -1141,8 +1141,6 @@ function start() {
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
             wait_time=$previous_wait_time;
         fi
-        docker volume prune -f
-        docker image prune -f
     done
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
