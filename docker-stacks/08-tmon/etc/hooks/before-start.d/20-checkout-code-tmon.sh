@@ -49,13 +49,18 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     ########################### TMON ##########################
     ###########################################################
     echo "TMON"
-    res=$(${SIMVA_HOME}/bin/check-checksum.sh ${SIMVA_TMON_GIT_REPO} "${SIMVA_DATA_HOME}/tmon/tmon-sha256sums" "requirements.txt")
+    set +e
+    source ${SIMVA_HOME}/bin/check-checksum.sh
+    _check_checksum ${SIMVA_TMON_GIT_REPO} "${SIMVA_DATA_HOME}/tmon/tmon-sha256sums" "requirements.txt"
+    res=$?
+    set -e
     echo $res
-    if [[ ! $(${SIMVA_HOME}/bin/get-last-caracter-from-string.sh "$res") == "0" ]]; then
+    if [[ ! $res == "0" ]]; then
         RUNBUILDCODE=true
     fi
     chmod -R 777 ${SIMVA_TMON_GIT_REPO}
 fi
 if [[ ${RUNBUILDCODE} == true ]] ; then
+    exit 1
     exec ${SIMVA_HOME}/simva build ./08-tmon
 fi
