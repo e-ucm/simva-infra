@@ -47,7 +47,7 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}:/root/.limesurvey/certs/:ro
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${STACK_HOME:-/home/vagrant/docker-stacks/03-limesurvey}/etc/entrypoint.d/:/entrypoint
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     healthcheck:
       test: "curl -sS http://localhost:8080 || exit 1"
       interval: 60s

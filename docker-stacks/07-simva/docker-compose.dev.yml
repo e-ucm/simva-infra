@@ -13,7 +13,7 @@ x-default-opts:
 services:
   simva-api:
     build: ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     volumes:
       - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}:/home/node/app/
       - /home/node/app/node_modules  # Exclude node_modules
@@ -21,7 +21,7 @@ services:
       - "127.0.0.1:9229:9229"
   simva-front:
     build: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     volumes:
       - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}:/home/node/app/
       - /home/node/app/node_modules  # Exclude node_modules
@@ -29,7 +29,7 @@ services:
       - "127.0.0.1:9230:9229"
   simva-trace-allocator:
     build: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     volumes:
       - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}:/home/node/app/
       - /home/node/app/node_modules  # Exclude node_modules

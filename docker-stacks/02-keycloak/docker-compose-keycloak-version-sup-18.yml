@@ -73,7 +73,7 @@ services:
       - ${SIMVA_CONFIG_TEMPLATE_HOME:-/home/vagrant/docker-stacks/config-template}/keycloak/simva-realm/:/opt/keycloak/data/simva-realm/:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/:/opt/keycloak/data/export/:rw
       - ${SIMVA_TLS_HOME?TLS home folder required}:/root/.keycloak/certs/:ro
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
 #    healthcheck:
 #     test: "wget http://0.0.0.0/health/ready:8080 || exit 1"
 #     interval: 60s

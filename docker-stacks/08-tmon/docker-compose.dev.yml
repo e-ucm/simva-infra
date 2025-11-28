@@ -163,7 +163,7 @@ services:
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
       MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
       MC_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     healthcheck:
       test: "curl -sS http://localhost:8888/ || exit 1"
       interval: 30s

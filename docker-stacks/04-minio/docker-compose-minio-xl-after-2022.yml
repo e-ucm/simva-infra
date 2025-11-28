@@ -46,7 +46,7 @@ services:
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
       SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
       SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     healthcheck:
       test: "curl -sS http://localhost:9000/minio/health/live || exit 1"
       interval: 30s

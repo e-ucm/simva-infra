@@ -32,7 +32,7 @@ services:
       MONGOKU_DEFAULT_HOST: "mongodb://${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}:27017"
       SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
       SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-15}
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     networks:
       default:
         aliases:

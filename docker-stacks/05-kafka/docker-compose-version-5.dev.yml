@@ -31,7 +31,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
     hostname: schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     networks:
       default:
         aliases:
@@ -52,7 +52,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
     hostname: kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     networks:
       default:
         aliases:
@@ -71,7 +71,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
     hostname: ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     networks:
       default:
         aliases:

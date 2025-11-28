@@ -82,7 +82,7 @@ services:
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-rootCA.sh:/root/.keycloak/entrypoint.d/docker-startup.sh
     depends_on:
       - mariadb
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     hostname: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

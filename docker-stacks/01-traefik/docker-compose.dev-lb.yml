@@ -73,7 +73,7 @@ services:
         published: 443
         protocol: tcp
         mode: host
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     hostname: "${SIMVA_NGINX_HOST_SUBDOMAIN:-nginx}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     networks:
       default:
@@ -89,7 +89,7 @@ services:
     image: ${SIMVA_WHOAMI_IMAGE:-containous/whoami}:${SIMVA_WHOAMI_VERSION:-latest}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-    restart: unless-stopped
+    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
     hostname: "${SIMVA_WHOAMI_NGINX_HOST_SUBDOMAIN:-nginx-whoami}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     networks:
       default:
