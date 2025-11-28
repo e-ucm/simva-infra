@@ -580,9 +580,9 @@ OPERATION one of the following:
     install:
         Install SIMVA locally (download docker images, build required tools, etc.)
     uninstall:
-        Stop and remove containers.
+        Stop and remove containers, without removing docker external volumes and data.
     purge:
-        Remove data from each stack, also remove docker external volumes too
+        Stop and remove containers, remove data from each stack, also remove docker external volumes too.
     start:
         Launch all containers by stages, waiting for dependencies to become available.
     stop:
