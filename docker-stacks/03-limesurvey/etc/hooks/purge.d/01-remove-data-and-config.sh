@@ -22,3 +22,4 @@ ${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "ls_maria_db_backup_data"
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "ls_upload"
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "ls_tmp"
+"${SIMVA_BIN_HOME}/volumectl.sh" delete "ls_etc"
