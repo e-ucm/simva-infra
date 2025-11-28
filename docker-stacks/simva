@@ -1164,7 +1164,9 @@ function start() {
             touch "${SIMVA_DATA_HOME}/${stack_name}/.initialized"
         fi
     done;
-    touch "${SIMVA_DATA_HOME}/.simva-initialized"
+    if [[ $stacks == $SIMVA_STACKS ]]; then
+        touch "${SIMVA_DATA_HOME}/.simva-initialized"
+    fi
 }
 
 # stop stacks
