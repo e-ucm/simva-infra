@@ -18,6 +18,7 @@ services:
       traefik_services:
         aliases:
           - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
   mongoku:
     << : *default-opts
     image: ${SIMVA_MONGOKU_UI_IMAGE:-huggingface/mongoku}:${SIMVA_MONGOKU_UI_VERSION:-latest}
@@ -31,6 +32,7 @@ services:
       MONGOKU_DEFAULT_HOST: "mongodb://${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}:27017"
       SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
       SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-15}
+    restart: unless-stopped
     networks:
       default:
         aliases:

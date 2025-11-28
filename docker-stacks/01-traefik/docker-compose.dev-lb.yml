@@ -89,6 +89,7 @@ services:
     image: ${SIMVA_WHOAMI_IMAGE:-containous/whoami}:${SIMVA_WHOAMI_VERSION:-latest}
     volumes:
       - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
     hostname: "${SIMVA_WHOAMI_NGINX_HOST_SUBDOMAIN:-nginx-whoami}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     networks:
       default:

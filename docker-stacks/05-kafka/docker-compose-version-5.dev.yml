@@ -31,6 +31,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
     hostname: schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
     networks:
       default:
         aliases:
@@ -51,6 +52,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
     hostname: kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
     networks:
       default:
         aliases:
@@ -58,7 +60,6 @@ services:
 
   zoonavigator:
     << : *default-opts
-    restart: unless-stopped
     image: elkozmon/zoonavigator:1.0.1
     environment:
       HTTP_PORT: 9000
@@ -70,6 +71,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
     hostname: ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
     networks:
       default:
         aliases:

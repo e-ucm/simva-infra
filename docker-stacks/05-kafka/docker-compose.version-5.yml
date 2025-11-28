@@ -73,6 +73,7 @@ services:
     depends_on:
       - zk1
     hostname: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
     networks:
       default:
         aliases:
@@ -157,6 +158,7 @@ services:
       - zk1
       - kafka1
     hostname: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
     networks:
       default:
         aliases:
