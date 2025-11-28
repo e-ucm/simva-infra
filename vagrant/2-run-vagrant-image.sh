@@ -4,7 +4,6 @@
 
 STOP=false
 RELOAD=false
-PROVISION=false
 MEMORY=4096
 CPU=8
 for arg in "$@"; do
@@ -15,10 +14,6 @@ for arg in "$@"; do
         ;;
         --reload|-r)
         RELOAD=true
-        shift
-        ;;
-        --provision|-p)
-        PROVISION=true
         shift
         ;;
         --memory|-m)
@@ -181,11 +176,7 @@ if $STOP; then
     fi
 elif $RELOAD; then
     echo "Reloading VM '$VM_NAME'..."
-    if $PROVISION; then
-        vagrant reload --provider virtualbox --provision
-    else 
-        vagrant reload --provider virtualbox
-    fi
+    vagrant reload --provider virtualbox
     # Call the root CA removal script
     ./helpers/install-rootCA.sh --certPath "../docker-stacks/config/tls/ca/rootCA.pem" --remove
     echo "VM reloaded."
@@ -194,17 +185,15 @@ elif $RELOAD; then
 else
     if [[ $STATUS  == "running" ]]; then
         echo "VM '$VM_NAME' is already running."
+        vagrant provision
+        echo "Provisioning completed."
     else
         echo "Starting VM '$VM_NAME'..."
         ./helpers/build_hostname.sh
         source ./helpers/adapter_ip.sh
         ./helpers/set_to_local_dev.sh
         monitor_vm "$VM_NAME" &  # Start monitoring in background
-        if $PROVISION; then
-            vagrant up --provider virtualbox --provision
-        else 
-            vagrant up --provider virtualbox
-        fi
+        vagrant up --provider virtualbox
         # Call the root CA installation script
         ./helpers/install-rootCA.sh --certPath "../docker-stacks/config/tls/ca/rootCA.pem"
         echo "VM started."

@@ -131,6 +131,7 @@ if($Stop) {
         $CPU=8
     }
     [System.Environment]::SetEnvironmentVariable("VBOX_CPU", $CPU, "Process")
+    Write-Host "Setting VM resources: Memory=${Memory}MB, CPU=${CPU} cores"
     ./helpers/build_hostname.ps1
     ./helpers/adapter_ip.ps1
     ./helpers/set_to_local_dev.ps1
