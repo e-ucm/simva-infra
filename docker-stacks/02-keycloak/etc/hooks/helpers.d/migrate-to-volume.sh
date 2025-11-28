@@ -14,7 +14,10 @@ for folder in "${!folders_volumes[@]}"; do
 done
 
 if [[ -d "${SIMVA_DATA_HOME}/keycloak/mariadb" ]]; then 
-  "${SIMVA_BIN_HOME}/volumectl.sh" exec "kc_maria_db_data" "/volume_data" "
+  rm -rf "${SIMVA_DATA_HOME}/keycloak/mariadb"
+fi
+
+"${SIMVA_BIN_HOME}/volumectl.sh" exec "kc_maria_db_data" "/volume_data" "
     # Set ownership recursively (mysql:mysql - 999:ping)
     chown -R 999:ping /volume_data;
 
@@ -29,11 +32,12 @@ if [[ -d "${SIMVA_DATA_HOME}/keycloak/mariadb" ]]; then
 
     ls -lia /volume_data
   "
-  rm -rf "${SIMVA_DATA_HOME}/keycloak/mariadb"
-fi
 
 if [[ -d "${SIMVA_DATA_HOME}/keycloak/mariadb-dump" ]]; then 
-  "${SIMVA_BIN_HOME}/volumectl.sh" exec "kc_maria_db_backup_data" "/dump" "
+  rm -rf "${SIMVA_DATA_HOME}/keycloak/mariadb-dunp"
+fi
+
+"${SIMVA_BIN_HOME}/volumectl.sh" exec "kc_maria_db_backup_data" "/dump" "
     # Set ownership recursively
     chown -R root:root /dump;
 
@@ -43,5 +47,3 @@ if [[ -d "${SIMVA_DATA_HOME}/keycloak/mariadb-dump" ]]; then
     # Files -> 644 (rw-r--r--)
     find /dump -type f -print0 | xargs -0 chmod 644;
   "
-  rm -rf "${SIMVA_DATA_HOME}/keycloak/mariadb-dunp"
-fi

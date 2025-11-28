@@ -2,6 +2,8 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
+"${HELPERS_STACK_HOME}/migrate-to-volume.sh"
+
 BACKUP_DIR="${SIMVA_BACKUP_HOME}/keycloak/db"
 BACKUP_FILE="keycloak.sql"
 BACKUP_FILE_COMPRESSED="$BACKUP_FILE.tar.gz"

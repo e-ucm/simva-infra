@@ -13,7 +13,10 @@ for folder in "${!folders_volumes[@]}"; do
 done
 
 if [[ -d "${SIMVA_DATA_HOME}/minio" ]]; then 
-  "${SIMVA_BIN_HOME}/volumectl.sh" exec "minio_data" "/minio" "
+  ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_DATA_HOME}/minio"
+fi
+
+"${SIMVA_BIN_HOME}/volumectl.sh" exec "minio_data" "/minio" "
     # Set ownership recursively
     chown -R 1000:1000 /minio;
     
@@ -23,5 +26,3 @@ if [[ -d "${SIMVA_DATA_HOME}/minio" ]]; then
     # Files -> 644 (rw-r--r--)
     find /minio -type f -print0 | xargs -0 chmod 644;
   "
-  ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_DATA_HOME}/minio"
-fi

@@ -2,6 +2,8 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
+"${HELPERS_STACK_HOME}/migrate-to-volume.sh"
+
 BACKUP_DIR="${SIMVA_BACKUP_HOME}/limesurvey/db"
 BACKUP_FILE="limesurvey.sql"
 BACKUP_FILE_COMPRESSED="$BACKUP_FILE.tar.gz"

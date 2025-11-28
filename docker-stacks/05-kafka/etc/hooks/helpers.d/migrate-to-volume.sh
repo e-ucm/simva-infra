@@ -13,7 +13,10 @@ for folder in "${!folders_volumes[@]}"; do
 done
 
 if [[ -d "${SIMVA_DATA_HOME}/kafka/data/kafka1/data" ]]; then 
-  "${SIMVA_BIN_HOME}/volumectl.sh" exec "kafka_data" "/kafka_data" "
+  rm -rf "${SIMVA_DATA_HOME}/kafka/data/kafka1/data"
+fi
+
+"${SIMVA_BIN_HOME}/volumectl.sh" exec "kafka_data" "/kafka_data" "
     # Set ownership recursively (appuser:appuser - 1000:1000)
     chown -R 1000:1000 /kafka_data;
 
@@ -23,5 +26,3 @@ if [[ -d "${SIMVA_DATA_HOME}/kafka/data/kafka1/data" ]]; then
     # Files -> 644 (rw-r--r--)
     find /kafka_data -type f -print0 | xargs -0 chmod 644;
   "
-  rm -rf "${SIMVA_DATA_HOME}/kafka/data/kafka1/data"
-fi

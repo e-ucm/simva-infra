@@ -13,16 +13,6 @@ for folder in "${!folders_volumes[@]}"; do
     "${SIMVA_BIN_HOME}/volumectl.sh" migrate "$folder" "$volume"
 done
 
-if [[ -d "${SIMVA_DATA_HOME}/logs/portainer" ]]; then 
-#  "${SIMVA_BIN_HOME}/volumectl.sh" exec "portainer-logs" "/portainer-logs" "
-#    # Set ownership recursively (appuser:appuser - 1000:1000)
-#    chown -R 1000:1000 /portainer-logs;
-#
-#    # Directories -> 755 (rwxr-xr-x)
-#    find /portainer-logs -type d -print0 | xargs -0 chmod 755;
-#
-#    # Files -> 644 (rw-r--r--)
-#    find /portainer-logs -type f -print0 | xargs -0 chmod 644;
-#  "
+if [[ -d "${SIMVA_DATA_HOME}/logs/portainer" ]]; then
     rm -rf "${SIMVA_DATA_HOME}/logs/portainer"
 fi

@@ -14,7 +14,10 @@ for folder in "${!folders_volumes[@]}"; do
 done
 
 if [[ -d "${SIMVA_DATA_HOME}/shlink/data" ]]; then 
-  "${SIMVA_BIN_HOME}/volumectl.sh" exec "shlink_db" "/shlink_db" "
+  ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_DATA_HOME}/shlink"
+fi
+
+"${SIMVA_BIN_HOME}/volumectl.sh" exec "shlink_db" "/shlink_db" "
     # Set ownership recursively
     chown -R 1001:1001 /shlink_db;
 
@@ -24,11 +27,12 @@ if [[ -d "${SIMVA_DATA_HOME}/shlink/data" ]]; then
     # Files -> 644 (rw-r--r--)
     find /shlink_db -type f -print0 | xargs -0 chmod 644;
   "
-  ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_DATA_HOME}/shlink"
-fi
 
 if [[ -d "${SIMVA_DATA_HOME}/shlink/config" ]]; then 
-  "${SIMVA_BIN_HOME}/volumectl.sh" exec "shlink_config" "/shlink_config" "
+  ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_DATA_HOME}/shlink/config"
+fi
+
+"${SIMVA_BIN_HOME}/volumectl.sh" exec "shlink_config" "/shlink_config" "
     # Set ownership recursively
     chown -R 1001:1001 /shlink_config;
 
@@ -38,5 +42,3 @@ if [[ -d "${SIMVA_DATA_HOME}/shlink/config" ]]; then
     # Files -> 644 (rw-r--r--)
     find /shlink_config -type f -print0 | xargs -0 chmod 644;
   "
-  ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_DATA_HOME}/shlink/config"
-fi
