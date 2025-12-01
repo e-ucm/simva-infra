@@ -69,7 +69,7 @@
 
 # ---------------------------
 [serversTransport]
-  insecureSkipVerify = {{ .Env.SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY }}
+  insecureSkipVerify = "{{ .Env.SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY }}"
   rootcas = [ "/etc/traefik/ssl/traefik-fullchain.pem" ]
 
 # ---------------------------
