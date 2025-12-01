@@ -51,6 +51,8 @@
   [entryPoints.web]
     address = ":80"
     
+    {{ .Env.TRAEFIK_WEB_SECURE_SCHEME_PERMANENT }}
+    
     [entryPoints.web.forwardedHeaders]
       trustedIPs = [ "{{ .Env.SIMVA_LOAD_BALANCER_IPS }}" ]
 
@@ -59,6 +61,7 @@
     [entryPoints.websecure.http.middlewares]
       middlewares = ["secHeaders@file"]   # ✅ Global middleware
     [entryPoints.websecure.forwardedHeaders]
+      trustedIPs = [ "{{ .Env.SIMVA_LOAD_BALANCER_IPS }}" ]
     [entryPoints.websecure.http.tls]
 
 # ---------------------------
