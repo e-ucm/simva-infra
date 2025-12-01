@@ -9,8 +9,11 @@ container_list=("simva-api" "simva-front" "simva-trace-allocator");
 for container_name in "${container_list[@]}"; do
     export RUN_IN_CONTAINER_NAME="$container_name"
     # Get the internal CA certificate content from inside the container
+    set +e
     internal_ca=$("${SIMVA_BIN_HOME}/run-command.sh" /bin/bash -c "cat \"/usr/local/share/ca-certificates/internal-CA.crt\" 2>/dev/null")
-    if [[ -z "$internal_ca" ]]; then
+    res=$?
+    set -e
+    if [[ ! "$res" == "0" ]]; then
         echo "No internal CA certificate found inside container '$container_name'."
         install=true
     else 
