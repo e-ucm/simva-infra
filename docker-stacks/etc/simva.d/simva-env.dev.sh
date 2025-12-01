@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-export SIMVA_DEVELOPMENT_LOCAL="true"
 export SIMVA_DEBUG="true"
 
 ###########################################
@@ -67,8 +66,9 @@ export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"
 
 # SIMVA Load Balancer IPs
 export SIMVA_DEV_LOAD_BALANCER="false"
-export SIMVA_LOAD_BALANCER_IPS="172.30.0.80"
-[[ "${SIMVA_ENVIRONMENT}" == "production" ]] && SIMVA_LOAD_BALANCER_IPS="127.0.0.1"
+SIMVA_DEV_LOAD_BALANCER_IPS="172.30.0.80"
+[[ "${SIMVA_DEV_LOAD_BALANCER}" == "true" ]] && export SIMVA_LOAD_BALANCER_IPS=$SIMVA_DEV_LOAD_BALANCER_IPS
+[[ "${SIMVA_LOAD_BALANCER}" == "true" ]] && export SIMVA_LOAD_BALANCER_IPS=$SIMVA_LOAD_BALANCER_IPS
 
 ########################
 # Domain and subdomain #
