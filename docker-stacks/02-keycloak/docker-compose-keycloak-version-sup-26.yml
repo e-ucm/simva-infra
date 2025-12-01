@@ -81,7 +81,7 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}:/root/.keycloak/certs/:ro
     depends_on:
       - mariadb
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     hostname: ${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

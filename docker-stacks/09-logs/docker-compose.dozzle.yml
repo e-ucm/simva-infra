@@ -25,7 +25,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONFIG_HOME}/logs/dozzle-config/users.yml:/data/users.yml:ro
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     hostname: logs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     environment:
       DOZZLE_AUTH_PROVIDER: simple

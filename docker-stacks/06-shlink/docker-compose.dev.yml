@@ -22,7 +22,7 @@ services:
       SHLINK_SERVER_NAME: "SHLINK"
     depends_on:
       - shlink
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     hostname: ${SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

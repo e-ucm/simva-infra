@@ -47,7 +47,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/zoo1/data:/data
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/kafka/data/zoo1/datalog:/datalog
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     hostname: zk1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -73,7 +73,7 @@ services:
     depends_on:
       - zk1
     hostname: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     networks:
       default:
         aliases:
@@ -158,7 +158,7 @@ services:
       - zk1
       - kafka1
     hostname: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     networks:
       default:
         aliases:

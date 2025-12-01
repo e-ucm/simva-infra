@@ -13,10 +13,10 @@ x-default-opts:
 services:
   simva-api:
     image: ${SIMVA_SIMVA_IMAGE:-eucm/simva-api}:${SIMVA_SIMVA_VERSION:-v1.0.0}
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
   simva-front:
     image: ${SIMVA_SIMVA_FRONT_IMAGE:-eucm/simva-front}:${SIMVA_SIMVA_FRONT_VERSION:-v1.0.0}
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
   simva-trace-allocator:
     image: ${SIMVA_SIMVA_TRACE_ALLOCATOR_IMAGE:-eucm/simva-trace-allocator}:${SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION:-v1.0.0}
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped

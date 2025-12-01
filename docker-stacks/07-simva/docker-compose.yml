@@ -25,7 +25,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - simva_mongodb_data:/data/db
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     hostname: ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -140,7 +140,7 @@ services:
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-certificate.sh:/home/node/entrypoint.d/docker-certificate.sh
     depends_on:
       - mongodb
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -230,7 +230,7 @@ services:
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-certificate.sh:/home/node/entrypoint.d/docker-certificate.sh
     depends_on:
       - simva-api
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     hostname: simva-front.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -303,7 +303,7 @@ services:
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-certificate.sh:/home/node/entrypoint.d/docker-certificate.sh
     depends_on:
       - simva-api
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     hostname: simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

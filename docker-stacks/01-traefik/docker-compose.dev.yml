@@ -14,7 +14,7 @@ services:
   whoami:
     << : *default-opts
     image: ${SIMVA_WHOAMI_IMAGE:-containous/whoami}:${SIMVA_WHOAMI_VERSION:-latest}
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     hostname: "${SIMVA_WHOAMI_HOST_SUBDOMAIN:-whoami}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
     networks:
       default:
@@ -57,7 +57,7 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/traefik/csp-reporter:/app
     hostname: ${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN:-csp-reporter}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     networks:
       default:
         aliases:

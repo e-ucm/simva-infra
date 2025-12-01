@@ -18,7 +18,7 @@ networks:
 services:
   tmon-app:
     << : *default-opts
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     hostname: ${SIMVA_TMON_HOST_DASHBOARD_SUBDOMAIN:-tmon}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

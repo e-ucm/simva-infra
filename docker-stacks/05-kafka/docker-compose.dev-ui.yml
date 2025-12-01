@@ -37,7 +37,7 @@ services:
       - schema-registry
       - kafka1
     hostname: ${SIMVA_KAFKA_UI_HOST_SUBDOMAIN:-kafka-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     networks:
       default:
         aliases:

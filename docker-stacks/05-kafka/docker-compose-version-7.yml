@@ -59,7 +59,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - kafka_data:/var/lib/kafka/data:rw
     hostname: kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     networks:
       default:
         aliases:
@@ -105,7 +105,7 @@ services:
     depends_on:
       - kafka1
     hostname: connect.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     networks:
       default:
         aliases:

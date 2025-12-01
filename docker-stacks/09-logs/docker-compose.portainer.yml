@@ -23,7 +23,7 @@ services:
       - portainer-logs:/data
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/logs/portainer-config/portainer_password:/tmp/portainer_password:ro
       - /var/run/docker.sock:/var/run/docker.sock
-    restart: on-failure:${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
     command: --admin-password-file "/tmp/portainer_password"
     hostname: ${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
