@@ -2,6 +2,17 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
+if { [[ "$SIMVA_ENVIRONMENT" == "development" ]] && [[ "$SIMVA_DEV_LOAD_BALANCER" == "true" ]]; } || \
+   { [[ "$SIMVA_LOAD_BALANCER" != "true" ]]; }; then
+    export TRAEFIK_WEB_SECURE_SCHEME_PERMANENT="[entryPoints.web.http.redirections]
+      [entryPoints.web.http.redirections.entryPoint]
+        to = \"websecure\"
+        scheme = \"https\"
+        permanent = true"
+else
+    export TRAEFIK_WEB_SECURE_SCHEME_PERMANENT=""
+fi
+
 gomplate \
     -f "${SIMVA_CONFIG_TEMPLATE_HOME}/traefik/traefik/static-conf/traefik.toml" \
     -o "${SIMVA_CONFIG_HOME}/traefik/traefik/static-conf/traefik.toml"

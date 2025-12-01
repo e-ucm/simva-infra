@@ -39,7 +39,8 @@ export SIMVA_NETWORK_INTERFACE="simva0"
 export SIMVA_NETWORK_CIDR="172.30.0.0/24"
 
 # SIMVA Load Balancer IPs
-SIMVA_LOAD_BALANCER_IPS="127.0.0.1"
+export SIMVA_LOAD_BALANCER="false"
+export SIMVA_LOAD_BALANCER_IPS="127.0.0.1"
 
 ########################
 # Domain and subdomain #
