@@ -1,22 +1,19 @@
 #!/usr/bin/env bash
+###############
+# SIMVA DEBUG #
+###############
 export SIMVA_DEBUG="true"
+
+###########################
+# SIMVA LOCAL DEVELOPMENT #
+###########################
 export SIMVA_DEVELOPMENT_LOCAL="false"
 
-#######################
-# SIMVA Git reference #
-#######################
-#Git reference branch
-export CSP_REPORTER_GIT_REF="master"
-branch="dev"
-export SIMVA_API_GIT_REF=$branch
-export SIMVA_FRONT_GIT_REF=$branch
-export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
-export SIMVA_LIMESURVEY_DOCKER_GIT_REF="remotecontrol-patch"
-export SIMVA_TMON_GIT_REF="plotly-dash"
-export SIMVA_TMON_ANACONDA_GIT_REF="master-jupyter-notebook"
-# SIMVA Load Balancer IPs
+###########################
+# SIMVA Load Balancer IPs #
+###########################
 export SIMVA_DEV_LOAD_BALANCER="false"
-SIMVA_DEV_LOAD_BALANCER_IPS="172.30.0.80"
+export SIMVA_DEV_LOAD_BALANCER_IPS="172.30.0.80"
 
 ########################
 # Domain and subdomain #
@@ -39,6 +36,19 @@ export SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN="shlink-admin"
 export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
 #LOGS
 export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
+
+#######################
+# SIMVA Git reference #
+#######################
+#Git reference branch
+export CSP_REPORTER_GIT_REF="master"
+branch="dev"
+export SIMVA_API_GIT_REF=$branch
+export SIMVA_FRONT_GIT_REF=$branch
+export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
+export SIMVA_LIMESURVEY_DOCKER_GIT_REF="remotecontrol-patch"
+export SIMVA_TMON_GIT_REF="plotly-dash"
+export SIMVA_TMON_ANACONDA_GIT_REF="master-jupyter-notebook"
 
 #####################
 # Socket Proxy info #
