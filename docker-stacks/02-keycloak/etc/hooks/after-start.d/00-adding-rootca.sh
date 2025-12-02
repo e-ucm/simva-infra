@@ -11,12 +11,14 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -ge 26 ]]; then
         echo "Checking if ${SIMVA_ROOT_CA_FILE} is already imported into ${SIMVA_TRUSTSTORE_FILE}..."
 
         # Try to extract fingerprint of the certificate already inside the truststore
+        set +e
         existing_fingerprint=$(
             "${SIMVA_BIN_HOME}/run-command.sh" keytool -list -keystore "/usr/lib/jvm/java-21-openjdk-21.0.6.0.7-1.el9.x86_64/lib/security/cacerts" \
                 -storepass "changeit" \
                 -alias "simvaCA" -v 2>/dev/null \
             | grep "SHA256:" | awk '{print $2}' | tr -d ':'
         )
+        set -e
 
         # Compute fingerprint of the certificate file
         file_fingerprint=$(openssl x509 -noout -fingerprint -sha256 -in "${SIMVA_ROOT_CA_FILE}" \
