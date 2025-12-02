@@ -35,6 +35,9 @@ function sourceBackupEnvFile() {
         if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh" ]]; then
             source "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh"
         fi
+        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.dev.sh" ]]; then
+            source "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.dev.sh"
+        fi
     fi
 }
 
@@ -42,6 +45,7 @@ function sourceEnvFile() {
     dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
     dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh"
     dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.sh"
+    dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.dev.sh"
     if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
         source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
     fi
@@ -51,6 +55,9 @@ function sourceEnvFile() {
     if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then 
         if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh" ]]; then
             source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh"
+        fi
+        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.dev.sh" ]]; then
+            source "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.dev.sh"
         fi
     fi
 }
@@ -638,6 +645,10 @@ function install() {
         if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then 
             if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh" ]]; then    
                 cp "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env-dev-$current_datetime.sh"
+            fi 
+            cp "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh"
+            if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.dev.sh" ]]; then    
+                cp "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.dev.sh" "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env-dev-$current_datetime.sh"
             fi 
             cp "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh"
         fi

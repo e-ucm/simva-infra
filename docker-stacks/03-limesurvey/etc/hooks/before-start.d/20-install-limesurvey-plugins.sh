@@ -19,7 +19,7 @@ for key in "${!plugins[@]}"; do
     ext_zip="$ext_name-${ext_version}.zip"
     if [[ ! -f "${PLUGINS_DIR}/${ext_zip}" ]]; then
         wget -q -P "${PLUGINS_DIR}" "${GIT_RELEASE_URL}/${ext_zip}"
-        chmod 777 "${PLUGINS_DIR}/${ext_zip}"
+        chmod -R ${SIMVA_LIMESURVEY_DIR_MODE} "${PLUGINS_DIR}/${ext_zip}"
         shasums="SHA256SUMS-$ext_name-${ext_version}"
         if [[ ! -f "${PLUGINS_DIR}/${shasums}" ]]; then
             wget -q -O "${PLUGINS_DIR}/${shasums}" "${GIT_RELEASE_URL}/SHA256SUMS"
@@ -31,5 +31,5 @@ for key in "${!plugins[@]}"; do
     tmp_dir=$(mktemp -d)
     unzip "${PLUGINS_DIR}/${ext_zip}" -d $tmp_dir
     rsync -avh --delete --itemize-changes ${tmp_dir}/ "${DEPLOYMENT_DIR}/$ext_name"
-    chown -R 33:33 "${DEPLOYMENT_DIR}/$ext_name"
+    chown -R  ${SIMVA_LIMESURVEY_GUID}:${SIMVA_LIMESURVEY_UUID} "${DEPLOYMENT_DIR}/$ext_name"
 done

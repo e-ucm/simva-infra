@@ -13,7 +13,7 @@ if [[ ! -e ""${SIMVA_ROOT_CA_FILE}"" ]]; then
         mkcert -install
         cp "$(mkcert -CAROOT)/${SIMVA_ROOT_CA_FILENAME}" ${SIMVA_ROOT_CA}/
         cp "$(mkcert -CAROOT)/${SIMVA_ROOT_CA_KEY_FILENAME}" ${SIMVA_ROOT_CA}/
-        chmod a+r "${SIMVA_ROOT_CA_FILE}"
+        chmod ${SIMVA_CERT_FILE_MOD} "${SIMVA_ROOT_CA_FILE}"
         cp "${SIMVA_ROOT_CA_FILE}" ${SIMVA_ROOT_CA}/backup/
         cp "${SIMVA_ROOT_CA_KEY_FILE}" ${SIMVA_ROOT_CA}/backup/
         set +e
