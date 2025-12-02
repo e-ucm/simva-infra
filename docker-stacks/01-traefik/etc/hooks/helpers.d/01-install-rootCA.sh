@@ -16,8 +16,8 @@ if [[ ! -e ""${SIMVA_ROOT_CA_FILE}"" ]]; then
         chmod ${SIMVA_CERT_FILE_MOD} "${SIMVA_ROOT_CA_FILE}"
         cp "${SIMVA_ROOT_CA_FILE}" ${SIMVA_ROOT_CA}/backup/
         cp "${SIMVA_ROOT_CA_KEY_FILE}" ${SIMVA_ROOT_CA}/backup/
-        set +e
         source ${SIMVA_HOME}/bin/check-checksum.sh;
+        set +e
         _check_checksum $SIMVA_ROOT_CA "${SIMVA_ROOTCA_SHA256SUMS_FILE}" "${SIMVA_ROOT_CA_FILENAME}"
         set -e
     else
