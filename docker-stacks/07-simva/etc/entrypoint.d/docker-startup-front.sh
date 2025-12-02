@@ -6,7 +6,7 @@ if [[ "${NODE_ENV:-production}" == "development" ]]; then
   if [[ "${ENABLE_DEBUG_PROFILING:-false}" == "true" ]]; then
       if [[ ! -e ${PROFILING_FOLDER} ]]; then 
         mkdir -p ${PROFILING_FOLDER}
-        chmod -R 777 ${PROFILING_FOLDER}
+        chmod -R ${SIMVA_NODE_DIR_MODE} ${PROFILING_FOLDER}
       fi
       rm -rf ./node_trace.*.log
       dateFormated=$(date +%Y-%m-%d_%H-%M-%S)

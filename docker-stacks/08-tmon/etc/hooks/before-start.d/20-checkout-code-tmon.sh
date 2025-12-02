@@ -44,7 +44,7 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
         RUNBUILDCODE=true
     fi
     rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/tmon/t-mon/ > /dev/null 2>&1
-    chmod -R 777 ${SIMVA_DATA_HOME}/tmon/t-mon/
+    chmod -R ${SIMVA_TMON_DIR_MODE} ${SIMVA_DATA_HOME}/tmon/t-mon/
 fi
 if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     ###########################################################
@@ -60,7 +60,7 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     if [[ ! $res == "0" ]]; then
         RUNBUILDCODE=true
     fi
-    chmod -R 777 ${SIMVA_TMON_GIT_REPO}
+    chmod -R ${SIMVA_TMON_DIR_MODE} ${SIMVA_TMON_GIT_REPO}
 fi
 if [[ ${RUNBUILDCODE} == true ]] ; then
     exec ${SIMVA_HOME}/simva build ./08-tmon
