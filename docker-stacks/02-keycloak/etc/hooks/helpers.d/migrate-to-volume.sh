@@ -49,4 +49,6 @@ fi
 
     # Files
     find /dump -type f -print0 | xargs -0 chmod ${SIMVA_MARIA_DB_BACKUP_FILE_MODE};
+    
+    ls -lia /dump
   "

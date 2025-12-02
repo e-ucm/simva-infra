@@ -29,6 +29,7 @@ fi
 
     # Files
     find /shlink_db -type f -print0 | xargs -0 chmod ${SIMVA_SHLINK_FILE_MODE};
+    ls -lia /shlink_db;
 "
 
 if [[ -d "${SIMVA_DATA_HOME}/shlink/config" ]]; then 
@@ -47,4 +48,5 @@ fi
 
     # Files
     find /shlink_config -type f -print0 | xargs -0 chmod ${SIMVA_SHLINK_FILE_MODE};
+    ls -lia /shlink_config;
   "

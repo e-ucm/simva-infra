@@ -28,4 +28,5 @@ fi
 
     # Files
     find /minio -type f -print0 | xargs -0 chmod ${SIMVA_MINIO_FILE_MODE};
+    ls -lia /minio;
   "

@@ -28,4 +28,5 @@ fi
 
     # Files
     find /kafka_data -type f -print0 | xargs -0 chmod ${SIMVA_KAFKA_FILE_MODE};
+    ls -lia /kafka_data;
   "

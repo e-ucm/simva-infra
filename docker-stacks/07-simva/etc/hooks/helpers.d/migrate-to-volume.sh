@@ -59,5 +59,6 @@ for folder in "${!folders_volumes[@]}"; do
 
         # Files
         find /volume_data -type f -print0 | xargs -0 chmod $fileMod;
+        ls -lia /volume_data;
     "
 done

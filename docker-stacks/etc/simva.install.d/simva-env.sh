@@ -2,7 +2,7 @@
 ################
 # SIMVA STACKS #
 ################
-export SIMVA_STACKS="00-network 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 07-simva 08-tmon 09-logs"
+export SIMVA_STACKS="00-network 01-traefik 09-logs 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 07-simva 08-tmon"
 
 #############################
 # SIMVA installation folder #
@@ -94,9 +94,9 @@ export SIMVA_KAFKA_VERSION="7.8.0"
 #KAFKA SETTINGS
 export SIMVA_KAFKA_GUID="1000" #appuser
 export SIMVA_KAFKA_UUID="1000" #appuser 
-export SIMVA_KAKFKA_TOP_DIR_MODE="755" #rwxr-xr-x
-export SIMVA_KAKFKA_DIR_MODE="755" #rwxr-xr-x
-export SIMVA_KAKFKA_FILE_MODE="644" #rw-r--r--
+export SIMVA_KAFKA_TOP_DIR_MODE="755" #rwxr-xr-x
+export SIMVA_KAFKA_DIR_MODE="755" #rwxr-xr-x
+export SIMVA_KAFKA_FILE_MODE="644" #rw-r--r--
 
 #SHLINK IMAGE
 export SIMVA_SHLINK_IMAGE="ghcr.io/shlinkio/shlink"

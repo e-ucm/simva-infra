@@ -88,7 +88,6 @@ export SIMVA_SOCKET_PROXY_LOG_LEVEL="info"
 # Traefik info #
 ################
 # Traefik: disables SSL certificate verification
-# Note: It is far better (and more secure) to config SIMVA_SSL_ROOT_CAS
 export SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY="false"
 
 # Traefik: logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO
