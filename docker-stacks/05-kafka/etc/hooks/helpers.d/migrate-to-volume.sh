@@ -17,12 +17,15 @@ if [[ -d "${SIMVA_DATA_HOME}/kafka/data/kafka1/data" ]]; then
 fi
 
 "${SIMVA_BIN_HOME}/volumectl.sh" exec "kafka_data" "/kafka_data" "
-    # Set ownership recursively (appuser:appuser - 1000:1000)
-    chown -R 1000:1000 /kafka_data;
+    # Set ownership recursively
+    chown -R ${SIMVA_KAFKA_GUID}:${SIMVA_KAFKA_UUID} /kafka_data;
 
-    # Directories -> 755 (rwxr-xr-x)
-    find /kafka_data -type d -print0 | xargs -0 chmod 755;
+    # Top-level volume directory
+    chmod ${SIMVA_KAFKA_TOP_DIR_MODE} /kafka_data;
 
-    # Files -> 644 (rw-r--r--)
-    find /kafka_data -type f -print0 | xargs -0 chmod 644;
+    # Directories
+    find /kafka_data -type d -print0 | xargs -0 chmod ${SIMVA_KAFKA_DIR_MODE};
+
+    # Files
+    find /kafka_data -type f -print0 | xargs -0 chmod ${SIMVA_KAFKA_FILE_MODE};
   "

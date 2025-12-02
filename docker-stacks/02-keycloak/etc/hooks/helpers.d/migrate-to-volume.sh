@@ -18,17 +18,17 @@ if [[ -d "${SIMVA_DATA_HOME}/keycloak/mariadb" ]]; then
 fi
 
 "${SIMVA_BIN_HOME}/volumectl.sh" exec "kc_maria_db_data" "/volume_data" "
-    # Set ownership recursively (mysql:mysql - 999:ping)
-    chown -R 999:ping /volume_data;
+    # Set ownership recursively
+    chown -R ${SIMVA_MARIA_DB_GUID}:${SIMVA_MARIA_DB_UUID} /volume_data;
 
-    # Top-level volume directory (rwxr-xr-x)
-    chmod 755 /volume_data;
+    # Top-level volume directory
+    chmod ${SIMVA_MARIA_DB_TOP_DIR_MODE} /volume_data;
 
-    # MySQL data directories (mysql, performance_schema, keycloak) -> 700 (rwx------)
-    find /volume_data -type d -print0 | xargs -0 chmod 700;
+    # MySQL data directories (mysql, performance_schema, keycloak)
+    find /volume_data -type d -print0 | xargs -0 chmod ${SIMVA_MARIA_DB_DIR_MODE};
 
-    # All files -> 660 (rw-rw----)
-    find /volume_data -type f -print0 | xargs -0 chmod 660;
+    # All files
+    find /volume_data -type f -print0 | xargs -0 chmod ${SIMVA_MARIA_DB_FILE_MODE};
 
     ls -lia /volume_data
   "
@@ -39,11 +39,14 @@ fi
 
 "${SIMVA_BIN_HOME}/volumectl.sh" exec "kc_maria_db_backup_data" "/dump" "
     # Set ownership recursively
-    chown -R root:root /dump;
+    chown -R ${SIMVA_MARIA_DB_BACKUP_GUID}:${SIMVA_MARIA_DB_BACKUP_UUID} /dump;
 
-    # Directories -> 755 (rwxr-xr-x)
-    find /dump -type d -print0 | xargs -0 chmod 755;
+    # Top-level volume directory
+    chmod ${SIMVA_MARIA_DB_BACKUP_TOP_DIR_MODE} /volume_data;
 
-    # Files -> 644 (rw-r--r--)
-    find /dump -type f -print0 | xargs -0 chmod 644;
+    # Directories
+    find /dump -type d -print0 | xargs -0 chmod ${SIMVA_MARIA_DB_BACKUP_DIR_MODE};
+
+    # Files
+    find /dump -type f -print0 | xargs -0 chmod ${SIMVA_MARIA_DB_BACKUP_FILE_MODE};
   "

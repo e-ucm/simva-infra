@@ -27,26 +27,37 @@ for folder in "${!folders_volumes[@]}"; do
         rm -rf "$folder"
     fi
     if [[ $volume == "simva_mongodb_data" ]]; then 
-        ownership="999:999" #"mongodb:mongodb" // "999:999" 
-        # Directories -> 700 (rwx------)
-        directoryMod="700"
-        # Files -> 600 (rw-------)
-        fileMod="600"
+        # Use MongoDB specific permissions
+        guid="${SIMVA_MONGO_DB_GUID}"
+        uuid="${SIMVA_MONGO_DB_UUID}"
+        # Top directory
+        topDirectoryMod="${SIMVA_MONGO_DB_TOP_DIR_MODE}"
+        # Directories
+        directoryMod="${SIMVA_MONGO_DB_DIR_MODE}"
+        # Files
+        fileMod="${SIMVA_MONGO_DB_FILE_MODE}"
     else
-        ownership="1000:1000" ##"node:node" // "1000:1000"
-        # Directories -> 775 (drwxrwxr-x)
-        directoryMod="775"
-        # Files -> 664 (rw-rw-r--)
-        fileMod="664"
+        # Use Node specific permissions
+        guid="${SIMVA_NODE_GUID}"
+        uuid="${SIMVA_NODE_UUID}"
+        # Top directory
+        topDirectoryMod="${SIMVA_NODE_TOP_DIR_MODE}"
+        # Directories
+        directoryMod="${SIMVA_NODE_DIR_MODE}"
+        # Files
+        fileMod="${SIMVA_NODE_FILE_MODE}"
     fi
     "${SIMVA_BIN_HOME}/volumectl.sh" exec "$volume" "/volume_data" "
         # Set ownership recursively
-        chown -R $ownership /volume_data;
+        chown -R $guid:$uuid /volume_data;
 
-        # Directories -> 755 (rwxr-xr-x)
+        # Top-level volume directory
+        chmod $topDirectoryMod /volume_data;
+
+        # Directories
         find /volume_data -type d -print0 | xargs -0 chmod $directoryMod;
 
-        # Files -> 644 (rw-r--r--)
+        # Files
         find /volume_data -type f -print0 | xargs -0 chmod $fileMod;
     "
 done

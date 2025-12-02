@@ -18,11 +18,14 @@ fi
 
 "${SIMVA_BIN_HOME}/volumectl.sh" exec "minio_data" "/minio" "
     # Set ownership recursively
-    chown -R 1000:1000 /minio;
+    chown -R ${SIMVA_MINIO_GUID}:${SIMVA_MINIO_UUID} /minio;
     
-    # Directories -> 755 (rwxr-xr-x)
-    find /minio -type d -print0 | xargs -0 chmod 755;
+    # Top-level volume directory
+    chmod ${SIMVA_MINIO_TOP_DIR_MODE} /minio;
 
-    # Files -> 644 (rw-r--r--)
-    find /minio -type f -print0 | xargs -0 chmod 644;
+    # Directories
+    find /minio -type d -print0 | xargs -0 chmod ${SIMVA_MINIO_DIR_MODE};
+
+    # Files
+    find /minio -type f -print0 | xargs -0 chmod ${SIMVA_MINIO_FILE_MODE};
   "
