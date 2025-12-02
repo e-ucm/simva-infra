@@ -51,8 +51,8 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     ########################### TMON ##########################
     ###########################################################
     echo "TMON"
-    set +e
     source ${SIMVA_HOME}/bin/check-checksum.sh
+    set +e
     _check_checksum ${SIMVA_TMON_GIT_REPO} "${SIMVA_DATA_HOME}/tmon/tmon-sha256sums" "requirements.txt"
     res=$?
     set -e
