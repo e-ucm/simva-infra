@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ################
 # SIMVA STACKS #
 ################
@@ -225,6 +226,7 @@ fi
 # Traefik: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
 # example: foo.crt,bar.crt
+export SIMVA_CERT_FILE_MOD="644" #rw-r--r--
 export SIMVA_SSL_ROOT_CAS_FILENAME="isrgrootx1.pem"
 export SIMVA_ROOT_CA_FILENAME="rootCA.pem"
 export SIMVA_ROOT_CA_KEY_FILENAME="rootCA-key.pem"
