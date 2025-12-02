@@ -73,7 +73,7 @@ fi
 
     # Files
     find /ls_tmp -type f -print0 | xargs -0 chmod ${SIMVA_LIMESURVEY_FILE_MODE};
-    ls -lia /ls_upload
+    ls -lia /ls_tmp
   "
 
 if [[ -d "${SIMVA_DATA_HOME}/limesurvey/data/upload" ]]; then 
