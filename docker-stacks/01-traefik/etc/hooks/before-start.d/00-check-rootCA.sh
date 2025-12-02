@@ -93,7 +93,7 @@ if [[ $SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN  == "false" ]]; then
         traefik_shlink_file_exists=true;
     fi
     set +e
-    _check_checksum $SIMVA_TLS_HOME "${SIMVA_TRAEFIK_SHLINK_SHA256SUMS_FILE}" "${SIMVA_TRAEFIK_SHLINK_CERT_FILE}"
+    _check_checksum $SIMVA_TLS_HOME "${SIMVA_TRAEFIK_SHLINK_SHA256SUMS_FILE}" "${SIMVA_TRAEFIK_SHLINK_CERT_FILENAME}"
     ret=$?
     set -e
     echo $ret
