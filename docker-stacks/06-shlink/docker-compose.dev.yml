@@ -13,7 +13,7 @@ x-default-opts:
 services:
   shlink-web-client:
     << : *default-opts
-    image: ${SIMVA_SHLINK_IMAGE:-ghcr.io/shlinkio/shlink-web-client}:${SIMVA_SHLINK_VERSION:-latest}
+    image: ${SIMVA_SHLINK_ADMIN_IMAGE:-ghcr.io/shlinkio/shlink-web-client}:${SIMVA_SHLINK_ADMIN_VERSION:-latest}
     volumes:
       - /etc/localtime:/etc/localtime:ro
     environment:

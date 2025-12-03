@@ -31,7 +31,11 @@ export SIMVA_KAFKA_REST_IMAGE="confluentinc/cp-kafka-rest"
 export SIMVA_KAKFA_UI_IMAGE="provectuslabs/kafka-ui"
 export SIMVA_KAKFA_UI_VERSION="latest"
 
-# Zoonavigator image
+#SHLINK ADMIN IMAGE
+export SIMVA_SHLINK_ADMIN_IMAGE="ghcr.io/shlinkio/shlink-web-client"
+export SIMVA_SHLINK_ADMIN_VERSION="latest"
+
+# Mongoku image
 export SIMVA_MONGOKU_UI_IMAGE="huggingface/mongoku"
 export SIMVA_MONGOKU_UI_VERSION="latest"
 
