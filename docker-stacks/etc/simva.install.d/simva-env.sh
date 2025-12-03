@@ -237,6 +237,7 @@ export SIMVA_TRUSTSTORE_FILENAME="truststore.jks"
 export SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME="traefik-fullchain.pem"
 export SIMVA_TRAEFIK_KEY_FILENAME="traefik-key.pem"
 export SIMVA_TRAEFIK_CERT_FILENAME="traefik.pem"
+export SIMVA_CA_ALIAS="simvaCA" # Alias for the CA certificate in the Java truststore
 
 export SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILENAME="traefik-shlink-fullchain.pem"
 export SIMVA_TRAEFIK_SHLINK_KEY_FILENAME="traefik-shlink-key.pem"

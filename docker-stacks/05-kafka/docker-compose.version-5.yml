@@ -102,7 +102,7 @@ services:
       # NOTE: To avoid to change the sourcecode we modify the JDK truststore so the AWS S3 client can connect to minio using a self-signed certificate
       JDK_TRUSTORE: "/usr/lib/jvm/zulu-8-amd64/jre/lib/security/cacerts"
       JDK_TRUSTORE_PASSWORD: "changeit"
-      SIMVA_CA_ALIAS: "simvaCA"
+      SIMVA_CA_ALIAS: "${SIMVA_CA_ALIAS:-simvaCA}"
       SIMVA_CA_FILE: "/usr/share/simva/ca/rootCA.pem"
 
       # Kafka connect options
