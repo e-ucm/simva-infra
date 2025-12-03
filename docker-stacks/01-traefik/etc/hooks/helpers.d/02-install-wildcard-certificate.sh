@@ -22,7 +22,7 @@ if [[ ! -e "${SIMVA_TRAEFIK_CERT_FILE}" ]]; then
         _check_checksum $SIMVA_TLS_HOME "${SIMVA_TRAEFIK_SHA256SUMS_FILE}" "${SIMVA_TRAEFIK_CERT_FILENAME}"
         set -e
     else 
-        echo "Please insert your ${SIMVA_TRAEFIK_CERT_FILE} and ${SIMVA_TRAEFIK_KEY_FILE} or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
+        echo "Please insert your cert file at '${SIMVA_TRAEFIK_CERT_FILE}' and key file at '${SIMVA_TRAEFIK_KEY_FILE}' or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
         exit 1;
     fi
 fi

@@ -15,7 +15,7 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -ge 26 ]]; then
         existing_fingerprint=$(
             "${SIMVA_BIN_HOME}/run-command.sh" keytool -list -keystore "/usr/lib/jvm/java-21-openjdk-21.0.6.0.7-1.el9.x86_64/lib/security/cacerts" \
                 -storepass "changeit" \
-                -alias "simvaCA" -v 2>/dev/null \
+                -alias "${SIMVA_CA_ALIAS}" -v 2>/dev/null \
             | grep "SHA256:" | awk '{print $2}' | tr -d ':'
         )
         set -e
@@ -48,8 +48,8 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -ge 26 ]]; then
             "${SIMVA_BIN_HOME}/run-command.sh" keytool -importcert \
                 -trustcacerts -noprompt -cacerts \
                 -storepass "changeit" \
-                -file "/root/.keycloak/certs/ca/rootCA.pem" \
-                -alias "simvaCA"
+                -file "/root/.keycloak/certs/ca/${SIMVA_ROOT_CA_FILENAME}" \
+                -alias "${SIMVA_CA_ALIAS}"
 
             # Restore -e if it was enabled
             if [[ $launch_bash_options =~ e ]]; then set -e; fi

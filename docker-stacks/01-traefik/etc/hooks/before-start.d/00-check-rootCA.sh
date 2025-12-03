@@ -43,7 +43,7 @@ fi
 
 # Update traefik fullchain cert if root CA or traefik cert have been updated
 traefik_fullchain_cert_automatically_updated=false;
-if [[ $rootCA_updated == "true" || $traefik_cert_updated == "true" ]]; then
+if [[ $rootCA_updated == "true" || $traefik_cert_updated == "true" ]] && [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
     if [[ $rootCA_file_exists == "true" && $traefik_file_exists == "true" ]]; then
         read -p "Are you sure that the root CA has been updated ? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
     fi
@@ -58,7 +58,7 @@ if [[ -f "${SIMVA_TRAEFIK_FULLCHAIN_SHA256SUMS_FILE}" ]]; then
     traefik_fullchain_file_exists=true;
 fi
 traefik_fullchain_cert_updated=false;
-if [[ ! traefik_fullchain_cert_automatically_updated == "true" ]]; then
+if [[ ! $traefik_fullchain_cert_automatically_updated == "true" ]]; then
     set +e
     _check_checksum $SIMVA_TLS_HOME "${SIMVA_TRAEFIK_FULLCHAIN_SHA256SUMS_FILE}" "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME}"
     ret=$?
@@ -73,7 +73,7 @@ fi
 # TRUSTORE UPDATE #
 ###################
 # Update truststore if traefik fullchain cert have been updated
-if [[ $traefik_fullchain_cert_updated == "true" || traefik_fullchain_cert_automatically_updated == "true" ]]; then
+if [[ $traefik_fullchain_cert_updated == "true" || $traefik_fullchain_cert_automatically_updated == "true" ]]  && [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then
     if [[ $traefik_fullchain_file_exists == "true" && ! $traefik_fullchain_cert_automatically_updated == "true" ]]; then
         read -p "Are you sure that the traefik fullchain has been updated ? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
         #"$SIMVA_HOME/simva" backup "$CURRENT_STACK";
@@ -101,7 +101,7 @@ if [[ $SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN  == "false" ]]; then
     if [[ $ret != 0 ]]; then
         traefik_shlink_cert_updated=true;
     fi
-    if [[ $traefik_shlink_cert_updated == "true" || $rootCA_updated == "true" ]]; then 
+    if [[ $traefik_shlink_cert_updated == "true" || $rootCA_updated == "true" ]] && [[ "${SIMVA_TLS_GENERATE_SELF_SIGNED}" == "true" ]]; then 
         "${HELPERS_STACK_HOME}/03bis-install-shlink-fullchain.sh"
         traefik_shlink_fullchain_cert_automatically_updated=true;
     fi
@@ -112,7 +112,7 @@ if [[ $SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN  == "false" ]]; then
         traefik_shlink_fullchain_file_exists=true;
     fi
     traefik_shlink_fullchain_cert_updated=false;
-    if [[ ! traefik_shlink_fullchain_cert_automatically_updated == "true" ]]; then
+    if [[ ! $traefik_shlink_fullchain_cert_automatically_updated == "true" ]]; then
         set +e
         _check_checksum $SIMVA_TLS_HOME "${SIMVA_TRAEFIK_SHLINK_FULLCHAIN_SHA256SUMS_FILE}" "${SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILENAME}"
         ret=$?
@@ -121,18 +121,5 @@ if [[ $SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN  == "false" ]]; then
         if [[ $ret != 0 ]]; then
             traefik_shlink_fullchain_cert_updated=true;
         fi
-    fi
-
-    ###################
-    # TRUSTORE UPDATE #
-    ###################
-    # Update truststore if traefik fullchain cert have been updated
-    if [[ $traefik_shlink_fullchain_cert_updated == "true" || traefik_shlink_fullchain_cert_automatically_updated == "true" ]]; then
-        if [[ $traefik_shlink_file_exists == "true" && ! $traefik_shlink_fullchain_cert_automatically_updated == "true" ]]; then
-            read -p "Are you sure that the traefik shlink fullchain has been updated ? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
-            #"$SIMVA_HOME/simva" backup "$CURRENT_STACK";
-        fi
-        rm -rf ${SIMVA_TRUSTSTORE_SHLINK_FILE}
-        "${HELPERS_STACK_HOME}/04bis-install-shlink-trustore.sh"
     fi
 fi
