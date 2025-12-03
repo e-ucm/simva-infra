@@ -2,3 +2,4 @@ csp-reporter
 .version
 .externaldomain
 .initialized
+nginx_upstream_hosts.txt

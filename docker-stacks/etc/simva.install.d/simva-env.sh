@@ -210,19 +210,9 @@ case $(uname -m) in
         export SIMVA_SYSTEM_ARCHITECTURE=$(uname -m);;
 esac
 
-########################
-# Domain and subdomain #
-########################
-if [[ $SIMVA_SHLINK_EXTERNAL_DOMAIN == "" ]]; then 
-    export SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN=true
-    export SIMVA_SHLINK_EXTERNAL_DOMAIN="${SIMVA_SHLINK_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
-else 
-    export SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN=false
-fi
-
-########################
-# Traefik certificates #
-########################
+#############################
+# Traefik certificates NAME #
+#############################
 # Traefik: list of certificates (as file paths, or data bytes) that will be set as Root Certificate
 # Authorities when using a self-signed TLS certificate
 # example: foo.crt,bar.crt
@@ -244,6 +234,25 @@ export SIMVA_TRAEFIK_SHLINK_KEY_FILENAME="traefik-shlink-key.pem"
 export SIMVA_TRAEFIK_SHLINK_CERT_FILENAME="traefik-shlink.pem"
 export SIMVA_TRUSTSTORE_SHLINK_FILENAME="truststore-shlink.jks"
 
+###################################
+# Domain and subdomain for SHLINK #
+###################################
+# If SIMVA_SHLINK_EXTERNAL_DOMAIN is not set, it will use SIMVA_EXTERNAL_DOMAIN
+# to build the full domain for SHLINK service
+if [[ $SIMVA_SHLINK_EXTERNAL_DOMAIN == "" ]]; then 
+    export SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN=true
+    export SIMVA_SHLINK_EXTERNAL_DOMAIN="${SIMVA_SHLINK_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"    
+    export SIMVA_TRAEFIK_SHLINK_FULLCHAIN_CERT_FILENAME=$SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME
+    export SIMVA_TRAEFIK_SHLINK_KEY_FILENAME=$SIMVA_TRAEFIK_KEY_FILENAME
+    export SIMVA_TRAEFIK_SHLINK_CERT_FILENAME=$SIMVA_TRAEFIK_CERT_FILENAME
+    export SIMVA_TRUSTSTORE_SHLINK_FILENAME=$SIMVA_TRUSTSTORE_FILENAME
+else
+    export SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN=false
+fi
+
+#############################
+# Traefik certificates PATH #
+#############################
 export SIMVA_ROOT_CA="${SIMVA_TLS_HOME}/ca"
 export SIMVA_SSL_ROOT_CAS="${SIMVA_ROOT_CA}/${SIMVA_SSL_ROOT_CAS_FILENAME}"
 export SIMVA_ROOT_CA_FILE="${SIMVA_ROOT_CA}/${SIMVA_ROOT_CA_FILENAME}"
@@ -263,6 +272,9 @@ export SIMVA_TRAEFIK_SHLINK_KEY_FILE="${SIMVA_TLS_HOME}/${SIMVA_TRAEFIK_SHLINK_K
 export SIMVA_TRAEFIK_SHLINK_CERT_FILE="${SIMVA_TLS_HOME}/${SIMVA_TRAEFIK_SHLINK_CERT_FILENAME}"
 export SIMVA_TRUSTSTORE_SHLINK_FILE="${SIMVA_TLS_HOME}/${SIMVA_TRUSTSTORE_SHLINK_FILENAME}"
 
+###################################
+# Traefik certificates SHA256SUMS #
+###################################
 export SIMVA_SHA256SUMS_TLS_HOME="${SIMVA_TLS_HOME}/sha256sums"
 export SIMVA_ROOTCA_SHA256SUMS_FILE="${SIMVA_SHA256SUMS_TLS_HOME}/rootca-sha256sums"
 export SIMVA_TRAEFIK_SHA256SUMS_FILE="${SIMVA_SHA256SUMS_TLS_HOME}/traefik-sha256sums"
