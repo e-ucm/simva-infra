@@ -1,5 +1,9 @@
-admin_username=$(echo ${SIMVA_USER:-admin} | tr '[:upper:]' '[:lower:]');
-json="{\"username\":\"${admin_username}\",\"password\":\"${SIMVA_PASSWORD:-password}\"}";
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
+
+admin_username=$(echo ${SIMVA_USER} | tr '[:upper:]' '[:lower:]');
+json="{\"username\":\"${admin_username}\",\"password\":\"${SIMVA_PASSWORD}\"}";
 
 set +e
 /bin/wait-available-with-connection.sh 'SIMVA API' "${SIMVA_PROTOCOL}://${SIMVA_HOST}:${SIMVA_PORT}/users/login" ${json} 'token' ${NODE_EXTRA_CA_CERTS};
@@ -11,8 +15,8 @@ if [[ $ret == 0 ]]; then
   cd "/home/node/app"
 
   #start trace allocator
-  echo "${NODE_ENV:-production}"
-  if [[ "${NODE_ENV:-production}" == "development" ]]; then
+  echo "${NODE_ENV}"
+  if [[ "${NODE_ENV}" == "development" ]]; then
     if [[ "${ENABLE_DEBUG_PROFILING:-false}" == "true" ]]; then
       if [[ ! -e ${PROFILING_FOLDER} ]]; then 
         mkdir -p ${PROFILING_FOLDER}

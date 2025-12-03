@@ -1,8 +1,12 @@
-mkdir -p ${SIMVA_STORAGE_PATH:-/storage} && cd /home/node/app
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
+
+mkdir -p ${SIMVA_STORAGE_PATH} && cd /home/node/app
 
 #start api
-echo "${NODE_ENV:-production}"
-if [[ "${NODE_ENV:-production}" == "development" ]]; then
+echo "${NODE_ENV}"
+if [[ "${NODE_ENV}" == "development" ]]; then
   if [[ "${ENABLE_DEBUG_PROFILING:-false}" == "true" ]]; then
       if [[ ! -e ${PROFILING_FOLDER} ]]; then 
         mkdir -p ${PROFILING_FOLDER}

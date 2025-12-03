@@ -5,7 +5,7 @@ set -euo pipefail
 export RUN_IN_CONTAINER=true
 export RUN_IN_AS_SPECIFIC_USER="root"
 
-container_list=("simva-api" "simva-front" "simva-trace-allocator");
+container_list=("simva-front" "simva-trace-allocator" "simva-api");
 for container_name in "${container_list[@]}"; do
     export RUN_IN_CONTAINER_NAME="$container_name"
     # Get the internal CA certificate content from inside the container
@@ -33,7 +33,7 @@ for container_name in "${container_list[@]}"; do
     # Compare and install if different
     if [[ $install == "true" ]]; then
         echo "Certificates differ — updating CA inside container..."
-        "${SIMVA_BIN_HOME}/run-command.sh" /bin/bash -c "cp /var/lib/simva/ca/$SIMVA_ROOT_CA_FILENAME \"/usr/local/share/ca-certificates/internal-CA.crt\";
+        "${SIMVA_BIN_HOME}/run-command.sh" /bin/bash -c "cp /var/lib/simva/tls/ca/$SIMVA_ROOT_CA_FILENAME \"/usr/local/share/ca-certificates/internal-CA.crt\";
             update-ca-certificates;
             cat /etc/ca-certificates.conf;
             echo \"Certificate added!\";"
