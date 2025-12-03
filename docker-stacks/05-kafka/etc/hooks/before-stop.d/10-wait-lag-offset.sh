@@ -4,8 +4,8 @@ set -euo pipefail
 
 RUN_IN_CONTAINER=true
 RUN_IN_CONTAINER_NAME="kafka1"
-set +e
 source "${SIMVA_BIN_HOME}/check-docker-running.sh"
+set +e
 _check_docker_running
 ret=$?
 set -e
