@@ -2,7 +2,7 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-if { [[ "$SIMVA_ENVIRONMENT" == "development" ]] && { [[ "$SIMVA_DEV_LOAD_BALANCER" != "true" ]] || [[ "$SIMVA_LOAD_BALANCER" != "true" ]]} ; } || \
+if { [[ "$SIMVA_ENVIRONMENT" == "development" ]] && [[ "$SIMVA_DEV_LOAD_BALANCER" != "true" ]] && [[ "$SIMVA_LOAD_BALANCER" != "true" ]]; } || \
    { [[ "$SIMVA_ENVIRONMENT" != "development" ]] && [[ "$SIMVA_LOAD_BALANCER" != "true" ]]; }; then
     export TRAEFIK_WEB_SECURE_SCHEME_PERMANENT="[entryPoints.web.http.redirections]
       [entryPoints.web.http.redirections.entryPoint]
