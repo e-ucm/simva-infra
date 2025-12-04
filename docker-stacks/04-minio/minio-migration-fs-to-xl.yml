@@ -16,77 +16,6 @@ networks:
     external: true
 
 services:
-  mc:
-    << : *default-opts
-    image: ${SIMVA_MINIO_MC_IMAGE:-minio/mc}:${SIMVA_MINIO_MC_VERSION:-RELEASE.2024-06-01T15-03-35Z}
-    depends_on:
-      - minio
-      - minio-mig
-    entrypoint: >
-      /bin/sh -c '
-        if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then
-          cp /root/.mc/certs/CAs/rootCA.pem "/etc/ssl/certs/internal-CA.pem";
-          cat "/etc/ssl/certs/internal-CA.pem" >> /etc/ssl/cert.pem;
-        fi;
-        /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_HOST} && if [ ! -e "/data/minio-initialized" ]; then 
-          /usr/bin/mc config host add simva-minio $${MINIO_URL} $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY} --api s3v4;
-          if [[ $$? -ne 0 ]]; then
-            echo "Error: Unable to initialize connection to MinIO."
-            exit 1
-          fi;
-          /usr/bin/mc ready simva-minio;
-          /usr/bin/mc --debug mb simva-minio/$${MINIO_BUCKET};
-          format=$$(cat /data/.minio.sys/format.json);
-          echo "Format :";
-          echo $$format;
-          /usr/bin/mc --debug admin user add simva-minio/ $${SIMVA_SINK_USER} $${SIMVA_SINK_SECRET};
-          /usr/bin/mc --debug admin policy create simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json;
-          /usr/bin/mc --debug admin policy attach simva-minio/ simvaSink --user $${SIMVA_SINK_USER};
-          touch /data/minio-initialized;
-        fi
-        /container-tools/wait-for -t $${WAIT_TIMEOUT} -it $${MINIO_MIG_HOST} &&  if [ ! -e "/data/minio-migrated" ]; then
-          /usr/bin/mc config host add simva-minio-mig $${MINIO_MIG_URL} $${MINIO_ACCESS_KEY} $${MINIO_SECRET_KEY} --api s3v4;
-          if [[ $$? -ne 0 ]]; then
-            echo "Error: Unable to initialize connection to MinIO migration."
-            exit 1
-          fi;
-          /usr/bin/mc ready simva-minio-mig;
-          /usr/bin/mc mirror simva-minio-mig/$${MINIO_BUCKET} simva-minio/$${MINIO_BUCKET};
-          echo "Format :";
-          cat /data/.minio.sys/format.json;
-          touch "/data/minio-migrated";
-        fi
-      '
-    volumes:
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio:/data
-      - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/minio/policies:/policies:ro
-      # Add extra CA (for self-signed certificates)
-      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.mc/certs/CAs/
-      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
-      - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available.sh:/bin/wait-available.sh:ro
-    environment:
-      MINIO_HOST: "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}:443"
-      MINIO_MIG_HOST: "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-mig.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9001"
-      MINIO_URL: "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      MINIO_MIG_URL: "http://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-mig.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9000"
-      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
-      MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
-      MINIO_BUCKET: "${SIMVA_TRACES_BUCKET_NAME:-traces}"
-      SIMVA_SINK_USER: "${SIMVA_KAFKA_CONNECT_SINK_USER:-simva-sink}"
-      SIMVA_SINK_SECRET: "${SIMVA_KAFKA_CONNECT_SINK_SECRET:-password}"
-      SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
-      SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
-      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
-    hostname: mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    networks:
-      default:
-        aliases:
-          - mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-      traefik_services:
-        aliases:
-          - mc.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-
   minio-mig:
     << : *default-opts
     image: ${SIMVA_MINIO_IMAGE:-quay.io/minio/minio}:RELEASE.2022-06-25T15-50-16Z
@@ -107,10 +36,10 @@ services:
      - '/data'
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio-mig/:/data
+      - minio_mig_data:/data
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
-      - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available.sh:/bin/wait-available.sh:ro
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh:ro
     environment:
       MINIO_ROOT_USER: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_BROWSER_REDIRECT_URL: "http://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-mig.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9001"
@@ -152,13 +81,13 @@ services:
      - '/data'
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/minio/:/data
+      - minio_data:/data
 # be advised if minio is launched as a non-root user you need to change this setting
 # Note too that this setting it is only needed if using a non-recognized CA
 # (https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html#install-certificates-from-third-party-cas)
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
-      - ${SIMVA_HOME:-/home/vagrant/docker-stacks}/bin/wait-available.sh:/bin/wait-available.sh:ro
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh:ro
     environment:
       MINIO_ROOT_USER: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
       MINIO_BROWSER_REDIRECT_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
@@ -189,3 +118,9 @@ services:
       - "traefik.http.services.minio-api-service.loadbalancer.server.port=9000"
       - "traefik.http.routers.minio-api.service=minio-api-service"
       - "traefik.http.routers.minio-api.rule=Host(`${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+
+volumes:
+  minio_data:
+    external: true
+  minio_mig_data:
+    external: true

@@ -20,7 +20,7 @@ services:
     << : *default-opts
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/mariadb:/var/lib/mysql
+      - kc_maria_db_data:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
     environment:
       - MYSQL_ROOT_PASSWORD=${SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD:-root}
@@ -46,7 +46,7 @@ services:
     << : *default-opts
     image: ${SIMVA_MARIADB_IMAGE:-mariadb}:${SIMVA_MARIADB_VERSION:-10.4.13}
     volumes:
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/mariadb-dump:/dump
+      - kc_maria_db_backup_data:/dump
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
@@ -73,7 +73,7 @@ services:
 
   mail:
     << : *default-opts
-    image: maildev/maildev:1.1.0
+    image: ${SIMVA_MAILDEV_IMAGE:-maildev/maildev}:${SIMVA_MAILDEV_VERSION:-1.1.0}
     environment:
       - MAILDEV_SMTP_PORT=25
       - MAILDEV_WEB_PORT=80
@@ -88,3 +88,10 @@ services:
       default:
         aliases:
           - "${SIMVA_MAIL_HOST_SUBDOMAIN:-mail}.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+
+
+volumes:
+  kc_maria_db_data:
+    external: true
+  kc_maria_db_backup_data:
+    external: true

@@ -17,7 +17,9 @@ networks:
 services:
   mail:
     << : *default-opts
-    image: maildev/maildev:1.1.0
+    image: ${SIMVA_MAILDEV_IMAGE:-maildev/maildev}:${SIMVA_MAILDEV_VERSION:-1.1.0}
+    hostname: mail.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
     networks:
       traefik_services:
         aliases:
@@ -30,23 +32,27 @@ services:
       
   phpmyadmin:
     << : *default-opts
-    image: phpmyadmin/phpmyadmin:5.0.2
+    image: ${SIMVA_PHPMYADMIN_IMAGE:-phpmyadmin/phpmyadmin}:${SIMVA_PHPMYADMIN_VERSION:-5.0.2}
     environment:
-      PMA_HOST: "mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      PMA_ARBITRARY: 1
+      PMA_HOSTS: mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test},mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      PMA_VERBOSES: Keycloak SSO DB,Limesurvey DB
+      PMA_PORT: 3306
     depends_on:
       - mariadb
     volumes:
       - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
     hostname: phpmyadmin.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - phpmyadmin.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - phpmyadmin.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - phpmyadmin.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - phpmyadmin.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.kc-phpmyadmin.loadbalancer.server.port=80"
-      - "traefik.http.routers.kc-phpmyadmin.rule=Host(`phpmyadmin-kc.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.kc-phpmyadmin.middlewares=dashboardAuth@file"
+      - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
+      - "traefik.http.routers.phpmyadmin.rule=Host(`${SIMVA_PHPMYADMIN_HOST_SUBDOMAIN:-phpmyadmin}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.phpmyadmin.middlewares=dashboardAuth@file"

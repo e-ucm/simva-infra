@@ -1,0 +1,10 @@
+{
+    "id": "15769ada-8b09-44ca-8282-12139b3a94b2",
+    "name": "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly",
+    "description": "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly",
+    "protocol": "openid-connect",
+    "attributes": {
+      "include.in.token.scope": "true",
+      "display.on.consent.screen": "true"
+    }
+}

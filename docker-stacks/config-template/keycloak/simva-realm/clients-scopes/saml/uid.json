@@ -1,0 +1,25 @@
+{
+  "id": "6818b21b-ebce-4fba-a8a4-878059918223",
+  "name": "saml_uid",
+  "description": "User identifier",
+  "protocol": "saml",
+  "attributes": {
+    "include.in.token.scope": "true",
+    "display.on.consent.screen": "true"
+  },
+  "protocolMappers": [
+    {
+      "id": "aa604da6-cf9c-4583-8649-f8dea7007d0a",
+      "name": "uid",
+      "protocol": "saml",
+      "protocolMapper": "saml-user-property-mapper",
+      "consentRequired": false,
+      "config": {
+        "attribute.nameformat": "Basic",
+        "user.attribute": "id",
+        "friendly.name": "User identifier",
+        "attribute.name": "uid"
+      }
+    }
+  ]
+}

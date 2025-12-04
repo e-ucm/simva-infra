@@ -27,6 +27,28 @@ __file_env() {
     fi
 }
 
+function get_or_generate_key() {
+    local key=${1}
+    local conf=${2:-""}
+    local length=${3:-""}
+    local var="SIMVA_${key^^}_KEY"
+    
+    var=$(echo $var | sed -e 's/[^0-9A-Za-z_]/_/g' )
+
+    __file_env $var ''
+
+    if [[ -z "${!var}" ]]; then
+        key_secret=$(openssl rand -base64 $length)
+        if [[ -e ${conf} ]]; then
+            echo "export ${var}=\"${key_secret}\"" >> "${conf}"
+        fi
+    else
+        key_secret=${!var}
+    fi
+
+    echo ${key_secret}
+}
+
 function get_or_generate_password() {
     local client=${1}
     local conf=${2:-""}

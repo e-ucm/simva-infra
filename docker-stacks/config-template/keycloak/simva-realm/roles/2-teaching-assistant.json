@@ -1,0 +1,19 @@
+{
+    "id": "9fee483e-4a26-4686-9abe-30ccae18e4bd",
+    "name": "teaching-assistant",
+    "composite": true,
+    "composites": {
+      "realm": [
+        "student"
+      ],
+      "client": {
+        "account": [
+          "view-profile",
+          "manage-account"
+        ]
+      }
+    },
+    "clientRole": false,
+    "containerId": "{{ .clients.simva.realmId }}",
+    "attributes": {}
+}

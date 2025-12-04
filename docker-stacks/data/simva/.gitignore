@@ -1,6 +1,15 @@
 simva-api/
 simva-front/
 simva-trace-allocator/
+simva-api-profiling/
+simva-front-profiling/
+simva-trace-allocator-profiling/
 .version
 .externaldomain
 .initialized
+simva-api-sha256sums
+simva-api-sha256sums-new
+simva-front-sha256sums
+simva-front-sha256sums-new
+simva-trace-allocator-sha256sums
+simva-trace-allocator-sha256sums-new

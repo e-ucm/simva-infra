@@ -1,0 +1,86 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    external: true
+  kafka_services:
+    name: "${SIMVA_KAFKA_NETWORK:-kafka_services}"
+
+## based on https://github.com/simplesteph/kafka-stack-docker-compose/blob/master/full-stack.yml
+services:
+  schema-registry:
+    << : *default-opts
+    image: confluentinc/cp-schema-registry:${SIMVA_KAFKA_VERSION:-5.5.0}
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+    depends_on:
+      - zk1
+      - kafka1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    hostname: schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
+    networks:
+      default:
+        aliases:
+          - schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+  kafka-rest-proxy:
+    << : *default-opts
+    image: confluentinc/cp-kafka-rest:${SIMVA_KAFKA_VERSION:-5.5.0}
+    environment:
+      KAFKA_REST_LISTENERS: http://0.0.0.0:8086/
+      KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}:8085/
+      KAFKA_REST_HOST_NAME: kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092
+    depends_on:
+      - zk1
+      - kafka1
+      - schema-registry
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    hostname: kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
+    networks:
+      default:
+        aliases:
+          - kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+  zoonavigator:
+    << : *default-opts
+    image: elkozmon/zoonavigator:1.0.1
+    environment:
+      HTTP_PORT: 9000
+      CONNECTION_ZK1_NAME: zk1.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      CONNECTION_ZK1_CONN: zk1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:2181
+      AUTO_CONNECT_CONNECTION_ID: ZK1
+    depends_on:
+      - zk1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    hostname: ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.zoonavigator.loadbalancer.server.port=9000"
+      - "traefik.http.routers.zoonavigator.rule=Host(`${SIMVA_ZOONAVIGATOR_HOST_SUBDOMAIN:-zoonavigator}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.zoonavigator.middlewares=dashboardAuth@file"

@@ -1,0 +1,21 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+  limesurvey:
+    << : *default-opts
+    image: ${SIMVA_LIMESURVEY_IMAGE:-e-ucm/limesurvey}:${SIMVA_LIMESURVEY_VERSION:-6-apache}

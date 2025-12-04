@@ -1,0 +1,38 @@
+{
+    "id" : "747393fa-ddb2-4b9a-bbd7-e54d0aa4fdac",
+    "createdTimestamp" : 1592588127442,
+    "username" : "{{ .users.administrator.username }}",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Administrator",
+    "lastName" : "Administrator",
+    "email" :  "{{ .users.administrator.username }}@{{ .clients.simva.externalDomain }}",
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "administrator" ],
+    "clientRoles" : {
+      "realm-management" : [
+        "view-clients",
+        "view-events",
+        "view-authorization",
+        "create-client",
+        "manage-authorization",
+        "manage-realm",
+        "manage-identity-providers",
+        "query-clients",
+        "query-groups",
+        "manage-clients",
+        "impersonation",
+        "query-realms",
+        "view-users",
+        "query-users",
+        "view-realm",
+        "view-identity-providers",
+        "manage-events",
+        "manage-users"
+      ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+}

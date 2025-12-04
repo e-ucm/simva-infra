@@ -1,0 +1,9 @@
+{
+    "id": "e02069f8-94ed-475e-b10b-c46dbd874bf9",
+    "name": "lrsmanager",
+    "description": "",
+    "composite": false,
+    "clientRole": false,
+    "containerId": "{{ .clients.simva.realmId }}",
+    "attributes": {}
+}

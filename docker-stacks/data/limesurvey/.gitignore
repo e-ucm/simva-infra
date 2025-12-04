@@ -1,3 +1,6 @@
 .version
 .externaldomain
 .initialized
+.initializedSSL
+plugins
+limesurvey-docker-sha256sums

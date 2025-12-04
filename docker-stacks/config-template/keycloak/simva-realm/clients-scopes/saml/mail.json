@@ -1,0 +1,38 @@
+{
+  "id": "78ed5aef-0706-4a19-b5f5-7641543ca238",
+  "name": "saml_mail",
+  "description": "User email",
+  "protocol": "saml",
+  "attributes": {
+    "include.in.token.scope": "true",
+    "display.on.consent.screen": "true"
+  },
+  "protocolMappers": [
+    {
+      "id": "3452e60d-e195-487a-9a56-c91fbf6ad450",
+      "name": "email verified",
+      "protocol": "saml",
+      "protocolMapper": "saml-user-property-mapper",
+      "consentRequired": false,
+      "config": {
+        "attribute.nameformat": "Basic",
+        "user.attribute": "emailVerified",
+        "friendly.name": "Represent if the user's email has been verified",
+        "attribute.name": "email_verified"
+      }
+    },
+    {
+      "id": "50964a82-33db-46de-a1d8-f9585b2437fa",
+      "name": "mail",
+      "protocol": "saml",
+      "protocolMapper": "saml-user-property-mapper",
+      "consentRequired": false,
+      "config": {
+        "attribute.nameformat": "Basic",
+        "user.attribute": "email",
+        "friendly.name": "User email",
+        "attribute.name": "mail"
+      }
+    }
+  ]
+}

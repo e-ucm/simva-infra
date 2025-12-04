@@ -1,7 +1,9 @@
-${SIMVA_HOME}/bin/purge-file-if-exist.sh \
-    "${SIMVA_TLS_HOME}/traefik.pem" \
-    "${SIMVA_TLS_HOME}/traefik-key.pem" \
-    "${SIMVA_TLS_HOME}/traefik-fullchain.pem" \
-    "${SIMVA_TLS_HOME}/truststore.jks" \
+${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
+    "${SIMVA_TRAEFIK_CERT_FILE}" \
+    "${SIMVA_TRAEFIK_KEY_FILE}" \
+    "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE}" \
+    "${SIMVA_TRUSTSTORE_FILE}" \
+    ${SIMVA_ROOT_CA_FILE} \
+    ${SIMVA_ROOT_CA_KEY_FILE} \
     "${SIMVA_CONFIG_HOME}/traefik/traefik/static-conf/traefik.toml" \
-    "${SIMVA_TLS_HOME}/dhparam.pem"
+    "${SIMVA_DHPARAM_FILE}"

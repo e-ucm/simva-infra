@@ -1,0 +1,19 @@
+{
+    "id" : "3599bb30-39c3-4c26-ba0e-45356746a2f5",
+    "createdTimestamp" : 1592586858577,
+    "username" :  "{{ .users.lrsmanager.username }}",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "LRSManager",
+    "lastName" : "LRSManager",
+    "email" :  "{{ .users.lrsmanager.username }}@{{ .clients.simva.externalDomain }}",
+    "attributes" : {
+    },
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "lrsmanager" ],
+    "clientRoles" : {},
+    "notBefore" : 0,
+    "groups" : [ ]
+}

@@ -32,7 +32,6 @@ else
   cacert=" --cacert $cacert"
 fi
 
-
 payload=${5:-}
 
 mc_max_retries=${SIMVA_MAX_RETRIES}

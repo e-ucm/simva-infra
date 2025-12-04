@@ -10,34 +10,12 @@ x-default-opts:
   # options:
   #   gelf-address: "udp://127.0.0.1:5000"
 
-volumes:
-  mariadb:
-    driver: local
-
 networks:
   traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
     external: true
 
 services:
-  phpmyadmin:
+  limesurvey:
     << : *default-opts
-    image: phpmyadmin/phpmyadmin:5.0.2
-    environment:
-      PMA_HOST: "mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-    depends_on:
-      - mariadb
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-    hostname: phpmyadmin.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    networks:
-      default:
-        aliases:
-          - phpmyadmin.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-      traefik_services:
-        aliases:
-          - phpmyadmin.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.ls-phpmyadmin.loadbalancer.server.port=80"
-      - "traefik.http.routers.ls-phpmyadmin.rule=Host(`phpmyadmin-ls.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.ls-phpmyadmin.middlewares=dashboardAuth@file"
+    build: ${SIMVA_LIMESURVEY_DOCKER_GIT_REPO:-/home/vagrant/docker-stacks/data/limesurvey/docker-limesurvey}
