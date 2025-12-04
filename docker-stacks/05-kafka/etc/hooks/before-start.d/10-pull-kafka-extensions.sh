@@ -20,17 +20,31 @@ fi
 
 pushd "${EXTENSIONS_DIR}"
 GIT_RELEASE_URL="https://github.com/e-ucm/kafka-extensions/releases/download/v${SIMVA_KAFKA_EXTENSIONS_VERSION}"
+shasums="SHA256SUMS-KAFKA-EXTENSIONS-${SIMVA_KAFKA_EXTENSIONS_VERSION}"
+wget -q -O "${EXTENSIONS_DIR}/${shasums}" "${GIT_RELEASE_URL}/SHA256SUMS"
 for ext in $SIMVA_EXTENSIONS; do
     ext_jar="${ext}-${KAFKA_VERSION}-${SIMVA_KAFKA_EXTENSIONS_VERSION}.jar"
-    if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
-        wget -q -P "${EXTENSIONS_DIR}" "${GIT_RELEASE_URL}/${ext_jar}"
-        chmod -R ${SIMVA_KAFKA_DIR_MODE} "${EXTENSIONS_DIR}/${ext_jar}"
-        shasums="SHA256SUMS-KAFKA-EXTENSIONS-${SIMVA_KAFKA_EXTENSIONS_VERSION}"
-        if [[ ! -f "${EXTENSIONS_DIR}/${shasums}" ]]; then
-            wget -q -O "${EXTENSIONS_DIR}/${shasums}" "${GIT_RELEASE_URL}/SHA256SUMS"
-        fi
+    if [[ -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
+        echo "Extension ${ext_jar} already downloaded."
+        echo "Verifying checksum..."
+        set +e
         echo "$(cat "${EXTENSIONS_DIR}/${shasums}"  | grep "${ext_jar}" | cut -d' ' -f1) ${ext_jar}" | sha256sum -c -w -
-        cp "${EXTENSIONS_DIR}/${ext_jar}" "${DEPLOYMENT_DIR}/${ext}.jar"
+        res=$?
+        set -e
+        if [[ $res -eq 0 ]]; then
+            echo "Checksum valid."
+            cp "${EXTENSIONS_DIR}/${ext_jar}" "${DEPLOYMENT_DIR}/${ext}.jar"
+            continue
+        else
+            echo "Checksum invalid. Re-downloading ${ext_jar}..."
+            rm -f "${EXTENSIONS_DIR}/${ext_jar}"
+        fi
     fi
+    if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
+        echo "Downloading extension ${ext_jar}..."
+        wget -q -P ${EXTENSIONS_DIR} "${GIT_RELEASE_URL}/${ext_jar}"
+        echo "$(cat "${EXTENSIONS_DIR}/${shasums}"  | grep "${ext_jar}" | cut -d' ' -f1) ${ext_jar}" | sha256sum -c -w -
+    fi
+    cp "${EXTENSIONS_DIR}/${ext_jar}" "${DEPLOYMENT_DIR}/${ext}.jar"
 done
 popd

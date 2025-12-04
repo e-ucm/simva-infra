@@ -30,15 +30,28 @@ fi
 pushd "${EXTENSIONS_DIR}"
 
 GIT_RELEASE_URL="https://github.com/e-ucm/keycloak-extensions/releases/download/v${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}"
+shasums="SHA256SUMS-KEYCLOAK-EXTENSIONS-${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}"
+wget -q -O "${EXTENSIONS_DIR}/${shasums}" "${GIT_RELEASE_URL}/SHA256SUMS"
 for ext in $SIMVA_EXTENSIONS; do
     ext_jar="${ext}-keycloak${KEYCLOAK_VERSION}-${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}.jar"
-    if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
-        wget -q -P "${EXTENSIONS_DIR}" "${GIT_RELEASE_URL}/${ext_jar}"
-        chmod -R ${SIMVA_KEYCLOAK_DIR_MODE} "${EXTENSIONS_DIR}/${ext_jar}"
-        shasums="SHA256SUMS-KEYCLOAK-EXTENSIONS-${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}"
-        if [[ ! -f "${EXTENSIONS_DIR}/${shasums}" ]]; then
-            wget -q -O "${EXTENSIONS_DIR}/${shasums}" "${GIT_RELEASE_URL}/SHA256SUMS"
+    if [[ -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
+        echo "Extension ${ext_jar} already downloaded."
+        echo "Verifying checksum..."
+        set +e
+        echo "$(cat "${EXTENSIONS_DIR}/${shasums}"  | grep "${ext_jar}" | cut -d' ' -f1) ${ext_jar}" | sha256sum -c -w -
+        res=$?
+        set -e
+        if [[ $res -eq 0 ]]; then
+            echo "Checksum valid."
+            continue
+        else
+            echo "Checksum invalid. Re-downloading ${ext_jar}..."
+            rm -f "${EXTENSIONS_DIR}/${ext_jar}"
         fi
+    fi 
+    if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
+        echo "Downloading extension ${ext_jar}..."
+        wget -q -P ${EXTENSIONS_DIR} "${GIT_RELEASE_URL}/${ext_jar}"
         echo "$(cat "${EXTENSIONS_DIR}/${shasums}"  | grep "${ext_jar}" | cut -d' ' -f1) ${ext_jar}" | sha256sum -c -w -
     fi
     cp "${EXTENSIONS_DIR}/${ext_jar}" "${DEPLOYMENT_DIR}/${ext}.jar"
@@ -46,12 +59,24 @@ done
 
 ext="io.phasetwo.keycloak.keycloak-events"
 ext_jar="${ext}-${SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION}.jar"
+shasums="SHA256SUMS-KEYCLOAK-EVENTS-${SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION}"
+wget -q -O "${EXTENSIONS_DIR}/${shasums}" "https://github.com/e-ucm/keycloak-events/releases/download/v${SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION}/SHA256SUMS"
+if [[ -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
+    echo "Extension ${ext_jar} already downloaded."
+    echo "Verifying checksum..."
+    set +e
+    echo "$(cat "${EXTENSIONS_DIR}/${shasums}"  | grep "${ext_jar}" | cut -d' ' -f1) ${ext_jar}" | sha256sum -c -w -
+    res=$?
+    set -e
+    if [[ $res -eq 0 ]]; then
+        echo "Checksum valid."
+    else
+        echo "Checksum invalid. Re-downloading ${ext_jar}..."
+        rm -f "${EXTENSIONS_DIR}/${ext_jar}"
+    fi
+fi
 if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
     wget -q -P ${EXTENSIONS_DIR} "https://github.com/e-ucm/keycloak-events/releases/download/v${SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION}/${ext_jar}"
-    shasums="SHA256SUMS-KEYCLOAK-EVENTS-${SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION}"
-    if [[ ! -f "${EXTENSIONS_DIR}/${shasums}" ]]; then
-        wget -q -O "${EXTENSIONS_DIR}/${shasums}" "https://github.com/e-ucm/keycloak-events/releases/download/v${SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION}/SHA256SUMS"
-    fi
     echo "$(cat "${EXTENSIONS_DIR}/${shasums}"  | grep "${ext_jar}" | cut -d' ' -f1) ${ext_jar}" | sha256sum -c -w -
 fi
 cp "${EXTENSIONS_DIR}/${ext_jar}" "${DEPLOYMENT_DIR}/${ext}.jar"
