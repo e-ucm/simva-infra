@@ -44,13 +44,15 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
                 USE $DB_NAME;
                 SELECT id FROM \`plugins\` WHERE name='AuthSAML' AND active=1;");
         echo $plugin;
-        if [[ ! $plugin == *"id"* ]]; then 
+        if [[ $plugin == *"id"* ]]; then 
             "${SIMVA_BIN_HOME}/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
                 USE $DB_NAME;
                 UPDATE \`plugins\`
                 SET active = 0
                 WHERE name = 'AuthSAML';    
             "
+        else 
+            echo "Plugin AuthSAML is already desactivated!"
         fi
     fi
 fi

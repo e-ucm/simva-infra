@@ -25,6 +25,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - simva_mongodb_data:/data/db
+    restart: unless-stopped
     hostname: ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -48,7 +49,7 @@ services:
       DEBUG: "${SIMVA_DEBUG:-true}"
       #NODE
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
-      NODE_EXTRA_CA_CERTS: "/var/lib/simva/ca/rootCA.pem"
+      NODE_EXTRA_CA_CERTS: "/var/lib/simva/tls/ca/rootCA.pem"
       #EXTERNAL URL
       EXTERNAL_URL: "https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       #SIMVA API (SELF)
@@ -130,7 +131,7 @@ services:
       SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/simva/tls
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/home/node/logs:rw
       - simva_storage_data:/storage
       - simva_api_logs:/root/.npm/_logs/
@@ -139,6 +140,7 @@ services:
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-certificate.sh:/home/node/entrypoint.d/docker-certificate.sh
     depends_on:
       - mongodb
+    restart: unless-stopped
     hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -168,7 +170,7 @@ services:
       DEBUG: "${SIMVA_DEBUG:-true}"
       #NODES
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
-      NODE_EXTRA_CA_CERTS: "/var/lib/simva/ca/rootCA.pem"
+      NODE_EXTRA_CA_CERTS: "/var/lib/simva/tls/ca/rootCA.pem"
       #SIMVA
       SIMVA_PORT: "3050"
       SIMVA_HOST:  "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
@@ -197,6 +199,11 @@ services:
       SIMVA_API_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_API_PORT: "${SIMVA_SIMVA_API_PORT:-443}"
       SIMVA_API_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
+      SIMVA_USER: "${SIMVA_API_ADMIN_USERNAME:-admin}"
+      SIMVA_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD:-password}"
+      SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
+      SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME: "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME:-traefik-fullchain.pem}"
       #LIMESURVEY
       LIMESURVEY_HOST: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
       LIMESURVEY_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
@@ -219,15 +226,17 @@ services:
       TMON_HOST: "${SIMVA_TMON_HOST_DASHBOARD_SUBDOMAIN:-tmon}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       TMON_PROTOCOL: "https"
       TMON_PORT: "443"
-      TMON_MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces.json}"
+      TMON_MINIO_TRACES_FILE: "${SIMVA_SINK_TRACES_FILE:-traces.json}"      
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/simva/tls
       - simva_front_logs:/home/node/logs:rw
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-front.sh:/home/node/entrypoint.d/docker-startup.sh
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-certificate.sh:/home/node/entrypoint.d/docker-certificate.sh
     depends_on:
       - simva-api
+    restart: unless-stopped
     hostname: simva-front.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -254,7 +263,7 @@ services:
       LOG_FOLDER: "/home/node/logs"
       #NODE
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
-      NODE_EXTRA_CA_CERTS: "/var/lib/simva/ca/rootCA.pem"
+      NODE_EXTRA_CA_CERTS: "/var/lib/simva/tls/ca/rootCA.pem"
       #TRACE ALLOCATOR
       CONCAT_EVENT_POLICY: "${SIMVA_TRACE_ALLOCATOR_CONCAT_EVENT_POLICY:-true}"
       BATCH_SIZE: "${SIMVA_TRACE_ALLOCATOR_BATCH_SIZE:-100}"
@@ -285,6 +294,7 @@ services:
       SIMVA_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD:-password}"
       SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
       SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
+      SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME: "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME:-traefik-fullchain.pem}"
       #KAFKA
       SIMVA_KAFKA_CLIENTID: "${SIMVA_TRACE_ALLOCATOR_KAFKA_CLIENT_ID:-simva_trace_allocator}"
       SIMVA_KAFKA_BROKER: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9092"
@@ -292,7 +302,7 @@ services:
       SIMVA_KAFKA_MINIO_TOPIC: "${SIMVA_MINIO_EVENTS_TOPIC:-minio-events}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/var/lib/simva/ca
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/simva/tls
       - simva_trace_allocator_logs:/home/node/logs:rw
       - simva_trace_allocator_data:${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-/data}
       - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
@@ -300,6 +310,7 @@ services:
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-certificate.sh:/home/node/entrypoint.d/docker-certificate.sh
     depends_on:
       - simva-api
+    restart: unless-stopped
     hostname: simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

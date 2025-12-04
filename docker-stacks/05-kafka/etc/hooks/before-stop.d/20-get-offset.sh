@@ -1,10 +1,15 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
-service_name="kafka1"
+
+RUN_IN_CONTAINER=true
+RUN_IN_CONTAINER_NAME="kafka1"
+source "${SIMVA_BIN_HOME}/check-docker-running.sh"
 set +e
-up=$(docker compose ps $service_name | grep $service_name)
+_check_docker_running
+ret=$?
 set -e
-if [[ ! $up == '' ]]; then
+echo $ret
+if [[ $ret == 0 ]]; then
     echo "The container is running."
     CONSUMER_GROUP=connect-$(jq '.name' "${SIMVA_CONFIG_HOME}/kafka/connect/simva-sink.json" -r)
     TOPIC="${SIMVA_TRACES_TOPIC}"

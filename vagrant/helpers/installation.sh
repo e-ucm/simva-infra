@@ -5,8 +5,15 @@ set -euo pipefail
 # FIX NETWORK Errors
 sudo systemctl stop systemd-resolved
 sudo systemctl disable systemd-resolved
-sudo rm -f /etc/resolv.conf
-echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee /etc/resolv.conf
+if [ -f "/etc/resolv.conf.backup" ]; then
+  echo "/etc/resolv.conf.backup already exists, skipping backup."
+else
+  echo "Backing up /etc/resolv.conf to /etc/resolv.conf.backup"
+  cp /etc/resolv.conf /etc/resolv.conf.backup || true
+  sudo rm -f /etc/resolv.conf
+  echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1\nnameserver 9.9.9.9" | sudo tee /etc/resolv.conf
+  sudo chattr +i /etc/resolv.conf
+fi
 sudo systemctl restart systemd-networkd
 
 echo "Updating packages..."
@@ -63,22 +70,20 @@ else
   echo "unzip already available."
 fi
 
-
 # --- Docker ---
 if ! command -v docker >/dev/null 2>&1; then
   echo "Installing Docker CE..."
-  sudo apt-get install -y docker-ce=5:28.5.2-1~ubuntu.22.04~jammy docker-ce-cli=5:28.5.2-1~ubuntu.22.04~jammy containerd.io docker-buildx-plugin docker-compose-plugin
-  #curl -fsSL https://get.docker.com -o get-docker.sh
-  #sudo sh get-docker.sh
-  #rm get-docker.sh
+  curl -fsSL https://get.docker.com -o get-docker.sh
+  sudo sh get-docker.sh 
+  rm get-docker.sh
   # Allow vagrant user to run docker without sudo
   sudo usermod -aG docker $USER
 else
   echo "Docker already installed."
-  echo "Downgrade to version 5:28.5.2-1 that is working."
-  sudo apt-get install -y --allow-downgrades --allow-change-held-packages docker-ce=5:28.5.2-1~ubuntu.22.04~jammy docker-ce-cli=5:28.5.2-1~ubuntu.22.04~jammy containerd.io docker-buildx-plugin docker-compose-plugin
-  sudo apt-mark hold docker-ce docker-ce-cli
 fi
+echo "Downgrade to version 5:28.5.2-1 that is working."
+sudo apt-get install -y --allow-downgrades --allow-change-held-packages docker-ce=5:28.5.2-1~ubuntu.22.04~jammy docker-ce-cli=5:28.5.2-1~ubuntu.22.04~jammy containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-mark hold docker-ce docker-ce-cli
 
 # --- nodejs ---
 if ! command -v node >/dev/null 2>&1; then

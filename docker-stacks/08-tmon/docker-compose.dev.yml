@@ -58,11 +58,11 @@ services:
         if [[ ! -d /home/anaconda ]]; then
           mkdir /home/anaconda;
         fi;
-        chown anaconda: -R /home/anaconda;
+        chown $${GUID}:$${UUID} -R /home/anaconda;
         if [[ ! -d /opt/notebooks ]]; then
           mkdir /opt/notebooks;
         fi;
-        chown anaconda: -R /opt/notebooks;
+        chown $${GUID}:$${UUID} -R /opt/notebooks;
 
         # Check if Anaconda has been initialized
         if [[ ! -e /home/anaconda/.jupyter/anaconda-initialized ]]; then
@@ -103,8 +103,8 @@ services:
           source /simva-env/bin/activate
         fi;
 
-        chown -R anaconda: /simva-env/;
-        chmod -R u=rxw /simva-env/
+        chown -R $${GUID}:$${UUID} /simva-env/;
+        chmod -R $${MOD} /simva-env/
         
         /simva-env/bin/jupyter server extension enable --py --sys-prefix ipympl;
         /simva-env/bin/jupyter server extension enable --py --sys-prefix widgetsnbextension;
@@ -153,6 +153,9 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
     environment:
+      GUID: "${SIMVA_JUPYTER_GUID:-anaconda}"
+      UUID: "${SIMVA_JUPYTER_UUID:-anaconda}"
+      MOD: "${SIMVA_JUPYTER_DIR_MODE:-755}"
       JUPYTER_PASSWORD: "${SIMVA_JUPYTER_PASSWORD:-password}"
       MINIO_IDENTITY_OPENID_CLIENT_ID: "${SIMVA_MINIO_CLIENT_ID:-minio}"
       MINIO_IDENTITY_OPENID_CONFIG_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/.well-known/openid-configuration"

@@ -18,6 +18,8 @@ services:
   mail:
     << : *default-opts
     image: ${SIMVA_MAILDEV_IMAGE:-maildev/maildev}:${SIMVA_MAILDEV_VERSION:-1.1.0}
+    hostname: mail.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
     networks:
       traefik_services:
         aliases:
@@ -40,6 +42,7 @@ services:
       - mariadb
     volumes:
       - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
     hostname: phpmyadmin.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

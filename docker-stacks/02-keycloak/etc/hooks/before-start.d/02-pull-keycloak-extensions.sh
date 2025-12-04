@@ -34,7 +34,7 @@ for ext in $SIMVA_EXTENSIONS; do
     ext_jar="${ext}-keycloak${KEYCLOAK_VERSION}-${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}.jar"
     if [[ ! -f "${EXTENSIONS_DIR}/${ext_jar}" ]]; then
         wget -q -P "${EXTENSIONS_DIR}" "${GIT_RELEASE_URL}/${ext_jar}"
-        chmod 777 "${EXTENSIONS_DIR}/${ext_jar}"
+        chmod -R ${SIMVA_KEYCLOAK_DIR_MODE} "${EXTENSIONS_DIR}/${ext_jar}"
         shasums="SHA256SUMS-KEYCLOAK-EXTENSIONS-${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}"
         if [[ ! -f "${EXTENSIONS_DIR}/${shasums}" ]]; then
             wget -q -O "${EXTENSIONS_DIR}/${shasums}" "${GIT_RELEASE_URL}/SHA256SUMS"

@@ -14,29 +14,39 @@ for folder in "${!folders_volumes[@]}"; do
 done
 
 if [[ -d "${SIMVA_DATA_HOME}/shlink/data" ]]; then 
-  "${SIMVA_BIN_HOME}/volumectl.sh" exec "shlink_db" "/shlink_db" "
-    # Set ownership recursively
-    chown -R 1001:1001 /shlink_db;
-
-    # Directories -> 755 (rwxr-xr-x)
-    find /shlink_db -type d -print0 | xargs -0 chmod 755;
-
-    # Files -> 644 (rw-r--r--)
-    find /shlink_db -type f -print0 | xargs -0 chmod 644;
-  "
   ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_DATA_HOME}/shlink"
 fi
 
-if [[ -d "${SIMVA_DATA_HOME}/shlink/config" ]]; then 
-  "${SIMVA_BIN_HOME}/volumectl.sh" exec "shlink_config" "/shlink_config" "
+"${SIMVA_BIN_HOME}/volumectl.sh" exec "shlink_db" "/shlink_db" "
     # Set ownership recursively
-    chown -R 1001:1001 /shlink_config;
+    chown -R ${SIMVA_SHLINK_GUID}:${SIMVA_SHLINK_UUID} /shlink_db;
 
-    # Directories -> 755 (rwxr-xr-x)
-    find /shlink_config -type d -print0 | xargs -0 chmod 755;
+    # # Top-level volume directory
+    chmod ${SIMVA_SHLINK_TOP_DIR_MODE} /shlink_db;
 
-    # Files -> 644 (rw-r--r--)
-    find /shlink_config -type f -print0 | xargs -0 chmod 644;
-  "
+    # Directories
+    find /shlink_db -type d -print0 | xargs -0 chmod ${SIMVA_SHLINK_DIR_MODE};
+
+    # Files
+    find /shlink_db -type f -print0 | xargs -0 chmod ${SIMVA_SHLINK_FILE_MODE};
+    ls -lia /shlink_db;
+"
+
+if [[ -d "${SIMVA_DATA_HOME}/shlink/config" ]]; then 
   ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_DATA_HOME}/shlink/config"
 fi
+
+"${SIMVA_BIN_HOME}/volumectl.sh" exec "shlink_config" "/shlink_config" "
+    # Set ownership recursively
+    chown -R ${SIMVA_SHLINK_GUID}:${SIMVA_SHLINK_UUID} /shlink_config;
+    
+    # Top-level volume directory
+    chmod ${SIMVA_SHLINK_TOP_DIR_MODE} /shlink_config;
+    
+    # Directories
+    find /shlink_config -type d -print0 | xargs -0 chmod ${SIMVA_SHLINK_DIR_MODE};
+
+    # Files
+    find /shlink_config -type f -print0 | xargs -0 chmod ${SIMVA_SHLINK_FILE_MODE};
+    ls -lia /shlink_config;
+  "

@@ -50,11 +50,9 @@
 
   [entryPoints.web]
     address = ":80"
-    [entryPoints.web.http.redirections]
-      [entryPoints.web.http.redirections.entryPoint]
-        to = "websecure"
-        scheme = "https"
-        permanent = true
+    
+    {{ .Env.TRAEFIK_WEB_SECURE_SCHEME_PERMANENT }}
+    
     [entryPoints.web.forwardedHeaders]
       trustedIPs = [ "{{ .Env.SIMVA_LOAD_BALANCER_IPS }}" ]
 
@@ -62,6 +60,8 @@
     address = ":443"
     [entryPoints.websecure.http.middlewares]
       middlewares = ["secHeaders@file"]   # ✅ Global middleware
+    [entryPoints.websecure.forwardedHeaders]
+      trustedIPs = [ "{{ .Env.SIMVA_LOAD_BALANCER_IPS }}" ]
     [entryPoints.websecure.http.tls]
 
 # ---------------------------
@@ -69,8 +69,8 @@
 
 # ---------------------------
 [serversTransport]
-  insecureSkipVerify = {{ .Env.SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY }}
-  rootcas = [ "{{ .Env.SIMVA_SSL_ROOT_CAS }}" ]
+  insecureSkipVerify = "{{ .Env.SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY }}"
+  rootcas = [ "/etc/traefik/ssl/traefik-fullchain.pem" ]
 
 # ---------------------------
 # Logging

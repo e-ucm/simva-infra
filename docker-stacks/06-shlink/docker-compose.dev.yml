@@ -13,13 +13,16 @@ x-default-opts:
 services:
   shlink-web-client:
     << : *default-opts
-    image: ${SIMVA_SHLINK_IMAGE:-ghcr.io/shlinkio/shlink-web-client}:${SIMVA_SHLINK_VERSION:-latest}
+    image: ${SIMVA_SHLINK_ADMIN_IMAGE:-ghcr.io/shlinkio/shlink-web-client}:${SIMVA_SHLINK_ADMIN_VERSION:-latest}
     volumes:
       - /etc/localtime:/etc/localtime:ro
     environment:
       SHLINK_SERVER_URL: https://${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}
       SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
       SHLINK_SERVER_NAME: "SHLINK"
+    depends_on:
+      - shlink
+    restart: unless-stopped
     hostname: ${SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN:-shlink-admin}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

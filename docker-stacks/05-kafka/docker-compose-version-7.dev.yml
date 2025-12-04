@@ -30,6 +30,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
     hostname: schema-registry.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
     networks:
       default:
         aliases:
@@ -51,6 +52,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
     hostname: kafka-rest-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    restart: unless-stopped
     networks:
       default:
         aliases:

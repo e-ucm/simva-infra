@@ -14,4 +14,5 @@ fi
 
 # Continue with LimeSurvey original entrypoint
 /container-tools/wait-for-it.sh -h ${DB_HOST} -p 3306 -t ${WAIT_TIMEOUT}
+/container-tools/wait-for-it.sh -h ${SSO_HOST} -p 443 -t ${WAIT_TIMEOUT}
 exec /usr/local/bin/entrypoint.sh $@

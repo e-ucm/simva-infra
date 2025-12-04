@@ -28,6 +28,7 @@ services:
       IS_HTTPS_ENABLED: true
       TIMEZONE: ${SIMVA_TIMEZONE:-Europe/Madrid}
       INITIAL_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
+    restart: unless-stopped
     hostname: ${SIMVA_SHLINK_HOST_SUBDOMAIN:-shlink}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:

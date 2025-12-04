@@ -2,5 +2,5 @@
 .externaldomain
 .initialized
 .initializedSSL
-.initializedRemoteControl
 plugins
+limesurvey-docker-sha256sums

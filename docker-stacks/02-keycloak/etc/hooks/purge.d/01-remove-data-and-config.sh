@@ -5,6 +5,8 @@ ${SIMVA_BIN_HOME}/purge-folder-contents.sh \
     "${SIMVA_CONFIG_HOME}/keycloak/simva-realm" \
     "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export"
 
+rm -rf "${SIMVA_DATA_HOME}/keycloak/deployments"
+
 ${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
     "${SIMVA_CONFIG_HOME}/keycloak/simva-env.sh" \
     "${SIMVA_CONFIG_HOME}/keycloak/realm-data.dev.yml" \

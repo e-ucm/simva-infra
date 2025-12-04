@@ -2,6 +2,8 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
+"${HELPERS_STACK_HOME}/migrate-to-volume.sh"
+
 BACKUP_DIR="${SIMVA_BACKUP_HOME}/shlink"
 
 # Check if the container is running

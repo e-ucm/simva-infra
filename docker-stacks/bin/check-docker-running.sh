@@ -51,6 +51,55 @@ _stop_docker_container() {
     esac
 }
 
+_restart_docker_container() {
+    run_in_container=${RUN_IN_CONTAINER}
+    container_name=${RUN_IN_CONTAINER_NAME}
+    case $run_in_container in
+        "true" | 1)
+            docker compose restart $container_name
+            return 0
+            ;;
+        *)
+            return 0
+            ;;
+    esac
+}
+
+_copy_to_docker_container() {
+    run_in_container=${RUN_IN_CONTAINER}
+    container_name=${RUN_IN_CONTAINER_NAME}
+    path_host=$1
+    path_container=$2
+    case $run_in_container in
+        "true" | 1)
+            docker compose cp $path_host $container_name:$path_container
+            return 0
+            ;;
+        *)
+            cp $path_host $path_container
+            return 0
+            ;;
+    esac
+}
+
+_copy_from_docker_container() {
+    run_in_container=${RUN_IN_CONTAINER}
+    container_name=${RUN_IN_CONTAINER_NAME}
+    path_container=$1
+    path_host=$2
+    
+    case $run_in_container in
+        "true" | 1)
+            docker compose cp $container_name:$path_container $path_host 
+            return 0
+            ;;
+        *)
+            cp $path_container $path_host
+            return 0
+            ;;
+    esac
+}
+
 _start_docker_container_if_not_running() {
     run_in_container=${RUN_IN_CONTAINER}
     container_name=${RUN_IN_CONTAINER_NAME}

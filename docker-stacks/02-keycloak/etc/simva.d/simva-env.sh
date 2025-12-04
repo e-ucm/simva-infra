@@ -3,10 +3,10 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 export COMPOSE_FILE="docker-compose.yml"
-if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -gt 25 ]]; then
+if [[ ${SIMVA_KEYCLOAK_VERSION:0:2} -gt 25 ]]; then
     export COMPOSE_FILE="$COMPOSE_FILE:docker-compose-keycloak-version-sup-26.yml"
 else 
-    if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -gt 18 ]]; then
+    if [[ ${SIMVA_KEYCLOAK_VERSION:0:2} -gt 18 ]]; then
         export COMPOSE_FILE="$COMPOSE_FILE:docker-compose-keycloak-version-sup-18.yml"
     else 
         export COMPOSE_FILE="$COMPOSE_FILE:docker-compose-keycloak-version-bef-18.yml"

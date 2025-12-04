@@ -66,7 +66,7 @@ services:
       - JDK_TRUSTORE_PASSWORD=changeit
       - KC_HTTPS_KEY_STORE=/root/.keycloak/certs/${SIMVA_KEYCLOAK_CERT_FILENAME}
       - KC_HTTPS_KEY_STORE_PASSWORD=changeit
-      - SIMVA_CA_ALIAS=simvaCA
+      - SIMVA_CA_ALIAS=${SIMVA_CA_ALIAS:-simvaCA}
       - SIMVA_CA_FILE=/root/.keycloak/certs/ca/rootCA.pem
       - KC_TRANSACTION_XA_TIMEOUT=600
       - KC_TRANSACTION_XA_TIMEOUT_ENABLED=true
@@ -79,7 +79,6 @@ services:
       - ${SIMVA_CONFIG_TEMPLATE_HOME:-/home/vagrant/docker-stacks/config-template}/keycloak/simva-realm/:/opt/keycloak/data/simva-realm/:ro
       - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/keycloak/simva-realm-export/:/opt/keycloak/data/export/:rw
       - ${SIMVA_TLS_HOME?TLS home folder required}:/root/.keycloak/certs/:ro
-      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-rootCA.sh:/root/.keycloak/entrypoint.d/docker-startup.sh
     depends_on:
       - mariadb
     restart: unless-stopped

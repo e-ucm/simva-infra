@@ -1,74 +1,19 @@
 #!/usr/bin/env bash
-export SIMVA_DEVELOPMENT_LOCAL="true"
+###############
+# SIMVA DEBUG #
+###############
 export SIMVA_DEBUG="true"
 
-###########################################
-# Images versions and SIMVA Git reference #
-###########################################
-# Images versions
-export SIMVA_NGINX_IMAGE="nginx"
-export SIMVA_NGINX_VERSION="1.19.2"
-
-export SIMVA_WHOAMI_IMAGE="containous/whoami"
-export SIMVA_WHOAMI_VERSION="latest"
-
-export SIMVA_NODE_IMAGE="node"
-export SIMVA_NODE_VERSION="12.18.2"
-
-export SIMVA_MAILDEV_IMAGE="maildev/maildev"
-export SIMVA_MAILDEV_VERSION="1.1.0"
-
-export SIMVA_PHPMYADMIN_IMAGE="phpmyadmin/phpmyadmin"
-export SIMVA_PHPMYADMIN_VERSION="5.0.2"
-
-export SIMVA_KAFKA_SCHEMA_REGISTRY_IMAGE="confluentinc/cp-schema-registry"
-export SIMVA_KAFKA_REST_IMAGE="confluentinc/cp-kafka-rest"
-
-export SIMVA_KAKFA_UI_IMAGE="provectuslabs/kafka-ui"
-export SIMVA_KAKFA_UI_VERSION="latest"
-
-export SIMVA_MONGOKU_UI_IMAGE="huggingface/mongoku"
-export SIMVA_MONGOKU_UI_VERSION="latest"
-
-export SIMVA_ANACONDA_IMAGE="continuumio/anaconda3"
-export SIMVA_ANACONDA_VERSION="2024.02-1"
-
-export SIMVA_PORTAINER_IMAGE="portainer/portainer-ce"
-export SIMVA_PORTAINER_VERSION="latest"
-
-#Git reference branch
-export CSP_REPORTER_GIT_REF="master"
-
+###########################
+# SIMVA LOCAL DEVELOPMENT #
+###########################
 export SIMVA_DEVELOPMENT_LOCAL="false"
-branch="dev"
-export SIMVA_API_GIT_REF=$branch
-export SIMVA_FRONT_GIT_REF=$branch
-export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
-export SIMVA_LIMESURVEY_DOCKER_GIT_REF="remotecontrol-patch"
-export SIMVA_TMON_GIT_REF=$branch
-export SIMVA_TMON_ANACONDA_GIT_REF="master-jupyter-notebook"
 
-base_for_simva_repos="${SIMVA_DATA_HOME}/simva"
-[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_simva_repos="${SIMVA_HOME}/../.."
-if [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]]; then
-    export SIMVA_API_GIT_REPO="${base_for_simva_repos}/simva"
-else 
-    export SIMVA_API_GIT_REPO="${base_for_simva_repos}/simva-api"
-fi
-export SIMVA_FRONT_GIT_REPO="${base_for_simva_repos}/simva-front"
-export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-allocator"
-
-base_for_limesurvey_repos="${SIMVA_DATA_HOME}/limesurvey"
-[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_limesurvey_repos="${SIMVA_HOME}/../.."
-export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/docker-limesurvey"
-base_for_tmon_repos="${SIMVA_DATA_HOME}/tmon"
-[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_tmon_repos="${SIMVA_HOME}/../.."
-export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"
-
-# SIMVA Load Balancer IPs
+###########################
+# SIMVA Load Balancer IPs #
+###########################
 export SIMVA_DEV_LOAD_BALANCER="false"
-export SIMVA_LOAD_BALANCER_IPS="172.30.0.80"
-[[ "${SIMVA_ENVIRONMENT}" == "production" ]] && SIMVA_LOAD_BALANCER_IPS="127.0.0.1"
+export SIMVA_DEV_LOAD_BALANCER_IPS="172.30.0.80"
 
 ########################
 # Domain and subdomain #
@@ -92,17 +37,24 @@ export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
 #LOGS
 export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
 
+#######################
+# SIMVA Git reference #
+#######################
+#Git reference branch
+export CSP_REPORTER_GIT_REF="master"
+branch="dev"
+export SIMVA_API_GIT_REF=$branch
+export SIMVA_FRONT_GIT_REF=$branch
+export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
+export SIMVA_LIMESURVEY_DOCKER_GIT_REF="remotecontrol-patch"
+export SIMVA_TMON_GIT_REF="plotly-dash"
+export SIMVA_TMON_ANACONDA_GIT_REF="master-jupyter-notebook"
+
 #####################
 # Socket Proxy info #
 #####################
 # tecnativa/socket-proxy logging level, possible values: info, debug
 export SIMVA_SOCKET_PROXY_LOG_LEVEL="info"
-
-################
-# Traefik info #
-################
-[[ "${SIMVA_ENVIRONMENT}" == "development" ]] && SIMVA_TRAEFIK_EXTRA_CSP_POLICY=" report-uri https://${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN:-csp-reporter}.${SIMVA_EXTERNAL_DOMAIN}/report-violation; report-to https://${SIMVA_CSP_REPORTER_HOST_SUBDOMAIN:-csp-reporter}.${SIMVA_EXTERNAL_DOMAIN}/report-violation;"
-
 
 ########################
 # Profiling Node Debug #

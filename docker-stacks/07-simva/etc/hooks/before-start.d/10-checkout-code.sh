@@ -90,7 +90,7 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
         RUNBUILDCODE=true
     fi
     rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-trace-allocator/ > /dev/null 2>&1
-    chmod -R 777 ${SIMVA_DATA_HOME}/simva
+    chmod -R ${SIMVA_NODE_DIR_MODE} ${SIMVA_DATA_HOME}/simva
 fi
 if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     ###########################################################

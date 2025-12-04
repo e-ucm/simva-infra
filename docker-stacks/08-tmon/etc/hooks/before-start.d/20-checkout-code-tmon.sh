@@ -33,28 +33,34 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
     git clone --depth 1 --branch ${SIMVA_TMON_GIT_REF} ${SIMVA_TMON_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
-
-    res=$(${SIMVA_HOME}/bin/check-checksum.sh $tmp_dir "${SIMVA_DATA_HOME}/tmon/tmon-sha256sums" "requirements.txt")
+    source ${SIMVA_HOME}/bin/check-checksum.sh
+    set +e
+    _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/tmon/tmon-sha256sums" "requirements.txt"
+    res=$?
+    set -e
     echo $res
-    
     # If checksums do not verify -> reinstall dependencies
-    if [[ ! $(${SIMVA_HOME}/bin/get-last-caracter-from-string.sh "$res") == "0" ]]; then
+    if [[ ! $res == "0" ]]; then
         RUNBUILDCODE=true
     fi
     rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/tmon/t-mon/ > /dev/null 2>&1
-    chmod -R 777 ${SIMVA_DATA_HOME}/tmon/t-mon/
+    chmod -R ${SIMVA_TMON_DIR_MODE} ${SIMVA_DATA_HOME}/tmon/t-mon/
 fi
 if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     ###########################################################
     ########################### TMON ##########################
     ###########################################################
     echo "TMON"
-    res=$(${SIMVA_HOME}/bin/check-checksum.sh ${SIMVA_TMON_GIT_REPO} "${SIMVA_DATA_HOME}/tmon/tmon-sha256sums" "requirements.txt")
+    source ${SIMVA_HOME}/bin/check-checksum.sh
+    set +e
+    _check_checksum ${SIMVA_TMON_GIT_REPO} "${SIMVA_DATA_HOME}/tmon/tmon-sha256sums" "requirements.txt"
+    res=$?
+    set -e
     echo $res
-    if [[ ! $(${SIMVA_HOME}/bin/get-last-caracter-from-string.sh "$res") == "0" ]]; then
+    if [[ ! $res == "0" ]]; then
         RUNBUILDCODE=true
     fi
-    chmod -R 777 ${SIMVA_TMON_GIT_REPO}
+    chmod -R ${SIMVA_TMON_DIR_MODE} ${SIMVA_TMON_GIT_REPO}
 fi
 if [[ ${RUNBUILDCODE} == true ]] ; then
     exec ${SIMVA_HOME}/simva build ./08-tmon

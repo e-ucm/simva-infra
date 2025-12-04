@@ -1,7 +1,6 @@
 param(
     [switch]$Stop,
     [switch]$Reload,
-    [switch]$Provision,
     [int]$Memory,
     [int]$CPU
 )
@@ -132,35 +131,26 @@ if($Stop) {
         $CPU=8
     }
     [System.Environment]::SetEnvironmentVariable("VBOX_CPU", $CPU, "Process")
+    Write-Host "Setting VM resources: Memory=${Memory}MB, CPU=${CPU} cores"
     ./helpers/build_hostname.ps1
     ./helpers/adapter_ip.ps1
     ./helpers/set_to_local_dev.ps1
     if($Reload) {
         Write-Host "Reloading VM '$VmName'..."
         if ($status -eq "running") {
-            if($Provision) {
-                vagrant reload --provision
-            } else {
-                vagrant reload
-            }
+            vagrant reload
         } else {
-            if($Provision) {
-                vagrant up --provider virtualbox --provision
-            } else {
-                vagrant up --provider virtualbox
-            }
+            vagrant up --provider virtualbox
         }
         Write-Host "VM Reloaded."
     } else {
         if ($status -eq "running") {
             Write-Host "Already started VM '$VmName'."
+            vagrant provision
+            Write-Host "VM provisioned."
         } else {
             Write-Host "Starting VM '$VmName'..."
-            if($Provision) {
-                vagrant up --provider virtualbox --provision
-            } else {
-                vagrant up --provider virtualbox
-            }
+            vagrant up --provider virtualbox
             Write-Host "VM started."
         }
     }

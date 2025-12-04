@@ -39,7 +39,8 @@ export SIMVA_NETWORK_INTERFACE="simva0"
 export SIMVA_NETWORK_CIDR="172.30.0.0/24"
 
 # SIMVA Load Balancer IPs
-SIMVA_LOAD_BALANCER_IPS="127.0.0.1"
+export SIMVA_LOAD_BALANCER="false"
+export SIMVA_LOAD_BALANCER_IPS="127.0.0.1"
 
 ########################
 # Domain and subdomain #
@@ -87,7 +88,6 @@ export SIMVA_SOCKET_PROXY_LOG_LEVEL="info"
 # Traefik info #
 ################
 # Traefik: disables SSL certificate verification
-# Note: It is far better (and more secure) to config SIMVA_SSL_ROOT_CAS
 export SIMVA_TRAEFIK_INSECURE_SKIP_VERIFY="false"
 
 # Traefik: logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO
@@ -152,6 +152,7 @@ export SIMVA_SINK_TOPICS_DIR="kafka-topics"
 export SIMVA_TRACES_TOPIC="traces"
 export SIMVA_SINK_OUTPUTS_DIR="outputs"
 export SIMVA_SINK_TRACES_FILE="traces.json"
+export SIMVA_KAFKA_CONNECT_OFFSET_FLUSH_INTERVAL_MS=10000
 export SIMVA_TRACES_FLUSH_SIZE=1000
 export SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN=30
 
@@ -167,7 +168,7 @@ export SIMVA_API_LTI_MONGO_DB="/lti_simva"
 export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
 export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
 export SIMVA_LTI_ENABLED="false"
-export SIMVA_LOCALE="es,fr,pt-BR,en"
+export SIMVA_LOCALE="en,es"
 
 ##############################
 # SIMVA Trace Allocator INFO #
@@ -275,14 +276,10 @@ export SIMVA_MINIO_CLIENT_ID="minio"
 
 # TMon Dashboard ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_TMON_CLIENT_ID="tmon"
-#export SIMVA_TMON_CLIENT_SECRET="secret"
-
-# TMon ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_TMON_CLIENT_ID="tmon"
 export SIMVA_TMON_CLIENT_SECRET="secret"
 
 # Keycloak Client ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
-export SIMVA_KEYCLOAK_CLIENT_CLIENT_ID="keycloak_client"
+export SIMVA_KEYCLOAK_CLIENT_CLIENT_ID="keycloak-client"
 export SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET="secret"
 
 ####################################################################
