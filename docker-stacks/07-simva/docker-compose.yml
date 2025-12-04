@@ -195,6 +195,9 @@ services:
       SSO_CLIENT_SECRET: "${SIMVA_SIMVA_CLIENT_SECRET:-secret}"
       SSO_SSL_REQUIRED: "external"
       SSO_PUBLIC_CLIENT: "false"
+      #I18N LOCALES
+      I18N_DEBUG: "${SIMVA_I18N_DEBUG:-false}"
+      SIMVA_LOCALES: "${SIMVA_LOCALE:-en}"
       #SIMVA API
       SIMVA_API_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_API_PORT: "${SIMVA_SIMVA_API_PORT:-443}"
