@@ -2,7 +2,9 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-if [[ ${SIMVA_LIMESURVEY_VERSION%.*} <= 5 ]]; then
+if [[ ${SIMVA_LIMESURVEY_VERSION:0:1} > 5 ]]; then
+    echo "Nothing to do";
+else
     if [[ ! -e "${SIMVA_LIMESURVEY_CERT_FILE}" ]]; then
         openssl genrsa -out ${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_SIMPLESAMLPHP_SP_PRIVATE_KEY} 2048
         openssl req \
