@@ -19,6 +19,7 @@ services:
       - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9229:9229"
+      - "127.0.0.1:9232:9230"
   simva-front:
     build: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}
     restart: unless-stopped
@@ -27,6 +28,7 @@ services:
       - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9230:9229"
+      - "127.0.0.1:9233:9230"
   simva-trace-allocator:
     build: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}
     restart: unless-stopped

@@ -2,7 +2,7 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-mkdir -p ${SIMVA_STORAGE_PATH} && cd /home/node/app
+cd /home/node/app
 
 #start api
 echo "${NODE_ENV}"
