@@ -1,0 +1,52 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+services:
+  mongodb:
+    << : *default-opts
+    image: ${SIMVA_MONGODB_IMAGE:-mongo}:${SIMVA_MONGODB_VERSION:-4.2.8}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - simva_mongodb_data:/data/db
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh
+    environment:
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
+      SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
+    hostname: ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+  simva-api:
+    environment:
+      #MONGO DB
+      MONGO_HOST: "${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      MONGO_DB: "${SIMVA_API_MONGO_DB:-/simva}"
+      LTI_MONGO_DB: "${SIMVA_API_LTI_MONGO_DB:-/lti_simva}"
+      #MONGO DB LTI
+      LTI_PLATFORM_DB_NAME: "${SIMVA_API_LTI_MONGO_DB:-/lti_simva}"
+      LTI_PLATFORM_DB_USER:  "${SIMVA_LTI_PLATFORM_DB_USER:-root}"
+      LTI_PLATFORM_DB_PASSWORD: "${SIMVA_LTI_PLATFORM_DB_PASSWORD:-password}"
+    depends_on:
+      - mongodb
+  simva-front:
+    environment:
+      #MONGO DB
+      MONGO_HOST: "${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      MONGO_DB: "${SIMVA_FRONT_MONGO_DB:-/simva-front}"
+
+volumes:
+  simva_mongodb_data:
+    external: true

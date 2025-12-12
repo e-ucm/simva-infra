@@ -19,19 +19,6 @@ networks:
     external: true
 
 services:
-  mongodb:
-    << : *default-opts
-    image: ${SIMVA_MONGODB_IMAGE:-mongo}:${SIMVA_MONGODB_VERSION:-4.2.8}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - simva_mongodb_data:/data/db
-    restart: unless-stopped
-    hostname: ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-    networks:
-      default:
-        aliases:
-          - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-
   simva-api:
     << : *default-opts
     command: ['bash', '/home/node/entrypoint.d/docker-startup.sh']
@@ -60,10 +47,6 @@ services:
       ADMIN_EMAIL: "${SIMVA_API_ADMIN_USERNAME:-admin}@${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       ADMIN_PASSWORD: "${SIMVA_API_ADMIN_PASSWORD:-password}"
       MAX_UPLOAD_FILE_SIZE: "${SIMVA_MAX_UPLOAD_FILE_SIZE:-33554432}"
-      #MONGO DB
-      MONGO_HOST: "${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      MONGO_DB: "${SIMVA_API_MONGO_DB:-/simva}"
-      LTI_MONGO_DB: "${SIMVA_API_LTI_MONGO_DB:-/lti_simva}"
       #KAFKA
       KAFKA_HOST: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       KAFKA_PORT: "9092"
@@ -119,9 +102,6 @@ services:
       #LTI
       LTI_PLATFORM_CLIENT_ID: "${SIMVA_LTI_PLATFORM_CLIENT_ID:-lti_platform}"
       LTI_PLATFORM_SIGNING_KEY: "${SIMVA_LTI_PLATFORM_CLIENT_SECRET:-secret}"
-      LTI_PLATFORM_DB_NAME: "${SIMVA_API_LTI_MONGO_DB:-/lti_simva}"
-      LTI_PLATFORM_DB_USER:  "${SIMVA_LTI_PLATFORM_DB_USER:-root}"
-      LTI_PLATFORM_DB_PASSWORD: "${SIMVA_LTI_PLATFORM_DB_PASSWORD:-password}"
       #STORAGE
       SIMVA_STORAGE_PATH: "/storage/"
       #SHLINK
@@ -137,8 +117,6 @@ services:
       - simva_api_logs:/root/.npm/_logs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-api.sh:/home/node/entrypoint.d/docker-startup.sh
-    depends_on:
-      - mongodb
     restart: unless-stopped
     hostname: ${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
@@ -175,9 +153,6 @@ services:
       SIMVA_HOST:  "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
       SIMVA_URL: "https://${SIMVA_EXTERNAL_DOMAIN:-external.test}"
-      #MONGO DB
-      MONGO_HOST: "${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      MONGO_DB: "${SIMVA_FRONT_MONGO_DB:-/simva-front}"
       #SSO KEYCLOAK
       SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
@@ -324,8 +299,6 @@ services:
           - simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
 volumes:
-  simva_mongodb_data:
-    external: true
   simva_trace_allocator_data:
     external: true
   simva_trace_allocator_logs:
