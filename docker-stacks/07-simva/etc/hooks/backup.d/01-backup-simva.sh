@@ -15,12 +15,8 @@ export RUN_IN_CONTAINER_NAME="simva-front"
 _stop_docker_container_if_running
 export RUN_IN_CONTAINER_NAME="simva-api"
 _stop_docker_container_if_running
-export RUN_IN_CONTAINER_NAME="mongodb"
-_stop_docker_container_if_running
 
 echo "💾 Creating new backup..."
-BACKUP_VOLUME="simva_mongodb_data"
-"${SIMVA_BIN_HOME}/volumectl.sh" backup $BACKUP_VOLUME "$BACKUP_DIR/$BACKUP_VOLUME" "$(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp")" #TODO VIA OTHER METHOD
 BACKUP_TRACE_ALLOCATOR_VOLUME="simva_trace_allocator_data"
 "${SIMVA_BIN_HOME}/volumectl.sh" backup $BACKUP_TRACE_ALLOCATOR_VOLUME "$BACKUP_DIR/$BACKUP_TRACE_ALLOCATOR_VOLUME" "$(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp")" #TODO ONLY COMPACTED DATA
 BACKUP_STORAGE_VOLUME="simva_storage_data"

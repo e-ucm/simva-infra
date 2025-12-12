@@ -669,6 +669,9 @@ function install() {
         local stack_name="${stack##*-}"
         local stack_name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
         local var_name="SIMVA_${stack_name_uppercase}_VERSION"
+        if [[ ! -d ${SIMVA_DATA_HOME}/${stack_name} ]]; then
+            mkdir ${SIMVA_DATA_HOME}/${stack_name}
+        fi
         echo $external_domain > "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain"
         if [[ -v $var_name ]]; then
             echo "Variable $var_name is set"
