@@ -377,4 +377,4 @@ ALTER TABLE `Users_Roles`
 ADD FOREIGN KEY(`role_id`) REFERENCES `Roles`(`role_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-INSERT INTO Roles (role_name) VALUES ('(SIMLET)'), ('(Session)'), ('(Activity)');
+INSERT INTO Roles (role_name) VALUES ('SUPERVISOR'), ('COORDINATOR'), ('OWNER');
