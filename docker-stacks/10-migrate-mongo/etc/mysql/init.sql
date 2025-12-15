@@ -24,16 +24,19 @@ CREATE TABLE IF NOT EXISTS `SIMLETs_sessions` (
 
 CREATE UNIQUE INDEX `SIMLET-session_index_0`
 ON `SIMLETs_sessions` (`simlet_id`, `session_id`);
-CREATE TABLE IF NOT EXISTS `SIMLETs_coordinators` (
+CREATE TABLE IF NOT EXISTS `Users_Roles` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`simlet_id` INTEGER NOT NULL,
-	`coordinator_id` INTEGER NOT NULL,
+	`user_id` INTEGER NOT NULL,
+	`role_id` INTEGER NOT NULL,
+	`simlet_id` INTEGER,
+	`session_id` INTEGER,
+	`activity_id` INTEGER,
 	PRIMARY KEY(`id`)
 );
 
 
 CREATE UNIQUE INDEX `SIMLET-coordinator_index_0`
-ON `SIMLETs_coordinators` (`simlet_id`, `coordinator_id`);
+ON `Users_Roles` (`simlet_id`, `session_id`, `activity_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_groups` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`simlet_id` INTEGER NOT NULL,
@@ -77,16 +80,6 @@ CREATE TABLE IF NOT EXISTS `Sessions` (
 
 CREATE UNIQUE INDEX `Session_index_0`
 ON `Sessions` (`session_id`);
-CREATE TABLE IF NOT EXISTS `Sessions_supervisors` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`session_id` INTEGER NOT NULL,
-	`supervisor_id` INTEGER NOT NULL,
-	PRIMARY KEY(`id`)
-);
-
-
-CREATE UNIQUE INDEX `Session-supervisor_index_0`
-ON `Sessions_supervisors` (`session_id`, `supervisor_id`);
 CREATE TABLE IF NOT EXISTS `Sessions_Activities` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`session_id` INTEGER NOT NULL,
@@ -155,16 +148,6 @@ CREATE TABLE IF NOT EXISTS `Manual_Activities` (
 
 CREATE UNIQUE INDEX `Manual_Activity_index_0`
 ON `Manual_Activities` (`activity_id`);
-CREATE TABLE IF NOT EXISTS `Activities_owners` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`activity_id` INTEGER NOT NULL,
-	`owner_id` INTEGER NOT NULL,
-	PRIMARY KEY(`id`)
-);
-
-
-CREATE UNIQUE INDEX `Activity_owner_index_0`
-ON `Activities_owners` (`activity_id`, `owner_id`);
 CREATE TABLE IF NOT EXISTS `Activities_completion` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`activity_id` INTEGER NOT NULL,
@@ -288,7 +271,16 @@ CREATE TABLE IF NOT EXISTS `GamePlay_Versions` (
 
 CREATE UNIQUE INDEX `GamePlay_Version_index_0`
 ON `GamePlay_Versions` (`game_id`, `version_id`);
-ALTER TABLE `SIMLETs_coordinators`
+CREATE TABLE IF NOT EXISTS `Roles` (
+	`role_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`role_name` VARCHAR(50) NOT NULL,
+	PRIMARY KEY(`role_id`)
+);
+
+
+CREATE INDEX `Roles_index_0`
+ON `Roles` (`role_id`);
+ALTER TABLE `Users_Roles`
 ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `SIMLETs_sessions`
@@ -315,9 +307,6 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Sessions_tags`
 ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Sessions_supervisors`
-ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Sessions_Activities`
 ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
@@ -333,20 +322,11 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Manual_Activities`
 ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Activities_owners`
-ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Activities_completion`
 ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `SIMLETs_coordinators`
-ADD FOREIGN KEY(`coordinator_id`) REFERENCES `Users`(`user_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Sessions_supervisors`
-ADD FOREIGN KEY(`supervisor_id`) REFERENCES `Users`(`user_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Activities_owners`
-ADD FOREIGN KEY(`owner_id`) REFERENCES `Users`(`user_id`)
+ALTER TABLE `Users_Roles`
+ADD FOREIGN KEY(`user_id`) REFERENCES `Users`(`user_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `ParticipantGroups_owners`
 ADD FOREIGN KEY(`owner_id`) REFERENCES `Users`(`user_id`)
@@ -387,3 +367,14 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `SIMLETs`
 ADD FOREIGN KEY(`sandbox_id`) REFERENCES `Sessions`(`session_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `Users_Roles`
+ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `Users_Roles`
+ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `Users_Roles`
+ADD FOREIGN KEY(`role_id`) REFERENCES `Roles`(`role_id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO Roles (role_name) VALUES ('(SIMLET)'), ('(Session)'), ('(Activity)');

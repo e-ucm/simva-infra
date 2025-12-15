@@ -525,10 +525,6 @@ simlet_group_sql = """
 INSERT INTO SIMLETs_groups (simlet_id, group_id)
 VALUES (%s, %s)
 """
-simlet_coordinators_sql = """
-INSERT INTO SIMLETs_coordinators (simlet_id, coordinator_id)
-VALUES (%s, %s)
-"""
 simlet_shlinks_sql = """
 INSERT INTO SIMLETs_shlinks (simlet_id, short_url, short_code, date_created, title, valid_date, expiration_date, domain )
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
@@ -536,7 +532,7 @@ VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
 
 simlet_sessions_values=[]
 simlet_group_values=[]
-simlet_coordinators_values=[]
+
 simlet_shlinks_values=[]
 for s in filtered_simlets:
     simlet_mongo_id=s["_id"]["$oid"]
@@ -556,15 +552,11 @@ for s in filtered_simlets:
         simlet_sessions_values.append((simlet_mysql_id, mongo_session_to_mysql_id[session_mongo_id]))
     for group_mongo_id in s.get("groups", []):
         simlet_group_values.append((simlet_mysql_id, mongo_group_to_mysql_id[group_mongo_id]))
-    for coordinator_mongo_id in s.get("owners", []):
-        simlet_coordinators_values.append((simlet_mysql_id, mongo_user_to_mysql_id[coordinator_mongo_id]))
 print(simlet_sessions_values)
 print(simlet_shlinks_values)
 print(simlet_group_values)
-print(simlet_coordinators_values)
 cursor.executemany(simlet_sesions_sql, simlet_sessions_values)
 cursor.executemany(simlet_group_sql, simlet_group_values)
-cursor.executemany(simlet_coordinators_sql, simlet_coordinators_values)
 cursor.executemany(simlet_shlinks_sql, simlet_shlinks_values)
 mysql_conn.commit()
 
@@ -572,7 +564,49 @@ print("Inserted:")
 print("  SIMLETs_shlinks:", len(simlet_shlinks_values))
 print("  SIMLETs_sessions:", len(simlet_sessions_values))
 print("  SIMLETs_groups:", len(simlet_group_values))
-print("  SIMLETs_coordinators:", len(simlet_coordinators_values))
+
+#adding SIMLETs coordinators, test supervisors and activities owners
+print("--------------------")
+print("Adding OWNERS TABLES")
+print("--------------------")
+print("Adding SIMLET Coordinator and session supervisor mapping")
+users_roles_sql = """
+INSERT INTO Users_Roles (user_id, role_id, simlet_id)
+VALUES (%s, %s, %s)
+"""
+users_roles_values=[]
+users_ids=[]
+for s in filtered_simlets:
+    simlet_mongo_id=s["_id"]["$oid"]
+    simlet_mysql_id=mongo_simlet_to_mysql_id[simlet_mongo_id]
+    for coordinator_mongo_id in s.get("owners", []):
+        owner_mysql=mongo_user_to_mysql_id[coordinator_mongo_id]
+        users_roles_values.append((owner_mysql, 1, simlet_mysql_id))
+        users_ids.append(coordinator_mongo_id)
+print(users_roles_values)
+cursor.executemany(users_roles_sql, users_roles_values)
+mysql_conn.commit()
+print("  Users_Roles:", len(users_roles_values))
+
+#adding activities owners
+#print("Adding activities owners mapping")
+#activities_owners_sql = """
+#INSERT INTO Users_Roles (user_id, activity_id)
+#VALUES (%s, %s)
+#"""
+#activities_owners_values=[]
+#for a in filtered_activities:
+#    activity_mongo_id=a["_id"]["$oid"]
+#    activity_mysql_id=mongo_activity_to_mysql_id[activity_mongo_id]
+#    for owner_mongo_id in a.get("owners", []):
+#        if(not users_ids in users_ids):
+#            activities_owners_values.append((mongo_user_to_mysql_id[owner_mongo_id], activity_mysql_id))
+#print(activities_owners_values)
+#cursor.executemany(activities_owners_sql, activities_owners_values)
+#mysql_conn.commit()
+#
+#print("Inserted:")
+#print("  Users_Roles:", len(activities_owners_values))
 
 print("Migration done!")
 cursor.close()
