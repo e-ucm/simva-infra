@@ -36,7 +36,11 @@ CREATE TABLE IF NOT EXISTS `Users_Roles` (
 
 
 CREATE UNIQUE INDEX `SIMLET-coordinator_index_0`
-ON `Users_Roles` (`simlet_id`, `session_id`, `activity_id`);
+ON `Users_Roles` (`simlet_id`, `role_id`, `user_id`);
+CREATE UNIQUE INDEX `Users_Roles_index_1`
+ON `Users_Roles` (`session_id`, `role_id`, `user_id`);
+CREATE UNIQUE INDEX `Users_Roles_index_2`
+ON `Users_Roles` (`activity_id`, `role_id`, `user_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_groups` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`simlet_id` INTEGER NOT NULL,
@@ -378,3 +382,68 @@ ADD FOREIGN KEY(`role_id`) REFERENCES `Roles`(`role_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 INSERT INTO Roles (role_name) VALUES ('SUPERVISOR'), ('COORDINATOR'), ('OWNER');
+
+CREATE OR REPLACE VIEW v_direct_permissions AS
+SELECT
+    ur.user_id,
+    CASE
+        WHEN ur.simlet_id   IS NOT NULL THEN 'SIMLET'
+        WHEN ur.session_id IS NOT NULL THEN 'SESSION'
+        WHEN ur.activity_id IS NOT NULL THEN 'ACTIVITY'
+    END AS object_type,
+    COALESCE(ur.simlet_id, ur.session_id, ur.activity_id) AS object_id,
+	r.role_id AS role_id,
+    r.role_name AS role_name
+FROM Users_Roles ur
+JOIN Roles r ON r.role_id = ur.role_id;
+
+
+CREATE OR REPLACE VIEW v_simlet_to_session AS
+SELECT
+    ur.user_id,
+    'SESSION' AS object_type,
+    s.session_id AS object_id,
+	r.role_id AS role_id,
+    r.role_name AS role_name
+FROM Users_Roles ur
+JOIN Roles r ON r.role_id = ur.role_id
+JOIN SIMLETs_sessions s ON s.simlet_id = ur.simlet_id
+WHERE ur.simlet_id IS NOT NULL
+  AND r.role_name = 'SUPERVISOR';
+
+CREATE OR REPLACE VIEW v_simlet_to_activity AS
+SELECT
+    ur.user_id,
+    'ACTIVITY' AS object_type,
+    a.activity_id AS object_id,
+	r.role_id AS role_id,
+    r.role_name AS role_name
+FROM Users_Roles ur
+JOIN Roles r ON r.role_id = ur.role_id
+JOIN SIMLETs_sessions s ON s.simlet_id = ur.simlet_id
+JOIN Sessions_Activities a ON a.session_id = s.session_id
+WHERE ur.simlet_id IS NOT NULL
+  AND r.role_name = 'SUPERVISOR';
+
+CREATE OR REPLACE VIEW v_session_to_activity AS
+SELECT
+    ur.user_id,
+    'ACTIVITY' AS object_type,
+    a.activity_id AS object_id,
+	r.role_id AS role_id,
+    r.role_name AS role_name
+FROM Users_Roles ur
+JOIN Roles r ON r.role_id = ur.role_id
+JOIN Sessions_Activities a ON a.session_id = ur.session_id
+WHERE ur.session_id IS NOT NULL
+  AND r.role_name = 'COORDINATOR';
+
+
+CREATE OR REPLACE VIEW v_user_permissions AS
+SELECT * FROM v_direct_permissions
+UNION ALL
+SELECT * FROM v_simlet_to_session
+UNION ALL
+SELECT * FROM v_simlet_to_activity
+UNION ALL
+SELECT * FROM v_session_to_activity;
