@@ -65,12 +65,12 @@ with open(MONGO_BACKUP_FOLDER + "/users.json", "r") as f:
 
 # Adding User into Users table
 user_sql = """
-INSERT INTO Users (mongo_id, username, email, role)
-VALUES (%s, %s, %s, %s)
+INSERT INTO Users (mongo_id, username, isToken, token, email, role)
+VALUES (%s, %s, %s, %s, %s, %s)
 """
 
 user_values = [
-    (u["_id"]["$oid"], u["username"], u["email"], u["role"])
+    (u["_id"]["$oid"], u["username"], u.get("isToken", False), u["token"], u["email"], u["role"])
     for u in users
     if u["username"] not in existing_usernames
 ]

@@ -171,6 +171,8 @@ CREATE TABLE IF NOT EXISTS `Users` (
 	`username` VARCHAR(255) NOT NULL UNIQUE,
 	`email` VARCHAR(255) NOT NULL,
 	`role` VARCHAR(50) NOT NULL,
+	`isToken` BOOLEAN NOT NULL,
+	`token` VARCHAR(50),
 	PRIMARY KEY(`user_id`)
 );
 
