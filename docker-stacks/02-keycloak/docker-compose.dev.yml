@@ -35,8 +35,8 @@ services:
     image: ${SIMVA_PHPMYADMIN_IMAGE:-phpmyadmin/phpmyadmin}:${SIMVA_PHPMYADMIN_VERSION:-5.0.2}
     environment:
       PMA_ARBITRARY: 1
-      PMA_HOSTS: mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test},mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
-      PMA_VERBOSES: Keycloak SSO DB,Limesurvey DB
+      PMA_HOSTS: mariadb.${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_INTERNAL_DOMAIN:-internal.test},mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_INTERNAL_DOMAIN:-internal.test},${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      PMA_VERBOSES: Keycloak SSO DB,Limesurvey DB,SIMVA MySQL
       PMA_PORT: 3306
     depends_on:
       - mariadb
