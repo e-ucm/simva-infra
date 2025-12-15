@@ -447,3 +447,12 @@ UNION ALL
 SELECT * FROM v_simlet_to_activity
 UNION ALL
 SELECT * FROM v_session_to_activity;
+
+
+CREATE OR REPLACE VIEW v_simlets_activities AS
+SELECT 
+	s.simlet_id,
+	s.session_id,
+	a.activity_id
+FROM SIMLETs_sessions s
+JOIN Sessions_Activities a ON a.session_id = s.session_id
