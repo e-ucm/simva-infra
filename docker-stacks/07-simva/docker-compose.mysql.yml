@@ -1,0 +1,55 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+services:
+  mysql:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: userpass
+      MYSQL_DATABASE: ${SIMVA_API_MYSQL_DB:-simva}
+      MYSQL_ROOT_HOST: "${MYSQL_ROOT_HOST:-172.30.0.%}"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-prootpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    ports:
+      - "3306:3306"
+    volumes:
+      - simva_mysql_data:/var/lib/mysql
+      - ${STACK_HOME}/etc/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    hostname: ${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
+  simva-api:
+    environment:
+      #MYSQL DB
+      MYSQL_HOST: "${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
+      MYSQL_DB: "${SIMVA_API_MYSQL_DB:-simva}"
+      MYSQL_DB_USER: dbuser
+      MYSQL_DB_PASSWORD: userpass
+    depends_on:
+      - mysql
+
+volumes:
+  simva_mysql_data:
+    external: true
