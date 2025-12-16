@@ -37,9 +37,9 @@ CREATE TABLE IF NOT EXISTS `Users_Roles` (
 
 CREATE UNIQUE INDEX `SIMLET-coordinator_index_0`
 ON `Users_Roles` (`simlet_id`, `role_id`, `user_id`);
-CREATE UNIQUE INDEX `Users_Roles_index_1`
+CREATE INDEX `Users_Roles_index_1`
 ON `Users_Roles` (`session_id`, `role_id`, `user_id`);
-CREATE UNIQUE INDEX `Users_Roles_index_2`
+CREATE INDEX `Users_Roles_index_2`
 ON `Users_Roles` (`activity_id`, `role_id`, `user_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_groups` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `Activities` (
 	`activity_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`mongo_id` VARCHAR(50),
 	`name` VARCHAR(100) NOT NULL,
-	`type` VARCHAR(20) NOT NULL,
+	`activity_type_id` INTEGER NOT NULL,
 	`presignedUrl` VARCHAR(50),
 	`generated_at` DATETIME,
 	`expire_on_seconds` INTEGER,
@@ -169,10 +169,10 @@ CREATE TABLE IF NOT EXISTS `Users` (
 	`user_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`mongo_id` VARCHAR(50),
 	`username` VARCHAR(255) NOT NULL UNIQUE,
-	`email` VARCHAR(255) NOT NULL,
-	`role` VARCHAR(50) NOT NULL,
 	`isToken` BOOLEAN NOT NULL,
 	`token` VARCHAR(50),
+	`email` VARCHAR(255) NOT NULL,
+	`role` VARCHAR(50) NOT NULL,
 	PRIMARY KEY(`user_id`)
 );
 
@@ -194,55 +194,51 @@ ON `ParticipantGroups` (`group_id`);
 CREATE TABLE IF NOT EXISTS `ParticipantGroups_participants` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`group_id` INTEGER NOT NULL,
-	`participant_id` INTEGER NOT NULL,
+	`participant_id` INTEGER,
+	`owner_id` INTEGER,
 	PRIMARY KEY(`id`)
 );
 
 
 CREATE UNIQUE INDEX `Group-participants_index_0`
 ON `ParticipantGroups_participants` (`group_id`, `participant_id`);
-CREATE TABLE IF NOT EXISTS `ParticipantGroups_owners` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`group_id` INTEGER NOT NULL,
-	`owner_id` INTEGER NOT NULL,
-	PRIMARY KEY(`id`)
-);
-
-
-CREATE UNIQUE INDEX `Group-owner_index_0`
-ON `ParticipantGroups_owners` (`group_id`, `owner_id`);
+CREATE INDEX `ParticipantGroups_participants_index_1`
+ON `ParticipantGroups_participants` (`group_id`, `owner_id`);
 CREATE TABLE IF NOT EXISTS `Allocators` (
 	`allocator_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`allocator_type_id` INTEGER NOT NULL,
 	`mongo_id` VARCHAR(50),
-	`type` VARCHAR(25) NOT NULL,
 	PRIMARY KEY(`allocator_id`)
 );
 
 
 CREATE UNIQUE INDEX `Allocator_index_0`
 ON `Allocators` (`allocator_id`);
-CREATE TABLE IF NOT EXISTS `Default_Allocators` (
+CREATE TABLE IF NOT EXISTS `Allocations` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`allocator_id` INTEGER NOT NULL,
 	`session_id` INTEGER NOT NULL,
-	`participant_id` INTEGER NOT NULL,
+	`participant_id` INTEGER,
+	`group_id` INTEGER,
 	PRIMARY KEY(`id`)
 );
 
 
 CREATE UNIQUE INDEX `Default_Allocator_index_0`
-ON `Default_Allocators` (`allocator_id`, `session_id`, `participant_id`);
-CREATE TABLE IF NOT EXISTS `Group_Allocators` (
+ON `Allocations` (`allocator_id`, `session_id`, `participant_id`);
+CREATE INDEX `Default_Allocators_index_1`
+ON `Allocations` (`allocator_id`, `session_id`, `group_id`);
+CREATE TABLE IF NOT EXISTS `Random_Allocators` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`allocator_id` INTEGER NOT NULL,
 	`session_id` INTEGER NOT NULL,
-	`group_id` INTEGER NOT NULL,
+	`percentage` FLOAT NOT NULL,
 	PRIMARY KEY(`id`)
 );
 
 
 CREATE UNIQUE INDEX `Group_Allocator_index_0`
-ON `Group_Allocators` (`allocator_id`, `session_id`, `group_id`);
+ON `Random_Allocators` (`allocator_id`, `session_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_tags` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`simlet_id` INTEGER NOT NULL,
@@ -286,6 +282,24 @@ CREATE TABLE IF NOT EXISTS `Roles` (
 
 CREATE INDEX `Roles_index_0`
 ON `Roles` (`role_id`);
+CREATE TABLE IF NOT EXISTS `Allocators_types` (
+	`allocator_type_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`allocator_type_name` VARCHAR(50) NOT NULL,
+	PRIMARY KEY(`allocator_type_id`)
+);
+
+
+CREATE INDEX `Allocator_types_index_0`
+ON `Allocators_types` (`allocator_type_id`);
+CREATE TABLE IF NOT EXISTS `Activities_types` (
+	`activity_type_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`activity_type_name` VARCHAR(50) NOT NULL,
+	PRIMARY KEY(`activity_type_id`)
+);
+
+
+CREATE INDEX `Activities_types_index_0`
+ON `Activities_types` (`activity_type_id`);
 ALTER TABLE `Users_Roles`
 ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
@@ -304,10 +318,10 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `SIMLETs_sessions`
 ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Default_Allocators`
+ALTER TABLE `Allocations`
 ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Group_Allocators`
+ALTER TABLE `Random_Allocators`
 ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Sessions_tags`
@@ -334,23 +348,17 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Users_Roles`
 ADD FOREIGN KEY(`user_id`) REFERENCES `Users`(`user_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `ParticipantGroups_owners`
-ADD FOREIGN KEY(`owner_id`) REFERENCES `Users`(`user_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `ParticipantGroups_participants`
 ADD FOREIGN KEY(`participant_id`) REFERENCES `Users`(`user_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Activities_completion`
 ADD FOREIGN KEY(`participant_id`) REFERENCES `Users`(`user_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Default_Allocators`
+ALTER TABLE `Allocations`
 ADD FOREIGN KEY(`participant_id`) REFERENCES `Users`(`user_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Limesurvey_Activities`
 ADD FOREIGN KEY(`survey_owner`) REFERENCES `Users`(`user_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `ParticipantGroups_owners`
-ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `SIMLETs_groups`
 ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
@@ -358,13 +366,10 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `ParticipantGroups_participants`
 ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Group_Allocators`
-ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Default_Allocators`
+ALTER TABLE `Allocations`
 ADD FOREIGN KEY(`allocator_id`) REFERENCES `Allocators`(`allocator_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Group_Allocators`
+ALTER TABLE `Random_Allocators`
 ADD FOREIGN KEY(`allocator_id`) REFERENCES `Allocators`(`allocator_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `SIMLETs`
@@ -382,79 +387,19 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Users_Roles`
 ADD FOREIGN KEY(`role_id`) REFERENCES `Roles`(`role_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `Allocations`
+ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `Allocators`
+ADD FOREIGN KEY(`allocator_type_id`) REFERENCES `Allocators_types`(`allocator_type_id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `Activities`
+ADD FOREIGN KEY(`activity_type_id`) REFERENCES `Activities_types`(`activity_type_id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `ParticipantGroups_participants`
+ADD FOREIGN KEY(`owner_id`) REFERENCES `Users`(`user_id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 INSERT INTO Roles (role_name) VALUES ('SUPERVISOR'), ('COORDINATOR'), ('OWNER');
-
-CREATE OR REPLACE VIEW v_direct_permissions AS
-SELECT
-    ur.user_id,
-    CASE
-        WHEN ur.simlet_id   IS NOT NULL THEN 'SIMLET'
-        WHEN ur.session_id IS NOT NULL THEN 'SESSION'
-        WHEN ur.activity_id IS NOT NULL THEN 'ACTIVITY'
-    END AS object_type,
-    COALESCE(ur.simlet_id, ur.session_id, ur.activity_id) AS object_id,
-	r.role_id AS role_id,
-    r.role_name AS role_name
-FROM Users_Roles ur
-JOIN Roles r ON r.role_id = ur.role_id;
-
-
-CREATE OR REPLACE VIEW v_simlet_to_session AS
-SELECT
-    ur.user_id,
-    'SESSION' AS object_type,
-    s.session_id AS object_id,
-	r.role_id AS role_id,
-    r.role_name AS role_name
-FROM Users_Roles ur
-JOIN Roles r ON r.role_id = ur.role_id
-JOIN SIMLETs_sessions s ON s.simlet_id = ur.simlet_id
-WHERE ur.simlet_id IS NOT NULL
-  AND r.role_name = 'SUPERVISOR';
-
-CREATE OR REPLACE VIEW v_simlet_to_activity AS
-SELECT
-    ur.user_id,
-    'ACTIVITY' AS object_type,
-    a.activity_id AS object_id,
-	r.role_id AS role_id,
-    r.role_name AS role_name
-FROM Users_Roles ur
-JOIN Roles r ON r.role_id = ur.role_id
-JOIN SIMLETs_sessions s ON s.simlet_id = ur.simlet_id
-JOIN Sessions_Activities a ON a.session_id = s.session_id
-WHERE ur.simlet_id IS NOT NULL
-  AND r.role_name = 'SUPERVISOR';
-
-CREATE OR REPLACE VIEW v_session_to_activity AS
-SELECT
-    ur.user_id,
-    'ACTIVITY' AS object_type,
-    a.activity_id AS object_id,
-	r.role_id AS role_id,
-    r.role_name AS role_name
-FROM Users_Roles ur
-JOIN Roles r ON r.role_id = ur.role_id
-JOIN Sessions_Activities a ON a.session_id = ur.session_id
-WHERE ur.session_id IS NOT NULL
-  AND r.role_name = 'COORDINATOR';
-
-
-CREATE OR REPLACE VIEW v_user_permissions AS
-SELECT * FROM v_direct_permissions
-UNION ALL
-SELECT * FROM v_simlet_to_session
-UNION ALL
-SELECT * FROM v_simlet_to_activity
-UNION ALL
-SELECT * FROM v_session_to_activity;
-
-
-CREATE OR REPLACE VIEW v_simlets_activities AS
-SELECT 
-	s.simlet_id,
-	s.session_id,
-	a.activity_id
-FROM SIMLETs_sessions s
-JOIN Sessions_Activities a ON a.session_id = s.session_id
+INSERT INTO Activities_types (Activity_type_name) VALUES ('default'), ('manual'), ('gameplay'), ('limesurvey'),('lti-tool');
+INSERT INTO Allocators_types (allocator_type_name) VALUES ('default'), ('group'), ('random');

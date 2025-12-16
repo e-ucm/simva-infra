@@ -70,7 +70,14 @@ VALUES (%s, %s, %s, %s, %s, %s)
 """
 
 user_values = [
-    (u["_id"]["$oid"], u["username"], u.get("isToken", False), u["token"], u["email"], u["role"])
+    (
+        u["_id"]["$oid"],
+        u["username"],
+        u.get("isToken", "false") == "true",
+        u.get("token",None),
+        u["email"],
+        u["role"]
+    )
     for u in users
     if u["username"] not in existing_usernames
 ]
@@ -156,7 +163,7 @@ print("  ParticipantGroups_participants:", len(groups_participant_values))
 #adding groups owners
 print("Adding Groups owners")
 groups_owners_sql = """
-INSERT INTO ParticipantGroups_owners (group_id, owner_id)
+INSERT INTO ParticipantGroups_participants (group_id, owner_id)
 VALUES (%s, %s)
 """
 groups_owners_values=[]
@@ -170,7 +177,7 @@ cursor.executemany(groups_owners_sql, groups_owners_values)
 mysql_conn.commit()
 
 print("Inserted:")
-print("  Groups-Owners:", len(groups_owners_values))
+print("  ParticipantGroups_participants owners:", len(groups_owners_values))
 
 print("-----------------")
 print("Adding Activities")
@@ -179,6 +186,12 @@ print("-----------------")
 cursor.execute("SELECT mongo_id FROM Activities WHERE mongo_id IS NOT NULL")
 mysql_activities_mongo_ids = cursor.fetchall()
 existing_activities_mongo_db = set(id[0] for id in mysql_activities_mongo_ids)  # extract string from tuple
+
+#Dict to map activity types to MySQL Id
+cursor.execute("SELECT activity_type_id, activity_type_name FROM Activities_types")
+mysql_activity_type_ids = cursor.fetchall()
+mongo_activity_type_to_mysql_id = {activity_type_name: activity_type_id for activity_type_id, activity_type_name in mysql_activity_type_ids}
+print(mongo_activity_type_to_mysql_id)
 
 # Get Activities from Mongo Backup
 activities=[]
@@ -190,7 +203,7 @@ with open(MONGO_BACKUP_FOLDER + "/activities.json", "r") as f:
 
 # Adding Activities into Activities table
 activities_sql = """
-INSERT INTO Activities (mongo_id, name, type, presignedUrl, generated_at, expire_on_seconds, version, trace_storage, description, isTemplate)
+INSERT INTO Activities (mongo_id, name, activity_type_id, presignedUrl, generated_at, expire_on_seconds, version, trace_storage, description, isTemplate)
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
 
@@ -201,7 +214,16 @@ filtered_activities = [
 ]
 
 activities_values = [
-    (a["_id"]["$oid"], a["name"], a["type"], a.get("extra_data", {}).get("minio_trace", {}).get("presignedUrl"), convert_iso_to_mysql_datetime_format(a.get("extra_data", {}).get("minio_trace", {}).get("generated_at")), a.get("extra_data", {}).get("minio_trace", {}).get("expire_on_sec"), a.get("version", "0"), a.get("extra_data", {}).get("config", {}).get("trace_storage",False), "", False)
+    (
+        a["_id"]["$oid"], 
+        a["name"], 
+        mongo_activity_type_to_mysql_id[a["type"]], 
+        a.get("extra_data", {}).get("minio_trace", {}).get("presignedUrl"), 
+        convert_iso_to_mysql_datetime_format(a.get("extra_data", {}).get("minio_trace", {}).get("generated_at")),
+        a.get("extra_data", {}).get("minio_trace", {}).get("expire_on_sec"), 
+        a.get("version", "0"), a.get("extra_data", {}).get("config", {}).get("trace_storage","false") == "true", 
+        "", 
+        False)
     for a in filtered_activities
 ]
 print(activities_values)
@@ -228,7 +250,7 @@ VALUES (%s, %s, %s, %s)
 manual_activities_values = [
     (
         mongo_activity_to_mysql_id[a["_id"]["$oid"]],
-        a.get("extra_data", {}).get("user_managed", False),
+        a.get("extra_data", {}).get("user_managed", "false") == "true",
         "LOCAL" if a.get("extra_data", {}).get("uri", "") == "" else "URL",
         a.get("extra_data", {}).get("uri", "")
     )
@@ -255,9 +277,9 @@ limesurvey_activities_values = [
     (
         mongo_activity_to_mysql_id[a["_id"]["$oid"]],
         a.get("extra_data", {}).get("surveyId", ""),
-        1 if a.get("extra_data", {}).get("survey_owner", "") == "" else mongo_user_to_mysql_id[a.get("extra_data", {}).get("survey_owner", "")],
+        list(mongo_user_to_mysql_id.values())[0] if a.get("extra_data", {}).get("survey_owner", "") == "" else mongo_user_to_mysql_id[a.get("extra_data", {}).get("survey_owner", "")],
         a.get("extra_data", {}).get("language", ""),
-        a.get("extra_data", {}).get("lrsset", False)
+        a.get("extra_data", {}).get("lrsset", "false") == "true"
     )
     for a in filtered_activities
     if a.get("type") == "limesurvey"
@@ -280,8 +302,8 @@ VALUES (%s, %s, %s, %s, %s)
 gameplay_activities_values = [
     (
         mongo_activity_to_mysql_id[a["_id"]["$oid"]],
-        a.get("extra_data", {}).get("config", {}).get("backup", False),
-        a.get("extra_data", {}).get("config", {}).get("scorm_xapi_by_game", False),
+        a.get("extra_data", {}).get("config", {}).get("backup", "false") == "true",
+        a.get("extra_data", {}).get("config", {}).get("scorm_xapi_by_game", "false") == "true",
         "LOCAL" if a.get("extra_data", {}).get("game_uri", "") == "" else "URL",
         a.get("extra_data", {}).get("game_uri", "")
     )
@@ -308,7 +330,7 @@ for a in filtered_activities:
     activity_mongo_id=a["_id"]["$oid"]
     for participant_mongo_id in a.get("extra_data", {}).get("participants", {}):
         participant_value = a.get("extra_data", {}).get("participants", {})[participant_mongo_id]
-        completed=participant_value.get("completion", False)
+        completed=participant_value.get("completion", "false") == "true"
         actual_progress=participant_value.get("progress", 0)
         progress=None if actual_progress == 0 and not completed else actual_progress
         initialized=False if progress is None else True
@@ -392,6 +414,13 @@ cursor.execute("SELECT mongo_id FROM Allocators WHERE mongo_id IS NOT NULL")
 mysql_allocator_mongo_ids = cursor.fetchall()
 existing_allocator_mongo_db = set(id[0] for id in mysql_allocator_mongo_ids)  # extract string from tuple
 
+#Dict to map allocators types to MySQL Id
+cursor.execute("SELECT allocator_type_id, allocator_type_name FROM Allocators_types")
+mysql_allocator_type_ids = cursor.fetchall()
+mongo_allocator_type_to_mysql_id = {allocator_type_name: allocator_type_id for allocator_type_id, allocator_type_name in mysql_allocator_type_ids}
+print(mongo_allocator_type_to_mysql_id)
+
+
 # Get allocators from Mongo Backup
 allocators=[]
 with open(MONGO_BACKUP_FOLDER + "/allocators.json", "r") as f:
@@ -402,7 +431,7 @@ with open(MONGO_BACKUP_FOLDER + "/allocators.json", "r") as f:
 
 #adding allocators into allocators table
 allocators_sql = """
-INSERT INTO Allocators (mongo_id, type)
+INSERT INTO Allocators (mongo_id, allocator_type_id)
 VALUES (%s, %s)
 """
 
@@ -412,7 +441,7 @@ filtered_allocators = [
     if a["_id"]["$oid"] not in existing_allocator_mongo_db
 ]
 allocators_values = [
-    (a["_id"]["$oid"], a["type"])
+    (a["_id"]["$oid"], mongo_allocator_type_to_mysql_id[a["type"]])
     for a in filtered_allocators
 ]
 print(allocators_values)
@@ -431,12 +460,12 @@ print(mongo_allocator_to_mysql_id)
 #adding Default and groups Allocators
 print("Adding Default and groups Allocators")
 default_allocator_sql = """
-INSERT INTO Default_Allocators (allocator_id, session_id, participant_id)
+INSERT INTO Allocations (allocator_id, session_id, participant_id)
 VALUES (%s, %s, %s)
 """
 
 group_allocator_sql = """
-INSERT INTO Group_Allocators (allocator_id, session_id, group_id)
+INSERT INTO Allocations (allocator_id, session_id, group_id)
 VALUES (%s, %s, %s)
 """
 
@@ -460,8 +489,8 @@ cursor.executemany(group_allocator_sql, group_allocator_values)
 mysql_conn.commit()
 
 print("Inserted:")
-print("  Default_Allocators:", len(default_allocator_values))
-print("  Group_Allocators:", len(group_allocator_values))
+print("  Allocations - Default:", len(default_allocator_values))
+print("  Allocations - Groups:", len(group_allocator_values))
 
 print("---------------")
 print("Adding SIMLETS ")

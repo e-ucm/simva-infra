@@ -20,9 +20,9 @@ services:
     image: mysql:8
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: dbuser
-      MYSQL_PASSWORD: userpass
+      MYSQL_ROOT_PASSWORD:  ${SIMVA_MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_USER: ${SIMVA_MYSQL_USER:-dbuser}
+      MYSQL_PASSWORD: ${SIMVA_MYSQL_PASSWORD:-userpass}
       MYSQL_DATABASE: ${SIMVA_API_MYSQL_DB:-simva}
       MYSQL_ROOT_HOST: "${MYSQL_ROOT_HOST:-172.30.0.%}"
     healthcheck:
@@ -45,14 +45,38 @@ services:
         aliases:
           - ${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
+  mysql-views:
+    image: mysql:8
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ${STACK_HOME}/etc/mysql/03-views.sql:/views/views.sql
+    entrypoint: >
+      sh -c "
+        # Wait until MySQL is ready
+        echo '⏳ Waiting for MySQL...'
+        until mysqladmin ping -h ${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test} -uroot -p${MYSQL_ROOT_PASSWORD:-root} --silent; do
+          sleep 2
+        done
+        echo '✅ MySQL ready — updating views'
+        mysql -h '${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}' -u${SIMVA_MYSQL_USER:-dbuser} -p${SIMVA_MYSQL_PASSWORD:-userpass} ${SIMVA_API_MYSQL_DB:-simva} < /views/views.sql
+      "
+    hostname: mysql-views.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - mysql-views.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+
   migration:
     build: ${STACK_HOME}/etc/migrate
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       MYSQL_HOST: "${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      MYSQL_USER: "dbuser"
-      MYSQL_PASSWORD: "userpass"
+      MYSQL_USER: ${SIMVA_MYSQL_USER:-dbuser}
+      MYSQL_PASSWORD: ${SIMVA_MYSQL_PASSWORD:-userpass}
       MYSQL_DB: "${SIMVA_API_MYSQL_DB:-simva}"
       MONGO_BACKUP_FOLDER: /export
     volumes:
