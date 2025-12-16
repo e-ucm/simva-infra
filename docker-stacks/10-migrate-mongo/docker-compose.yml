@@ -35,7 +35,7 @@ services:
       - "3306:3306"
     volumes:
       - simva_mysql_data:/var/lib/mysql
-      - ${STACK_HOME}/etc/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ${STACK_HOME}/etc/mysql/01-schemas.sql:/docker-entrypoint-initdb.d/init.sql
     hostname: ${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
@@ -51,7 +51,7 @@ services:
       mysql:
         condition: service_healthy
     volumes:
-      - ${STACK_HOME}/etc/mysql/03-views.sql:/views/views.sql
+      - ${STACK_HOME}/etc/mysql/02-views.sql:/views/views.sql
     entrypoint: >
       sh -c "
         # Wait until MySQL is ready
