@@ -15,9 +15,9 @@ services:
     image: mysql:8
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: dbuser
-      MYSQL_PASSWORD: userpass
+      MYSQL_ROOT_PASSWORD:  ${SIMVA_MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_USER: ${SIMVA_MYSQL_USER:-dbuser}
+      MYSQL_PASSWORD: ${SIMVA_MYSQL_PASSWORD:-userpass}
       MYSQL_DATABASE: ${SIMVA_API_MYSQL_DB:-simva}
       MYSQL_ROOT_HOST: "${MYSQL_ROOT_HOST:-172.30.0.%}"
     healthcheck:
