@@ -134,7 +134,7 @@ LEFT JOIN v_session_to_simlet upses ON upses.object_type = "SIMLET" AND sim.siml
 LEFT JOIN v_direct_permissions upsim ON upsim.object_type = "SIMLET" AND sim.simlet_id = upsim.object_id
 GROUP BY sim.simlet_id;
 
-CREATE OR REPLACE VIEW v_simlets_sessions AS
+CREATE OR REPLACE VIEW v_complete_simlets_sessions AS
 SELECT
     sim.simlet_id,
     ses.*,
@@ -152,7 +152,7 @@ LEFT JOIN v_activity_to_session upses ON upses.object_type = "SESSION" AND sim.s
 LEFT JOIN v_direct_permissions upa ON upa.object_type = "SESSION" AND sim.session_id = upa.object_id
 GROUP BY sim.simlet_id, sim.session_id;
 
-CREATE OR REPLACE VIEW v_sessions_activities AS
+CREATE OR REPLACE VIEW v_complete_sessions_activities AS
 SELECT
     ses.session_id,
     act.*,
@@ -190,7 +190,7 @@ SELECT
 FROM v_complete_groups
 WHERE version = 0;
 
-CREATE OR REPLACE VIEW v_group_participants AS
+CREATE OR REPLACE VIEW v_complete_group_participants AS
 SELECT
     p.group_id,
     u.*
@@ -198,7 +198,7 @@ FROM ParticipantGroups_participants p
 JOIN Users u ON u.user_id = p.participant_id
 WHERE p.participant_id is not NULL;
 
-CREATE OR REPLACE VIEW v_group_owners AS
+CREATE OR REPLACE VIEW v_complete_group_owners AS
 SELECT
     p.group_id,
     u.*
@@ -206,7 +206,7 @@ FROM ParticipantGroups_participants p
 JOIN Users u ON u.user_id = p.owner_id
 WHERE p.owner_id is not NULL;
 
-CREATE OR REPLACE VIEW v_default_random_allocation_participants AS
+CREATE OR REPLACE VIEW v_complete_default_random_allocation_participants AS
 SELECT
     a.allocator_id,
     a.session_id,
@@ -215,7 +215,7 @@ FROM Allocations a
 JOIN Users u ON u.user_id = a.participant_id
 WHERE a.participant_id is not NULL;
 
-CREATE OR REPLACE VIEW v_group_allocation_groups AS
+CREATE OR REPLACE VIEW v_complete_group_allocation_groups AS
 SELECT
     a.allocator_id,
     a.session_id,
@@ -224,11 +224,38 @@ FROM Allocations a
 JOIN ParticipantGroups g ON g.group_id = a.group_id
 WHERE a.group_id is not NULL;
 
-CREATE OR REPLACE VIEW v_group_allocation_participants AS
+CREATE OR REPLACE VIEW v_complete_group_allocation_participants AS
 SELECT
     a.allocator_id,
     a.session_id,
     g.*
 FROM Allocations a
-JOIN v_group_participants g ON g.group_id = a.group_id
+JOIN v_complete_group_participants g ON g.group_id = a.group_id
 WHERE a.group_id is not NULL;
+
+CREATE OR REPLACE VIEW v_complete_simlets_users_permissions AS
+SELECT 
+    u.user_id,
+    u.role_id,
+    u.role_name,
+    s.*
+FROM v_complete_simlets s 
+LEFT JOIN v_user_permissions u ON s.simlet_id = u.object_id AND u.object_type = "SIMLET";
+
+CREATE OR REPLACE VIEW v_complete_sessions_users_permissions AS
+SELECT 
+    u.user_id,
+    u.role_id,
+    u.role_name,
+    s.*
+FROM v_complete_simlets_sessions s
+LEFT JOIN v_user_permissions u ON s.session_id = u.object_id AND u.object_type = "SESSION";
+
+CREATE OR REPLACE VIEW v_complete_activities_users_permissions AS
+SELECT 
+    u.user_id,
+    u.role_id,
+    u.role_name,
+    a.*
+FROM v_complete_sessions_activities a
+LEFT JOIN v_user_permissions u ON a.activity_id = u.object_id AND u.object_type = "ACTIVITY"
