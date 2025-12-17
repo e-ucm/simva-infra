@@ -3,56 +3,24 @@ CREATE TABLE IF NOT EXISTS `SIMLETs` (
 	`mongo_id` VARCHAR(50),
 	`name` VARCHAR(100) NOT NULL,
 	`created` DATETIME,
-	`sandbox_id` INTEGER,
-	`version` INTEGER,
+	`sandbox_session_id` INTEGER,
 	`description` VARCHAR(255) NOT NULL,
 	`objective` VARCHAR(255),
 	`allocator_id` INTEGER NOT NULL,
+	`simlet_coordinator_id` INTEGER NOT NULL,
 	PRIMARY KEY(`simlet_id`)
 );
 
 
-CREATE UNIQUE INDEX `SIMLET_index_0`
-ON `SIMLETs` (`simlet_id`);
-CREATE TABLE IF NOT EXISTS `SIMLETs_sessions` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`simlet_id` INTEGER NOT NULL,
-	`session_id` INTEGER NOT NULL,
-	PRIMARY KEY(`id`)
-);
-
-
-CREATE UNIQUE INDEX `SIMLET-session_index_0`
-ON `SIMLETs_sessions` (`simlet_id`, `session_id`);
-CREATE TABLE IF NOT EXISTS `Users_Roles` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`user_id` INTEGER NOT NULL,
-	`role_name` ENUM('COORDINATOR', 'SUPERVISOR', 'OWNER') NOT NULL,
-	`simlet_id` INTEGER,
-	`session_id` INTEGER,
-	`activity_id` INTEGER,
-	PRIMARY KEY(`id`)
-);
-
-
-CREATE UNIQUE INDEX `SIMLET-coordinator_index_0`
-ON `Users_Roles` (`simlet_id`, `role_name`, `user_id`);
-CREATE INDEX `Users_Roles_index_1`
-ON `Users_Roles` (`session_id`, `role_name`, `user_id`);
-CREATE INDEX `Users_Roles_index_2`
-ON `Users_Roles` (`activity_id`, `role_name`, `user_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_groups` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`simlet_id` INTEGER NOT NULL,
 	`group_id` INTEGER NOT NULL,
-	PRIMARY KEY(`id`)
+	PRIMARY KEY(`simlet_id`, `group_id`)
 );
 
 
-CREATE UNIQUE INDEX `SIMLET-group_index_0`
-ON `SIMLETs_groups` (`simlet_id`, `group_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_shlinks` (
-	`simlet_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`simlet_id` INTEGER NOT NULL UNIQUE,
 	`short_url` VARCHAR(100) NOT NULL,
 	`short_code` VARCHAR(25) NOT NULL,
 	`date_created` DATETIME NOT NULL,
@@ -64,37 +32,24 @@ CREATE TABLE IF NOT EXISTS `SIMLETs_shlinks` (
 );
 
 
-CREATE UNIQUE INDEX `SIMLET_shlink_index_0`
-ON `SIMLETs_shlinks` (`simlet_id`);
 CREATE TABLE IF NOT EXISTS `Sessions` (
+	`simlet_id` INTEGER NOT NULL,
 	`session_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`mongo_id` VARCHAR(50),
 	`name` VARCHAR(100) NOT NULL,
-	`version` INTEGER,
 	`description` VARCHAR(255) NOT NULL,
 	`date` DATETIME,
 	`experimental_method` VARCHAR(20),
 	`active` BOOLEAN,
 	`session_start_date` DATETIME,
 	`session_end_date` DATETIME,
-	`session_duration` NUMERIC,
+	`session_supervisor_id` INTEGER NOT NULL,
 	PRIMARY KEY(`session_id`)
 );
 
 
-CREATE UNIQUE INDEX `Session_index_0`
-ON `Sessions` (`session_id`);
-CREATE TABLE IF NOT EXISTS `Sessions_Activities` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`session_id` INTEGER NOT NULL,
-	`activity_id` INTEGER NOT NULL,
-	PRIMARY KEY(`id`)
-);
-
-
-CREATE UNIQUE INDEX `Session-Activity_index_0`
-ON `Sessions_Activities` (`session_id`, `activity_id`);
 CREATE TABLE IF NOT EXISTS `Activities` (
+	`session_id` INTEGER NOT NULL,
 	`activity_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`mongo_id` VARCHAR(50),
 	`name` VARCHAR(100) NOT NULL,
@@ -102,18 +57,14 @@ CREATE TABLE IF NOT EXISTS `Activities` (
 	`presignedUrl` VARCHAR(50),
 	`generated_at` DATETIME,
 	`expire_on_seconds` INTEGER,
-	`version` INTEGER,
 	`trace_storage` BOOLEAN NOT NULL,
 	`description` VARCHAR(255) NOT NULL,
-	`isTemplate` BOOLEAN NOT NULL,
 	PRIMARY KEY(`activity_id`)
 );
 
 
-CREATE UNIQUE INDEX `Activity_index_0`
-ON `Activities` (`activity_id`);
 CREATE TABLE IF NOT EXISTS `Limesurvey_Activities` (
-	`activity_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`activity_id` INTEGER NOT NULL UNIQUE,
 	`survey_id` INTEGER NOT NULL,
 	`survey_owner` INTEGER,
 	`language` VARCHAR(10) NOT NULL,
@@ -122,49 +73,37 @@ CREATE TABLE IF NOT EXISTS `Limesurvey_Activities` (
 );
 
 
-CREATE UNIQUE INDEX `Limesurvey_Activity_index_0`
-ON `Limesurvey_Activities` (`activity_id`);
 CREATE TABLE IF NOT EXISTS `GamePlay_Activities` (
-	`activity_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`activity_id` INTEGER NOT NULL UNIQUE,
 	`backup` BOOLEAN NOT NULL,
 	`scorm_xapi_by_game` BOOLEAN NOT NULL,
 	`category` VARCHAR(50),
 	`subject_area` VARCHAR(50),
-	`game_type` VARCHAR(50) NOT NULL,
-	`game_technology` VARCHAR(50),
-	`game_tracker` VARCHAR(50),
+	`game_type` ENUM('WEB', 'DESKTOP') NOT NULL,
 	`game_url` VARCHAR(255) NOT NULL,
-	`game_version` INTEGER,
 	PRIMARY KEY(`activity_id`)
 );
 
 
-CREATE UNIQUE INDEX `Manual_Activity_index_0`
-ON `GamePlay_Activities` (`activity_id`);
 CREATE TABLE IF NOT EXISTS `Manual_Activities` (
-	`activity_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`activity_id` INTEGER NOT NULL UNIQUE,
 	`user_managed` BOOLEAN NOT NULL,
-	`ressource_type` VARCHAR(50) NOT NULL,
+	`ressource_type` ENUM('WEB', 'EXTERNAL') NOT NULL,
 	`ressource_url` VARCHAR(100) NOT NULL,
 	PRIMARY KEY(`activity_id`)
 );
 
 
-CREATE UNIQUE INDEX `Manual_Activity_index_0`
-ON `Manual_Activities` (`activity_id`);
 CREATE TABLE IF NOT EXISTS `Activities_completion` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`activity_id` INTEGER NOT NULL,
 	`participant_id` INTEGER NOT NULL,
 	`initialized` BOOLEAN NOT NULL,
 	`completed` BOOLEAN NOT NULL,
-	`progress` FLOAT,
-	PRIMARY KEY(`id`)
+	`progress` NUMERIC,
+	PRIMARY KEY(`activity_id`, `participant_id`)
 );
 
 
-CREATE UNIQUE INDEX `Activity_index_0`
-ON `Activities_completion` (`activity_id`, `participant_id`);
 CREATE TABLE IF NOT EXISTS `Users` (
 	`user_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`mongo_id` VARCHAR(50),
@@ -177,33 +116,25 @@ CREATE TABLE IF NOT EXISTS `Users` (
 );
 
 
-CREATE UNIQUE INDEX `User_index_0`
-ON `Users` (`user_id`);
 CREATE TABLE IF NOT EXISTS `ParticipantGroups` (
 	`group_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`mongo_id` VARCHAR(50),
 	`name` VARCHAR(255) NOT NULL,
 	`created` DATETIME NOT NULL,
-	`version` INTEGER NOT NULL,
+	`use_new_generation` BOOLEAN NOT NULL,
+	`group_owner_id` INTEGER NOT NULL,
 	PRIMARY KEY(`group_id`)
 );
 
 
-CREATE UNIQUE INDEX `Group_index_0`
-ON `ParticipantGroups` (`group_id`);
-CREATE TABLE IF NOT EXISTS `ParticipantGroups_participants` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+CREATE TABLE IF NOT EXISTS `ParticipantGroups_permission` (
 	`group_id` INTEGER NOT NULL,
-	`participant_id` INTEGER,
-	`owner_id` INTEGER,
-	PRIMARY KEY(`id`)
+	`user_id` INTEGER NOT NULL,
+	`permission` ENUM('READ', 'WRITE') NOT NULL,
+	PRIMARY KEY(`group_id`, `user_id`)
 );
 
 
-CREATE UNIQUE INDEX `Group-participants_index_0`
-ON `ParticipantGroups_participants` (`group_id`, `participant_id`);
-CREATE INDEX `ParticipantGroups_participants_index_1`
-ON `ParticipantGroups_participants` (`group_id`, `owner_id`);
 CREATE TABLE IF NOT EXISTS `Allocators` (
 	`allocator_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`allocator_type` ENUM('default', 'group', 'random') NOT NULL,
@@ -214,152 +145,220 @@ CREATE TABLE IF NOT EXISTS `Allocators` (
 
 CREATE UNIQUE INDEX `Allocator_index_0`
 ON `Allocators` (`allocator_id`);
-CREATE TABLE IF NOT EXISTS `Allocations` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+CREATE TABLE IF NOT EXISTS `Experimental_Participants` (
 	`allocator_id` INTEGER NOT NULL,
 	`session_id` INTEGER NOT NULL,
-	`participant_id` INTEGER,
-	`group_id` INTEGER,
-	PRIMARY KEY(`id`)
+	`participant_id` INTEGER NOT NULL,
+	PRIMARY KEY(`allocator_id`, `session_id`, `participant_id`)
 );
 
 
-CREATE UNIQUE INDEX `Default_Allocator_index_0`
-ON `Allocations` (`allocator_id`, `session_id`, `participant_id`);
-CREATE INDEX `Default_Allocators_index_1`
-ON `Allocations` (`allocator_id`, `session_id`, `group_id`);
 CREATE TABLE IF NOT EXISTS `Random_Allocators` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`allocator_id` INTEGER NOT NULL,
 	`session_id` INTEGER NOT NULL,
 	`percentage` FLOAT NOT NULL,
-	PRIMARY KEY(`id`)
+	PRIMARY KEY(`allocator_id`, `session_id`)
 );
 
 
-CREATE UNIQUE INDEX `Group_Allocator_index_0`
-ON `Random_Allocators` (`allocator_id`, `session_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_tags` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`simlet_id` INTEGER NOT NULL,
-	`tag` VARCHAR(25) NOT NULL,
-	PRIMARY KEY(`id`)
+	`tag_id` INTEGER NOT NULL,
+	PRIMARY KEY(`simlet_id`, `tag_id`)
 );
 
 
-CREATE INDEX `SIMLET_TAG_index_0`
-ON `SIMLETs_tags` (`simlet_id`);
 CREATE TABLE IF NOT EXISTS `Sessions_tags` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`session_id` INTEGER NOT NULL,
-	`tag` VARCHAR(25) NOT NULL,
-	PRIMARY KEY(`id`)
+	`tag_id` INTEGER NOT NULL,
+	PRIMARY KEY(`session_id`, `tag_id`)
 );
 
 
-CREATE INDEX `Session_tag_index_0`
-ON `Sessions_tags` (`session_id`);
-CREATE TABLE IF NOT EXISTS `GamePlay_Versions` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`game_id` INTEGER NOT NULL,
-	`version_id` INTEGER NOT NULL,
-	`game_type` VARCHAR(50) NOT NULL,
-	`game_technology` VARCHAR(50) NOT NULL,
-	`game_tracker` VARCHAR(50) NOT NULL,
+CREATE TABLE IF NOT EXISTS `ParticipantGroups_participants` (
+	`group_id` INTEGER NOT NULL,
+	`participant_id` INTEGER NOT NULL,
+	PRIMARY KEY(`group_id`, `participant_id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `Sessions_permission` (
+	`session_id` INTEGER NOT NULL,
+	`user_id` INTEGER NOT NULL,
+	`permission` ENUM('READ', 'WRITE') NOT NULL,
+	PRIMARY KEY(`session_id`, `user_id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `SIMLETs_permission` (
+	`simlet_id` INTEGER NOT NULL,
+	`user_id` INTEGER NOT NULL,
+	`permission` ENUM('READ', 'WRITE') NOT NULL,
+	PRIMARY KEY(`simlet_id`, `user_id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `Activities_template` (
+	`activity_template_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`name` VARCHAR(100) NOT NULL,
+	`activity_type` ENUM('default', 'manual', 'gameplay', 'limesurvey', 'lti-tool') NOT NULL,
+	`description` VARCHAR(255) NOT NULL,
+	`public` BOOLEAN NOT NULL,
+	PRIMARY KEY(`activity_template_id`)
+);
+
+
+CREATE UNIQUE INDEX `Activity_index_0`
+ON `Activities_template` (`activity_id`);
+CREATE TABLE IF NOT EXISTS `Manual_Template_Activities` (
+	`activity_template_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`ressource_type` ENUM('EXTERNAL', 'WEB') NOT NULL,
+	`ressource_url` VARCHAR(100) NOT NULL,
+	PRIMARY KEY(`activity_template_id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `GamePlay_Activities_Template` (
+	`activity_template_id` INTEGER NOT NULL UNIQUE,
+	`category` VARCHAR(50) NOT NULL,
+	`subject_area` VARCHAR(50) NOT NULL,
+	`game_type` ENUM('WEB', 'DESKTOP') NOT NULL,
 	`game_url` VARCHAR(255) NOT NULL,
-	PRIMARY KEY(`id`)
+	PRIMARY KEY(`activity_template_id`)
 );
 
 
-CREATE UNIQUE INDEX `GamePlay_Version_index_0`
-ON `GamePlay_Versions` (`game_id`, `version_id`);
-ALTER TABLE `Users_Roles`
-ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `SIMLETs_sessions`
-ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+CREATE UNIQUE INDEX `Manual_Activity_index_0`
+ON `GamePlay_Activities_Template` (`activity_id`);
+CREATE TABLE IF NOT EXISTS `Limesurvey_Activities_Template` (
+	`activity_template_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`survey_id` INTEGER NOT NULL,
+	`survey_owner` INTEGER,
+	PRIMARY KEY(`activity_template_id`)
+);
+
+
+CREATE UNIQUE INDEX `Limesurvey_Activity_index_0`
+ON `Limesurvey_Activities_Template` (`activity_id`);
+CREATE TABLE IF NOT EXISTS `SIMLETs_tags_list` (
+	`simlet_tag_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`simlet_tag_name` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`simlet_tag_id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `sessions_tags_list` (
+	`session_tag_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`session_tag_name` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`session_tag_id`)
+);
+
+
 ALTER TABLE `SIMLETs_shlinks`
 ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `SIMLETs_groups`
 ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `SIMLETs_tags`
 ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `SIMLETs_sessions`
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Experimental_Participants`
 ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Allocations`
-ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `Random_Allocators`
 ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `Sessions_tags`
 ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Sessions_Activities`
-ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `Limesurvey_Activities`
 ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Sessions_Activities`
-ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `GamePlay_Activities`
 ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `Manual_Activities`
 ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `Activities_completion`
 ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Users_Roles`
-ADD FOREIGN KEY(`user_id`) REFERENCES `Users`(`user_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `ParticipantGroups_participants`
-ADD FOREIGN KEY(`participant_id`) REFERENCES `Users`(`user_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `Activities_completion`
 ADD FOREIGN KEY(`participant_id`) REFERENCES `Users`(`user_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Allocations`
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Experimental_Participants`
 ADD FOREIGN KEY(`participant_id`) REFERENCES `Users`(`user_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `Limesurvey_Activities`
 ADD FOREIGN KEY(`survey_owner`) REFERENCES `Users`(`user_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `SIMLETs_groups`
 ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `ParticipantGroups_participants`
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `ParticipantGroups_permission`
 ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Allocations`
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Experimental_Participants`
 ADD FOREIGN KEY(`allocator_id`) REFERENCES `Allocators`(`allocator_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `Random_Allocators`
 ADD FOREIGN KEY(`allocator_id`) REFERENCES `Allocators`(`allocator_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `SIMLETs`
 ADD FOREIGN KEY(`allocator_id`) REFERENCES `Allocators`(`allocator_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `SIMLETs`
-ADD FOREIGN KEY(`sandbox_id`) REFERENCES `Sessions`(`session_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Users_Roles`
+ADD FOREIGN KEY(`sandbox_session_id`) REFERENCES `Sessions`(`session_id`)
+ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE `ParticipantGroups_permission`
+ADD FOREIGN KEY(`user_id`) REFERENCES `Users`(`user_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Sessions`
+ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Activities`
 ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Users_Roles`
-ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Allocations`
-ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `ParticipantGroups_participants`
-ADD FOREIGN KEY(`owner_id`) REFERENCES `Users`(`user_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
+ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `ParticipantGroups_participants`
+ADD FOREIGN KEY(`participant_id`) REFERENCES `Users`(`user_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Sessions_permission`
+ADD FOREIGN KEY(`user_id`) REFERENCES `Users`(`user_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `SIMLETs_permission`
+ADD FOREIGN KEY(`user_id`) REFERENCES `Users`(`user_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Sessions_permission`
+ADD FOREIGN KEY(`session_id`) REFERENCES `Sessions`(`session_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Manual_Template_Activities`
+ADD FOREIGN KEY(`activity_template_id`) REFERENCES `Activities_template`(`activity_template_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Limesurvey_Activities_Template`
+ADD FOREIGN KEY(`activity_template_id`) REFERENCES `Activities_template`(`activity_template_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `GamePlay_Activities_Template`
+ADD FOREIGN KEY(`activity_template_id`) REFERENCES `Activities_template`(`activity_template_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Sessions_tags`
+ADD FOREIGN KEY(`tag_id`) REFERENCES `sessions_tags_list`(`session_tag_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `SIMLETs_tags`
+ADD FOREIGN KEY(`tag_id`) REFERENCES `SIMLETs_tags_list`(`simlet_tag_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `SIMLETs_permission`
+ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
+ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE `ParticipantGroups`
+ADD FOREIGN KEY(`group_owner_id`) REFERENCES `Users`(`user_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `Sessions`
+ADD FOREIGN KEY(`session_supervisor_id`) REFERENCES `Users`(`user_id`)
+ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE `SIMLETs`
+ADD FOREIGN KEY(`simlet_coordinator_id`) REFERENCES `Users`(`user_id`)
+ON UPDATE CASCADE ON DELETE SET NULL;
