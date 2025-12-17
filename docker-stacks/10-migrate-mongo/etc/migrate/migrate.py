@@ -187,12 +187,6 @@ cursor.execute("SELECT mongo_id FROM Activities WHERE mongo_id IS NOT NULL")
 mysql_activities_mongo_ids = cursor.fetchall()
 existing_activities_mongo_db = set(id[0] for id in mysql_activities_mongo_ids)  # extract string from tuple
 
-#Dict to map activity types to MySQL Id
-cursor.execute("SELECT activity_type_id, activity_type_name FROM Activities_types")
-mysql_activity_type_ids = cursor.fetchall()
-mongo_activity_type_to_mysql_id = {activity_type_name: activity_type_id for activity_type_id, activity_type_name in mysql_activity_type_ids}
-print(mongo_activity_type_to_mysql_id)
-
 # Get Activities from Mongo Backup
 activities=[]
 with open(MONGO_BACKUP_FOLDER + "/activities.json", "r") as f:
@@ -203,7 +197,7 @@ with open(MONGO_BACKUP_FOLDER + "/activities.json", "r") as f:
 
 # Adding Activities into Activities table
 activities_sql = """
-INSERT INTO Activities (mongo_id, name, activity_type_id, presignedUrl, generated_at, expire_on_seconds, version, trace_storage, description, isTemplate)
+INSERT INTO Activities (mongo_id, name, activity_type, presignedUrl, generated_at, expire_on_seconds, version, trace_storage, description, isTemplate)
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
 
@@ -217,7 +211,7 @@ activities_values = [
     (
         a["_id"]["$oid"], 
         a["name"], 
-        mongo_activity_type_to_mysql_id[a["type"]], 
+        a["type"],
         a.get("extra_data", {}).get("minio_trace", {}).get("presignedUrl"), 
         convert_iso_to_mysql_datetime_format(a.get("extra_data", {}).get("minio_trace", {}).get("generated_at")),
         a.get("extra_data", {}).get("minio_trace", {}).get("expire_on_sec"), 
@@ -414,13 +408,6 @@ cursor.execute("SELECT mongo_id FROM Allocators WHERE mongo_id IS NOT NULL")
 mysql_allocator_mongo_ids = cursor.fetchall()
 existing_allocator_mongo_db = set(id[0] for id in mysql_allocator_mongo_ids)  # extract string from tuple
 
-#Dict to map allocators types to MySQL Id
-cursor.execute("SELECT allocator_type_id, allocator_type_name FROM Allocators_types")
-mysql_allocator_type_ids = cursor.fetchall()
-mongo_allocator_type_to_mysql_id = {allocator_type_name: allocator_type_id for allocator_type_id, allocator_type_name in mysql_allocator_type_ids}
-print(mongo_allocator_type_to_mysql_id)
-
-
 # Get allocators from Mongo Backup
 allocators=[]
 with open(MONGO_BACKUP_FOLDER + "/allocators.json", "r") as f:
@@ -431,7 +418,7 @@ with open(MONGO_BACKUP_FOLDER + "/allocators.json", "r") as f:
 
 #adding allocators into allocators table
 allocators_sql = """
-INSERT INTO Allocators (mongo_id, allocator_type_id)
+INSERT INTO Allocators (mongo_id, allocator_type)
 VALUES (%s, %s)
 """
 
@@ -441,7 +428,7 @@ filtered_allocators = [
     if a["_id"]["$oid"] not in existing_allocator_mongo_db
 ]
 allocators_values = [
-    (a["_id"]["$oid"], mongo_allocator_type_to_mysql_id[a["type"]])
+    (a["_id"]["$oid"], a["type"])
     for a in filtered_allocators
 ]
 print(allocators_values)
@@ -600,7 +587,7 @@ print("Adding OWNERS TABLES")
 print("--------------------")
 print("Adding SIMLET Coordinator and session supervisor mapping")
 users_roles_sql = """
-INSERT INTO Users_Roles (user_id, role_id, simlet_id)
+INSERT INTO Users_Roles (user_id, role_name, simlet_id)
 VALUES (%s, %s, %s)
 """
 users_roles_values=[]
@@ -610,7 +597,7 @@ for s in filtered_simlets:
     simlet_mysql_id=mongo_simlet_to_mysql_id[simlet_mongo_id]
     for coordinator_mongo_id in s.get("owners", []):
         owner_mysql=mongo_user_to_mysql_id[coordinator_mongo_id]
-        users_roles_values.append((owner_mysql, 1, simlet_mysql_id))
+        users_roles_values.append((owner_mysql, "COORDINATOR", simlet_mysql_id))
         users_ids.append(coordinator_mongo_id)
 print(users_roles_values)
 cursor.executemany(users_roles_sql, users_roles_values)
