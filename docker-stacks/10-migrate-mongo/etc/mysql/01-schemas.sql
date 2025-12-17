@@ -27,7 +27,7 @@ ON `SIMLETs_sessions` (`simlet_id`, `session_id`);
 CREATE TABLE IF NOT EXISTS `Users_Roles` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`user_id` INTEGER NOT NULL,
-	`role_id` INTEGER NOT NULL,
+	`role_name` ENUM('COORDINATOR', 'SUPERVISOR', 'OWNER') NOT NULL,
 	`simlet_id` INTEGER,
 	`session_id` INTEGER,
 	`activity_id` INTEGER,
@@ -36,11 +36,11 @@ CREATE TABLE IF NOT EXISTS `Users_Roles` (
 
 
 CREATE UNIQUE INDEX `SIMLET-coordinator_index_0`
-ON `Users_Roles` (`simlet_id`, `role_id`, `user_id`);
+ON `Users_Roles` (`simlet_id`, `role_name`, `user_id`);
 CREATE INDEX `Users_Roles_index_1`
-ON `Users_Roles` (`session_id`, `role_id`, `user_id`);
+ON `Users_Roles` (`session_id`, `role_name`, `user_id`);
 CREATE INDEX `Users_Roles_index_2`
-ON `Users_Roles` (`activity_id`, `role_id`, `user_id`);
+ON `Users_Roles` (`activity_id`, `role_name`, `user_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_groups` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`simlet_id` INTEGER NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `Activities` (
 	`activity_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`mongo_id` VARCHAR(50),
 	`name` VARCHAR(100) NOT NULL,
-	`activity_type_id` INTEGER NOT NULL,
+	`activity_type` ENUM('default', 'manual', 'gameplay', 'limesurvey', 'lti-tool') NOT NULL,
 	`presignedUrl` VARCHAR(50),
 	`generated_at` DATETIME,
 	`expire_on_seconds` INTEGER,
@@ -206,7 +206,7 @@ CREATE INDEX `ParticipantGroups_participants_index_1`
 ON `ParticipantGroups_participants` (`group_id`, `owner_id`);
 CREATE TABLE IF NOT EXISTS `Allocators` (
 	`allocator_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`allocator_type_id` INTEGER NOT NULL,
+	`allocator_type` ENUM('default', 'group', 'random') NOT NULL,
 	`mongo_id` VARCHAR(50),
 	PRIMARY KEY(`allocator_id`)
 );
@@ -273,33 +273,6 @@ CREATE TABLE IF NOT EXISTS `GamePlay_Versions` (
 
 CREATE UNIQUE INDEX `GamePlay_Version_index_0`
 ON `GamePlay_Versions` (`game_id`, `version_id`);
-CREATE TABLE IF NOT EXISTS `Roles` (
-	`role_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`role_name` VARCHAR(50) NOT NULL,
-	PRIMARY KEY(`role_id`)
-);
-
-
-CREATE INDEX `Roles_index_0`
-ON `Roles` (`role_id`);
-CREATE TABLE IF NOT EXISTS `Allocators_types` (
-	`allocator_type_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`allocator_type_name` VARCHAR(50) NOT NULL,
-	PRIMARY KEY(`allocator_type_id`)
-);
-
-
-CREATE INDEX `Allocator_types_index_0`
-ON `Allocators_types` (`allocator_type_id`);
-CREATE TABLE IF NOT EXISTS `Activities_types` (
-	`activity_type_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`activity_type_name` VARCHAR(50) NOT NULL,
-	PRIMARY KEY(`activity_type_id`)
-);
-
-
-CREATE INDEX `Activities_types_index_0`
-ON `Activities_types` (`activity_type_id`);
 ALTER TABLE `Users_Roles`
 ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
@@ -384,22 +357,9 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Users_Roles`
 ADD FOREIGN KEY(`activity_id`) REFERENCES `Activities`(`activity_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Users_Roles`
-ADD FOREIGN KEY(`role_id`) REFERENCES `Roles`(`role_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `Allocations`
 ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Allocators`
-ADD FOREIGN KEY(`allocator_type_id`) REFERENCES `Allocators_types`(`allocator_type_id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `Activities`
-ADD FOREIGN KEY(`activity_type_id`) REFERENCES `Activities_types`(`activity_type_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `ParticipantGroups_participants`
 ADD FOREIGN KEY(`owner_id`) REFERENCES `Users`(`user_id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-
-INSERT INTO Roles (role_name) VALUES ('SUPERVISOR'), ('COORDINATOR'), ('OWNER');
-INSERT INTO Activities_types (Activity_type_name) VALUES ('default'), ('manual'), ('gameplay'), ('limesurvey'),('lti-tool');
-INSERT INTO Allocators_types (allocator_type_name) VALUES ('default'), ('group'), ('random');
