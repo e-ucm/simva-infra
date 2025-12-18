@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS `SIMLETs` (
 );
 
 
+CREATE INDEX `SIMLETs_index_0`
+ON `SIMLETs` (`simlet_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_groups` (
 	`simlet_id` INTEGER NOT NULL,
 	`group_id` INTEGER NOT NULL,
@@ -19,6 +21,8 @@ CREATE TABLE IF NOT EXISTS `SIMLETs_groups` (
 );
 
 
+CREATE INDEX `SIMLETs_groups_index_0`
+ON `SIMLETs_groups` (`simlet_id`, `group_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_shlinks` (
 	`simlet_id` INTEGER NOT NULL UNIQUE,
 	`short_url` VARCHAR(100) NOT NULL,
@@ -32,6 +36,8 @@ CREATE TABLE IF NOT EXISTS `SIMLETs_shlinks` (
 );
 
 
+CREATE INDEX `SIMLETs_shlinks_index_0`
+ON `SIMLETs_shlinks` (`simlet_id`);
 CREATE TABLE IF NOT EXISTS `Sessions` (
 	`simlet_id` INTEGER NOT NULL,
 	`session_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
@@ -48,6 +54,8 @@ CREATE TABLE IF NOT EXISTS `Sessions` (
 );
 
 
+CREATE UNIQUE INDEX `Sessions_index_0`
+ON `Sessions` (`session_id`);
 CREATE TABLE IF NOT EXISTS `Activities` (
 	`session_id` INTEGER NOT NULL,
 	`activity_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
@@ -63,6 +71,8 @@ CREATE TABLE IF NOT EXISTS `Activities` (
 );
 
 
+CREATE UNIQUE INDEX `Activities_index_0`
+ON `Activities` (`activity_id`);
 CREATE TABLE IF NOT EXISTS `Limesurvey_Activities` (
 	`activity_id` INTEGER NOT NULL UNIQUE,
 	`survey_id` INTEGER NOT NULL,
@@ -73,6 +83,8 @@ CREATE TABLE IF NOT EXISTS `Limesurvey_Activities` (
 );
 
 
+CREATE INDEX `Limesurvey_Activities_index_0`
+ON `Limesurvey_Activities` (`activity_id`);
 CREATE TABLE IF NOT EXISTS `GamePlay_Activities` (
 	`activity_id` INTEGER NOT NULL UNIQUE,
 	`backup` BOOLEAN NOT NULL,
@@ -85,6 +97,8 @@ CREATE TABLE IF NOT EXISTS `GamePlay_Activities` (
 );
 
 
+CREATE INDEX `GamePlay_Activities_index_0`
+ON `GamePlay_Activities` (`activity_id`);
 CREATE TABLE IF NOT EXISTS `Manual_Activities` (
 	`activity_id` INTEGER NOT NULL UNIQUE,
 	`user_managed` BOOLEAN NOT NULL,
@@ -94,6 +108,8 @@ CREATE TABLE IF NOT EXISTS `Manual_Activities` (
 );
 
 
+CREATE INDEX `Manual_Activities_index_0`
+ON `Manual_Activities` (`activity_id`);
 CREATE TABLE IF NOT EXISTS `Activities_completion` (
 	`activity_id` INTEGER NOT NULL,
 	`participant_id` INTEGER NOT NULL,
@@ -104,6 +120,8 @@ CREATE TABLE IF NOT EXISTS `Activities_completion` (
 );
 
 
+CREATE INDEX `Activities_completion_index_0`
+ON `Activities_completion` (`activity_id`, `participant_id`);
 CREATE TABLE IF NOT EXISTS `Users` (
 	`user_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`mongo_id` VARCHAR(50),
@@ -116,6 +134,10 @@ CREATE TABLE IF NOT EXISTS `Users` (
 );
 
 
+CREATE UNIQUE INDEX `Users_index_0`
+ON `Users` (`user_id`);
+CREATE UNIQUE INDEX `Users_index_1`
+ON `Users` (`username`);
 CREATE TABLE IF NOT EXISTS `ParticipantGroups` (
 	`group_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`mongo_id` VARCHAR(50),
@@ -127,6 +149,8 @@ CREATE TABLE IF NOT EXISTS `ParticipantGroups` (
 );
 
 
+CREATE UNIQUE INDEX `ParticipantGroups_index_0`
+ON `ParticipantGroups` (`group_id`);
 CREATE TABLE IF NOT EXISTS `ParticipantGroups_permission` (
 	`group_id` INTEGER NOT NULL,
 	`user_id` INTEGER NOT NULL,
@@ -135,10 +159,12 @@ CREATE TABLE IF NOT EXISTS `ParticipantGroups_permission` (
 );
 
 
+CREATE INDEX `ParticipantGroups_permission_index_0`
+ON `ParticipantGroups_permission` (`group_id`, `user_id`);
 CREATE TABLE IF NOT EXISTS `Allocators` (
 	`allocator_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`allocator_type` ENUM('default', 'group', 'random') NOT NULL,
 	`mongo_id` VARCHAR(50),
+	`allocator_type` ENUM('default', 'group', 'random') NOT NULL,
 	PRIMARY KEY(`allocator_id`)
 );
 
@@ -147,12 +173,15 @@ CREATE UNIQUE INDEX `Allocator_index_0`
 ON `Allocators` (`allocator_id`);
 CREATE TABLE IF NOT EXISTS `Experimental_Participants` (
 	`allocator_id` INTEGER NOT NULL,
-	`session_id` INTEGER NOT NULL,
+	`group_id` INTEGER NOT NULL,
 	`participant_id` INTEGER NOT NULL,
-	PRIMARY KEY(`allocator_id`, `session_id`, `participant_id`)
+	`session_id` INTEGER NOT NULL,
+	PRIMARY KEY(`allocator_id`, `group_id`, `participant_id`, `session_id`)
 );
 
 
+CREATE INDEX `Experimental_Participants_index_0`
+ON `Experimental_Participants` (`allocator_id`, `group_id`, `participant_id`, `session_id`);
 CREATE TABLE IF NOT EXISTS `Random_Allocators` (
 	`allocator_id` INTEGER NOT NULL,
 	`session_id` INTEGER NOT NULL,
@@ -161,6 +190,8 @@ CREATE TABLE IF NOT EXISTS `Random_Allocators` (
 );
 
 
+CREATE INDEX `Random_Allocators_index_0`
+ON `Random_Allocators` (`allocator_id`, `session_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_tags` (
 	`simlet_id` INTEGER NOT NULL,
 	`tag_id` INTEGER NOT NULL,
@@ -168,6 +199,8 @@ CREATE TABLE IF NOT EXISTS `SIMLETs_tags` (
 );
 
 
+CREATE INDEX `SIMLETs_tags_index_0`
+ON `SIMLETs_tags` (`simlet_id`, `tag_id`);
 CREATE TABLE IF NOT EXISTS `Sessions_tags` (
 	`session_id` INTEGER NOT NULL,
 	`tag_id` INTEGER NOT NULL,
@@ -175,6 +208,8 @@ CREATE TABLE IF NOT EXISTS `Sessions_tags` (
 );
 
 
+CREATE INDEX `Sessions_tags_index_0`
+ON `Sessions_tags` (`session_id`, `tag_id`);
 CREATE TABLE IF NOT EXISTS `ParticipantGroups_participants` (
 	`group_id` INTEGER NOT NULL,
 	`participant_id` INTEGER NOT NULL,
@@ -182,6 +217,8 @@ CREATE TABLE IF NOT EXISTS `ParticipantGroups_participants` (
 );
 
 
+CREATE INDEX `ParticipantGroups_participants_index_0`
+ON `ParticipantGroups_participants` (`group_id`, `participant_id`);
 CREATE TABLE IF NOT EXISTS `Sessions_permission` (
 	`session_id` INTEGER NOT NULL,
 	`user_id` INTEGER NOT NULL,
@@ -190,6 +227,8 @@ CREATE TABLE IF NOT EXISTS `Sessions_permission` (
 );
 
 
+CREATE INDEX `Sessions_permission_index_0`
+ON `Sessions_permission` (`session_id`, `user_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_permission` (
 	`simlet_id` INTEGER NOT NULL,
 	`user_id` INTEGER NOT NULL,
@@ -198,6 +237,8 @@ CREATE TABLE IF NOT EXISTS `SIMLETs_permission` (
 );
 
 
+CREATE INDEX `SIMLETs_permission_index_0`
+ON `SIMLETs_permission` (`simlet_id`, `user_id`);
 CREATE TABLE IF NOT EXISTS `Activities_template` (
 	`activity_template_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`name` VARCHAR(100) NOT NULL,
@@ -208,8 +249,8 @@ CREATE TABLE IF NOT EXISTS `Activities_template` (
 );
 
 
-CREATE UNIQUE INDEX `Activity_index_0`
-ON `Activities_template` (`activity_id`);
+CREATE INDEX `Activities_template_index_0`
+ON `Activities_template` (`activity_template_id`);
 CREATE TABLE IF NOT EXISTS `Manual_Template_Activities` (
 	`activity_template_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`ressource_type` ENUM('EXTERNAL', 'WEB') NOT NULL,
@@ -218,6 +259,8 @@ CREATE TABLE IF NOT EXISTS `Manual_Template_Activities` (
 );
 
 
+CREATE INDEX `Manual_Template_Activities_index_0`
+ON `Manual_Template_Activities` (`activity_template_id`);
 CREATE TABLE IF NOT EXISTS `GamePlay_Activities_Template` (
 	`activity_template_id` INTEGER NOT NULL UNIQUE,
 	`category` VARCHAR(50) NOT NULL,
@@ -228,8 +271,8 @@ CREATE TABLE IF NOT EXISTS `GamePlay_Activities_Template` (
 );
 
 
-CREATE UNIQUE INDEX `Manual_Activity_index_0`
-ON `GamePlay_Activities_Template` (`activity_id`);
+CREATE INDEX `GamePlay_Activities_Template_index_0`
+ON `GamePlay_Activities_Template` (`activity_template_id`);
 CREATE TABLE IF NOT EXISTS `Limesurvey_Activities_Template` (
 	`activity_template_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`survey_id` INTEGER NOT NULL,
@@ -238,8 +281,8 @@ CREATE TABLE IF NOT EXISTS `Limesurvey_Activities_Template` (
 );
 
 
-CREATE UNIQUE INDEX `Limesurvey_Activity_index_0`
-ON `Limesurvey_Activities_Template` (`activity_id`);
+CREATE INDEX `Limesurvey_Activities_Template_index_0`
+ON `Limesurvey_Activities_Template` (`activity_template_id`);
 CREATE TABLE IF NOT EXISTS `SIMLETs_tags_list` (
 	`simlet_tag_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`simlet_tag_name` VARCHAR(255) NOT NULL,
@@ -247,13 +290,17 @@ CREATE TABLE IF NOT EXISTS `SIMLETs_tags_list` (
 );
 
 
-CREATE TABLE IF NOT EXISTS `sessions_tags_list` (
+CREATE INDEX `SIMLETs_tags_list_index_0`
+ON `SIMLETs_tags_list` (`simlet_tag_id`);
+CREATE TABLE IF NOT EXISTS `Sessions_tags_list` (
 	`session_tag_id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`session_tag_name` VARCHAR(255) NOT NULL,
 	PRIMARY KEY(`session_tag_id`)
 );
 
 
+CREATE INDEX `sessions_tags_list_index_0`
+ON `Sessions_tags_list` (`session_tag_id`);
 ALTER TABLE `SIMLETs_shlinks`
 ADD FOREIGN KEY(`simlet_id`) REFERENCES `SIMLETs`(`simlet_id`)
 ON UPDATE CASCADE ON DELETE CASCADE;
@@ -345,7 +392,7 @@ ALTER TABLE `GamePlay_Activities_Template`
 ADD FOREIGN KEY(`activity_template_id`) REFERENCES `Activities_template`(`activity_template_id`)
 ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `Sessions_tags`
-ADD FOREIGN KEY(`tag_id`) REFERENCES `sessions_tags_list`(`session_tag_id`)
+ADD FOREIGN KEY(`tag_id`) REFERENCES `Sessions_tags_list`(`session_tag_id`)
 ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `SIMLETs_tags`
 ADD FOREIGN KEY(`tag_id`) REFERENCES `SIMLETs_tags_list`(`simlet_tag_id`)
@@ -362,3 +409,6 @@ ON UPDATE CASCADE ON DELETE SET NULL;
 ALTER TABLE `SIMLETs`
 ADD FOREIGN KEY(`simlet_coordinator_id`) REFERENCES `Users`(`user_id`)
 ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE `Experimental_Participants`
+ADD FOREIGN KEY(`group_id`) REFERENCES `ParticipantGroups`(`group_id`)
+ON UPDATE CASCADE ON DELETE CASCADE;
