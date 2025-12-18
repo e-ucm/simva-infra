@@ -258,13 +258,6 @@ filtered_simlets = [
     for s in simlets
     if s["_id"]["$oid"] not in existing_simlet_mongo_db
 ]
-sandbox_values = [
-    (
-        s["_id"]["$oid"],
-        s.get("sandbox")
-    )
-    for s in filtered_simlets if s.get("sandbox", None) is not None
-]
 simlets_values = [
     (
         s["_id"]["$oid"], 
@@ -572,7 +565,7 @@ print("-----------------")
 print("Adding Allocation")
 print("-----------------")
 #adding Default and groups Allocators
-print("Adding Default and groups Allocators")
+print("Adding Experimental_Participants")
 allocation_sql = """
 INSERT INTO Experimental_Participants (allocator_id, group_id, participant_id, session_id)
 VALUES (%s, %s, %s, %s)
@@ -632,7 +625,28 @@ cursor.executemany(allocation_sql, allocation_values)
 mysql_conn.commit()
 
 print("Inserted:")
-print("  Allocations:", len(allocation_values))
+print("  Experimental_Participants:", len(allocation_values))
+
+
+print("---------------------")
+print("Adding SIMLET_Sandbox")
+print("---------------------")
+simlets_sandbox_sql = """
+UPDATE SIMLETs SET sandbox_session_id = %s WHERE simlet_id = %s
+"""
+simlets_sandbox_values = [
+    (
+        mongo_simlet_to_mysql_id[s["_id"]["$oid"]],
+        mongo_session_to_mysql_id[s.get("sandbox")]
+    )
+    for s in filtered_simlets if s.get("sandbox", None) is not None
+]
+print(simlets_sandbox_values)
+cursor.executemany(simlets_sandbox_sql, simlets_sandbox_values)
+mysql_conn.commit()
+
+print("Update:")
+print("  SIMLET_Sandbox:", len(simlets_sandbox_values))
 
 print("Migration done!")
 cursor.close()
