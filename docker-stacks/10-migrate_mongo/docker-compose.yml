@@ -45,6 +45,16 @@ services:
         aliases:
           - ${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
+  mysql2sqlite:
+    build: ${STACK_HOME}/etc/mysql2sqlite
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - simva_mysql_data:/data
+    stdin_open: true
+    tty: true
+
   mysql-views:
     image: mysql:8
     depends_on:
