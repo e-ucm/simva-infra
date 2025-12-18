@@ -2,8 +2,7 @@ import os
 import json
 import time
 from datetime import datetime
-import mysql.connector
-from mysql.connector import Error
+import sqlite3
 
 def convert_iso_to_mysql_datetime_format(date):
     if date is None :
@@ -11,38 +10,27 @@ def convert_iso_to_mysql_datetime_format(date):
     return datetime.fromisoformat(date.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
 # ---- Environment variables from docker-compose ----
-MYSQL_HOST = os.getenv("MYSQL_HOST")
-MYSQL_USER = os.getenv("MYSQL_USER")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
-MYSQL_DB = os.getenv("MYSQL_DB")
+SQL_SCRIPT_FOLDER = os.getenv("SQL_SCRIPT_FOLDER")
+SQL_DB_FOLDER = os.getenv("SQL_DB_FOLDER")
+SQL_DB_FILE = os.getenv("SQL_DB_FILE")
 MONGO_BACKUP_FOLDER = os.getenv("MONGO_BACKUP_FOLDER")
 
 # ---- Connect to MySQL ----
-def wait_for_mysql(host, user, password, database, port=3306, retries=20, delay=3):
-    for attempt in range(retries):
-        try:
-            print(f"Trying to connect to MySQL... attempt {attempt+1}/{retries}")
-            conn = mysql.connector.connect(
-                host=host,
-                user=user,
-                password=password,
-                database=database,
-                port=port
-            )
-            print("MySQL is available!")
-            return conn
-        except Error as e:
-            print(f"MySQL not ready: {e}")
-            time.sleep(delay)
-    raise Exception("MySQL did not become available. Migration aborted.")
+sqlite_con = sqlite3.connect(f"{SQL_DB_FOLDER}/{SQL_DB_FILE}")
+print("SQLite is available!")
 
-mysql_conn = wait_for_mysql(
-    host=MYSQL_HOST,
-    user=MYSQL_USER,
-    password=MYSQL_PASSWORD,
-    database=MYSQL_DB
-)
-cursor = mysql_conn.cursor()
+cursor = sqlite_con.cursor()
+
+with open(f"{SQL_SCRIPT_FOLDER}/01-schemas.sql", "r") as f:
+    schema_sql = f.read()
+    cursor.executescript(schema_sql)
+    sqlite_con.commit()
+
+with open(f"{SQL_SCRIPT_FOLDER}/02-views.sql", "r") as f:
+    views_sql = f.read()
+    cursor.executescript(views_sql)
+    sqlite_con.commit()
+
 
 print("Starting migration...")
 print("------------")
@@ -66,7 +54,7 @@ with open(MONGO_BACKUP_FOLDER + "/users.json", "r") as f:
 # Adding User into Users table
 user_sql = """
 INSERT INTO Users (mongo_id, username, isToken, token, email, role)
-VALUES (%s, %s, %s, %s, %s, %s)
+VALUES (?, ?, ?, ?, ?, ?)
 """
 
 user_values = [
@@ -83,7 +71,7 @@ user_values = [
 ]
 print(user_values)
 cursor.executemany(user_sql, user_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  Users:", len(user_values))
@@ -114,7 +102,7 @@ with open(MONGO_BACKUP_FOLDER + "/groups.json", "r") as f:
 # Adding Group into Groups table
 groups_sql = """
 INSERT INTO ParticipantGroups (mongo_id, name, created, use_new_generation, group_owner_id)
-VALUES (%s, %s, %s, %s, %s)
+VALUES (?, ?, ?, ?, ?)
 """
 
 filtered_groups = [
@@ -135,7 +123,7 @@ groups_values = [
 print(groups_values)
 
 cursor.executemany(groups_sql, groups_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  Groups:", len(groups_values))
@@ -150,7 +138,7 @@ print(mongo_group_to_mysql_id)
 print("Adding Groups Participants")
 groups_participant_sql = """
 INSERT INTO ParticipantGroups_participants (group_id, participant_id)
-VALUES (%s, %s)
+VALUES (?, ?)
 """
 
 groups_participant_values=[]
@@ -161,7 +149,7 @@ for g in filtered_groups:
 print(groups_participant_values)
 
 cursor.executemany(groups_participant_sql, groups_participant_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  ParticipantGroups_participants:", len(groups_participant_values))
@@ -169,8 +157,8 @@ print("  ParticipantGroups_participants:", len(groups_participant_values))
 #adding groups owners
 print("Adding Groups owners")
 groups_owners_sql = """
-INSERT INTO ParticipantGroups_permission (group_id, owner_id, permission)
-VALUES (%s, %s, %s)
+INSERT INTO ParticipantGroups_permissions (group_id, user_id, permission)
+VALUES (?, ?, ?)
 """
 groups_owners_values=[]
 for g in filtered_groups:
@@ -182,10 +170,10 @@ for g in filtered_groups:
 print(groups_owners_values)
 
 cursor.executemany(groups_owners_sql, groups_owners_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
-print("  ParticipantGroups_permission:", len(groups_owners_values))
+print("  ParticipantGroups_permissions:", len(groups_owners_values))
 
 print("----------------")
 print("Adding Allocator")
@@ -206,7 +194,7 @@ with open(MONGO_BACKUP_FOLDER + "/allocators.json", "r") as f:
 #adding allocators into allocators table
 allocators_sql = """
 INSERT INTO Allocators (mongo_id, allocator_type)
-VALUES (%s, %s)
+VALUES (?, ?)
 """
 
 filtered_allocators = [
@@ -220,7 +208,7 @@ allocators_values = [
 ]
 print(allocators_values)
 cursor.executemany(allocators_sql, allocators_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  Allocators:", len(filtered_allocators))
@@ -250,7 +238,7 @@ with open(MONGO_BACKUP_FOLDER + "/studies.json", "r") as f:
 #adding simlets into simlets table
 simlets_sql = """
 INSERT INTO SIMLETs (mongo_id, name, created, description, allocator_id, simlet_coordinator_id)
-VALUES (%s, %s, %s, %s, %s, %s)
+VALUES (?, ?, ?, ?, ?, ?)
 """
 
 filtered_simlets = [
@@ -272,7 +260,7 @@ simlets_values = [
 print(simlets_values)
 
 cursor.executemany(simlets_sql, simlets_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  SIMLETs:", len(simlets_values))
@@ -287,11 +275,11 @@ print(mongo_simlet_to_mysql_id)
 print("Adding SIMLETs groups and shlinks")
 simlet_group_sql = """
 INSERT INTO SIMLETs_groups (simlet_id, group_id)
-VALUES (%s, %s)
+VALUES (?, ?)
 """
 simlet_shlinks_sql = """
 INSERT INTO SIMLETs_shlinks (simlet_id, short_url, short_code, date_created, title, valid_date, expiration_date, domain )
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 """
 
 simlet_group_values=[]
@@ -316,7 +304,7 @@ print(simlet_shlinks_values)
 print(simlet_group_values)
 cursor.executemany(simlet_group_sql, simlet_group_values)
 cursor.executemany(simlet_shlinks_sql, simlet_shlinks_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  SIMLETs_shlinks:", len(simlet_shlinks_values))
@@ -329,7 +317,7 @@ print("--------------------")
 print("Adding SIMLET Coordinator and session supervisor mapping")
 users_roles_sql = """
 INSERT INTO SIMLETs_permissions (simlet_id, user_id, permission)
-VALUES (%s, %s, %s)
+VALUES (?, ?, ?)
 """
 users_roles_values=[]
 for s in filtered_simlets:
@@ -342,7 +330,7 @@ for s in filtered_simlets:
         users_roles_values.append((simlet_mysql_id, owner_mysql, "WRITE"))
 print(users_roles_values)
 cursor.executemany(users_roles_sql, users_roles_values)
-mysql_conn.commit()
+sqlite_con.commit()
 print("  SIMLETs_permissions:", len(users_roles_values))
 
 print("----------------")
@@ -370,7 +358,7 @@ with open(MONGO_BACKUP_FOLDER + "/tests.json", "r") as f:
 # Adding Sessions into sesions table
 sessions_sql = """
 INSERT INTO Sessions (simlet_id, mongo_id, name, description, active, session_supervisor_id)
-VALUES (%s, %s, %s, %s, %s, %s)
+VALUES (?, ?, ?, ?, ?, ?)
 """
 
 filtered_sessions = [
@@ -391,7 +379,7 @@ sessions_values = [
 ]
 
 cursor.executemany(sessions_sql, sessions_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  Sessions:", len(sessions_values))
@@ -421,7 +409,7 @@ with open(MONGO_BACKUP_FOLDER + "/activities.json", "r") as f:
 # Adding Activities into Activities table
 activities_sql = """
 INSERT INTO Activities (session_id, mongo_id, name, activity_type, presignedUrl, generated_at, expire_on_seconds, trace_storage, description)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 """
 
 filtered_activities = [
@@ -447,7 +435,7 @@ activities_values = [
 print(activities_values)
 
 cursor.executemany(activities_sql, activities_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  Activities:", len(activities_values))
@@ -462,7 +450,7 @@ print(mongo_activity_to_mysql_id)
 print("Adding Manual Activities")
 manual_activities_sql = """
 INSERT INTO Manual_Activities (activity_id, user_managed, ressource_type, ressource_url)
-VALUES (%s, %s, %s, %s)
+VALUES (?, ?, ?, ?)
 """
 
 manual_activities_values = [
@@ -479,7 +467,7 @@ manual_activities_values = [
 print(manual_activities_values)
 
 cursor.executemany(manual_activities_sql, manual_activities_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  ManualActivities:", len(manual_activities_values))
@@ -488,7 +476,7 @@ print("  ManualActivities:", len(manual_activities_values))
 print("Adding Limesurvey Activities")
 limesurvey_activities_sql = """
 INSERT INTO Limesurvey_Activities (activity_id, survey_id, survey_owner, language, lrsset)
-VALUES (%s, %s, %s, %s, %s)
+VALUES (?, ?, ?, ?, ?)
 """
 
 limesurvey_activities_values = [
@@ -505,7 +493,7 @@ limesurvey_activities_values = [
 print(limesurvey_activities_values)
 
 cursor.executemany(limesurvey_activities_sql, limesurvey_activities_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  LimesurveyActivities:", len(limesurvey_activities_values))
@@ -514,7 +502,7 @@ print("  LimesurveyActivities:", len(limesurvey_activities_values))
 print("Adding Gameplay Activities")
 gameplay_activities_sql = """
 INSERT INTO GamePlay_Activities (activity_id, backup, scorm_xapi_by_game, game_type, game_url)
-VALUES (%s, %s, %s, %s, %s)
+VALUES (?, ?, ?, ?, ?)
 """
 
 gameplay_activities_values = [
@@ -531,7 +519,7 @@ gameplay_activities_values = [
 print(gameplay_activities_values)
 
 cursor.executemany(gameplay_activities_sql, gameplay_activities_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  GameplayActivities:", len(gameplay_activities_values))
@@ -540,7 +528,7 @@ print("  GameplayActivities:", len(gameplay_activities_values))
 print("Adding Activities completion")
 activities_completion_sql = """
 INSERT INTO Activities_completion (activity_id, participant_id, initialized, progress, completed)
-VALUES (%s, %s, %s, %s, %s)
+VALUES (?, ?, ?, ?, ?)
 """
 
 activities_completion_values=[]
@@ -556,7 +544,7 @@ for a in filtered_activities:
 print(activities_completion_values)
 
 cursor.executemany(activities_completion_sql, activities_completion_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  Activities_completion:", len(activities_completion_values))
@@ -568,7 +556,7 @@ print("-----------------")
 print("Adding Experimental_Participants")
 allocation_sql = """
 INSERT INTO Experimental_Participants (allocator_id, group_id, participant_id, session_id)
-VALUES (%s, %s, %s, %s)
+VALUES (?, ?, ?, ?)
 """
 
 def get_group_ids(participant_id, pairs):
@@ -595,7 +583,7 @@ for a in filtered_allocators:
     query = f"""
             SELECT group_id, user_id
             FROM v_complete_groups_from_allocator_and_simlets
-            WHERE allocator_id = '%s'
+            WHERE allocator_id = ?
     """
     print(query)
     print(allocator_id)
@@ -622,7 +610,7 @@ for a in filtered_allocators:
 
 print(allocation_values)
 cursor.executemany(allocation_sql, allocation_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Inserted:")
 print("  Experimental_Participants:", len(allocation_values))
@@ -632,7 +620,7 @@ print("---------------------")
 print("Adding SIMLET_Sandbox")
 print("---------------------")
 simlets_sandbox_sql = """
-UPDATE SIMLETs SET sandbox_session_id = %s WHERE simlet_id = %s
+UPDATE SIMLETs SET sandbox_session_id = ? WHERE simlet_id = ?
 """
 simlets_sandbox_values = [
     (
@@ -643,11 +631,11 @@ simlets_sandbox_values = [
 ]
 print(simlets_sandbox_values)
 cursor.executemany(simlets_sandbox_sql, simlets_sandbox_values)
-mysql_conn.commit()
+sqlite_con.commit()
 
 print("Update:")
 print("  SIMLET_Sandbox:", len(simlets_sandbox_values))
 
 print("Migration done!")
 cursor.close()
-mysql_conn.close()
+sqlite_con.close()
