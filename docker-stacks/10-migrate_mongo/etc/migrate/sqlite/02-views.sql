@@ -1,4 +1,5 @@
-CREATE OR REPLACE VIEW v_direct_permissions AS
+DROP VIEW IF EXISTS v_direct_permissions;
+CREATE VIEW v_direct_permissions AS
 SELECT
     s.simlet_coordinator_id as user_id,
     'SIMLET' AS object_type,
@@ -11,7 +12,7 @@ SELECT
     'SIMLET' AS object_type,
     s.simlet_id AS object_id,
 	s.permission AS permission
-FROM SIMLETs_permission s
+FROM SIMLETs_permissions s
 UNION ALL
 SELECT
     s.session_supervisor_id as user_id,
@@ -25,10 +26,10 @@ SELECT
     'SESSION' AS object_type,
     s.session_id AS object_id,
 	s.permission AS permission
-FROM Sessions_permission s
-;
+FROM Sessions_permissions s;
 
-CREATE OR REPLACE VIEW v_simlet_to_session AS
+DROP VIEW IF EXISTS v_simlet_to_session;
+CREATE VIEW v_simlet_to_session AS
 SELECT
     p.user_id,
     'SESSION' AS object_type,
@@ -37,7 +38,8 @@ SELECT
 FROM v_direct_permissions p
 JOIN Sessions s ON s.simlet_id = p.object_id AND p.object_type = 'SIMLET';
 
-CREATE OR REPLACE VIEW v_session_to_simlet AS
+DROP VIEW IF EXISTS v_session_to_simlet;
+CREATE VIEW v_session_to_simlet AS
 SELECT
     p.user_id,
     'SIMLET' AS object_type,
@@ -48,7 +50,8 @@ JOIN Sessions s ON s.session_id = p.object_id AND p.object_type = 'SESSION'
 LEFT JOIN v_direct_permissions psim ON s.simlet_id = psim.object_id AND psim.object_type = 'SIMLET'
 WHERE psim.permission IS NULL;
 
-CREATE OR REPLACE VIEW v_simlet_to_activity AS
+DROP VIEW IF EXISTS v_simlet_to_activity;
+CREATE VIEW v_simlet_to_activity AS
 SELECT
     p.user_id,
     'ACTIVITY' AS object_type,
@@ -58,7 +61,8 @@ FROM v_direct_permissions p
 JOIN Sessions s ON s.simlet_id = p.object_id AND p.object_type = 'SIMLET'
 JOIN Activities a ON a.session_id = s.session_id;
 
-CREATE OR REPLACE VIEW v_session_to_activity AS
+DROP VIEW IF EXISTS v_session_to_activity;
+CREATE VIEW v_session_to_activity AS
 SELECT
     p.user_id,
     'ACTIVITY' AS object_type,
@@ -68,7 +72,8 @@ FROM v_direct_permissions p
 JOIN Activities a ON a.session_id = p.object_id
 WHERE p.object_type = 'SESSION';
 
-CREATE OR REPLACE VIEW v_user_permissions AS
+DROP VIEW IF EXISTS v_user_permissions;
+CREATE VIEW v_user_permissions AS
 SELECT * FROM v_direct_permissions
 UNION ALL
 SELECT * FROM v_simlet_to_session
@@ -80,7 +85,8 @@ UNION ALL
 SELECT * FROM v_session_to_activity
 ORDER BY object_type, permission;
 
-CREATE OR REPLACE VIEW v_complete_simlets AS
+DROP VIEW IF EXISTS v_complete_simlets;
+CREATE VIEW v_complete_simlets AS
 SELECT
     sim.simlet_id,
     sim.name,
@@ -94,7 +100,7 @@ SELECT
     shlink.short_url,
     COUNT(DISTINCT g.group_id) as total_groups,
     COUNT(DISTINCT ses.session_id) as total_sessions,
-    GROUP_CONCAT(tag_list.simlet_tag_name SEPARATOR ', ') as tags,
+    GROUP_CONCAT(tag_list.simlet_tag_name) as tags,
     COUNT(DISTINCT upsim.user_id) as total_direct_supervisors,
     COUNT(DISTINCT upses.user_id) as total_direct_coordinators
 FROM SIMLETs sim
@@ -109,7 +115,8 @@ LEFT JOIN v_session_to_simlet upses ON upses.object_type = "SIMLET" AND sim.siml
 LEFT JOIN v_direct_permissions upsim ON upsim.object_type = "SIMLET" AND sim.simlet_id = upsim.object_id
 GROUP BY sim.simlet_id;
 
-CREATE OR REPLACE VIEW v_complete_simlets_sessions AS
+DROP VIEW IF EXISTS v_complete_simlets_sessions;
+CREATE VIEW v_complete_simlets_sessions AS
 SELECT
     ses.simlet_id,
     ses.session_id,
@@ -121,7 +128,7 @@ SELECT
     ses.session_start_date,
     ses.session_end_date,
     COUNT(DISTINCT act.activity_id) as total_activities,
-    GROUP_CONCAT(tag_list.session_tag_name SEPARATOR ', ') as tags,
+    GROUP_CONCAT(tag_list.session_tag_name) as tags,
     COUNT(DISTINCT upsim.user_id) as total_direct_supervisors,
     COUNT(DISTINCT upses.user_id) as total_direct_coordinators
 FROM Sessions ses
@@ -132,7 +139,8 @@ LEFT JOIN v_simlet_to_session upsim ON upsim.object_type = "SESSION" AND ses.sim
 LEFT JOIN v_direct_permissions upses ON upses.object_type = "SESSION" AND ses.session_id = upses.object_id
 GROUP BY ses.simlet_id, ses.session_id;
 
-CREATE OR REPLACE VIEW v_complete_sessions_activities AS
+DROP VIEW IF EXISTS v_complete_sessions_activities;
+CREATE VIEW v_complete_sessions_activities AS
 SELECT
     act.session_id,
     act.activity_id,
@@ -151,7 +159,8 @@ LEFT JOIN v_simlet_to_activity upsim ON upsim.object_type = "ACTIVITY" AND act.a
 LEFT JOIN v_session_to_activity upses ON upses.object_type = "ACTIVITY" AND act.activity_id = upses.object_id
 GROUP BY act.session_id, act.activity_id;
 
-CREATE OR REPLACE VIEW v_complete_groups AS
+DROP VIEW IF EXISTS v_complete_groups;
+CREATE VIEW v_complete_groups AS
 SELECT
     g.group_id,
     g.name,
@@ -161,22 +170,25 @@ SELECT
     COUNT(DISTINCT o.user_id)+1 as total_permissions_owners
 FROM ParticipantGroups g
 LEFT JOIN ParticipantGroups_participants p ON g.group_id = p.group_id AND p.participant_id is not NULL
-LEFT JOIN ParticipantGroups_permission o ON g.group_id = o.group_id AND o.user_id is not NULL
+LEFT JOIN ParticipantGroups_permissions o ON g.group_id = o.group_id AND o.user_id is not NULL
 GROUP BY g.group_id;
 
-CREATE OR REPLACE VIEW v_complete_new_groups AS
+DROP VIEW IF EXISTS v_complete_new_groups;
+CREATE VIEW v_complete_new_groups AS
 SELECT
     * 
 FROM v_complete_groups
 WHERE use_new_generation IS True;
 
-CREATE OR REPLACE VIEW v_complete_previous_groups AS
+DROP VIEW IF EXISTS v_complete_previous_groups;
+CREATE VIEW v_complete_previous_groups AS
 SELECT
     * 
 FROM v_complete_groups
 WHERE use_new_generation IS False;
 
-CREATE OR REPLACE VIEW v_complete_group_participants AS
+DROP VIEW IF EXISTS v_complete_group_participants;
+CREATE VIEW v_complete_group_participants AS
 SELECT
     p.group_id,
     u.user_id,
@@ -189,7 +201,8 @@ FROM ParticipantGroups_participants p
 JOIN Users u ON u.user_id = p.participant_id
 WHERE p.participant_id is not NULL;
 
-CREATE OR REPLACE VIEW v_complete_groups_from_allocator_and_simlets AS
+DROP VIEW IF EXISTS v_complete_groups_from_allocator_and_simlets;
+CREATE VIEW v_complete_groups_from_allocator_and_simlets AS
 SELECT
     a.allocator_id,
     pg.*
@@ -198,7 +211,8 @@ JOIN SIMLETs s ON a.allocator_id = s.allocator_id
 JOIN SIMLETs_groups g ON s.simlet_id = g.simlet_id
 JOIN v_complete_group_participants pg ON pg.group_id = g.group_id;
 
-CREATE OR REPLACE VIEW v_complete_allocation_participants AS
+DROP VIEW IF EXISTS v_complete_allocation_participants;
+CREATE VIEW v_complete_allocation_participants AS
 SELECT
     a.allocator_id,
     a.session_id,
@@ -213,7 +227,8 @@ FROM Experimental_Participants a
 JOIN Users u ON u.user_id = a.participant_id
 WHERE a.participant_id is not NULL;
 
-CREATE OR REPLACE VIEW v_complete_simlets_users_permissions AS
+DROP VIEW IF EXISTS v_complete_simlets_users_permissions;
+CREATE VIEW v_complete_simlets_users_permissions AS
 SELECT 
     u.user_id,
     u.username,
@@ -227,14 +242,16 @@ FROM v_complete_simlets s
 LEFT JOIN v_user_permissions up ON s.simlet_id = up.object_id AND up.object_type = "SIMLET"
 JOIN Users u ON u.user_id = up.user_id;
 
-CREATE OR REPLACE VIEW v_complete_simlets_group_id AS
+DROP VIEW IF EXISTS v_complete_simlets_group_id;
+CREATE VIEW v_complete_simlets_group_id AS
 SELECT
     g.group_id,
     s.*
 FROM v_complete_simlets s
 LEFT JOIN SIMLETs_groups g ON s.simlet_id = g.simlet_id;
 
-CREATE OR REPLACE VIEW v_complete_sessions_users_permissions AS
+DROP VIEW IF EXISTS v_complete_sessions_users_permissions;
+CREATE VIEW v_complete_sessions_users_permissions AS
 SELECT 
     u.user_id,
     u.username,
@@ -248,7 +265,8 @@ FROM v_complete_simlets_sessions s
 LEFT JOIN v_user_permissions up ON s.session_id = up.object_id AND up.object_type = "SESSION"
 JOIN Users u ON u.user_id = up.user_id;
 
-CREATE OR REPLACE VIEW v_complete_activities_users_permissions AS
+DROP VIEW IF EXISTS v_complete_activities_users_permissions;
+CREATE VIEW v_complete_activities_users_permissions AS
 SELECT 
     u.user_id,
     u.username,

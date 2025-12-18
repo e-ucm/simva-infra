@@ -4,7 +4,7 @@ set -euo pipefail
 
 # Define folders and corresponding volumes
 declare -A folders_volumes=(
-    ["${SIMVA_DATA_HOME}/simva/mysql"]="simva_mysql_data"
+    ["${SIMVA_DATA_HOME}/simva/sqlite"]="simva_sqlite_data"
 )
 
 for folder in "${!folders_volumes[@]}"; do
