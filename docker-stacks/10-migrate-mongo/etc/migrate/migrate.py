@@ -574,27 +574,56 @@ print("-----------------")
 #adding Default and groups Allocators
 print("Adding Default and groups Allocators")
 allocation_sql = """
-INSERT INTO Experimental_Participants (allocator_id, session_id, participant_id)
-VALUES (%s, %s, %s)
+INSERT INTO Experimental_Participants (allocator_id, group_id, participant_id, session_id)
+VALUES (%s, %s, %s, %s)
 """
+
+def get_group_ids(participant_id, pairs):
+    return {
+        group_id
+        for group_id, pid in pairs
+        if pid == participant_id
+    }
+
+def get_participants(group_id, pairs):
+    return {
+        participant_id
+        for gid, participant_id in pairs
+        if gid == group_id
+    }
 
 allocation_values=[]
 for a in filtered_allocators:
     allocator_mongo_id=a["_id"]["$oid"]
+    allocator_id=mongo_allocator_to_mysql_id[allocator_mongo_id]
     allocator_type=a["type"]
+    # Convert mongo group ids to mysql ids
+    # Create placeholders for SQL IN clause
+    query = f"""
+            SELECT group_id, user_id
+            FROM v_complete_groups_from_allocator_and_simlets
+            WHERE allocator_id = '%s'
+    """
+    print(query)
+    print(allocator_id)
+    cursor.execute(query, [allocator_id])
+    sql_participants_ids = cursor.fetchall()
+    # Extract values from tuples
+    existing_sql_participants_ids = {
+            (group_id, participant_id)
+            for group_id, participant_id in sql_participants_ids
+    }
+    print(existing_sql_participants_ids)
     for allocation_mongo_id in a.get("extra_data", {}).get("allocations", {}):
         session_id = mongo_session_to_mysql_id[a.get("extra_data", {}).get("allocations", {})[allocation_mongo_id]]
-        allocator_id=mongo_allocator_to_mysql_id[allocator_mongo_id]
         if allocator_type == "default":
             allocation_id=mongo_user_to_mysql_id[allocation_mongo_id]
-            allocation_values.append((allocator_id, session_id, allocation_id))
+            for group_id in get_group_ids(allocation_id, existing_sql_participants_ids):
+                allocation_values.append((allocator_id, group_id, allocation_id, session_id))
         elif allocator_type == "group":
-            cursor.execute("SELECT participant_id FROM ParticipantGroups_participants WHERE group_id = '%s'", [mongo_group_to_mysql_id[allocation_mongo_id]])
-            sql_participants_ids = cursor.fetchall()
-            existing_sql_participants_ids = set(id[0] for id in sql_participants_ids)  # extract string from tuple
-            print(existing_sql_participants_ids)
-            for id in existing_sql_participants_ids:
-                allocation_values.append((allocator_id, session_id, id))
+            group_id=mongo_group_to_mysql_id[allocation_mongo_id]
+            for id in get_participants(group_id, existing_sql_participants_ids):
+                allocation_values.append((allocator_id, group_id, id, session_id))
         else:
             continue
 
