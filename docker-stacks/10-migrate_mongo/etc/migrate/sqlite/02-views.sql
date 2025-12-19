@@ -56,7 +56,9 @@ SELECT
     p.email,
     p.role
 FROM v_direct_permissions_users p
-JOIN Sessions s ON s.simlet_id = p.object_id AND p.object_type = 'SIMLET';
+JOIN Sessions s ON s.simlet_id = p.object_id AND p.object_type = 'SIMLET'
+LEFT JOIN v_direct_permissions_users psim ON s.simlet_id = psim.object_id AND psim.object_type = 'SIMLET'
+WHERE psim.permission IS NULL;
 
 DROP VIEW IF EXISTS v_session_to_simlet;
 CREATE VIEW v_session_to_simlet AS
@@ -89,7 +91,9 @@ SELECT
     p.role
 FROM v_direct_permissions_users p
 JOIN Sessions s ON s.simlet_id = p.object_id AND p.object_type = 'SIMLET'
-JOIN Activities a ON a.session_id = s.session_id;
+JOIN Activities a ON a.session_id = s.session_id
+LEFT JOIN v_direct_permissions_users psim ON s.session_id = psim.object_id AND psim.object_type = 'SESSION'
+WHERE psim.permission IS NULL;
 
 DROP VIEW IF EXISTS v_session_to_activity;
 CREATE VIEW v_session_to_activity AS
@@ -125,7 +129,7 @@ CREATE VIEW v_complete_simlets AS
 SELECT
     sim.simlet_id,
     sim.name,
-    sim.created,
+    sim.createdAt,
     sandbox.username as sandbox_username,
     sandbox.token as sandbox_token,
     sandbox.role as sandbox_role,
@@ -157,7 +161,7 @@ SELECT
     ses.session_id,
     ses.name,
     ses.description,
-    ses.date,
+    ses.createdAt,
     ses.experimental_method,
     ses.active,
     ses.session_start_date,
@@ -199,7 +203,7 @@ CREATE VIEW v_complete_groups AS
 SELECT
     g.group_id,
     g.name,
-    g.created,
+    g.createdAt,
     g.use_new_generation,
     COUNT(DISTINCT p.participant_id) as total_participants,
     COUNT(DISTINCT o.user_id)+1 as total_permissions_owners
