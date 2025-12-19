@@ -34,6 +34,7 @@ SELECT
     dp.object_type,
     dp.object_id,
     dp.permission,
+    'DIRECT' AS permission_type,
     u.user_id,
     u.username,
     u.isToken,
@@ -49,6 +50,7 @@ SELECT
     'SESSION' AS object_type,
     s.session_id AS object_id,
     p.permission AS permission,
+    'INDIRECT' AS permission_type,
     p.user_id,
     p.username,
     p.isToken,
@@ -66,6 +68,7 @@ SELECT
     'SIMLET' AS object_type,
     s.simlet_id AS object_id,
     'READ' AS permission,
+    'INDIRECT' AS permission_type,
     p.user_id,
     p.username,
     p.isToken,
@@ -83,6 +86,7 @@ SELECT
     'ACTIVITY' AS object_type,
     a.activity_id AS object_id,
     p.permission AS permission,
+    'INDIRECT' AS permission_type,
     p.user_id,
     p.username,
     p.isToken,
@@ -101,6 +105,7 @@ SELECT
     'ACTIVITY' AS object_type,
     a.activity_id AS object_id,
     p.permission AS permission,
+    'INDIRECT' AS permission_type,
     p.user_id,
     p.username,
     p.isToken,
@@ -122,7 +127,7 @@ UNION ALL
 SELECT * FROM v_simlet_to_activity
 UNION ALL
 SELECT * FROM v_session_to_activity
-ORDER BY object_type, permission;
+ORDER BY permission_type, permission, object_type;
 
 DROP VIEW IF EXISTS v_complete_simlets;
 CREATE VIEW v_complete_simlets AS
@@ -274,6 +279,7 @@ SELECT
     up.email,
     up.role,
     up.permission,
+    up.permission_type,
     s.*
 FROM v_complete_simlets s 
 LEFT JOIN v_user_permissions up ON s.simlet_id = up.object_id AND up.object_type = "SIMLET";
@@ -294,6 +300,7 @@ SELECT
     up.email,
     up.role,
     up.permission,
+    up.permission_type,
     s.*
 FROM v_complete_simlets_sessions s
 LEFT JOIN v_user_permissions up ON s.session_id = up.object_id AND up.object_type = "SESSION";
@@ -306,6 +313,7 @@ SELECT
     up.email,
     up.role,
     up.permission,
+    up.permission_type,
     a.*
 FROM v_complete_sessions_activities a
 LEFT JOIN v_user_permissions up ON a.activity_id = up.object_id AND up.object_type = "ACTIVITY";
