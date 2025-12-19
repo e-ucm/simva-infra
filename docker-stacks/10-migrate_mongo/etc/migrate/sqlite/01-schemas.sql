@@ -94,13 +94,10 @@ ON "Activities" ("activity_id");
 CREATE TABLE IF NOT EXISTS "Limesurvey_Activities" (
 	"activity_id" INTEGER NOT NULL UNIQUE,
 	"survey_id" INTEGER NOT NULL,
-	"survey_owner" INTEGER,
 	"language" VARCHAR NOT NULL,
 	"lrsset" INTEGER,
 	PRIMARY KEY("activity_id"),
 	FOREIGN KEY ("activity_id") REFERENCES "Activities"("activity_id")
-	ON UPDATE CASCADE ON DELETE CASCADE,
-	FOREIGN KEY ("survey_owner") REFERENCES "Users"("user_id")
 	ON UPDATE CASCADE ON DELETE CASCADE
 );
 
@@ -344,7 +341,9 @@ CREATE TABLE IF NOT EXISTS "Limesurvey_Activities_Template" (
 	"survey_owner" INTEGER,
 	PRIMARY KEY("activity_template_id"),
 	FOREIGN KEY ("activity_template_id") REFERENCES "Activities_template"("activity_template_id")
-	ON UPDATE CASCADE ON DELETE CASCADE
+	ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY ("survey_owner") REFERENCES "Users"("user_id")
+	ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE INDEX IF NOT EXISTS "Limesurvey_Activities_Template_index_0"
@@ -371,9 +370,9 @@ CREATE TABLE IF NOT EXISTS "Activities_template_permissions" (
 	"permission" VARCHAR NOT NULL CHECK(permission IN ("READ","WRITE")),
 	PRIMARY KEY("activity_template_id", "user_id"),
 	FOREIGN KEY ("activity_template_id") REFERENCES "Activities_template"("activity_template_id")
-	ON UPDATE CASCADE ON DELETE CASCADE,
+	ON UPDATE CASCADE ON DELETE RESTRICT,
 	FOREIGN KEY ("user_id") REFERENCES "Users"("user_id")
-	ON UPDATE CASCADE ON DELETE CASCADE
+	ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE INDEX IF NOT EXISTS "Sessions_permission_index_0"

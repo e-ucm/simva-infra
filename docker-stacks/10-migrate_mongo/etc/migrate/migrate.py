@@ -475,17 +475,16 @@ print("  ManualActivities:", len(manual_activities_values))
 #adding Limesurvey Activities
 print("Adding Limesurvey Activities")
 limesurvey_activities_sql = """
-INSERT INTO Limesurvey_Activities (activity_id, survey_id, survey_owner, language, lrsset)
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO Limesurvey_Activities (activity_id, survey_id, language, lrsset)
+VALUES (?, ?, ?, ?)
 """
 
 limesurvey_activities_values = [
     (
         mongo_activity_to_mysql_id[a["_id"]["$oid"]],
         a.get("extra_data", {}).get("surveyId", ""),
-        list(mongo_user_to_mysql_id.values())[0] if a.get("extra_data", {}).get("survey_owner", "") == "" else mongo_user_to_mysql_id[a.get("extra_data", {}).get("survey_owner", "")],
         a.get("extra_data", {}).get("language", ""),
-        a.get("extra_data", {}).get("lrsset", "false") == "true"
+        a.get("extra_data", {}).get("lrsset", "")
     )
     for a in filtered_activities
     if a.get("type") == "limesurvey"
