@@ -13,12 +13,12 @@ x-default-opts:
 services:
   simva-api:
     volumes:
-      - simva_sqllite_data:/data/db
+      - simva_sqlite_data:/data/db
     environment:
       #MYSQL DB
-      SQLLITE_DB_FILE: "${SIMVA_API_MYSQL_DB:-simva}.sqllite"
+      SQLLITE_DB_FILE: "${SIMVA_API_MYSQL_DB:-simva}_data.db"
       SQLLITE_DB_PATH: "/data/db"
 
 volumes:
-  simva_sqllite_data:
+  simva_sqlite_data:
     external: true
