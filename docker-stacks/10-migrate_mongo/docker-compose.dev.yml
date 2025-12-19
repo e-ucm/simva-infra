@@ -32,7 +32,7 @@ services:
       - "traefik.http.services.sqlite.loadbalancer.server.port=8001"
       - "traefik.http.routers.sqlite.rule=Host(`${SIMVA_SQLITE_UI_HOST_SUBDOMAIN:-simva-sqlite-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.sqlite.middlewares=dashboardAuth@file"
-  
+
 volumes:
   simva_sqlite_data:
     external: true
