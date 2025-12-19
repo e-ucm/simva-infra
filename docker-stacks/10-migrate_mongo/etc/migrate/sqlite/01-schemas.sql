@@ -306,7 +306,10 @@ CREATE TABLE IF NOT EXISTS "Activities_template" (
 	"public" BOOLEAN NOT NULL,
 	"createdAt" DATETIME NOT NULL DEFAULT (datetime('now')),
 	"updatedAt" DATETIME NOT NULL DEFAULT (datetime('now')),
-	PRIMARY KEY("activity_template_id")
+	"owner_id" INTEGER NOT NULL,
+	PRIMARY KEY("activity_template_id"),
+	FOREIGN KEY ("owner_id") REFERENCES "Users"("user_id")
+	ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE INDEX IF NOT EXISTS "Activities_template_index_0"
@@ -362,3 +365,16 @@ CREATE TABLE IF NOT EXISTS "Sessions_tags_list" (
 
 CREATE INDEX IF NOT EXISTS "sessions_tags_list_index_0"
 ON "Sessions_tags_list" ("session_tag_id");
+CREATE TABLE IF NOT EXISTS "Activities_template_permissions" (
+	"activity_template_id" INTEGER NOT NULL,
+	"user_id" INTEGER NOT NULL,
+	"permission" VARCHAR NOT NULL CHECK(permission IN ("READ","WRITE")),
+	PRIMARY KEY("activity_template_id", "user_id"),
+	FOREIGN KEY ("activity_template_id") REFERENCES "Activities_template"("activity_template_id")
+	ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY ("user_id") REFERENCES "Users"("user_id")
+	ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS "Sessions_permission_index_0"
+ON "Activities_template_permissions" ("session_id", "user_id");
