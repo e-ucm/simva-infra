@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS "SIMLETs" (
 	"simlet_id" INTEGER NOT NULL UNIQUE,
 	"mongo_id" VARCHAR,
 	"name" VARCHAR NOT NULL,
-	"created" DATETIME,
+	"createdAt" DATETIME NOT NULL DEFAULT (datetime('now')),
+	"updatedAt" DATETIME NOT NULL DEFAULT (datetime('now')),
 	"sandbox_session_id" INTEGER,
 	"description" VARCHAR NOT NULL,
 	"objective" VARCHAR,
@@ -35,7 +36,8 @@ CREATE TABLE IF NOT EXISTS "SIMLETs_shlinks" (
 	"simlet_id" INTEGER NOT NULL UNIQUE,
 	"short_url" VARCHAR NOT NULL,
 	"short_code" VARCHAR NOT NULL,
-	"date_created" DATETIME NOT NULL,
+	"createdAt" DATETIME NOT NULL DEFAULT (datetime('now')),
+	"updatedAt" DATETIME NOT NULL DEFAULT (datetime('now')),
 	"valid_date" DATETIME,
 	"expiration_date" DATETIME,
 	"title" VARCHAR NOT NULL,
@@ -53,7 +55,8 @@ CREATE TABLE IF NOT EXISTS "Sessions" (
 	"mongo_id" VARCHAR,
 	"name" VARCHAR NOT NULL,
 	"description" VARCHAR NOT NULL,
-	"date" DATETIME,
+	"createdAt" DATETIME NOT NULL DEFAULT (datetime('now')),
+	"updatedAt" DATETIME NOT NULL DEFAULT (datetime('now')),
 	"experimental_method" VARCHAR,
 	"active" BOOLEAN,
 	"session_start_date" DATETIME,
@@ -79,6 +82,8 @@ CREATE TABLE IF NOT EXISTS "Activities" (
 	"expire_on_seconds" INTEGER,
 	"trace_storage" BOOLEAN NOT NULL,
 	"description" VARCHAR NOT NULL,
+	"createdAt" DATETIME NOT NULL DEFAULT (datetime('now')),
+	"updatedAt" DATETIME NOT NULL DEFAULT (datetime('now')),
 	PRIMARY KEY("activity_id"),
 	FOREIGN KEY ("session_id") REFERENCES "Sessions"("session_id")
 	ON UPDATE CASCADE ON DELETE CASCADE
@@ -151,6 +156,8 @@ CREATE TABLE IF NOT EXISTS "Users" (
 	"token" VARCHAR,
 	"email" VARCHAR NOT NULL,
 	"role" VARCHAR NOT NULL,
+	"createdAt" DATETIME NOT NULL DEFAULT (datetime('now')),
+	"updatedAt" DATETIME NOT NULL DEFAULT (datetime('now')),
 	PRIMARY KEY("user_id")
 );
 
@@ -163,7 +170,8 @@ CREATE TABLE IF NOT EXISTS "ParticipantGroups" (
 	"group_id" INTEGER NOT NULL UNIQUE,
 	"mongo_id" VARCHAR,
 	"name" VARCHAR NOT NULL,
-	"created" DATETIME NOT NULL,
+	"createdAt" DATETIME NOT NULL DEFAULT (datetime('now')),
+	"updatedAt" DATETIME NOT NULL DEFAULT (datetime('now')),
 	"use_new_generation" BOOLEAN NOT NULL,
 	"group_owner_id" INTEGER NOT NULL,
 	PRIMARY KEY("group_id"),
@@ -190,6 +198,8 @@ CREATE TABLE IF NOT EXISTS "Allocators" (
 	"allocator_id" INTEGER NOT NULL UNIQUE,
 	"mongo_id" VARCHAR,
 	"allocator_type" VARCHAR NOT NULL CHECK(allocator_type IN ("default", "group", "random")),
+	"createdAt" DATETIME NOT NULL DEFAULT (datetime('now')),
+	"updatedAt" DATETIME NOT NULL DEFAULT (datetime('now')),
 	PRIMARY KEY("allocator_id")
 );
 
@@ -294,6 +304,8 @@ CREATE TABLE IF NOT EXISTS "Activities_template" (
 	"activity_type" VARCHAR NOT NULL CHECK(activity_type IN ("default", "manual", "limesurvey", "gameplay", "lti_tool")),
 	"description" VARCHAR NOT NULL,
 	"public" BOOLEAN NOT NULL,
+	"createdAt" DATETIME NOT NULL DEFAULT (datetime('now')),
+	"updatedAt" DATETIME NOT NULL DEFAULT (datetime('now')),
 	PRIMARY KEY("activity_template_id")
 );
 

@@ -101,7 +101,7 @@ with open(MONGO_BACKUP_FOLDER + "/groups.json", "r") as f:
 
 # Adding Group into Groups table
 groups_sql = """
-INSERT INTO ParticipantGroups (mongo_id, name, created, use_new_generation, group_owner_id)
+INSERT INTO ParticipantGroups (mongo_id, name, createdAt, use_new_generation, group_owner_id)
 VALUES (?, ?, ?, ?, ?)
 """
 
@@ -237,7 +237,7 @@ with open(MONGO_BACKUP_FOLDER + "/studies.json", "r") as f:
 
 #adding simlets into simlets table
 simlets_sql = """
-INSERT INTO SIMLETs (mongo_id, name, created, description, allocator_id, simlet_coordinator_id)
+INSERT INTO SIMLETs (mongo_id, name, createdAt, description, allocator_id, simlet_coordinator_id)
 VALUES (?, ?, ?, ?, ?, ?)
 """
 
@@ -278,7 +278,7 @@ INSERT INTO SIMLETs_groups (simlet_id, group_id)
 VALUES (?, ?)
 """
 simlet_shlinks_sql = """
-INSERT INTO SIMLETs_shlinks (simlet_id, short_url, short_code, date_created, title, valid_date, expiration_date, domain )
+INSERT INTO SIMLETs_shlinks (simlet_id, short_url, short_code, createdAt, title, valid_date, expiration_date, domain )
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 """
 
