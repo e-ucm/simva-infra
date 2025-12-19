@@ -107,13 +107,17 @@ CREATE TABLE IF NOT EXISTS "GamePlay_Activities" (
 	"activity_id" INTEGER NOT NULL UNIQUE,
 	"backup" BOOLEAN NOT NULL,
 	"scorm_xapi_by_game" BOOLEAN NOT NULL,
-	"category" VARCHAR,
-	"subject_area" VARCHAR,
+	"category_id" INTEGER,
+	"subject_area_id" INTEGER,
 	"game_type" VARCHAR NOT NULL CHECK(game_type IN ("WEB", "DESKTOP")),
 	"game_url" VARCHAR NOT NULL,
 	PRIMARY KEY("activity_id"),
 	FOREIGN KEY ("activity_id") REFERENCES "Activities"("activity_id")
-	ON UPDATE CASCADE ON DELETE CASCADE
+	ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY ("subject_area_id") REFERENCES "Subject_area_list"("subject_area_id")
+	ON UPDATE CASCADE ON DELETE RESTRICT,
+	FOREIGN KEY ("category_id") REFERENCES "Category_list"("category_id")
+	ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE INDEX IF NOT EXISTS "GamePlay_Activities_index_0"
@@ -249,9 +253,9 @@ CREATE TABLE IF NOT EXISTS "Sessions_tags" (
 	"session_id" INTEGER NOT NULL,
 	"tag_id" INTEGER NOT NULL,
 	PRIMARY KEY("session_id", "tag_id"),
-	FOREIGN KEY ("session_id") REFERENCES "Sessions"("session_id")
-	ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY ("tag_id") REFERENCES "Sessions_tags_list"("session_tag_id")
+	ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY ("session_id") REFERENCES "Sessions"("session_id")
 	ON UPDATE CASCADE ON DELETE CASCADE
 );
 
@@ -324,13 +328,17 @@ CREATE INDEX IF NOT EXISTS "Manual_Template_Activities_index_0"
 ON "Manual_Template_Activities" ("activity_template_id");
 CREATE TABLE IF NOT EXISTS "GamePlay_Activities_Template" (
 	"activity_template_id" INTEGER NOT NULL UNIQUE,
-	"category" VARCHAR NOT NULL,
-	"subject_area" VARCHAR NOT NULL,
+	"category_id" INTEGER,
+	"subject_area_id" INTEGER,
 	"game_type" VARCHAR NOT NULL CHECK(game_type IN ("WEB", "DESKTOP")),
 	"game_url" VARCHAR NOT NULL,
 	PRIMARY KEY("activity_template_id"),
 	FOREIGN KEY ("activity_template_id") REFERENCES "Activities_template"("activity_template_id")
-	ON UPDATE CASCADE ON DELETE CASCADE
+	ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY ("category_id") REFERENCES "Category_list"("category_id")
+	ON UPDATE CASCADE ON DELETE RESTRICT,
+	FOREIGN KEY ("subject_area_id") REFERENCES "Subject_area_list"("subject_area_id")
+	ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE INDEX IF NOT EXISTS "GamePlay_Activities_Template_index_0"
@@ -343,7 +351,7 @@ CREATE TABLE IF NOT EXISTS "Limesurvey_Activities_Template" (
 	FOREIGN KEY ("activity_template_id") REFERENCES "Activities_template"("activity_template_id")
 	ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY ("survey_owner") REFERENCES "Users"("user_id")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
+	ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE INDEX IF NOT EXISTS "Limesurvey_Activities_Template_index_0"
@@ -377,3 +385,19 @@ CREATE TABLE IF NOT EXISTS "Activities_template_permissions" (
 
 CREATE INDEX IF NOT EXISTS "Sessions_permission_index_0"
 ON "Activities_template_permissions" ("session_id", "user_id");
+CREATE TABLE IF NOT EXISTS "Subject_area_list" (
+	"subject_area_id" INTEGER NOT NULL UNIQUE,
+	"subject_area_name" VARCHAR NOT NULL,
+	PRIMARY KEY("subject_area_id")
+);
+
+CREATE INDEX IF NOT EXISTS "sessions_tags_list_index_0"
+ON "Subject_area_list" ("subject_area_id");
+CREATE TABLE IF NOT EXISTS "Category_list" (
+	"category_id" INTEGER NOT NULL UNIQUE,
+	"category_name" VARCHAR NOT NULL,
+	PRIMARY KEY("category_id")
+);
+
+CREATE INDEX IF NOT EXISTS "sessions_tags_list_index_0"
+ON "Category_list" ("category_id");
