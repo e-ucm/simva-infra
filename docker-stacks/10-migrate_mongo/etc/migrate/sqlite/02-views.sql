@@ -28,53 +28,88 @@ SELECT
 	s.permission AS permission
 FROM Sessions_permissions s;
 
+DROP VIEW IF EXISTS v_direct_permissions_users;
+CREATE VIEW v_direct_permissions_users AS
+SELECT
+    dp.object_type,
+    dp.object_id,
+    dp.permission,
+    u.user_id,
+    u.username,
+    u.isToken,
+    u.token,
+    u.email,
+    u.role
+FROM v_direct_permissions dp
+JOIN Users u ON u.user_id = dp.user_id;
+
 DROP VIEW IF EXISTS v_simlet_to_session;
 CREATE VIEW v_simlet_to_session AS
 SELECT
-    p.user_id,
     'SESSION' AS object_type,
     s.session_id AS object_id,
-    p.permission AS permission
-FROM v_direct_permissions p
+    p.permission AS permission,
+    p.user_id,
+    p.username,
+    p.isToken,
+    p.token,
+    p.email,
+    p.role
+FROM v_direct_permissions_users p
 JOIN Sessions s ON s.simlet_id = p.object_id AND p.object_type = 'SIMLET';
 
 DROP VIEW IF EXISTS v_session_to_simlet;
 CREATE VIEW v_session_to_simlet AS
 SELECT
-    p.user_id,
     'SIMLET' AS object_type,
     s.simlet_id AS object_id,
-    'READ' AS permission
-FROM v_direct_permissions p
+    'READ' AS permission,
+    p.user_id,
+    p.username,
+    p.isToken,
+    p.token,
+    p.email,
+    p.role
+FROM v_direct_permissions_users p
 JOIN Sessions s ON s.session_id = p.object_id AND p.object_type = 'SESSION'
-LEFT JOIN v_direct_permissions psim ON s.simlet_id = psim.object_id AND psim.object_type = 'SIMLET'
+LEFT JOIN v_direct_permissions_users psim ON s.simlet_id = psim.object_id AND psim.object_type = 'SIMLET'
 WHERE psim.permission IS NULL;
 
 DROP VIEW IF EXISTS v_simlet_to_activity;
 CREATE VIEW v_simlet_to_activity AS
 SELECT
-    p.user_id,
     'ACTIVITY' AS object_type,
     a.activity_id AS object_id,
-    p.permission AS permission
-FROM v_direct_permissions p
+    p.permission AS permission,
+    p.user_id,
+    p.username,
+    p.isToken,
+    p.token,
+    p.email,
+    p.role
+FROM v_direct_permissions_users p
 JOIN Sessions s ON s.simlet_id = p.object_id AND p.object_type = 'SIMLET'
 JOIN Activities a ON a.session_id = s.session_id;
 
 DROP VIEW IF EXISTS v_session_to_activity;
 CREATE VIEW v_session_to_activity AS
 SELECT
-    p.user_id,
     'ACTIVITY' AS object_type,
     a.activity_id AS object_id,
-    p.permission AS permission
-FROM v_direct_permissions p
+    p.permission AS permission,
+    p.user_id,
+    p.username,
+    p.isToken,
+    p.token,
+    p.email,
+    p.role
+FROM v_direct_permissions_users p
 JOIN Activities a ON a.session_id = p.object_id
 WHERE p.object_type = 'SESSION';
 
 DROP VIEW IF EXISTS v_user_permissions;
 CREATE VIEW v_user_permissions AS
-SELECT * FROM v_direct_permissions
+SELECT * FROM v_direct_permissions_users
 UNION ALL
 SELECT * FROM v_simlet_to_session
 UNION ALL
@@ -230,17 +265,14 @@ WHERE a.participant_id is not NULL;
 DROP VIEW IF EXISTS v_complete_simlets_users_permissions;
 CREATE VIEW v_complete_simlets_users_permissions AS
 SELECT 
-    u.user_id,
-    u.username,
-    u.isToken,
-    u.token,
-    u.email,
-    u.role,
+    up.user_id,
+    up.username,
+    up.email,
+    up.role,
     up.permission,
     s.*
 FROM v_complete_simlets s 
-LEFT JOIN v_user_permissions up ON s.simlet_id = up.object_id AND up.object_type = "SIMLET"
-JOIN Users u ON u.user_id = up.user_id;
+LEFT JOIN v_user_permissions up ON s.simlet_id = up.object_id AND up.object_type = "SIMLET";
 
 DROP VIEW IF EXISTS v_complete_simlets_group_id;
 CREATE VIEW v_complete_simlets_group_id AS
@@ -253,29 +285,23 @@ LEFT JOIN SIMLETs_groups g ON s.simlet_id = g.simlet_id;
 DROP VIEW IF EXISTS v_complete_sessions_users_permissions;
 CREATE VIEW v_complete_sessions_users_permissions AS
 SELECT 
-    u.user_id,
-    u.username,
-    u.isToken,
-    u.token,
-    u.email,
-    u.role,
+    up.user_id,
+    up.username,
+    up.email,
+    up.role,
     up.permission,
     s.*
 FROM v_complete_simlets_sessions s
-LEFT JOIN v_user_permissions up ON s.session_id = up.object_id AND up.object_type = "SESSION"
-JOIN Users u ON u.user_id = up.user_id;
+LEFT JOIN v_user_permissions up ON s.session_id = up.object_id AND up.object_type = "SESSION";
 
 DROP VIEW IF EXISTS v_complete_activities_users_permissions;
 CREATE VIEW v_complete_activities_users_permissions AS
 SELECT 
-    u.user_id,
-    u.username,
-    u.isToken,
-    u.token,
-    u.email,
-    u.role,
+    up.user_id,
+    up.username,
+    up.email,
+    up.role,
     up.permission,
     a.*
 FROM v_complete_sessions_activities a
-LEFT JOIN v_user_permissions up ON a.activity_id = up.object_id AND up.object_type = "ACTIVITY"
-JOIN Users u ON u.user_id = up.user_id;
+LEFT JOIN v_user_permissions up ON a.activity_id = up.object_id AND up.object_type = "ACTIVITY";
