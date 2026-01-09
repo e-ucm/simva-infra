@@ -16,6 +16,7 @@ declare -A folders_volumes=(
     ["${SIMVA_DATA_HOME}/simva/simva-trace-allocator-logs"]="simva_trace_allocator_logs"
     ["${SIMVA_DATA_HOME}/simva/simva-front-logs"]="simva_front_logs"
     ["${SIMVA_DATA_HOME}/simva/simva-api-logs"]="simva_api_logs"
+    ["${SIMVA_DATA_HOME}/simva/pumva-logs"]="pumva_logs"
     ["${simva_storage_data}"]="simva_storage_data"
     ["${SIMVA_DATA_HOME}/simva/mongo"]="simva_mongodb_data"
     ["${SIMVA_DATA_HOME}/simva/sqlite"]="simva_sqlite_data"
