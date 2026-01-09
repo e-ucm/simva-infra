@@ -112,7 +112,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/simva/tls
-      - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/simva/simva-api-logs:/home/node/logs:rw
       - simva_storage_data:/storage
       - simva_api_logs:/root/.npm/_logs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
