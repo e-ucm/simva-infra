@@ -167,7 +167,7 @@ copy_data_from_volume_to_local() {
 
     if [[ "$compress" == "true" ]]; then
         # Copy and compress
-        if docker run --rm -v "$volume":/src:ro -v "$(realpath "$local_dir")":/dest alpine sh -c "tar czf /dest/$local_name.tar.gz -C /src $(basename "$container_path")"; then
+        if docker run --rm -v "$volume":/src:ro -v "$(realpath "$local_dir")":/dest alpine sh -c "tar czf /dest/$local_name.tar.gz -C $(dirname "/src/$container_path") $(basename "/src/$container_path")"; then
             echo "✅ Data copied and compressed to '$dest_path.tar.gz'"
         else
             echo "❌ Failed to copy and compress data"
