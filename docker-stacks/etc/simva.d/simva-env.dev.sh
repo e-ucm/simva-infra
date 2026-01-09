@@ -46,6 +46,7 @@ branch="dev"
 export SIMVA_API_GIT_REF=$branch
 export SIMVA_FRONT_GIT_REF=$branch
 export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
+export SIMVA_PUMVA_GIT_REF=$branch
 export SIMVA_LIMESURVEY_DOCKER_GIT_REF="remotecontrol-patch"
 export SIMVA_TMON_GIT_REF="plotly-dash"
 export SIMVA_TMON_ANACONDA_GIT_REF="master-jupyter-notebook"

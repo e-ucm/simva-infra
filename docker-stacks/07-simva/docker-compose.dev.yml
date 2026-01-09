@@ -37,3 +37,19 @@ services:
       - /home/node/app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9231:9229"
+  pumva:
+    build: ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}
+    restart: unless-stopped
+    volumes:
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/src:/home/node/app/src
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/public:/home/node/app/public
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/package.json:/home/node/app/package.json
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/package-lock.json:/home/node/app/package-lock.json
+      - next-cache:/home/node/app/.next/cache
+      - turbo-cache:/home/node/app/.turbo
+    ports:
+      - "127.0.0.1:9234:9229"
+
+volumes:
+  next-cache:
+  turbo-cache:

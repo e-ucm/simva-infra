@@ -65,6 +65,7 @@ else
 fi
 export SIMVA_FRONT_GIT_REPO="${base_for_simva_repos}/simva-front"
 export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-allocator"
+export SIMVA_PUMVA_GIT_REPO="${base_for_simva_repos}/pumva"
 
 base_for_limesurvey_repos="${SIMVA_DATA_HOME}/limesurvey"
 [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_limesurvey_repos="${SIMVA_HOME}/../.."
