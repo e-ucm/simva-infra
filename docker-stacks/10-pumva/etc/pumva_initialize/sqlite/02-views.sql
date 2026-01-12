@@ -64,6 +64,8 @@ SELECT
     g.description,
     g.owner_id,
     g.type,
+    g.createdAt,
+    g.updatedAt,
     gv.version_id as actual_version_id,
     gv.external_url as actual_version_url,
     t.technology as technology_name,
@@ -78,6 +80,8 @@ DROP VIEW IF EXISTS v_complete_game_guide_url;
 CREATE VIEW v_complete_game_guide_url AS
 SELECT
     tg.game_id,
+    tg.createdAt,
+    tg.updatedAt,
     l.language,
     tg.url AS teacher_guide_url
 FROM 
@@ -95,4 +99,17 @@ SELECT
     g.*
 FROM
     v_complete_game g
+LEFT JOIN v_effective_permissions ep ON g.game_id = ep.game_id;
+
+DROP VIEW IF EXISTS v_game_guide_url_permissions;
+CREATE VIEW v_game_guide_url_permissions AS
+SELECT
+    ep.user_id,
+    ep.username,
+    ep.role,
+    ep.email,
+    ep.permission,
+    g.*
+FROM
+    v_complete_game_guide_url g
 LEFT JOIN v_effective_permissions ep ON g.game_id = ep.game_id;
