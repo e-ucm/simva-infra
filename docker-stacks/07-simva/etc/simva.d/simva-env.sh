@@ -7,6 +7,9 @@ if [[ -f "$SIMVA_DATA_HOME/simva/migration_sqlite_in_progress" ]]; then
     export COMPOSE_FILE="docker-compose.migrate_mongo.yml:docker-compose.mongo.yml"
     if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then
         export COMPOSE_FILE="$COMPOSE_FILE:docker-compose.dev.sqlite.yml:docker-compose.dev.mongo.yml"
+        if [[ $SIMVA_SIMVA_DATABASE_CHECK == "true" ]]; then
+            export COMPOSE_FILE="$COMPOSE_FILE:docker-compose.yml:docker-compose.dev.yml:docker-compose.simva.sqlite.yml"
+        fi
     fi
 else
     if [[ -f "$SIMVA_DATA_HOME/simva/sqlite_init" ]]; then
