@@ -72,9 +72,9 @@ SELECT
     tr.tracker as tracker_name
 FROM
     Games g
-LEFT JOIN Game_Versions gv ON g.game_id = gv.game_id AND g.actual = gv.version_id
+LEFT JOIN Games_Versions gv ON g.game_id = gv.game_id AND g.actual = gv.version_id
 LEFT JOIN Technologies t ON g.technology_id = t.technology_id
-LEFT JOIN Trackers tr ON g.tracker_id = tr.tracker_id;
+LEFT JOIN Trackers tr ON g.tracker_id = tr.tracker_id AND g.technology_id = tr.technology_id;
 
 DROP VIEW IF EXISTS v_complete_game_guide_url;
 CREATE VIEW v_complete_game_guide_url AS
