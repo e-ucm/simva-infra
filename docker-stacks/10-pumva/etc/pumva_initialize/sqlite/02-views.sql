@@ -21,7 +21,7 @@ SELECT
     u.role,
     u.email
 FROM
-    Games_permissions gp
+    Games_Permissions gp
 LEFT JOIN Users u ON gp.user_id = u.user_id;
 
 DROP VIEW IF EXISTS v_public_games;
@@ -72,9 +72,9 @@ SELECT
     tr.tracker as tracker_name
 FROM
     Games g
-LEFT JOIN Game_Version gv ON g.game_id = gv.game_id AND g.actual = gv.version_id
-LEFT JOIN Technology t ON g.technology_id = t.technology_id
-LEFT JOIN Tracker tr ON g.tracker_id = tr.tracker_id;
+LEFT JOIN Game_Versions gv ON g.game_id = gv.game_id AND g.actual = gv.version_id
+LEFT JOIN Technologies t ON g.technology_id = t.technology_id
+LEFT JOIN Trackers tr ON g.tracker_id = tr.tracker_id;
 
 DROP VIEW IF EXISTS v_complete_game_guide_url;
 CREATE VIEW v_complete_game_guide_url AS
@@ -85,7 +85,7 @@ SELECT
     l.language,
     tg.url AS teacher_guide_url
 FROM 
-    Teacher_Guide tg
+    Teacher_Guides tg
 LEFT JOIN Languages l ON tg.language_id = l.language_id;
 
 DROP VIEW IF EXISTS v_complete_game_permissions;
