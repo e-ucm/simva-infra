@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "Games" (
 	"createdAt" DATE NOT NULL,
 	"updatedAt" DATE NOT NULL,
 	PRIMARY KEY("game_id"),
-	FOREIGN KEY ("actual") REFERENCES "Game_Versions"("version_id")
+	FOREIGN KEY ("actual") REFERENCES "Games_Versions"("version_id")
 	ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY ("owner_id") REFERENCES "Users"("user_id")
 	ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS "Games" (
 
 CREATE INDEX IF NOT EXISTS "Games_index_0"
 ON "Games" ("game_id");
-CREATE TABLE IF NOT EXISTS "Game_Versions" (
+CREATE TABLE IF NOT EXISTS "Games_Versions" (
 	"game_id" INTEGER NOT NULL,
 	"version_id" INTEGER NOT NULL UNIQUE,
 	"external_url" VARCHAR NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS "Sessions" (
 	"version_id" INTEGER NOT NULL,
 	"save_path" VARCHAR NOT NULL,
 	PRIMARY KEY("player_id", "version_id"),
-	FOREIGN KEY ("version_id") REFERENCES "Game_Versions"("version_id")
+	FOREIGN KEY ("version_id") REFERENCES "Games_Versions"("version_id")
 	ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY ("player_id") REFERENCES "Users"("user_id")
 	ON UPDATE CASCADE ON DELETE NO ACTION
@@ -105,13 +105,16 @@ CREATE TABLE IF NOT EXISTS "Technologies" (
 );
 
 CREATE TABLE IF NOT EXISTS "Trackers" (
+	"technology_id" INTEGER NOT NULL,
 	"tracker_id" INTEGER NOT NULL UNIQUE,
 	"tracker" VARCHAR NOT NULL,
 	"public" BOOLEAN NOT NULL,
 	"owner_id" INTEGER NOT NULL,
 	"createdAt" DATE NOT NULL,
 	"updatedAt" DATE NOT NULL,
-	PRIMARY KEY("tracker_id", "owner_id"),
+	PRIMARY KEY("technology_id", "tracker_id", "owner_id"),
 	FOREIGN KEY ("owner_id") REFERENCES "Users"("user_id")
+	ON UPDATE NO ACTION ON DELETE NO ACTION,
+	FOREIGN KEY ("technology_id") REFERENCES "Technologies"("technology_id")
 	ON UPDATE NO ACTION ON DELETE NO ACTION
 );
