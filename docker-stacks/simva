@@ -117,6 +117,11 @@ function main() {
             stop ${DEFAULT_WAIT_TIME} ${@%/}
             exit 0
         ;;
+        "migrate_db")
+            check_docker_launched
+            migrate_db ${DEFAULT_WAIT_TIME} ${@%/}
+            exit 0
+        ;;
         "backup")
             check_docker_launched
             backup ${DEFAULT_WAIT_TIME} ${@%/}
@@ -288,6 +293,10 @@ function execute_before_hooks() {
             folder="${folder}/before-migrate.d"
             run_scripts_from_folder ${folder}
         ;;
+        "migrate_db")
+            folder="${folder}/before-migrate-db.d"
+            run_scripts_from_folder ${folder}
+        ;;
         "changeConfig")
             folder="${folder}/before-changeConfig.d"
             run_scripts_from_folder ${folder}
@@ -347,6 +356,10 @@ function execute_before_hooks() {
             ;;
             "migrate")
                 folder="${folder}/before-migrate.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "migrate_db")
+                folder="${folder}/before-migrate-db.d"
                 run_scripts_from_folder ${folder}
             ;;
             "changeConfig")
@@ -427,6 +440,10 @@ function execute_after_hooks() {
                 folder="${folder}/after-migrate.d"
                 run_scripts_from_folder ${folder}
             ;;
+            "migrate_db")
+                folder="${folder}/afer-migrate-db.d"
+                run_scripts_from_folder ${folder}
+            ;;
             "changeConfig")
                 folder="${folder}/after-changeConfig.d"
                 run_scripts_from_folder ${folder}
@@ -482,6 +499,10 @@ function execute_after_hooks() {
             folder="${folder}/after-migrate.d"
             run_scripts_from_folder ${folder}
         ;;
+        "migrate_db")
+                folder="${folder}/afer-migrate-db.d"
+                run_scripts_from_folder ${folder}
+            ;;
         "changeConfig")
             folder="${folder}/after-changeConfig.d"
             run_scripts_from_folder ${folder}
@@ -737,6 +758,41 @@ compare_versions() {
         echo 2
         exit
     fi
+}
+
+# Migrate DB stack
+function migrate_db() {
+    echo "Migrate DB : $@"
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time"
+        exit 1
+    fi
+    local wait_time=${1}
+    shift
+
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    echo "Migrate DB stated"
+    local phase="migrate_db"
+    setExecutable ${phase} ${stacks}
+
+    for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
+        echo "Migrate DB ${stack} started"
+        execute_before_hooks ${phase} ${stack}
+        backup ${wait_time} ${stack}
+        STACK_HOME="${SIMVA_HOME}/${stack}"
+        start 30 "false" ${stack}
+        stop "${wait_time}" ${stack}
+        execute_after_hooks ${phase} ${stack}
+        echo "Migrate DB ${stack} done!"
+    done
+    echo "Migrate DB done!"
 }
 
 # upgrade stack
@@ -1278,6 +1334,12 @@ function setExecutable() {
                 folder="${HooksFolder}/after-migrate.d"
                 setExecutable_scripts_from_folder ${folder}
             ;;
+            "migrate_db")
+                folder="${HooksFolder}/before-migrate-db.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/after-migrate-db.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
             "purge")
                 folder="${HooksFolder}/before-purge.d"
                 setExecutable_scripts_from_folder ${folder}
@@ -1346,6 +1408,12 @@ function setExecutable() {
             folder="${HooksFolder}/before-migrate.d"
             setExecutable_scripts_from_folder ${folder}
             folder="${HooksFolder}/after-migrate.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+        "migrate_db")
+            folder="${HooksFolder}/before-migrate-db.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/after-migrate-db.d"
             setExecutable_scripts_from_folder ${folder}
         ;;
         "purge")
