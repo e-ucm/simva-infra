@@ -12,27 +12,27 @@ x-default-opts:
 
 services:
   datasette:
-    image : datasetteproject/datasette:latest
+    image: datasetteproject/datasette:latest
     command: "datasette
-      /db/simva_data.db
+      /db/pumva_data.db
       --host 0.0.0.0
       --port 8001
       --cors"
     volumes:
-      - simva_sqlite_data:/db
+      - pumva_sqlite_data:/db
     networks:
       default:
         aliases:
-          - ${SIMVA_SQLITE_UI_HOST_SUBDOMAIN:-simva-sqlite-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_PUMVA_SQLITE_UI_HOST_SUBDOMAIN:-pumva-sqlite-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - ${SIMVA_SQLITE_UI_HOST_SUBDOMAIN:-simva-sqlite-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_PUMVA_SQLITE_UI_HOST_SUBDOMAIN:-pumva-sqlite-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.sqlite.loadbalancer.server.port=8001"
-      - "traefik.http.routers.sqlite.rule=Host(`${SIMVA_SQLITE_UI_HOST_SUBDOMAIN:-simva-sqlite-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.sqlite.rule=Host(`${SIMVA_PUMVA_SQLITE_UI_HOST_SUBDOMAIN:-pumva-sqlite-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
       - "traefik.http.routers.sqlite.middlewares=dashboardAuth@file"
 
 volumes:
-  simva_sqlite_data:
+  pumva_sqlite_data:
     external: true

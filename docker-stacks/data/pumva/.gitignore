@@ -1,0 +1,7 @@
+.externaldomain
+.version
+.initialized
+pumva-sha256sums
+pumva-sha256sums-new
+sqlite_init
+sqlite_initialisation_in_progress

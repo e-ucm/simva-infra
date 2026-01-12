@@ -4,8 +4,8 @@ set -euo pipefail
 
 "${HELPERS_STACK_HOME}/migrate-to-volume.sh"
 
-if [[ ! -f "$SIMVA_DATA_HOME/simva/sqlite_init" ]]; then
-    if [[ -f "$SIMVA_DATA_HOME/simva/migration_sqlite_in_progress" ]]; then
+if [[ ! -f "$SIMVA_DATA_HOME/pumva/sqlite_init" ]]; then
+    if [[ -f "$SIMVA_DATA_HOME/pumva/sqlite_initialisation_in_progress" ]]; then
         echo "Migration in progress. Skipping SQLite initialization."
         exit 0
     else

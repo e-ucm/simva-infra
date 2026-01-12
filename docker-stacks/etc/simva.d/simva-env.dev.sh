@@ -51,6 +51,12 @@ export SIMVA_LIMESURVEY_DOCKER_GIT_REF="remotecontrol-patch"
 export SIMVA_TMON_GIT_REF="plotly-dash"
 export SIMVA_TMON_ANACONDA_GIT_REF="master-jupyter-notebook"
 
+################################################
+# Database migration check for SIMVA and PUMVA #
+################################################
+export SIMVA_SIMVA_DATABASE_CHECK="false"
+export SIMVA_PUMVA_DATABASE_CHECK="false"
+
 #####################
 # Socket Proxy info #
 #####################

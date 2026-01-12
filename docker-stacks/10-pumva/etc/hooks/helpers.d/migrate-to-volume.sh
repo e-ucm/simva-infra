@@ -4,7 +4,8 @@ set -euo pipefail
 
 # Define folders and corresponding volumes
 declare -A folders_volumes=(
-    ["${SIMVA_DATA_HOME}/simva/sqlite"]="simva_sqlite_data"
+    ["${SIMVA_DATA_HOME}/pumva/sqlite"]="pumva_sqlite_data"
+    ["${SIMVA_DATA_HOME}/pumva/logs"]="pumva_logs"
 )
 
 for folder in "${!folders_volumes[@]}"; do

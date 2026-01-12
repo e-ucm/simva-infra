@@ -346,6 +346,7 @@ print(mongo_simlet_owners_to_mysql_id)
 cursor.execute("SELECT mongo_id FROM Sessions WHERE mongo_id IS NOT NULL")
 mysql_session_mongo_ids = cursor.fetchall()
 existing_session_mongo_db = set(id[0] for id in mysql_session_mongo_ids)  # extract string from tuple
+print(existing_session_mongo_db)
 
 # Get Sessions from Mongo Backup
 sessions=[]
@@ -366,6 +367,8 @@ filtered_sessions = [
     for s in sessions
     if s["_id"]["$oid"] not in existing_session_mongo_db
 ]
+print(filtered_sessions)
+
 sessions_values = [
     (
         mongo_simlet_to_mysql_id[s["study"]],
