@@ -82,11 +82,11 @@ CREATE TABLE IF NOT EXISTS "Teacher_Guide" (
 	PRIMARY KEY("game_id", "language_id"),
 	FOREIGN KEY ("game_id") REFERENCES "Games"("game_id")
 	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("language_id") REFERENCES "languages"("language_id")
+	FOREIGN KEY ("language_id") REFERENCES "Languages"("language_id")
 	ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS "languages" (
+CREATE TABLE IF NOT EXISTS "Languages" (
 	"language_id" INTEGER NOT NULL UNIQUE,
 	"language" VARCHAR NOT NULL,
 	"createdAt" DATE,
