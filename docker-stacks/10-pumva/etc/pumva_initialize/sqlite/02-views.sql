@@ -86,7 +86,7 @@ SELECT
     tg.url AS teacher_guide_url
 FROM 
     Teacher_Guide tg
-LEFT JOIN languages l ON tg.language_id = l.language_id;
+LEFT JOIN Languages l ON tg.language_id = l.language_id;
 
 DROP VIEW IF EXISTS v_complete_game_permissions;
 CREATE VIEW v_complete_game_permissions AS
