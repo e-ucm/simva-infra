@@ -16,7 +16,7 @@ services:
       - simva_sqlite_data:/data/db
     environment:
       #MYSQL DB
-      SQLLITE_DB_FILE: "${SIMVA_API_MYSQL_DB:-simva}_data.db"
+      SQLLITE_DB_FILE: "${SIMVA_API_SQLITE_DB:-simva}_data.db"
       SQLLITE_DB_PATH: "/data/db"
 
 volumes:

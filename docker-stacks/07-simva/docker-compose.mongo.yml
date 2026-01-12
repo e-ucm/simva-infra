@@ -29,24 +29,6 @@ services:
         aliases:
           - ${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
 
-  simva-api:
-    environment:
-      #MONGO DB
-      MONGO_HOST: "${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      MONGO_DB: "${SIMVA_API_MONGO_DB:-/simva}"
-      LTI_MONGO_DB: "${SIMVA_API_LTI_MONGO_DB:-/lti_simva}"
-      #MONGO DB LTI
-      LTI_PLATFORM_DB_NAME: "${SIMVA_API_LTI_MONGO_DB:-/lti_simva}"
-      LTI_PLATFORM_DB_USER:  "${SIMVA_LTI_PLATFORM_DB_USER:-root}"
-      LTI_PLATFORM_DB_PASSWORD: "${SIMVA_LTI_PLATFORM_DB_PASSWORD:-password}"
-    depends_on:
-      - mongodb
-  simva-front:
-    environment:
-      #MONGO DB
-      MONGO_HOST: "${SIMVA_MONGO_HOST_SUBDOMAIN:-simva-mongo}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
-      MONGO_DB: "${SIMVA_FRONT_MONGO_DB:-/simva-front}"
-
 volumes:
   simva_mongodb_data:
     external: true

@@ -1,0 +1,64 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+  kafka_services:
+    name: "${SIMVA_KAFKA_NETWORK:-kafka_services}"
+    external: true
+
+services:
+  pumva:
+    << : *default-opts
+    command: ['sh', '/home/node/entrypoint.d/docker-startup.sh']
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    user: "${SIMVA_NODE_GUID:-1000}:${SIMVA_NODE_UUID:-1000}"
+    environment:
+      #DEBUG
+      DEBUG: "${SIMVA_DEBUG:-true}"
+      #LOG
+      LOG_LEVEL: "debug"
+      LOG_FOLDER: "/home/node/logs"
+      #NODE
+      NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
+      NODE_EXTRA_CA_CERTS: "/var/lib/pumva/tls/ca/rootCA.pem"
+      #MYSQL DB
+      SQLLITE_DB_FILE: "${PUMVA_SQLITE_DB:-pumva}_data.db"
+      SQLLITE_DB_PATH: "/data/db"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/pumva/tls
+      - pumva_logs:/home/node/logs:rw
+      - pumva_sqlite_data:/data/db:rw
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-pumva.sh:/home/node/entrypoint.d/docker-startup.sh
+    hostname: ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.pumva.loadbalancer.server.port=3000"
+      - "traefik.http.routers.pumva.rule=Host(`${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+
+volumes:
+  pumva_logs:
+    external: true
+  pumva_sqlite_data:
+    external: true

@@ -16,19 +16,17 @@ networks:
     external: true
 
 services:
-  migration:
-    build: ${STACK_HOME}/etc/migrate
+  pumva-database-initialization:
+    build: ${STACK_HOME}/etc/pumva_initialize
     environment:
-      MONGO_BACKUP_FOLDER: /export
       SQL_SCRIPT_FOLDER: /app/sqlite
       SQL_DB_FOLDER: /sql_db
-      SQL_DB_FILE: "${SIMVA_SQLITE_DB_FILE:-simva_data.db}"
+      SQL_DB_FILE: "${SIMVA_PUMVA_SQLITE_DB_FILE:-pumva_data.db}"
     volumes:
-      - simva_sqlite_data:/sql_db
-      - ${STACK_HOME}/etc/migrate:/app
-      - ${SIMVA_BACKUP_HOME}/simva/simva_mongodb_data/export:/export
-    command: ["python", "migrate.py"]
+      - pumva_sqlite_data:/sql_db
+      - ${STACK_HOME}/etc/pumva_initialize:/app
+    command: ["python", "initialize-pumva.py"]
 
 volumes:
-  simva_sqlite_data:
+  pumva_sqlite_data:
     external: true

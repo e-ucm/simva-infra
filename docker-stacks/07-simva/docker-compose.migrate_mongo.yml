@@ -1,0 +1,34 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+  mongodb_migration:
+    build: ${STACK_HOME}/etc/migrate
+    environment:
+      MONGO_BACKUP_FOLDER: /export
+      SQL_SCRIPT_FOLDER: /app/sqlite
+      SQL_DB_FOLDER: /sql_db
+      SQL_DB_FILE: "${SIMVA_SQLITE_DB_FILE:-simva_data.db}"
+    volumes:
+      - simva_sqlite_data:/sql_db
+      - ${STACK_HOME}/etc/migrate:/app
+      - ${SIMVA_BACKUP_HOME}/simva/simva_mongodb_data/export:/export
+    command: ["python", "migrate.py"]
+
+volumes:
+  simva_sqlite_data:
+    external: true

@@ -29,9 +29,9 @@ services:
           - ${SIMVA_SQLITE_UI_HOST_SUBDOMAIN:-simva-sqlite-ui}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.simva_sqlite.loadbalancer.server.port=8001"
-      - "traefik.http.routers.simva_sqlite.rule=Host(`${SIMVA_SQLITE_UI_HOST_SUBDOMAIN:-simva-sqlite-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.simva_sqlite.middlewares=dashboardAuth@file"
+      - "traefik.http.services.pumva_sqlite.loadbalancer.server.port=8001"
+      - "traefik.http.routers.pumva_sqlite.rule=Host(`${SIMVA_SQLITE_UI_HOST_SUBDOMAIN:-simva-sqlite-ui}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.pumva_sqlite.middlewares=dashboardAuth@file"
 
 volumes:
   simva_sqlite_data:
