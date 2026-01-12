@@ -11,19 +11,19 @@ CREATE TABLE IF NOT EXISTS "Games" (
 	"createdAt" DATE NOT NULL,
 	"updatedAt" DATE NOT NULL,
 	PRIMARY KEY("game_id"),
-	FOREIGN KEY ("actual") REFERENCES "Game_Version"("version_id")
+	FOREIGN KEY ("actual") REFERENCES "Game_Versions"("version_id")
 	ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY ("owner_id") REFERENCES "Users"("user_id")
 	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("technology_id") REFERENCES "Technology"("technology_id")
+	FOREIGN KEY ("technology_id") REFERENCES "Technologies"("technology_id")
 	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("tracker_id") REFERENCES "Tracker"("tracker_id")
+	FOREIGN KEY ("tracker_id") REFERENCES "Trackers"("tracker_id")
 	ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE INDEX IF NOT EXISTS "Games_index_0"
 ON "Games" ("game_id");
-CREATE TABLE IF NOT EXISTS "Game_Version" (
+CREATE TABLE IF NOT EXISTS "Game_Versions" (
 	"game_id" INTEGER NOT NULL,
 	"version_id" INTEGER NOT NULL UNIQUE,
 	"external_url" VARCHAR NOT NULL,
@@ -49,10 +49,12 @@ ON "Users" ("user_id");
 
 CREATE UNIQUE INDEX IF NOT EXISTS "Users_index_1"
 ON "Users" ("username");
-CREATE TABLE IF NOT EXISTS "Games_permissions" (
+CREATE TABLE IF NOT EXISTS "Games_Permissions" (
 	"user_id" INTEGER NOT NULL,
 	"game_id" INTEGER NOT NULL,
 	"permission" VARCHAR NOT NULL CHECK(permission IN ("READ","WRITE")),
+	"createdAt" DATE NOT NULL,
+	"updatedAt" DATE NOT NULL,
 	PRIMARY KEY("user_id", "game_id"),
 	FOREIGN KEY ("game_id") REFERENCES "Games"("game_id")
 	ON UPDATE CASCADE ON DELETE CASCADE,
@@ -60,20 +62,20 @@ CREATE TABLE IF NOT EXISTS "Games_permissions" (
 	ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
-CREATE INDEX IF NOT EXISTS "SIMLETs_permission_index_0"
-ON "Games_permissions" ("game_id", "user_id");
+CREATE INDEX IF NOT EXISTS "Games_Permissions_index_0"
+ON "Games_Permissions" ("game_id", "user_id");
 CREATE TABLE IF NOT EXISTS "Sessions" (
 	"player_id" INTEGER NOT NULL,
 	"version_id" INTEGER NOT NULL,
 	"save_path" VARCHAR NOT NULL,
 	PRIMARY KEY("player_id", "version_id"),
-	FOREIGN KEY ("version_id") REFERENCES "Game_Version"("version_id")
+	FOREIGN KEY ("version_id") REFERENCES "Game_Versions"("version_id")
 	ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY ("player_id") REFERENCES "Users"("user_id")
 	ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS "Teacher_Guide" (
+CREATE TABLE IF NOT EXISTS "Teacher_Guides" (
 	"game_id" INTEGER NOT NULL UNIQUE,
 	"language_id" INTEGER NOT NULL,
 	"url" VARCHAR NOT NULL,
@@ -94,7 +96,7 @@ CREATE TABLE IF NOT EXISTS "Languages" (
 	PRIMARY KEY("language_id")
 );
 
-CREATE TABLE IF NOT EXISTS "Technology" (
+CREATE TABLE IF NOT EXISTS "Technologies" (
 	"technology_id" INTEGER NOT NULL UNIQUE,
 	"technology" VARCHAR NOT NULL,
 	"createdAt" DATE NOT NULL,
@@ -102,7 +104,7 @@ CREATE TABLE IF NOT EXISTS "Technology" (
 	PRIMARY KEY("technology_id")
 );
 
-CREATE TABLE IF NOT EXISTS "Tracker" (
+CREATE TABLE IF NOT EXISTS "Trackers" (
 	"tracker_id" INTEGER NOT NULL UNIQUE,
 	"tracker" VARCHAR NOT NULL,
 	"public" BOOLEAN NOT NULL,
