@@ -22,5 +22,3 @@ ${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "simva_storage_data"
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "simva_mongodb_data"
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "simva_sqlite_data"
-#"${SIMVA_BIN_HOME}/volumectl.sh" delete "pumva_logs"
-#"${SIMVA_BIN_HOME}/volumectl.sh" delete "pumva_sqlite_data"

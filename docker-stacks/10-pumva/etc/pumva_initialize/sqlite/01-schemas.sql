@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS "Games" (
 	"type" VARCHAR NOT NULL CHECK(type IN ("WEB","DESKTOP")),
 	"technology_id" INTEGER NOT NULL,
 	"tracker_id" INTEGER NOT NULL,
+	"createdAt" DATE NOT NULL,
+	"updatedAt" DATE NOT NULL,
 	PRIMARY KEY("game_id"),
 	FOREIGN KEY ("actual") REFERENCES "Game_Version"("version_id")
 	ON UPDATE CASCADE ON DELETE CASCADE,
@@ -25,6 +27,8 @@ CREATE TABLE IF NOT EXISTS "Game_Version" (
 	"game_id" INTEGER NOT NULL,
 	"version_id" INTEGER NOT NULL UNIQUE,
 	"external_url" VARCHAR NOT NULL,
+	"createdAt" DATE NOT NULL,
+	"updatedAt" DATE NOT NULL,
 	PRIMARY KEY("game_id", "version_id"),
 	FOREIGN KEY ("game_id") REFERENCES "Games"("game_id")
 	ON UPDATE NO ACTION ON DELETE NO ACTION
@@ -35,6 +39,8 @@ CREATE TABLE IF NOT EXISTS "Users" (
 	"username" VARCHAR NOT NULL UNIQUE,
 	"email" VARCHAR NOT NULL,
 	"role" VARCHAR NOT NULL,
+	"createdAt" DATE NOT NULL,
+	"updatedAt" DATE NOT NULL,
 	PRIMARY KEY("user_id")
 );
 
@@ -71,6 +77,8 @@ CREATE TABLE IF NOT EXISTS "Teacher_Guide" (
 	"game_id" INTEGER NOT NULL UNIQUE,
 	"language_id" INTEGER NOT NULL,
 	"url" VARCHAR NOT NULL,
+	"createdAt" DATE NOT NULL,
+	"updatedAt" DATE NOT NULL,
 	PRIMARY KEY("game_id", "language_id"),
 	FOREIGN KEY ("game_id") REFERENCES "Games"("game_id")
 	ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -81,12 +89,16 @@ CREATE TABLE IF NOT EXISTS "Teacher_Guide" (
 CREATE TABLE IF NOT EXISTS "languages" (
 	"language_id" INTEGER NOT NULL UNIQUE,
 	"language" VARCHAR NOT NULL,
+	"createdAt" DATE,
+	"updatedAt" DATE,
 	PRIMARY KEY("language_id")
 );
 
 CREATE TABLE IF NOT EXISTS "Technology" (
 	"technology_id" INTEGER NOT NULL UNIQUE,
 	"technology" VARCHAR NOT NULL,
+	"createdAt" DATE NOT NULL,
+	"updatedAt" DATE NOT NULL,
 	PRIMARY KEY("technology_id")
 );
 
@@ -95,7 +107,9 @@ CREATE TABLE IF NOT EXISTS "Tracker" (
 	"tracker" VARCHAR NOT NULL,
 	"public" BOOLEAN NOT NULL,
 	"owner_id" INTEGER NOT NULL,
-	PRIMARY KEY("tracker_id"),
+	"createdAt" DATE NOT NULL,
+	"updatedAt" DATE NOT NULL,
+	PRIMARY KEY("tracker_id", "owner_id"),
 	FOREIGN KEY ("owner_id") REFERENCES "Users"("user_id")
 	ON UPDATE NO ACTION ON DELETE NO ACTION
 );
