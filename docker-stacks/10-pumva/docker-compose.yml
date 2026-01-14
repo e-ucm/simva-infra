@@ -37,7 +37,7 @@ services:
       NODE_EXTRA_CA_CERTS: "/var/lib/pumva/tls/ca/rootCA.pem"
       #MYSQL DB
       SQLLITE_DB_FILE: "${PUMVA_SQLITE_DB:-pumva}_data.db"
-      SQLLITE_DB_PATH: "/data/db"
+      SQLLITE_DB_PATH: "/data/db/"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/pumva/tls
