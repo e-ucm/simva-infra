@@ -32,6 +32,8 @@ services:
       #LOG
       LOG_LEVEL: "debug"
       LOG_FOLDER: "/home/node/logs"
+      #APP FOLDER
+      APP_FOLDER: "/home/node/app"
       #NODE
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       NODE_EXTRA_CA_CERTS: "/var/lib/pumva/tls/ca/rootCA.pem"
