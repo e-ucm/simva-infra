@@ -16,9 +16,14 @@ services:
     restart: unless-stopped
     volumes:
       - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/src:/home/node/app/src
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/tests:/home/node/app/tests
       - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/public:/home/node/app/public
       - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/package.json:/home/node/app/package.json
       - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/package-lock.json:/home/node/app/package-lock.json
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/jest.config.cjs:/home/node/app/jest.config.cjs
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/tsconfig.jest.json:/home/node/app/tsconfig.jest.json
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/tsconfig.json:/home/node/app/tsconfig.json
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/coverage:/home/node/app/coverage
       - next-cache:/home/node/app/.next/cache
       - turbo-cache:/home/node/app/.turbo
     ports:
