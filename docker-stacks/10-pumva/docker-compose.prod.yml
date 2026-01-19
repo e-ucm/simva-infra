@@ -19,3 +19,6 @@ services:
   pumva:
     image: ${SIMVA_PUMVA_IMAGE:-eucm/pumva}:${SIMVA_PUMVA_VERSION:-v1.0.0}
     restart: unless-stopped
+  pumva-front:
+    image: ${SIMVA_PUMVA_FRONT_IMAGE:-eucm/pumva}:${SIMVA_PUMVA_VERSION:-v1.0.0}
+    restart: unless-stopped

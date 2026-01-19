@@ -19,6 +19,42 @@ networks:
     external: true
 
 services:
+  pumva-front:
+    << : *default-opts
+    command: ['sh', '/home/node/entrypoint.d/docker-startup.sh']
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    user: "${SIMVA_NODE_GUID:-1000}:${SIMVA_NODE_UUID:-1000}"
+    environment:
+      #DEBUG
+      DEBUG: "${SIMVA_DEBUG:-true}"
+      #LOG
+      LOG_LEVEL: "debug"
+      LOG_FOLDER: "/home/node/logs"
+      #APP FOLDER
+      APP_FOLDER: "/home/node/app"
+      #NODE
+      NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
+      NODE_EXTRA_CA_CERTS: "/var/lib/pumva/tls/ca/rootCA.pem"
+      NEXT_CACHE_DIR: "/tmp/next-cache"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/pumva/tls
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-pumva.sh:/home/node/entrypoint.d/docker-startup.sh
+    hostname: ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.pumva-front.loadbalancer.server.port=3000"
+      - "traefik.http.routers.pumva-front.rule=Host(`${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+  
   pumva:
     << : *default-opts
     command: ['sh', '/home/node/entrypoint.d/docker-startup.sh']
@@ -38,26 +74,27 @@ services:
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       NODE_EXTRA_CA_CERTS: "/var/lib/pumva/tls/ca/rootCA.pem"
       #MYSQL DB
-      SQLLITE_DB_FILE: "${PUMVA_SQLITE_DB:-pumva}_data.db"
-      SQLLITE_DB_PATH: "/data/db/"
+      SQLLITE_DB_FILE: "${PUMVA_SQLITE_DB:-pumva_data.db}"
+      SQLLITE_DB_PATH: "/data/db"
+      SQL_FILE_PATH: "pumva_initialize/sqlite"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/pumva/tls
       - pumva_logs:/home/node/logs:rw
       - pumva_sqlite_data:/data/db:rw
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-pumva.sh:/home/node/entrypoint.d/docker-startup.sh
-    hostname: ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    hostname: ${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.pumva.loadbalancer.server.port=3000"
-      - "traefik.http.routers.pumva.rule=Host(`${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.pumva.rule=Host(`${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
 volumes:
   pumva_logs:

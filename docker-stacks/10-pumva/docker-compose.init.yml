@@ -17,14 +17,14 @@ networks:
 
 services:
   pumva-database-initialization:
-    build: ${STACK_HOME}/etc/pumva_initialize
+    build: ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/pumva_initialize
     environment:
       SQL_SCRIPT_FOLDER: /app/sqlite
       SQL_DB_FOLDER: /sql_db
       SQL_DB_FILE: "${SIMVA_PUMVA_SQLITE_DB_FILE:-pumva_data.db}"
     volumes:
       - pumva_sqlite_data:/sql_db
-      - ${STACK_HOME}/etc/pumva_initialize:/app
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/pumva_initialize:/app
     command: ["python", "initialize-pumva.py"]
 
 volumes:
