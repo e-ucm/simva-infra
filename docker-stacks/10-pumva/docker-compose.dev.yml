@@ -11,6 +11,20 @@ x-default-opts:
   #   gelf-address: "udp://127.0.0.1:5000"
 
 services:
+  pumva-front:
+    build: ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}
+    restart: unless-stopped
+    volumes:
+      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/app:/home/node/app/app
+      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/public:/home/node/public
+      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/package.json:/home/node/app/package.json
+      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/package-lock.json:/home/node/app/package-lock.json
+      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/tsconfig.json:/home/node/app/tsconfig.json
+      - next-cache:/home/node/app/.next/cache
+      - turbo-cache:/home/node/app/.turbo
+      - /home/node/app/node_modules
+    ports:
+      - "127.0.0.1:9234:9229"
   pumva:
     build: ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}
     restart: unless-stopped
@@ -24,10 +38,9 @@ services:
       - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/tsconfig.jest.json:/home/node/app/tsconfig.jest.json
       - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/tsconfig.json:/home/node/app/tsconfig.json
       - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/coverage:/home/node/app/coverage
-      - next-cache:/home/node/app/.next/cache
-      - turbo-cache:/home/node/app/.turbo
+      - /home/node/app/node_modules
     ports:
-      - "127.0.0.1:9234:9229"
+      - "127.0.0.1:9235:9229"
 
 volumes:
   next-cache:
