@@ -77,6 +77,15 @@ services:
       SQLLITE_DB_FILE: "${PUMVA_SQLITE_DB:-pumva_data.db}"
       SQLLITE_DB_PATH: "/data/db"
       SQL_FILE_PATH: "pumva_initialize/sqlite"
+      #KEYCLOAK
+      KEYCLOAK_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
+      KEYCLOAK_REALM: "${SIMVA_SSO_REALM:-simva-realm}"
+      KEYCLOAK_CLIENT_ID: "${SIMVA_PUMVA_CLIENT_ID:-pumva}"
+      KEYCLOAK_CLIENT_SECRET: "${SIMVA_PUMVA_CLIENT_SECRET:-secret}"
+      ADMIN_USERNAME: "${SIMVA_ADMINISTRATOR_USER:-admin}"
+      ADMIN_PASSWORD: "${SIMVA_ADMINISTRATOR_PASSWORD:-admin}"
+      TEACHER_USERNAME: "${SIMVA_TEACHER_USER:-teacher}"
+      TEACHER_PASSWORD: "${SIMVA_TEACHER_PASSWORD:-teacher}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/pumva/tls
