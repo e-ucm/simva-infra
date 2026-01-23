@@ -66,7 +66,7 @@ services:
       #DEBUG
       DEBUG: "${SIMVA_DEBUG:-true}"
       #LOG
-      LOG_LEVEL: "debug"
+      LOG_LEVEL: "info"
       LOG_FOLDER: "/home/node/logs"
       #APP FOLDER
       APP_FOLDER: "/home/node/app"

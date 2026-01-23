@@ -8,7 +8,6 @@ cd /home/node/app
 echo "${NODE_ENV}"
 if [[ "${NODE_ENV}" == "development" ]]; then
     npm run dev
-  fi
 else
-  npm start
+    npm start
 fi
