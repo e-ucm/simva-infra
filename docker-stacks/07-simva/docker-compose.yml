@@ -21,7 +21,7 @@ networks:
 services:
   simva-api:
     << : *default-opts
-    command: ['bash', '/home/node/entrypoint.d/docker-startup.sh']
+    command: ['sh', '/home/node/entrypoint.d/docker-startup.sh']
     stdin_open: true
     tty: true
     environment:
@@ -207,7 +207,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/simva/tls
       - simva_front_logs:/home/node/logs:rw
-      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh:ro
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-front.sh:/home/node/entrypoint.d/docker-startup.sh
     depends_on:
       - simva-api
@@ -280,7 +280,7 @@ services:
       - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/simva/tls
       - simva_trace_allocator_logs:/home/node/logs:rw
       - simva_trace_allocator_data:${SIMVA_TRACE_ALLOCATOR_LOCAL_STATE:-/data}
-      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available-with-connection.sh:/bin/wait-available-with-connection.sh:ro
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh:ro
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-trace-allocator.sh:/home/node/entrypoint.d/docker-startup.sh
     depends_on:
       - simva-api

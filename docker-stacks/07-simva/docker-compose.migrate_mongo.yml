@@ -17,7 +17,7 @@ networks:
 
 services:
   mongodb_migration:
-    build: ${STACK_HOME}/etc/migrate
+    build: ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/migrate
     environment:
       MONGO_BACKUP_FOLDER: /export
       SQL_SCRIPT_FOLDER: /app/sqlite
@@ -25,7 +25,7 @@ services:
       SQL_DB_FILE: "${SIMVA_SQLITE_DB_FILE:-simva_data.db}"
     volumes:
       - simva_sqlite_data:/sql_db
-      - ${STACK_HOME}/etc/migrate:/app
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/migrate:/app
       - ${SIMVA_BACKUP_HOME}/simva/simva_mongodb_data/export:/export
     command: ["python", "migrate.py"]
 
