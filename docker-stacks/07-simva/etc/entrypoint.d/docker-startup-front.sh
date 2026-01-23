@@ -2,11 +2,8 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-admin_username=$(echo ${SIMVA_USER} | tr '[:upper:]' '[:lower:]');
-json="{\"username\":\"${admin_username}\",\"password\":\"${SIMVA_PASSWORD}\"}";
-
 set +e
-/bin/wait-available-with-connection.sh 'SIMVA API' "${SIMVA_API_PROTOCOL}://${SIMVA_API_HOST}:${SIMVA_API_PORT}/users/login" ${json} 'token' ${NODE_EXTRA_CA_CERTS};
+/bin/wait-available.sh 'SIMVA API' "${SIMVA_API_PROTOCOL}://${SIMVA_API_HOST}:${SIMVA_API_PORT}/health" true ${NODE_EXTRA_CA_CERTS};
 ret=$?
 set -e
 echo $ret

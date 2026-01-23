@@ -15,6 +15,15 @@ services:
     build: ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}
     restart: unless-stopped
     volumes:
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/src:/home/node/app/src
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/tests:/home/node/app/tests
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/public:/home/node/app/public
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/package.json:/home/node/app/package.json
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/package-lock.json:/home/node/app/package-lock.json
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/jest.config.cjs:/home/node/app/jest.config.cjs
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/tsconfig.jest.json:/home/node/app/tsconfig.jest.json
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/tsconfig.json:/home/node/app/tsconfig.json
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/coverage:/home/node/app/coverage
       - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}:/home/node/app/
       - /home/node/app/node_modules  # Exclude node_modules
     ports:
