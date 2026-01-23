@@ -2,7 +2,8 @@ param(
     [switch]$Stop,
     [switch]$Reload,
     [int]$Memory,
-    [int]$CPU
+    [int]$CPU,
+    [switch]$fixNetwork=$false
 )
 
 # Check the OS
@@ -26,6 +27,13 @@ elseif ($IsMacOS) {
     Write-Host "OS : Unknown"
     Write-Host "Unknown OS detected. Use Bash script (2-run-vagrant-image.sh)."
     exit 1
+}
+
+if($fixNetwork) {
+    Write-Host "fix network : ON"
+    [System.Environment]::SetEnvironmentVariable("FIX_NETWORK_ERROR", "True", "Process")
+} else {
+    Write-Host "fix network : OFF"
 }
 
 function Get-CommandVersion($cmd) {
