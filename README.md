@@ -9,7 +9,7 @@ Applying Game Learning Analytics (GLA) to these games enables the collection, an
 
 Traditionally, educational tools effectiveness is measured through experimental sessions which involve pre- and post-surveys. These surveys are usually conducted on paper or electronically. The issue is that these surveys are ultimately isolated from the learning experience itself.
 
-To conclude, with SGs there is a need to collect data from several resources during the different stages of a session. Also, there is a need to map these data for each user in order to give meaningful insights (user’s pre-survey results, user’s in-game interaction data and user’s post-survey results). Which raises several challenges in user management, data collection and analysis. 
+To conclude, with SGs there is a need to collect data from several resources during the different stages of a session. Also, there is a need to map these data for each participnat in order to give meaningful insights (participnat’s pre-survey results, participnat’s in-game interaction data and participnat’s post-survey results). Which raises several challenges in user management, data collection and analysis. 
 
 Thus, there is a need for a tool that simplifies the assessment with pre and post surveys and enables a comprehensive management of the collected information. ***SIMVA*** tool addresses these challenges by offering integrated solutions. 
 
@@ -19,8 +19,8 @@ The following table shows in detail these challenges and the solutions provided 
 
 | Phase  | Challenge | Solution ***SIMVA*** provides |
 | ------------- | ------------- | ------------- |
-| Before the session  | - The lack of formal validation, or performed outside the game</br> - Managing surveys</br> - Managing users and providing anonymous identifiers to users|- Simplifying & supporting experimental design</br> - LimeSurvey encapsulation</br> - Token generation for users in keycloak|
-| During the session, for example PreSurvey-GamePlay-PostSurvey  | - Collecting and storing surveys data</br> - Collecting and storing interactions traces data</br> -Relating those different data types to each user</br> - Teachers lack control when applying games in classes|- Surveys data is stored in LimeSurvey database</br> - Trace data backup are stored in Minio as xAPI-SG format</br> - Using the same user token during the whole session</br> - Support GLA remotely to conduct  sessions in broader settings|
+| Before the session  | - The lack of formal validation, or performed outside the game</br> - Managing surveys</br> - Managing users and providing anonymous identifiers to participnats|- Simplifying & supporting experimental design</br> - LimeSurvey encapsulation</br> - Token generation for participnats in keycloak|
+| During the session, for example PreSurvey-GamePlay-PostSurvey  | - Collecting and storing surveys data</br> - Collecting and storing interactions traces data</br> -Relating those different data types to each participnat</br> - Teachers lack control when applying games in classes|- Surveys data is stored in LimeSurvey database</br> - Trace data backup are stored in Minio as xAPI-SG format</br> - Using the same participnat token during the whole session</br> - Support GLA remotely to conduct  sessions in broader settings|
 | After the session  | - Access of all data collected from different data sources</br> - Analysis of all data collected from different data sources</br>|- Data can be downloaded from a visual dashboard</br> - TMon:  Default analysis and visualisation web tool for xAPI-SG data</br>|
 
 This repository allows you to launch a complete ***SIMVA*** environment. 
