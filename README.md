@@ -21,7 +21,7 @@ The following table shows in detail these challenges and the solutions provided 
 | ------------- | ------------- | ------------- |
 | Before the session  | - The lack of formal validation, or performed outside the game</br> - Managing surveys</br> - Managing users and providing anonymous identifiers to participants|- Simplifying & supporting experimental design</br> - LimeSurvey encapsulation</br> - Token generation for participants in keycloak|
 | During the session, for example PreSurvey-GamePlay-PostSurvey  | - Collecting and storing surveys data</br> - Collecting and storing interactions traces data</br> -Relating those different data types to each participant</br> - Teachers lack control when applying games in classes|- Surveys data is stored in LimeSurvey database</br> - Trace data backup are stored in Minio as xAPI-SG format</br> - Using the same participant token during the whole session</br> - Support GLA remotely to conduct  sessions in broader settings|
-| After the session  | - Access of all data collected from different data sources</br> - Analysis of all data collected from different data sources</br>|- Data can be downloaded from a visual dashboard</br> - TMon:  Default analysis and visualisation web tool for xAPI-SG data</br>|
+| After the session  | - Access of all data collected from different data sources</br> - Analysis of all data collected from different data sources</br>|- Data can be downloaded from a visual dashboard</br> - Mapping the participant's data from all the resources</br>- TMon:  Default analysis and visualisation web tool for xAPI-SG data</br>|
 
 This repository allows you to launch a complete ***SIMVA*** environment. 
 
