@@ -14,6 +14,8 @@ services:
   simva-api:
     build: ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}
     restart: unless-stopped
+    environment:
+      LOG_LEVEL: "debug"
     volumes:
       - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/src:/home/node/app/src
       - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/tests:/home/node/app/tests
@@ -32,6 +34,8 @@ services:
   simva-front:
     build: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}
     restart: unless-stopped
+    environment:
+      LOG_LEVEL: "debug"
     volumes:
       - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}:/home/node/app/
       - /home/node/app/node_modules  # Exclude node_modules
@@ -41,6 +45,8 @@ services:
   simva-trace-allocator:
     build: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}
     restart: unless-stopped
+    environment:
+      LOG_LEVEL: "debug"
     volumes:
       - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}:/home/node/app/
       - /home/node/app/node_modules  # Exclude node_modules
