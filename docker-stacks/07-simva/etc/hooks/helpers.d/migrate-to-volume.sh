@@ -38,15 +38,6 @@ for folder in "${!folders_volumes[@]}"; do
         directoryMod="${SIMVA_MONGO_DB_DIR_MODE}"
         # Files
         fileMod="${SIMVA_MONGO_DB_FILE_MODE}"
-    elif [[ $volume == "simva_sqlite_data" ]]; then 
-        guid="root"
-        uuid="root"
-        # Top directory
-        topDirectoryMod="${SIMVA_NODE_TOP_DIR_MODE}"
-        # Directories
-        directoryMod="${SIMVA_NODE_DIR_MODE}"
-        # Files
-        fileMod="${SIMVA_NODE_FILE_MODE}"
     else
         # Use Node specific permissions
         guid="${SIMVA_NODE_GUID}"
