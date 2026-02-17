@@ -44,6 +44,7 @@ db:
   database: "${SIMVA_LIMESURVEY_MYSQL_DATABASE}"
   user: "${SIMVA_LIMESURVEY_MYSQL_USER}"
   password: "${SIMVA_LIMESURVEY_MYSQL_PASSWORD}"
+  prefix: "${SIMVA_LIMESURVEY_DB_TABLE_PREFIX}"
 plugins:
   webhooks:
     url: "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/limesurvey-completion-webhooks"
