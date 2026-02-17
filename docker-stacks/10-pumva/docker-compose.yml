@@ -38,6 +38,28 @@ services:
       NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
       NODE_EXTRA_CA_CERTS: "/var/lib/pumva/tls/ca/rootCA.pem"
       NEXT_CACHE_DIR: "/tmp/next-cache"
+      #PUMVA
+      PUMVA_HOST: "${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      PUMVA_API_HOST: "${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      #PUMVA_API
+      VITE_API_BASE: "https://${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/games/user"
+      VITE_API_TOKEN: "${SIMVA_PUMVA_API_TOKEN:-token}"
+      #SSO KEYCLOAK
+      SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
+      SSO_PORT: "443"
+      SSO_ACCOUNT_PATH: "/account"
+      SSO_USER_CAN_SELECT_ROLE: "${SIMVA_SSO_USER_CAN_SELECT_ROLE:-true}"
+      SSO_ADMINISTRATOR_CONTACT: "${SIMVA_SSO_ADMINISTRATOR_CONTACT:-contact@administrator.com}"
+      SSO_STUDENT_ALLOWED_ROLE: "${SIMVA_STUDENT_ALLOWED_ROLE:-true}"
+      SSO_TEACHING_ASSISTANT_ALLOWED_ROLE: "${SIMVA_TEACHING_ASSISTANT_ALLOWED_ROLE:-true}"
+      SSO_TEACHER_ALLOWED_ROLE: "${SIMVA_TEACHER_ALLOWED_ROLE:-true}"
+      SSO_RESEARCHER_ALLOWED_ROLE: "${SIMVA_RESEARCHER_ALLOWED_ROLE:-true}"
+      SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      SSO_CLIENT_ID: "${SIMVA_PUMVA_CLIENT_ID:-pumva}"
+      SSO_CLIENT_SECRET: "${SIMVA_PUMVA_CLIENT_SECRET:-secret}"
+      SSO_SSL_REQUIRED: "external"
+      SSO_PUBLIC_CLIENT: "false"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/pumva/tls
@@ -52,7 +74,7 @@ services:
           - ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.pumva-front.loadbalancer.server.port=3000"
+      - "traefik.http.services.pumva-front.loadbalancer.server.port=5173"
       - "traefik.http.routers.pumva-front.rule=Host(`${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
   
   pumva:
@@ -77,15 +99,31 @@ services:
       SQLLITE_DB_FILE: "${PUMVA_SQLITE_DB:-pumva_data.db}"
       SQLLITE_DB_PATH: "/data/db"
       SQL_FILE_PATH: "pumva_initialize/sqlite"
-      #KEYCLOAK
-      KEYCLOAK_URL: "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
-      KEYCLOAK_REALM: "${SIMVA_SSO_REALM:-simva-realm}"
-      KEYCLOAK_CLIENT_ID: "${SIMVA_PUMVA_CLIENT_ID:-pumva}"
-      KEYCLOAK_CLIENT_SECRET: "${SIMVA_PUMVA_CLIENT_SECRET:-secret}"
+      #KEYCLOAK USERS
       ADMIN_USERNAME: "${SIMVA_ADMINISTRATOR_USER:-admin}"
       ADMIN_PASSWORD: "${SIMVA_ADMINISTRATOR_PASSWORD:-admin}"
       TEACHER_USERNAME: "${SIMVA_TEACHER_USER:-teacher}"
       TEACHER_PASSWORD: "${SIMVA_TEACHER_PASSWORD:-teacher}"
+      #SSO KEYCLOAK
+      SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
+      SSO_PORT: "443"
+      SSO_ACCOUNT_PATH: "/account"
+      SSO_USER_CAN_SELECT_ROLE: "${SIMVA_SSO_USER_CAN_SELECT_ROLE:-true}"
+      SSO_ADMINISTRATOR_CONTACT: "${SIMVA_SSO_ADMINISTRATOR_CONTACT:-contact@administrator.com}"
+      SSO_STUDENT_ALLOWED_ROLE: "${SIMVA_STUDENT_ALLOWED_ROLE:-true}"
+      SSO_TEACHING_ASSISTANT_ALLOWED_ROLE: "${SIMVA_TEACHING_ASSISTANT_ALLOWED_ROLE:-true}"
+      SSO_TEACHER_ALLOWED_ROLE: "${SIMVA_TEACHER_ALLOWED_ROLE:-true}"
+      SSO_RESEARCHER_ALLOWED_ROLE: "${SIMVA_RESEARCHER_ALLOWED_ROLE:-true}"
+      SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      SSO_CLIENT_ID: "${SIMVA_SIMVA_CLIENT_ID:-simva}"
+      SSO_CLIENT_SECRET: "${SIMVA_SIMVA_CLIENT_SECRET:-secret}"
+      SSO_SSL_REQUIRED: "external"
+      SSO_PUBLIC_CLIENT: "false"
+      #SIMVA API
+      PUMVA_HOST: "${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      PUMVA_PORT: "3000"
+      PUMVA_PROTOCOL: "https"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/pumva/tls

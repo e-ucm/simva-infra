@@ -15,13 +15,7 @@ services:
     build: ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}
     restart: unless-stopped
     volumes:
-      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/app:/home/node/app/app
-      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/public:/home/node/public
-      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/package.json:/home/node/app/package.json
-      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/package-lock.json:/home/node/app/package-lock.json
-      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/tsconfig.json:/home/node/app/tsconfig.json
-      - next-cache:/home/node/app/.next/cache
-      - turbo-cache:/home/node/app/.turbo
+      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/:/home/node/app
       - /home/node/app/node_modules
     ports:
       - "127.0.0.1:9234:9229"
