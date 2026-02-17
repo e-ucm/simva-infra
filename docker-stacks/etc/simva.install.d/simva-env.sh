@@ -2,7 +2,7 @@
 ################
 # SIMVA STACKS #
 ################
-export SIMVA_STACKS="00-network 01-traefik 09-logs 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 07-simva 08-tmon"
+export SIMVA_STACKS="00-network 01-traefik 09-logs 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 07-simva 08-tmon 10-pumva"
 
 #############################
 # SIMVA installation folder #
@@ -179,7 +179,7 @@ export SIMVA_LOGS_FILE_MODE="644" #rw-r--r--
 # Extensions and Plugins #
 ##########################
 #Git reference tag version release branch for Keycloak Extensions
-export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.2.0"
+export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.3.0"
 export SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION="0.26"
 
 #Git reference tag version release branch for Kafka Extensions
