@@ -721,6 +721,7 @@ function uninstall() {
         stacks=$@
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+    purgeDanglingContainers ${stacks}
     for stack in ${reverse_stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
@@ -785,7 +786,9 @@ function migrate_db() {
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         echo "Migrate DB ${stack} started"
         execute_before_hooks ${phase} ${stack}
-        backup ${wait_time} ${stack}
+        if [[ -f "${SIMVA_DATA_HOME}/${stack}/.initialized" ]]; then 
+            backup ${wait_time} ${stack}
+        fi  
         STACK_HOME="${SIMVA_HOME}/${stack}"
         start 30 "false" ${stack}
         stop "${wait_time}" ${stack}
@@ -1063,6 +1066,27 @@ function restore() {
     done 
 }
 
+function purgeDanglingContainers() {
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    for stack in ${stacks}; do
+        local stopped_containers
+        stopped_containers="$(docker ps -aq \
+            --filter "name=${stack}-" \
+            --filter status=created \
+            --filter status=exited \
+            --filter status=dead)"
+
+        if [[ -n "${stopped_containers}" ]]; then
+            echo "🧹 Removing stopped containers for stack '${stack}'..."
+            docker rm ${stopped_containers} >/dev/null
+            echo "✅ Stopped containers removed for stack '${stack}'."
+        fi
+    done
+}
+
 # purge data
 function purge() {
     echo "Purge : $@"
@@ -1079,6 +1103,7 @@ function purge() {
         stacks=$@
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+    purgeDanglingContainers ${stacks}
     for stack in ${reverse_stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"

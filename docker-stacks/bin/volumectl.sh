@@ -289,6 +289,19 @@ delete_volume() {
   local volume=$1
 
   if docker volume inspect "$volume" >/dev/null 2>&1; then
+    local stopped_containers=""
+    stopped_containers="$(docker ps -aq \
+      --filter volume="$volume" \
+      --filter status=created \
+      --filter status=exited \
+      --filter status=dead)"
+
+    if [[ -n "$stopped_containers" ]]; then
+      echo "🧹 Removing stopped containers attached to volume '$volume'..."
+      docker rm $stopped_containers >/dev/null
+      echo "✅ Stopped containers removed."
+    fi
+
     echo "📦 Deleting volume '$volume'..."
     docker volume rm "$volume" >/dev/null
     echo "✅ Deletion complete."

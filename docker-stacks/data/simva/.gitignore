@@ -14,4 +14,4 @@ simva-front-sha256sums-new
 simva-trace-allocator-sha256sums
 simva-trace-allocator-sha256sums-new
 sqlite_init
-sqlite_migration_in_progress
+migration_sqlite_in_progress
