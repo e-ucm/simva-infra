@@ -60,7 +60,7 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
             -s supportedLocales="$lang" \
             -s defaultLocale=en
 
-        csp="base-uri 'self'; frame-src 'self'; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN}; object-src 'none';"
+        csp="base-uri 'self'; frame-src 'self'; frame-ancestors 'self' https://${SIMVA_EXTERNAL_DOMAIN} https://${SIMVA_PUMVA_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}; object-src 'none';"
         __update_realm_with_params -s "browserSecurityHeaders.contentSecurityPolicy=$csp"
         
         __keycloak_login
