@@ -2,12 +2,6 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then 
-    if [[ ${SIMVA_SIMVA_DATABASE_CHECK} == "true" ]]; then
-        echo "Database check enabled. Skipping wait for migration. Exiting."
-        exit 0
-    fi
-fi
 if [[ -f "$SIMVA_DATA_HOME/simva/migration_sqlite_in_progress" ]]; then
     set +e
     docker compose wait "mongodb_migration"

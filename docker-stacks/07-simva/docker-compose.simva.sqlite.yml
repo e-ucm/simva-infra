@@ -18,7 +18,6 @@ services:
       #MYSQL DB
       SQLLITE_DB_FILE: "${SIMVA_API_SQLITE_DB:-simva}_data.db"
       SQLLITE_DB_PATH: "/data/db"
-
 volumes:
   simva_sqlite_data:
     external: true
