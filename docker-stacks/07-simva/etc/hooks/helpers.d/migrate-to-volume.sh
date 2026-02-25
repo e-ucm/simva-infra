@@ -20,6 +20,7 @@ declare -A folders_volumes=(
     ["${simva_storage_data}"]="simva_storage_data"
     ["${SIMVA_DATA_HOME}/simva/mongo"]="simva_mongodb_data"
     ["${SIMVA_DATA_HOME}/simva/sqlite"]="simva_sqlite_data"
+    ["${SIMVA_DATA_HOME}/simva/bloom-filter/"]="simva_bloom_filter_data"
 )
 
 for folder in "${!folders_volumes[@]}"; do

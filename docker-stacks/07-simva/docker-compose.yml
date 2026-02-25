@@ -49,6 +49,9 @@ services:
       #KAFKA
       KAFKA_HOST: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       KAFKA_PORT: "9092"
+      KAFKA_CLIENTID: "${SIMVA_KAFKA_CLIENT_ID:-simva_api}"
+      KAFKA_GROUPID: "${SIMVA_KAFKA_GROUP_ID:-simva_api}"
+      KAFKA_SIMVA_EVENTS_TOPIC: "${SIMVA_SIMVA_EVENTS_TOPIC:-simva_events_topic}"
       #MINIO
       MINIO_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
       MINIO_API_URL: "${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
@@ -103,6 +106,9 @@ services:
       LTI_PLATFORM_SIGNING_KEY: "${SIMVA_LTI_PLATFORM_CLIENT_SECRET:-secret}"
       #STORAGE
       SIMVA_STORAGE_PATH: "/storage/"
+      #BLOOM FILTER
+      BLOOM_FILTER_BACKUP_PATH: "${SIMVA_BLOOM_FILTER_BACKUP_PATH:-/home/node/bloom-filter}"
+      BLOOM_FILTER_BACKUP_FILE: "${SIMVA_BLOOM_FILTER_BACKUP_FILE:-bloom-filter-backup.json}"
       #SHLINK
       SHLINK_SERVER_HOST: ${SIMVA_SHLINK_EXTERNAL_DOMAIN:-shlink.external.test}
       SHLINK_PORT: ${SIMVA_SHLINK_PORT:-443}
@@ -112,6 +118,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/simva/tls
       - simva_storage_data:/storage
+      - simva_bloom_filter_data:/home/node/bloom-filter
       - simva_api_logs:/root/.npm/_logs/
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-api.sh:/home/node/entrypoint.d/docker-startup.sh
@@ -304,4 +311,6 @@ volumes:
   simva_api_logs:
     external: true
   simva_front_logs:
+    external: true
+  simva_bloom_filter_data:
     external: true
