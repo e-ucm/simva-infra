@@ -5,7 +5,10 @@ set -euo pipefail
 RUNCHECKOUTCODE=false
 RUNBUILDCODE=false
 CHECKLOCALDEPLOYMENT=false
-
+if [[ -f "$SIMVA_DATA_HOME/pumva/sqlite_initialisation_in_progress" ]]; then
+    echo "Initialisation of the data in progress. Pass the execution."
+    exit 0
+fi
 if [[ ! -e "${SIMVA_DATA_HOME}/pumva/.initialized" ]]; then
     echo "PUMVA is not initialized, initializing checkout code."
     RUNCHECKOUTCODE=true
