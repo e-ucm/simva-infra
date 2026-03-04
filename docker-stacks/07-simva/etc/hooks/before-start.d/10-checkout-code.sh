@@ -5,6 +5,10 @@ set -euo pipefail
 RUNCHECKOUTCODE=false
 RUNBUILDCODE=false
 CHECKLOCALDEPLOYMENT=false
+if [[ -f "$SIMVA_DATA_HOME/simva/migration_sqlite_in_progress" ]]; then
+    echo "Migration of the data in progress. Pass the execution."
+    exit 0
+fi
 if [[ ! -e "${SIMVA_DATA_HOME}/simva/.initialized" ]]; then
     echo "SIMVA it is not initialized, initializing checkout code."
     RUNCHECKOUTCODE=true
@@ -62,9 +66,6 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
 
     SIMVA_TRACE_ALLOCATOR_GIT_REPO_URL=https://github.com/e-ucm/simva-trace-allocator.git
     SIMVA_TRACE_ALLOCATOR_GIT_REF=${SIMVA_TRACE_ALLOCATOR_GIT_REF:-master}
-
-    SIMVA_PUMVA_GIT_REPO_URL=https://github.com/e-ucm/pumva.git
-    SIMVA_PUMVA_GIT_REF=${SIMVA_PUMVA_GIT_REF:-master}
     ###########################################################
     ######################### BACKEND #########################
     ###########################################################
@@ -125,26 +126,6 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     fi
     rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/simva/simva-trace-allocator/ > /dev/null 2>&1
     chmod -R ${SIMVA_NODE_DIR_MODE} ${SIMVA_DATA_HOME}/simva
-
-    ###################################################################
-    ############################# PUMVA ###############################
-    ###################################################################
-    # Create source folder
-    mkdir -p ${SIMVA_DATA_HOME}/pumva
-
-    # Checkout code in temp dir
-    tmp_dir=$(mktemp -d)
-    git clone --depth 1 --branch ${SIMVA_PUMVA_GIT_REF} ${SIMVA_PUMVA_GIT_REPO_URL} ${tmp_dir} > /dev/null  2>&1;
-    set +e
-    _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/pumva/pumva-sha256sums" "Dockerfile package.json package-lock.json"
-    ret=$?
-    set -e
-    echo $ret
-    if [[ $ret != 0 ]]; then
-        RUNBUILDCODE=true
-    fi
-    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/pumva/ > /dev/null 2>&1
-    chmod -R ${SIMVA_NODE_DIR_MODE} ${SIMVA_DATA_HOME}/pumva
 fi
 if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     ###########################################################
@@ -184,20 +165,6 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     echo $ret
     if [[ $ret != 0 ]]; then
         rm -rf ${SIMVA_TRACE_ALLOCATOR_GIT_REPO}/node_modules
-        RUNBUILDCODE=true
-    fi
-
-    ###################################################################
-    ############################# PUMVA ############################### 
-    ###################################################################
-    echo "PUMVA"
-    set +e
-    _check_checksum ${SIMVA_PUMVA_GIT_REPO} "${SIMVA_DATA_HOME}/pumva/pumva-sha256sums" "Dockerfile package.json package-lock.json"
-    ret=$?
-    set -e
-    echo $ret
-    if [[ $ret != 0 ]]; then
-        rm -rf ${SIMVA_PUMVA_GIT_REPO}/node_modules
         RUNBUILDCODE=true
     fi
 fi

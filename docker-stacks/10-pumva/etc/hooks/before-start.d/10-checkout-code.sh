@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
+
+RUNCHECKOUTCODE=false
+RUNBUILDCODE=false
+CHECKLOCALDEPLOYMENT=false
+
+if [[ ! -e "${SIMVA_DATA_HOME}/pumva/.initialized" ]]; then
+    echo "PUMVA is not initialized, initializing checkout code."
+    RUNCHECKOUTCODE=true
+fi
+if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then
+    if [[ $SIMVA_DEVELOPMENT_LOCAL = "true" ]]; then
+        echo "PUMVA is in local development environment, no checkout as code is local."
+        RUNCHECKOUTCODE=false
+        CHECKLOCALDEPLOYMENT=true
+    else 
+        echo "PUMVA is in development environment, launch checkout code."
+        RUNCHECKOUTCODE=true
+    fi
+fi
+
+source ${SIMVA_BIN_HOME}/check-checksum.sh;
+
+if [[ ${RUNCHECKOUTCODE} = true ]] ; then
+    SIMVA_PUMVA_GIT_REPO_URL=https://github.com/e-ucm/pumva.git
+    SIMVA_PUMVA_GIT_REF=${SIMVA_PUMVA_GIT_REF:-master}
+
+    SIMVA_PUMVA_FRONT_GIT_REPO_URL=https://github.com/e-ucm/pumva-front.git
+    SIMVA_PUMVA_FRONT_GIT_REF=${SIMVA_PUMVA_FRONT_GIT_REF:-master}
+
+    ###################################################################
+    ############################# PUMVA ###############################
+    ###################################################################
+    # Create source folder
+    mkdir -p ${SIMVA_DATA_HOME}/pumva/pumva-api
+
+    # Checkout code in temp dir
+    tmp_dir=$(mktemp -d)
+    git clone --depth 1 --branch ${SIMVA_PUMVA_GIT_REF} ${SIMVA_PUMVA_GIT_REPO_URL} ${tmp_dir} > /dev/null  2>&1;
+    set +e
+    _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/pumva/pumva-api-sha256sums" "Dockerfile package.json package-lock.json"
+    ret=$?
+    set -e
+    echo $ret
+    if [[ $ret != 0 ]]; then
+        RUNBUILDCODE=true
+    fi
+    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/pumva/pumva-api/ > /dev/null 2>&1
+    chmod -R ${SIMVA_NODE_DIR_MODE} ${SIMVA_DATA_HOME}/pumva/pumva-api
+
+    ###################################################################
+    ########################### PUMVA FRONT ###########################
+    ###################################################################
+    # Create source folder
+    mkdir -p ${SIMVA_DATA_HOME}/pumva/pumva-front
+
+    # Checkout code in temp dir
+    tmp_dir=$(mktemp -d)
+    git clone --depth 1 --branch ${SIMVA_PUMVA_FRONT_GIT_REF} ${SIMVA_PUMVA_FRONT_GIT_REPO_URL} ${tmp_dir} > /dev/null  2>&1;
+    set +e
+    _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/pumva/pumva-front-sha256sums" "Dockerfile package.json package-lock.json"
+    ret=$?
+    set -e
+    echo $ret
+    if [[ $ret != 0 ]]; then
+        RUNBUILDCODE=true
+    fi
+    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/pumva/pumva-front/ > /dev/null 2>&1
+    chmod -R ${SIMVA_NODE_DIR_MODE} ${SIMVA_DATA_HOME}/pumva/pumva-front
+fi
+
+if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
+    ###################################################################
+    ############################# PUMVA ############################### 
+    ###################################################################
+    echo "PUMVA"
+    set +e
+    _check_checksum ${SIMVA_PUMVA_GIT_REPO} "${SIMVA_DATA_HOME}/pumva/pumva-api-sha256sums" "Dockerfile package.json package-lock.json"
+    ret=$?
+    set -e
+    echo $ret
+    if [[ $ret != 0 ]]; then
+        rm -rf ${SIMVA_PUMVA_GIT_REPO}/node_modules
+        RUNBUILDCODE=true
+    fi
+
+    ###################################################################
+    ########################### PUMVA FRONT ###########################
+    ###################################################################
+    echo "PUMVA FRONT"
+    set +e
+    _check_checksum ${SIMVA_PUMVA_FRONT_GIT_REPO} "${SIMVA_DATA_HOME}/pumva/pumva-front-sha256sums" "Dockerfile package.json package-lock.json"
+    ret=$?
+    set -e
+    echo $ret
+    if [[ $ret != 0 ]]; then
+        rm -rf ${SIMVA_PUMVA_FRONT_GIT_REPO}/node_modules
+        RUNBUILDCODE=true
+    fi
+fi
+
+if [[ ${RUNBUILDCODE} = true ]] ; then
+    exec ${SIMVA_HOME}/simva build ./10-pumva
+fi
