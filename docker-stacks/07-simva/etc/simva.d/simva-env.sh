@@ -3,6 +3,7 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 export SIMVA_LIMESURVEY_VERSION_NUMBER=${SIMVA_LIMESURVEY_VERSION%.*}
+export SIMVA_LIMESURVEY_USE_NEW_VERSION=$([[ ${SIMVA_LIMESURVEY_VERSION_NUMBER} -gt 5 ]] && echo "true" || echo "false")
 if [[ -f "$SIMVA_DATA_HOME/simva/migration_sqlite_in_progress" ]]; then
     export COMPOSE_FILE="docker-compose.migrate_mongo.yml:docker-compose.mongo.yml"
     if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then

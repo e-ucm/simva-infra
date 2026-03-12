@@ -74,6 +74,8 @@ export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/docker-lim
 base_for_tmon_repos="${SIMVA_DATA_HOME}/tmon"
 [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_tmon_repos="${SIMVA_HOME}/../.."
 export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"
+export SIMVA_KEYCLOAK_EXTENSIONS_LOCAL_PATH="${SIMVA_HOME}/../../keycloak-extensions"
+export SIMVA_KAFKA_EXTENSIONS_LOCAL_PATH="${SIMVA_HOME}/../../kafka-extensions"
 
 ###########################
 # SIMVA Load Balancer IPs #
