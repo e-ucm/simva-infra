@@ -76,6 +76,7 @@ base_for_tmon_repos="${SIMVA_DATA_HOME}/tmon"
 export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"
 export SIMVA_KEYCLOAK_EXTENSIONS_LOCAL_PATH="${SIMVA_HOME}/../../keycloak-extensions"
 export SIMVA_KAFKA_EXTENSIONS_LOCAL_PATH="${SIMVA_HOME}/../../kafka-extensions"
+export SIMVA_LIMESURVEY_PLUGINS_LOCAL_PATH="${SIMVA_HOME}/../.."
 
 ###########################
 # SIMVA Load Balancer IPs #
