@@ -1225,8 +1225,8 @@ function start() {
         export CURRENT_STACK="${stack}"
         export STACK_NAME="${stack##*-}"
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
+        previous_max_retries=$SIMVA_MAX_RETRIES;
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
-            previous_max_retries=$SIMVA_MAX_RETRIES;
             previous_simva_wait_time=$SIMVA_WAIT_TIME;
             export SIMVA_MAX_RETRIES=$(($previous_max_retries*2));
             export SIMVA_WAIT_TIME=$(($previous_simva_wait_time*2));
