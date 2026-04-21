@@ -9,19 +9,57 @@ param(
 # Check the OS
 Write-Host "Checking OS..."
 
-if ($IsWindows) {
+# Improved OS detection for PowerShell Core and Windows PowerShell
+if ($PSVersionTable.PSEdition -eq 'Desktop' -or $env:OS -eq 'Windows_NT') {
     Write-Host "OS : Windows"
     Write-Host "Windows detected."
+
+    # --- Ensure VBoxManage and Vagrant are in PATH ---
+    function Add-ToPathIfExists($dir) {
+        if (Test-Path $dir) {
+            if (-not ($env:PATH -split ';' | Where-Object { $_ -eq $dir })) {
+                $env:PATH = "$dir;" + $env:PATH
+                Write-Host "Added to PATH: $dir"
+            }
+        }
+    }
+
+    # Common install locations
+    $vboxDirs = @(
+        "$env:ProgramFiles\Oracle\VirtualBox",
+        "$env:ProgramFiles(x86)\Oracle\VirtualBox"
+    )
+    $vagrantDirs = @(
+        "$env:ProgramFiles\Vagrant\bin",
+        "$env:ProgramFiles(x86)\Vagrant\bin"
+    )
+
+    $foundVBox = $false
+    foreach ($dir in $vboxDirs) {
+        if (Test-Path (Join-Path $dir 'VBoxManage.exe')) {
+            Add-ToPathIfExists $dir
+            $foundVBox = $true
+            break
+        }
+    }
+
+    $foundVagrant = $false
+    foreach ($dir in $vagrantDirs) {
+        if (Test-Path (Join-Path $dir 'vagrant.exe')) {
+            Add-ToPathIfExists $dir
+            $foundVagrant = $true
+            break
+        }
+    }
 }
-elseif ($IsLinux) {
+elseif ($PSVersionTable.Platform -eq 'Unix' -or $env:OSTYPE -like '*linux*') {
     Write-Host "OS : Linux"
     Write-Host "Linux detected. Use Bash script (2-run-vagrant-image.sh)."
     exit 1
 }
-elseif ($IsMacOS) {
+elseif ($PSVersionTable.Platform -eq 'Unix' -or $env:OSTYPE -like '*darwin*') {
     Write-Host "OS : MacOS"
-    Write-Host "MacOS detected."
-    Write-Host "Linux detected. Use Bash script (2-run-vagrant-image.sh)."
+    Write-Host "MacOS detected. Use Bash script (2-run-vagrant-image.sh)."
     exit 1
 } else {
     Write-Host "OS : Unknown"
