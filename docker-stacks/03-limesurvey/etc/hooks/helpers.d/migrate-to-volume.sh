@@ -95,15 +95,6 @@ fi
     ls -lia /ls_upload
   "
 
-if [[ -d "${SIMVA_CONFIG_HOME}/limesurvey/etc" ]]; then
-  if [[ -f "${SIMVA_CONFIG_HOME}/limesurvey/etc/config.php" ]]; then
-    "${SIMVA_BIN_HOME}/volumectl.sh" copylv "${SIMVA_CONFIG_HOME}/limesurvey/etc" "ls_etc" "config.php" "config.php" false
-  fi
-  if [[ -f "${SIMVA_CONFIG_HOME}/limesurvey/etc/security.php" ]]; then
-    "${SIMVA_BIN_HOME}/volumectl.sh" copylv "${SIMVA_CONFIG_HOME}/limesurvey/etc" "ls_etc" "security.php" "security.php" false
-  fi
-fi
-
 "${SIMVA_BIN_HOME}/volumectl.sh" exec "ls_etc" "/ls_etc" "
     # Set ownership recursively
     chown -R ${SIMVA_LIMESURVEY_GUID}:${SIMVA_LIMESURVEY_UUID} /ls_etc;

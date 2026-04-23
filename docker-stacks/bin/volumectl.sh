@@ -12,6 +12,7 @@ usage() {
   echo "  $0 copylv <local_dir> <volume> <local_file> <volume_file> <volume_dest> [extract]"
   echo "  $0 copyvv <volume> <new_volume>"
   echo "  $0 exec <volume> <volume_local_path> <command to execute>"
+  echo "  $0 execcheck <volume> <volume_local_path> <command to execute>"
   echo "  $0 delete <volume>"
   exit 1
 }
@@ -246,6 +247,23 @@ copy_volume() {
   echo "✅ Data copy complete."
 }
 
+# --- Execute a command in a volume, preserving the real exit code (no output capture) ---
+exec_check_volume() {
+  local volume=$1
+  local volume_local_path=$2
+  shift 2
+  local command="$@"
+
+  if ! docker volume inspect "$volume" >/dev/null 2>&1; then
+    echo "❌  Volume '$volume' not exist. Skipping." >&2
+    exit 0
+  fi
+
+  docker run --rm \
+    -v "$volume":"$volume_local_path" \
+    alpine sh -c "$command"
+}
+
 # --- Execute a command in a volume and return its value ---
 exec_command_volume() {
   local volume=$1
@@ -325,5 +343,6 @@ case "$cmd" in
   copyvl)  [ $# -lt 4 ] && usage; copy_data_from_volume_to_local "$@" ;;
   copylv)  [ $# -lt 4 ] && usage; copy_data_from_local_to_volume "$@" ;;
   exec)  [ $# -lt 3 ] && usage; exec_command_volume "$@" ;;
+  execcheck)  [ $# -lt 3 ] && usage; exec_check_volume "$@" ;;
   *) usage ;;
 esac

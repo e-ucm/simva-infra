@@ -17,7 +17,11 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
     DB_NAME=$SIMVA_LIMESURVEY_MYSQL_DATABASE
     DB_USER=$SIMVA_LIMESURVEY_MYSQL_USER
     DB_PASSWORD=$SIMVA_LIMESURVEY_MYSQL_PASSWORD
-    
+    if [[ ${SIMVA_LIMESURVEY_DB_TABLE_PREFIX} == " " ]]; then
+        PLUGIN_TABLE_NAME="plugins"
+    else
+        PLUGIN_TABLE_NAME="${SIMVA_LIMESURVEY_DB_TABLE_PREFIX}plugins"
+    fi
     if [[ ${SIMVA_LIMESURVEY_VERSION%.*} > 5 ]]; then
         declare -A plugins=(["LimeSurveyWebhook"]=${SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION} ["AuthOAuth2"]=${SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION} ["LimeSurveyXAPITracker"]=${SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION});
         for key in "${!plugins[@]}"; do
@@ -26,12 +30,12 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
             echo "Inserting plugin $ext_name into the plugins table..."
             plugin=$("${SIMVA_BIN_HOME}/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
                 USE $DB_NAME;
-                SELECT id FROM \`plugins\` WHERE name='$ext_name' AND active=1 and version='$ext_version';");
+                SELECT id FROM \`$PLUGIN_TABLE_NAME\` WHERE name='$ext_name' AND active=1 and version='$ext_version';");
             echo $plugin;
             if [[ ! $plugin == *"id"* ]]; then 
                 "${SIMVA_BIN_HOME}/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
                 USE $DB_NAME;
-                INSERT INTO \`plugins\` (name, plugin_type, active, priority, version)
+                INSERT INTO \`$PLUGIN_TABLE_NAME\` (name, plugin_type, active, priority, version)
                 VALUES ('$ext_name', 'user', 1, 0, '$ext_version');
                 "
                 echo "Plugin $ext_name has been installed and its settings have been added!"
@@ -42,12 +46,12 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
         #Desactivate AuthSAML
         plugin=$("${SIMVA_BIN_HOME}/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
                 USE $DB_NAME;
-                SELECT id FROM \`plugins\` WHERE name='AuthSAML' AND active=1;");
+                SELECT id FROM \`$PLUGIN_TABLE_NAME\` WHERE name='AuthSAML' AND active=1;");
         echo $plugin;
         if [[ $plugin == *"id"* ]]; then 
             "${SIMVA_BIN_HOME}/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
                 USE $DB_NAME;
-                UPDATE \`plugins\`
+                UPDATE \`$PLUGIN_TABLE_NAME\`
                 SET active = 0
                 WHERE name = 'AuthSAML';    
             "
@@ -56,3 +60,4 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
         fi
     fi
 fi
+"${SIMVA_BIN_HOME}/run-command.sh" rm -rf /var/www/html/tmp/runtime/cache/*
