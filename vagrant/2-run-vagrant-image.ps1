@@ -79,6 +79,16 @@ function Get-CommandVersion($cmd) {
     if ($LASTEXITCODE -eq 0) { return $result.Trim() }
     return $null
 }
+
+function Get-FreePhysicalRamGb {
+    try {
+        $osInfo = Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction Stop
+        $freeBytes = [double]$osInfo.FreePhysicalMemory * 1KB
+        return [math]::Round($freeBytes / 1GB, 2)
+    } catch {
+        return $null
+    }
+}
 $VBoxVersion = Get-CommandVersion "VBoxManage"
 $VagrantVersion = Get-CommandVersion "vagrant"
 
@@ -138,20 +148,8 @@ foreach ($plugin in $requiredPlugins) {
     }
 }
 
-# --- Auto-detect VM name from Vagrantfile ---
-try {
-    $vagrantfile = Get-Content -Path "./Vagrantfile" -Raw
-    if ($vagrantfile -match 'vb\.name\s*=\s*["''](.+?)["'']') {
-        $VmName = $Matches[1]
-        Write-Host "Detected VM name: $VmName"
-    } else {
-        $VmName = "default"
-        Write-Host "No VM name defined in Vagrantfile. Using default: $VmName"
-    }
-} catch {
-    Write-Host "Error reading Vagrantfile. Using default VM name."
-    $VmName = "default"
-}
+$VmName = "SIMVA-INFRA-VAGRANT"
+[System.Environment]::SetEnvironmentVariable("VBOX_NAME", $VmName, "Process")
 
 # Start VM
 $status = vagrant status --machine-readable | ForEach-Object {
@@ -161,7 +159,7 @@ Write-Host $status;
 if($Stop) {
     if($status -eq "running") {
         Write-Host "Stopping VM '$VmName'..."
-        vagrant halt
+        vagrant halt $VmName
         ./helpers/install-rootCA.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem" -Remove
         Write-Host "VM stopped."
     } else {
@@ -170,23 +168,35 @@ if($Stop) {
     exit 0
 } else {
     if(!$Memory) {
-        $Memory=4096
+        $Memory=4
     }
-    [System.Environment]::SetEnvironmentVariable("VBOX_MEMORY", $Memory, "Process")
+
+    $freeRamGb = Get-FreePhysicalRamGb
+    if ($null -eq $freeRamGb) {
+        Write-Warning "Could not determine free host RAM. Skipping RAM availability check."
+    } elseif ($Memory -gt $freeRamGb) {
+        Write-Error "Not enough free RAM on host. Requested ${Memory}GB, available ${freeRamGb}GB."
+        exit 1
+    } else {
+        Write-Host "Host free RAM check passed: requested ${Memory}GB, available ${freeRamGb}GB"
+    }
+
+    $memoryMb = $Memory * 1024
+    [System.Environment]::SetEnvironmentVariable("VBOX_MEMORY", $memoryMb, "Process")
     if(!$CPU) {
-        $CPU=8
+        $CPU=3
     }
     [System.Environment]::SetEnvironmentVariable("VBOX_CPU", $CPU, "Process")
-    Write-Host "Setting VM resources: Memory=${Memory}MB, CPU=${CPU} cores"
+    Write-Host "Setting VM resources: Memory=${Memory}GB (${memoryMb}MB), CPU=${CPU} cores"
     ./helpers/build_hostname.ps1
     ./helpers/adapter_ip.ps1
     ./helpers/set_to_local_dev.ps1
     if($Reload) {
         Write-Host "Reloading VM '$VmName'..."
         if ($status -eq "running") {
-            vagrant reload
+            vagrant reload $VmName
         } else {
-            vagrant up --provider virtualbox
+            vagrant up $VmName --provider virtualbox
         }
         Write-Host "VM Reloaded."
     } else {
@@ -196,12 +206,12 @@ if($Stop) {
             Write-Host "VM provisioned."
         } else {
             Write-Host "Starting VM '$VmName'..."
-            vagrant up --provider virtualbox
+            vagrant up $VmName --provider virtualbox
             Write-Host "VM started."
         }
     }
 }
 ./helpers/install-rootCA.ps1 -certPath "../docker-stacks/config/tls/ca/rootCA.pem"
 # SSH into VM
-vagrant ssh
+vagrant ssh $VmName
 exit 0
