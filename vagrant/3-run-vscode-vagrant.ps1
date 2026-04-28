@@ -1,17 +1,5 @@
-# --- Auto-detect VM name from Vagrantfile ---
-try {
-    $vagrantfile = Get-Content -Path "./Vagrantfile" -Raw
-    if ($vagrantfile -match 'vb\.name\s*=\s*["''](.+?)["'']') {
-        $VmName = $Matches[1]
-        Write-Host "Detected VM name: $VmName"
-    } else {
-        $VmName = "default"
-        Write-Host "No VM name defined in Vagrantfile. Using default: $VmName"
-    }
-} catch {
-    Write-Host "Error reading Vagrantfile. Using default VM name."
-    $VmName = "default"
-}
+$VmName = "SIMVA-INFRA-VAGRANT"
+[System.Environment]::SetEnvironmentVariable("VBOX_NAME", $VmName, "Process")
 
 # SSH CONFIG for  VM
 # Path to your SSH config (for VS Code Remote-SSH)

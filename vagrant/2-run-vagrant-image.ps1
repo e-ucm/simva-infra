@@ -150,6 +150,14 @@ foreach ($plugin in $requiredPlugins) {
 
 $VmName = "SIMVA-INFRA-VAGRANT"
 [System.Environment]::SetEnvironmentVariable("VBOX_NAME", $VmName, "Process")
+if(Test-Path -Path "./.vagrant/default" -PathType Container) {
+    Copy-Item -Path "./.vagrant/default" -Destination "./.vagrant/default_backup" -Force
+    Move-Item -Path "./.vagrant/default" -Destination "./.vagrant/$VmName" -Force
+    Write-Host "Renamed .vagrant/default to .vagrant/$VmName"
+} else {
+    Write-Host "No existing .vagrant/default directory found. Skipping rename."
+}
+
 
 # Start VM
 $status = vagrant status --machine-readable | ForEach-Object {
