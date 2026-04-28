@@ -115,6 +115,9 @@ services:
       SHLINK_PORT: ${SIMVA_SHLINK_PORT:-443}
       SHLINK_PROTOCOL: ${SIMVA_SHLINK_EXTERNAL_PROTOCOL:-https}
       SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
+      LRS_ENDPOINT: "https://${SIMVA_LRS_HOST_SUBDOMAIN:-lrs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
+      LRS_API_KEY: "${SIMVA_LRS_API_KEY_DEFAULT:-my_api_key}"
+      LRS_API_SECRET: "${SIMVA_LRS_API_SECRET_DEFAULT:-my_api_secret}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/simva/tls
