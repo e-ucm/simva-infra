@@ -89,6 +89,15 @@ function Get-FreePhysicalRamGb {
         return $null
     }
 }
+
+function Get-LogicalCpuCount {
+    try {
+        $cpuInfo = Get-CimInstance -ClassName Win32_Processor -ErrorAction Stop
+        return ($cpuInfo | Measure-Object -Property NumberOfLogicalProcessors -Sum).Sum
+    } catch {
+        return $null
+    }
+}
 $VBoxVersion = Get-CommandVersion "VBoxManage"
 $VagrantVersion = Get-CommandVersion "vagrant"
 
@@ -179,21 +188,41 @@ if($Stop) {
         $Memory=4
     }
 
+    if(!$CPU) {
+        $CPU=3
+    }
+
+    $reservedRamGb = 2
     $freeRamGb = Get-FreePhysicalRamGb
+    $allowedRamGb = if ($null -ne $freeRamGb) { [math]::Max(0, [math]::Floor($freeRamGb - $reservedRamGb)) } else { $null }
+
     if ($null -eq $freeRamGb) {
         Write-Warning "Could not determine free host RAM. Skipping RAM availability check."
-    } elseif ($Memory -gt $freeRamGb) {
-        Write-Error "Not enough free RAM on host. Requested ${Memory}GB, available ${freeRamGb}GB."
+    } elseif ($allowedRamGb -lt 1) {
+        Write-Error "Not enough free RAM on host after reserving ${reservedRamGb}GB for the OS. Free RAM: ${freeRamGb}GB."
+        exit 1
+    } elseif ($Memory -gt $allowedRamGb) {
+        Write-Error "Not enough free RAM on host with OS headroom reserved. Requested ${Memory}GB, free ${freeRamGb}GB, allowed ${allowedRamGb}GB after reserving ${reservedRamGb}GB for the OS."
         exit 1
     } else {
-        Write-Host "Host free RAM check passed: requested ${Memory}GB, available ${freeRamGb}GB"
+        Write-Host "Host RAM check passed: requested ${Memory}GB, free ${freeRamGb}GB, reserving ${reservedRamGb}GB for OS, allowed ${allowedRamGb}GB"
+    }
+
+    $logicalCpuCount = Get-LogicalCpuCount
+    $reservedCpu = if ($null -ne $logicalCpuCount -and $logicalCpuCount -ge 4) { 2 } else { 1 }
+    $allowedCpu = if ($null -ne $logicalCpuCount) { [math]::Max(1, $logicalCpuCount - $reservedCpu) } else { $null }
+
+    if ($null -eq $logicalCpuCount) {
+        Write-Warning "Could not determine host logical CPU count. Skipping CPU availability check."
+    } elseif ($CPU -gt $allowedCpu) {
+        Write-Error "Not enough CPU headroom on host. Requested ${CPU} vCPUs, host has ${logicalCpuCount} logical CPUs, allowed ${allowedCpu} after reserving ${reservedCpu} for the OS."
+        exit 1
+    } else {
+        Write-Host "Host CPU check passed: requested ${CPU} vCPUs, host has ${logicalCpuCount} logical CPUs, reserving ${reservedCpu} for OS, allowed ${allowedCpu}"
     }
 
     $memoryMb = $Memory * 1024
     [System.Environment]::SetEnvironmentVariable("VBOX_MEMORY", $memoryMb, "Process")
-    if(!$CPU) {
-        $CPU=3
-    }
     [System.Environment]::SetEnvironmentVariable("VBOX_CPU", $CPU, "Process")
     Write-Host "Setting VM resources: Memory=${Memory}GB (${memoryMb}MB), CPU=${CPU} cores"
     ./helpers/build_hostname.ps1
