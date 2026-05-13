@@ -51,8 +51,15 @@ if (JSTRACKER_LOCAL_DEPLOYMENT) {
             });
 
             console.log('[Setup] Installing local js-tracker into simva-api...');
+            // Pack first to force a real copy into node_modules (not a symlink to tempBuildDir).
+            const tarballName = execSync('npm pack --silent', {
+                cwd: tempBuildDir,
+                stdio: ['ignore', 'pipe', 'inherit']
+            }).toString().trim();
+            const tarballPath = path.join(tempBuildDir, tarballName);
+
             // Install only into node_modules without mutating app manifests.
-            execSync(`npm install --no-save --no-package-lock file:${tempBuildDir}`, {
+            execSync(`npm install --no-save --no-package-lock file:${tarballPath}`, {
                 cwd: appDir,
                 stdio: 'inherit'
             });
