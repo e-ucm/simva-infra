@@ -194,7 +194,7 @@ export SIMVA_CONFLUENCE_CONNECT_S3_VERSION="11.0.1"
 #Git reference tag version release branch for Limesurvey Plugins
 export SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION="1.5.0"
 export SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION="1.1.0"
-export SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION="1.0.0"
+export SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION="1.0.1"
 
 #################################
 # OS and Architecture detection #
