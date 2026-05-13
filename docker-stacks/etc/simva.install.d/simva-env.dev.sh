@@ -77,6 +77,7 @@ export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"
 export SIMVA_KEYCLOAK_EXTENSIONS_LOCAL_PATH="${SIMVA_HOME}/../../keycloak-extensions"
 export SIMVA_KAFKA_EXTENSIONS_LOCAL_PATH="${SIMVA_HOME}/../../kafka-extensions"
 export SIMVA_LIMESURVEY_PLUGINS_LOCAL_PATH="${SIMVA_HOME}/../.."
+export SIMVA_JSTRACKER_LIBRARY_LOCAL_PATH="${SIMVA_HOME}/../../js-tracker"
 
 ###########################
 # SIMVA Load Balancer IPs #

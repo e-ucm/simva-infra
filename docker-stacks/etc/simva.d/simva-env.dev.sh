@@ -55,6 +55,7 @@ export SIMVA_TMON_ANACONDA_GIT_REF="master-jupyter-notebook"
 export SIMVA_KEYCLOAK_EXTENSION_LOCAL_DEPLOYMENT=false
 export SIMVA_KAFKA_EXTENSION_LOCAL_DEPLOYMENT=false
 export SIMVA_LIMESURVEY_PLUGIN_LOCAL_DEPLOYMENT=false
+export SIMVA_JSTRACKER_LIBRARY_LOCAL_DEPLOYMENT=false
 
 ################################################
 # Database migration check for SIMVA and PUMVA #
