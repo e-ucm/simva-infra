@@ -25,6 +25,9 @@ function __keycloak_login() {
     admin_user_file="$SIMVA_DATA_HOME/keycloak/.master_admin_user_created"
     echo "--- Checking Keycloak admin user status ---"
 
+    # Always use lowercase for admin username
+    admin_user_lc="${SIMVA_KEYCLOAK_ADMIN_USER,,}"
+
     if [[ -f "$admin_user_file" ]]; then
         echo "Admin user already persisted previously."
     else
@@ -40,13 +43,13 @@ function __keycloak_login() {
             set +e
             "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config credentials \
                 --server "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" \
-                --realm "master" --user "${SIMVA_KEYCLOAK_ADMIN_USER}" \
+                --realm "master" --user "$admin_user_lc" \
                 --password "${SIMVA_KEYCLOAK_ADMIN_PASSWORD}"
             ret=$?
             set -e
             echo $ret
             if [[ $ret != 0 ]]; then
-                echo "Either temp admin '${SIMVA_KEYCLOAK_TMP_ADMIN_USER}' user and admin '${SIMVA_KEYCLOAK_ADMIN_USER}' user can't connect to Keycloak with the current password '${SIMVA_KEYCLOAK_ADMIN_PASSWORD}'."
+                echo "Either temp admin '${SIMVA_KEYCLOAK_TMP_ADMIN_USER}' user and admin '$admin_user_lc' user can't connect to Keycloak with the current password '${SIMVA_KEYCLOAK_ADMIN_PASSWORD}'."
                 echo "Please update your simva-env.sh with the correct password configuration. Exiting..."
                 exit 1
             else 
@@ -55,11 +58,11 @@ function __keycloak_login() {
         else 
             echo "Checking if admin user exists in Keycloak..."
             
-            admin_user_present=$(
+            admin_user_present=$(\
                 "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh get users \
-                    -r master -q username="${SIMVA_KEYCLOAK_ADMIN_USER}" -q exact=true --fields id,username 2>/dev/null
+                    -r master -q username="$admin_user_lc" -q exact=true --fields id,username 2>/dev/null
             )
-            if echo "$admin_user_present" | grep -q "\"username\" : \"${SIMVA_KEYCLOAK_ADMIN_USER}\""; then
+            if echo "$admin_user_present" | grep -iq "\"username\" *: *\"$admin_user_lc\""; then
                 echo "Admin exists"
                 echo "$admin_user_present"
                 echo "Admin user already exists in Keycloak."
@@ -67,18 +70,30 @@ function __keycloak_login() {
                 echo "Admin NOT found"
                 echo "Admin user doesn't exist. Creating through TMP admin login..."
                 "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh create users \
-                    -r master -s username="${SIMVA_KEYCLOAK_ADMIN_USER}" -s enabled=true
+                    -r master -s username="$admin_user_lc" -s enabled=true
                 echo "Admin user created."
-                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles \
-                    -r master --uusername "${SIMVA_KEYCLOAK_ADMIN_USER}" --rolename admin
             fi
-
+            
+            # Check if the user already has the 'admin' role before adding
+            has_admin_role=$( \
+                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh get users \
+                    -r master -q username="$admin_user_lc" -q exact=true --fields id 2>/dev/null | \
+                jq -r '.[0].id' | \
+                xargs -I{} "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh get users/{}/role-mappings/realm -r master 2>/dev/null | \
+                jq -r '.[] | select(.name=="admin") | .name' )
+            if [[ "$has_admin_role" != "admin" ]]; then
+                "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh add-roles \
+                    -r master --uusername "$admin_user_lc" --rolename admin
+            else
+                echo "Admin user already has the 'admin' role."
+            fi
+                    
             "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh set-password \
-                -r master --username "${SIMVA_KEYCLOAK_ADMIN_USER}" \
+                -r master --username "$admin_user_lc" \
                 --new-password "${SIMVA_KEYCLOAK_ADMIN_PASSWORD}"
 
             # Delete the temporary admin user
-            tmp_user_json=$(
+            tmp_user_json=$(\
                 "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh get users \
                     -r master -q username="${SIMVA_KEYCLOAK_TMP_ADMIN_USER}" -q exact=true --fields id 2>/dev/null
             )
@@ -97,11 +112,11 @@ function __keycloak_login() {
         touch "$admin_user_file"
     fi
 
-    # Now always login using the actual admin
+    # Now always login using the actual admin (lowercase)
     echo "--- Logging into Keycloak with the final admin ---"
     "${SIMVA_HOME}/bin/run-command.sh" /opt/keycloak/bin/kcadm.sh config credentials \
         --server "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" \
-        --realm "master" --user "${SIMVA_KEYCLOAK_ADMIN_USER}" \
+        --realm "master" --user "$admin_user_lc" \
         --password "${SIMVA_KEYCLOAK_ADMIN_PASSWORD}"
 
     export KEYCLOAK_LOGIN_ON=true
