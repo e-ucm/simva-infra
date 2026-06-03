@@ -51,13 +51,11 @@ if ($PSVersionTable.PSEdition -eq 'Desktop' -or $env:OS -eq 'Windows_NT') {
             break
         }
     }
-}
-elseif ($PSVersionTable.Platform -eq 'Unix' -or $env:OSTYPE -like '*linux*') {
+} elseif ($PSVersionTable.Platform -eq 'Unix' -and $env:OSTYPE -like '*linux*') {
     Write-Host "OS : Linux"
     Write-Host "Linux detected. Use Bash script (2-run-vagrant-image.sh)."
     exit 1
-}
-elseif ($PSVersionTable.Platform -eq 'Unix' -or $env:OSTYPE -like '*darwin*') {
+} elseif ($PSVersionTable.Platform -eq 'Unix' -and $env:OSTYPE -like '*darwin*') {
     Write-Host "OS : MacOS"
     Write-Host "MacOS detected. Use Bash script (2-run-vagrant-image.sh)."
     exit 1
@@ -98,17 +96,17 @@ function Get-LogicalCpuCount {
         return $null
     }
 }
-$VBoxVersion = Get-CommandVersion "VBoxManage"
-$VagrantVersion = Get-CommandVersion "vagrant"
 
-if ($VBoxVersion) {
+if ($foundVBox) {
+    $VBoxVersion = Get-CommandVersion "VBoxManage"
     Write-Host "✅ VBoxManage installed — Version: $VBoxVersion"
 } else {
     Write-Host "❌ VBoxManage not found. InstalL it before!"
     return
 }
 
-if ($VagrantVersion) {
+if ($foundVagrant) {
+    $VagrantVersion = Get-CommandVersion "vagrant"
     Write-Host "✅ Vagrant installed — Version: $VagrantVersion"
 } else {
     Write-Host "❌ Vagrant not found. Install it before!"
