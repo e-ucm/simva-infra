@@ -36,8 +36,9 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     ###################################################################
     ############################# PUMVA ###############################
     ###################################################################
-    # Create source folder
-    mkdir -p ${SIMVA_DATA_HOME}/pumva/pumva-api
+    # Create source folder (align with docker-compose build contexts)
+    PUMVA_API_DIR="${SIMVA_PUMVA_GIT_REPO:-${SIMVA_DATA_HOME}/pumva/pumva-api}"
+    mkdir -p "${PUMVA_API_DIR}"
 
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
@@ -50,15 +51,16 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     if [[ $ret != 0 ]]; then
         RUNBUILDCODE=true
     fi
-    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/pumva/pumva-api/ > /dev/null 2>&1
-    chmod -R ${SIMVA_NODE_DIR_MODE} ${SIMVA_DATA_HOME}/pumva/pumva-api
+    rsync -avh --delete --itemize-changes ${tmp_dir}/ "${PUMVA_API_DIR}/" > /dev/null 2>&1
+    chmod -R "${SIMVA_NODE_DIR_MODE}" "${PUMVA_API_DIR}"
     rm -rf "${tmp_dir}"
 
     ###################################################################
     ########################### PUMVA FRONT ###########################
     ###################################################################
-    # Create source folder
-    mkdir -p ${SIMVA_DATA_HOME}/pumva/pumva-front
+    # Create source folder (align with docker-compose build contexts)
+    PUMVA_FRONT_DIR="${SIMVA_PUMVA_FRONT_GIT_REPO:-${SIMVA_DATA_HOME}/pumva/pumva-front}"
+    mkdir -p "${PUMVA_FRONT_DIR}"
 
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
@@ -71,8 +73,8 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     if [[ $ret != 0 ]]; then
         RUNBUILDCODE=true
     fi
-    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/pumva/pumva-front/ > /dev/null 2>&1
-    chmod -R ${SIMVA_NODE_DIR_MODE} ${SIMVA_DATA_HOME}/pumva/pumva-front
+    rsync -avh --delete --itemize-changes ${tmp_dir}/ "${PUMVA_FRONT_DIR}/" > /dev/null 2>&1
+    chmod -R "${SIMVA_NODE_DIR_MODE}" "${PUMVA_FRONT_DIR}"
     rm -rf "${tmp_dir}"
 fi
 

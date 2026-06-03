@@ -786,9 +786,10 @@ function migrate_db() {
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         echo "Migrate DB ${stack} started"
         execute_before_hooks ${phase} ${stack}
-        if [[ -f "${SIMVA_DATA_HOME}/${stack}/.initialized" ]]; then 
-            backup ${wait_time} ${stack}
-        fi  
+        local stack_name="${stack##*-}"
+        if [[ -f "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
+            backup "${wait_time}" "${stack}"
+        fi
         STACK_HOME="${SIMVA_HOME}/${stack}"
         start 30 "false" ${stack}
         stop "${wait_time}" ${stack}
