@@ -772,6 +772,7 @@ compare_versions() {
 # Migrate DB stack
 function migrate_db() {
     echo "Migrate DB : $@"
+    shift
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time"
         exit 1
