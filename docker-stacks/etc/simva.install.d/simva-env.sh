@@ -177,6 +177,10 @@ export SIMVA_LOGS_TOP_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_LOGS_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_LOGS_FILE_MODE="644" #rw-r--r--
 
+#LRS IMAGE
+export SIMVA_LRS_IMAGE="yetanalytics/lrsql"
+export SIMVA_LRS_VERSION="v0.9.5"
+
 ##########################
 # Extensions and Plugins #
 ##########################

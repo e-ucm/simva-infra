@@ -35,7 +35,7 @@ if (JSTRACKER_LOCAL_DEPLOYMENT) {
             fs.cpSync(jsTrackerPath, tempBuildDir, {
                 recursive: true,
                 force: true,
-                filter: (src) => !src.includes(`${path.sep}node_modules${path.sep}`)
+                filter: (src) => !src.includes(`${path.sep}node_modules${path.sep}`) && path.basename(src) !== 'node_modules'
             });
 
             console.log('[Setup] Installing js-tracker dependencies...');

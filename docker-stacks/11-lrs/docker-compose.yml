@@ -33,7 +33,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql
   lrs:
-    image: yetanalytics/lrsql:${SIMVA_LRS_VERSION:-latest}
+    image: ${SIMVA_LRS_IMAGE:-yetanalytics/lrsql}:${SIMVA_LRS_VERSION:-v0.9.5}
     command:
       - /bin/sh
       - -ec

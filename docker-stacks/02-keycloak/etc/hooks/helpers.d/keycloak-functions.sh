@@ -49,7 +49,7 @@ function __keycloak_login() {
             set -e
             echo $ret
             if [[ $ret != 0 ]]; then
-                echo "Either temp admin '${SIMVA_KEYCLOAK_TMP_ADMIN_USER}' user and admin '$admin_user_lc' user can't connect to Keycloak with the current password '${SIMVA_KEYCLOAK_ADMIN_PASSWORD}'."
+                echo "Either temp admin '${SIMVA_KEYCLOAK_TMP_ADMIN_USER}' user and admin '$admin_user_lc' user can't connect to Keycloak with the current password."
                 echo "Please update your simva-env.sh with the correct password configuration. Exiting..."
                 exit 1
             else 
