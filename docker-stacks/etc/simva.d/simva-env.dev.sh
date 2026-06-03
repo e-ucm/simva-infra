@@ -44,14 +44,14 @@ export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
 #Git reference branch
 export CSP_REPORTER_GIT_REF="master"
 branch="dev"
-export SIMVA_API_GIT_REF=$branch
-export SIMVA_FRONT_GIT_REF=$branch
-export SIMVA_TRACE_ALLOCATOR_GIT_REF=$branch
-export SIMVA_PUMVA_GIT_REF=$branch
-export SIMVA_PUMVA_FRONT_GIT_REF=$branch
-export SIMVA_LIMESURVEY_DOCKER_GIT_REF="remotecontrol-patch"
-export SIMVA_TMON_GIT_REF="plotly-dash"
-export SIMVA_TMON_ANACONDA_GIT_REF="master-jupyter-notebook"
+export SIMVA_API_GIT_REF="v2.0.0-alpha" #$branch
+export SIMVA_FRONT_GIT_REF="v2.0.0-alpha" #$branch
+export SIMVA_TRACE_ALLOCATOR_GIT_REF="v1.1.0" #$branch
+export SIMVA_PUMVA_GIT_REF="v0.0.1-alpha" #$branch
+export SIMVA_PUMVA_FRONT_GIT_REF="v0.0.1-alpha" #$branch
+export SIMVA_LIMESURVEY_DOCKER_GIT_REF="6.16.16-apache"
+export SIMVA_TMON_GIT_REF="v1.0.0-alpha"
+export SIMVA_TMON_ANACONDA_GIT_REF="v0.0.1"
 
 export SIMVA_KEYCLOAK_EXTENSION_LOCAL_DEPLOYMENT=false
 export SIMVA_KAFKA_EXTENSION_LOCAL_DEPLOYMENT=false
