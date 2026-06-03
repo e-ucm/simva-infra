@@ -23,6 +23,7 @@ services:
       POSTGRES_DB: ${SIMVA_LRS_DB_NAME:-lrs}
       POSTGRES_USER: ${SIMVA_LRS_DB_USER:-lrs}
       POSTGRES_PASSWORD: ${SIMVA_LRS_DB_PASSWORD:-lrs}
+      PGDATA: /var/lib/postgresql/data
     networks:
         default:
           aliases:
@@ -31,7 +32,7 @@ services:
           aliases:
             - db-lrs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     volumes:
-      - pgdata:/var/lib/postgresql
+      - pgdata:/var/lib/postgresql/data
   lrs:
     image: yetanalytics/lrsql:${SIMVA_LRS_VERSION:-latest}
     command:
