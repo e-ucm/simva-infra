@@ -441,7 +441,7 @@ function execute_after_hooks() {
                 run_scripts_from_folder ${folder}
             ;;
             "migrate_db")
-                folder="${folder}/afer-migrate-db.d"
+                folder="${folder}/after-migrate-db.d"
                 run_scripts_from_folder ${folder}
             ;;
             "changeConfig")
@@ -500,9 +500,9 @@ function execute_after_hooks() {
             run_scripts_from_folder ${folder}
         ;;
         "migrate_db")
-                folder="${folder}/afer-migrate-db.d"
-                run_scripts_from_folder ${folder}
-            ;;
+            folder="${folder}/after-migrate-db.d"
+            run_scripts_from_folder ${folder}
+        ;;
         "changeConfig")
             folder="${folder}/after-changeConfig.d"
             run_scripts_from_folder ${folder}

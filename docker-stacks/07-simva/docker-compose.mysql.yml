@@ -21,7 +21,7 @@ services:
       MYSQL_DATABASE: ${SIMVA_API_MYSQL_DB:-simva}
       MYSQL_ROOT_HOST: "${MYSQL_ROOT_HOST:-172.30.0.%}"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-prootpass"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -p$${MYSQL_ROOT_PASSWORD} --silent"]
       interval: 5s
       timeout: 5s
       retries: 10

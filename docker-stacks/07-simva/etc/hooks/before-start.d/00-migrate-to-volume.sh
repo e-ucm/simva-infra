@@ -11,7 +11,7 @@ if [[ ! -f "$SIMVA_DATA_HOME/simva/sqlite_init" ]]; then
         exit 0
     else
         echo "Starting migration from MongoDB to SQLite."
-        "${SIMVA_HOME}/simva" migrate_db ${CURRENT_STACK}
+        "${SIMVA_HOME}/simva" migrate_db "${SIMVA_SCRIPT_WAIT_TIME:-10}" "${CURRENT_STACK}"
         "${HELPERS_STACK_HOME}/migrate-to-volume.sh"
     fi
 else 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-[[ "${DEBUG:-false}" == "true" ]] && set -xç
+[[ "${DEBUG:-false}" == "true" ]] && set -x
 
 if [[ -f "$SIMVA_DATA_HOME/pumva/sqlite_init" ]]; then
     echo "SQLite initialization file detected. Skipping SQLite initilisation."

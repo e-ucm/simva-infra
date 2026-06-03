@@ -18,10 +18,10 @@ _stop_docker_container_if_running
 if [[ ! -f "$SIMVA_DATA_HOME/simva/sqlite_init" ]]; then
     MIGRATION_DIR_NAME="simva_mongodb_data"
     BACKUP_FILE="export"
-else 
-    MIGRATION_DIR_NAME="sqllite"
-    BACKUP_FILE=${SIMVA_API_MYSQL_DB:-simva}_data.db
-fi 
+else
+    MIGRATION_DIR_NAME="sqlite"
+    BACKUP_FILE="${SIMVA_API_SQLITE_DB:-simva}_data.db"
+fi
 
 # If a previous backup exists
 previousBackupPath="$BACKUP_DIR/$MIGRATION_DIR_NAME/$BACKUP_FILE.tar.gz"
@@ -67,8 +67,8 @@ if [[ ! -f "$SIMVA_DATA_HOME/simva/sqlite_init" ]]; then
     "${SIMVA_BIN_HOME}/volumectl.sh" copyvl "simva_mongodb_data" $BACKUP_DIR/$MIGRATION_DIR_NAME $BACKUP_FILE $BACKUP_FILE false
     "${SIMVA_BIN_HOME}/volumectl.sh" copyvl "simva_mongodb_data" $BACKUP_DIR/$MIGRATION_DIR_NAME $BACKUP_FILE $BACKUP_FILE true
 else 
-    if [[ ! -d $BACKUP_DIR/$SQLITE_DIR_NAME ]]; then 
-        mkdir $BACKUP_DIR/$SQLITE_DIR_NAME
+    if [[ ! -d "$BACKUP_DIR/$MIGRATION_DIR_NAME" ]]; then
+        mkdir -p "$BACKUP_DIR/$MIGRATION_DIR_NAME"
     fi
 
     set +e
