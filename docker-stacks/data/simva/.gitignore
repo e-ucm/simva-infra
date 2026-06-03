@@ -15,3 +15,6 @@ simva-trace-allocator-sha256sums
 simva-trace-allocator-sha256sums-new
 sqlite_init
 migration_sqlite_in_progress
+mongo
+sqlite
+simva-backup-storage
