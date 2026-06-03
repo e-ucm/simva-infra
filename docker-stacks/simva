@@ -1224,6 +1224,7 @@ function start() {
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
         export STACK_NAME="${stack##*-}"
+        local stack_name="${stack##*-}"
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         previous_max_retries=$SIMVA_MAX_RETRIES;
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
