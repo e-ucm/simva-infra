@@ -45,8 +45,8 @@ services:
       #MYSQL DB
       MYSQL_HOST: "${SIMVA_MYSQL_HOST_SUBDOMAIN:-mysql}.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
       MYSQL_DB: "${SIMVA_API_MYSQL_DB:-simva}"
-      MYSQL_DB_USER: dbuser
-      MYSQL_DB_PASSWORD: userpass
+      MYSQL_DB_USER: "${SIMVA_MYSQL_USER:-dbuser}"
+      MYSQL_DB_PASSWORD: "${SIMVA_MYSQL_PASSWORD:-userpass}"
     depends_on:
       - mysql
 
