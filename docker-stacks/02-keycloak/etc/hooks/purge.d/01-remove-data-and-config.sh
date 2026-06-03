@@ -17,7 +17,7 @@ ${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
     "${SIMVA_DATA_HOME}/keycloak/.version" \
     "${SIMVA_DATA_HOME}/keycloak/.master_admin_user_created" \
     "${SIMVA_DATA_HOME}/keycloak/simva-realm-export\.exportinprogress" \
-    "${SIMVA_DATA_HOME}/keycloak/.migration"
+    "${SIMVA_CONFIG_HOME}/keycloak/.migration"
 
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "kc_maria_db_data"
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "kc_maria_db_backup_data"
