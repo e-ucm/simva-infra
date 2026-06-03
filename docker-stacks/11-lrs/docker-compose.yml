@@ -17,6 +17,7 @@ networks:
   
 services:
   db:
+    << : *default-opts
     image: postgres:18
     restart: unless-stopped
     environment:
@@ -33,17 +34,14 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql
   lrs:
+    << : *default-opts
     image: ${SIMVA_LRS_IMAGE:-yetanalytics/lrsql}:${SIMVA_LRS_VERSION:-v0.9.5}
     command:
       - /bin/sh
       - -ec
       - |
         mkdir -p /lrsql/config
-        cat > /lrsql/config/authority.json.template <<'EOF'
-        {
-          "account": {
-            "homePage": "{{authority-url}}",
-            "name": "${SIMVA_LRSMANAGER_USER:-lrs-manager}"
+        cat > /lrsql/config/authority.json.template <<EOF
           },
           "objectType": "Agent"
         }
