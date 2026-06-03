@@ -52,6 +52,7 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     fi
     rsync -avh --delete --itemize-changes ${tmp_dir}/ ${SIMVA_DATA_HOME}/pumva/pumva-api/ > /dev/null 2>&1
     chmod -R ${SIMVA_NODE_DIR_MODE} ${SIMVA_DATA_HOME}/pumva/pumva-api
+    rm -rf "${tmp_dir}"
 
     ###################################################################
     ########################### PUMVA FRONT ###########################
