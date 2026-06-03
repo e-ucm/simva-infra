@@ -4,14 +4,6 @@ set -euo pipefail
 
 source ${SIMVA_BIN_HOME}/get-or-generate.sh
 
-# Oneline certificate
-if [[ -e "${SIMVA_LIMESURVEY_CERT_FILE}" ]]; then 
-    limesurvey_cert=$(sed '1d; $d;:a;N;$!ba;s/\n//g' "${SIMVA_LIMESURVEY_CERT_FILE}")
-    limesurvey_cert=$(echo "${limesurvey_cert}//-----END CERTIFICATE-----/" )
-else 
-    limesurvey_cert=""
-fi
-
 function configure_realm_production() {
     generate_realm_data "${STACK_CONF}/realm-data.prod.yml"
     configure_realm_file "prod"
@@ -78,7 +70,6 @@ clients:
     sspBaseUrl: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}/module.php/saml/sp"
     clientId: "${limesurvey_client_id}"
     secret: "${limesurvey_client_secret}"
-    certificate: "${limesurvey_cert}"
   simva:
     externalDomain: "${SIMVA_EXTERNAL_DOMAIN}"
     baseUrl: "https://${SIMVA_EXTERNAL_DOMAIN}"

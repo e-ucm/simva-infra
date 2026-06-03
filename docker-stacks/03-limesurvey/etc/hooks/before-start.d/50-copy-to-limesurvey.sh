@@ -1,6 +1,6 @@
- #!/usr/bin/env bash
- set -euo pipefail
- [[ "${DEBUG:-false}" == "true" ]] && set -x
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
 
 copy_if_missing_in_ls_etc() {
   local src_dir="$1"
