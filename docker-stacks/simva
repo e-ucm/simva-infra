@@ -1224,7 +1224,7 @@ function start() {
                 echo "Variable $var_name is not set."
             fi;
         fi;
-        docker_compose_stacks "${stack}" "${wait_time}" "up -d --remove-orphans --force-recreate"
+        docker_compose_stacks "${stack}" "${wait_time}" "up -d --remove-orphans"
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
             wait_time=$previous_wait_time;
         fi

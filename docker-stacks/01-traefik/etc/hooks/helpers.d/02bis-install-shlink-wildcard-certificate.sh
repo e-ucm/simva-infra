@@ -25,6 +25,9 @@ if [[ $SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN  == "false" ]]; then
                 echo "Please insert your shlink cert file at '${SIMVA_TRAEFIK_SHLINK_CERT_FILE}' and shlink key file at '${SIMVA_TRAEFIK_SHLINK_KEY_FILE}' or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
                 exit 1;
             fi
+        else
+            echo "Please insert your shlink cert file at '${SIMVA_TRAEFIK_SHLINK_CERT_FILE}' and shlink key file at '${SIMVA_TRAEFIK_SHLINK_KEY_FILE}' or run using SIMVA_TLS_GENERATE_SELF_SIGNED=true to self generate your certificates."
+            exit 1;
         fi
     fi
 fi

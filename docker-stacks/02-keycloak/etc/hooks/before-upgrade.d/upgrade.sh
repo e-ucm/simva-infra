@@ -1,4 +1,8 @@
-if [[ ${SIMVA_KEYCLOAK_VERSION:0:2} -gt 18 ]]; then
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "${DEBUG:-false}" == "true" ]] && set -x
+
+if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -gt 18 ]]; then
     exit 0
 fi
 touch "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/.exportinprogress"
