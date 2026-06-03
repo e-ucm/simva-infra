@@ -97,6 +97,12 @@ function main() {
             install "1" "true" ${@%/}
             exit 0
         ;;
+        "updatecerts")  
+            check_docker_launched
+            setExecutable_scripts_from_folder ${SIMVA_BIN_HOME}
+            "${SIMVA_BIN_HOME}/update-certs.sh"
+            exit 0
+        ;;
         "uninstall")
             check_docker_launched
             uninstall "1" ${@%/}
@@ -608,6 +614,8 @@ See ${SIMVA_PROJECT_URL} for details.
 OPERATION one of the following:
     install:
         Install SIMVA locally (download docker images, build required tools, etc.)
+    updatecerts:
+        Update if SIMVA_TLS_GENERATE_SELF_SIGNED = false the root CA certificate and its fullchain in case it is expired from ${SIMVA_HOME}/../${SIMVA_EXTERNAL_DOMAIN}.pem;-key.pem;-fullchain.pem if exist and from ${SIMVA_HOME}/../${SIMVA_SHLINK_EXTERNAL_DOMAIN}.pem;-key.pem;-fullchain.pem if exist.
     uninstall:
         Stop and remove containers, without removing docker external volumes and data.
     purge:
@@ -1215,7 +1223,7 @@ function start() {
                 echo "Variable $var_name is not set."
             fi;
         fi;
-        docker_compose_stacks "${stack}" "${wait_time}" "up -d --remove-orphans"
+        docker_compose_stacks "${stack}" "${wait_time}" "up -d --remove-orphans --force-recreate"
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
             wait_time=$previous_wait_time;
         fi
