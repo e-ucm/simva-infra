@@ -154,6 +154,7 @@ export SIMVA_MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME="1h"
 ##############
 export SIMVA_KAFKA_NETWORK="kafka_services"
 export SIMVA_TRACES_BUCKET_NAME="traces"
+export SIMVA_BACKUP_BUCKET_NAME="backup"
 export SIMVA_SINK_TOPICS_DIR="kafka-topics"
 export SIMVA_TRACES_TOPIC="traces"
 export SIMVA_SINK_OUTPUTS_DIR="outputs"

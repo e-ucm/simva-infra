@@ -49,7 +49,9 @@ else
                 -c "mc config host add simva-minio ${minio_url} ${SIMVA_MINIO_ACCESS_KEY} ${SIMVA_MINIO_SECRET_KEY} ${extra_config} &&
                     mc ready simva-minio &&
                     $code &&
-                    mc --debug mb --ignore-existing simva-minio/${SIMVA_TRACES_BUCKET_NAME}"
+                    mc --debug mb --ignore-existing simva-minio/${SIMVA_TRACES_BUCKET_NAME}
+                    &&
+                    mc --debug mb --ignore-existing simva-minio/${SIMVA_BACKUP_BUCKET_NAME}"
         touch "${SIMVA_DATA_HOME}/minio/.minio-initialized";
     fi
 fi
