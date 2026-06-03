@@ -36,6 +36,11 @@ function generate_data() {
     secretboxkey=$(get_or_generate_key "limesurvey_secretboxkey" "${SIMVA_CONFIG_HOME}/limesurvey/simva-env.sh" 32)
     isdev=$([ "$SIMVA_ENVIRONMENT" == "development" ] && echo "true" || echo "false")
     limesurveydebug=$([ $isdev ] && echo 1 || echo 0)
+    db_table_prefix="${SIMVA_LIMESURVEY_DB_TABLE_PREFIX:-}"
+
+    if [[ "${db_table_prefix}" == " " ]]; then
+            db_table_prefix=""
+    fi
 
 cat << EOF > ${conf_file}
 debug: ${limesurveydebug}
@@ -44,6 +49,7 @@ db:
   database: "${SIMVA_LIMESURVEY_MYSQL_DATABASE}"
   user: "${SIMVA_LIMESURVEY_MYSQL_USER}"
   password: "${SIMVA_LIMESURVEY_MYSQL_PASSWORD}"
+  prefix: "${db_table_prefix}"
 plugins:
   webhooks:
     url: "https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/limesurvey-completion-webhooks"

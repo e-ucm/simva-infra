@@ -1,0 +1,150 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+  kafka_services:
+    name: "${SIMVA_KAFKA_NETWORK:-kafka_services}"
+    external: true
+
+services:
+  pumva-front:
+    << : *default-opts
+    command: ['sh', '/home/node/entrypoint.d/docker-startup.sh']
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    user: "${SIMVA_NODE_GUID:-1000}:${SIMVA_NODE_UUID:-1000}"
+    environment:
+      #DEBUG
+      DEBUG: "${SIMVA_DEBUG:-true}"
+      #LOG
+      LOG_LEVEL: "debug"
+      LOG_FOLDER: "/home/node/logs"
+      #APP FOLDER
+      APP_FOLDER: "/home/node/app"
+      #NODE
+      NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
+      NODE_EXTRA_CA_CERTS: "/var/lib/pumva/tls/ca/rootCA.pem"
+      NEXT_CACHE_DIR: "/tmp/next-cache"
+      #PUMVA
+      PUMVA_HOST: "${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      PUMVA_API_HOST: "${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      #PUMVA_API
+      VITE_API_BASE: "https://${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/games/user"
+      VITE_API_TOKEN: "${SIMVA_PUMVA_API_TOKEN:-token}"
+      #SSO KEYCLOAK
+      SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
+      SSO_PORT: "443"
+      SSO_ACCOUNT_PATH: "/account"
+      SSO_USER_CAN_SELECT_ROLE: "${SIMVA_SSO_USER_CAN_SELECT_ROLE:-true}"
+      SSO_ADMINISTRATOR_CONTACT: "${SIMVA_SSO_ADMINISTRATOR_CONTACT:-contact@administrator.com}"
+      SSO_STUDENT_ALLOWED_ROLE: "${SIMVA_STUDENT_ALLOWED_ROLE:-true}"
+      SSO_TEACHING_ASSISTANT_ALLOWED_ROLE: "${SIMVA_TEACHING_ASSISTANT_ALLOWED_ROLE:-true}"
+      SSO_TEACHER_ALLOWED_ROLE: "${SIMVA_TEACHER_ALLOWED_ROLE:-true}"
+      SSO_RESEARCHER_ALLOWED_ROLE: "${SIMVA_RESEARCHER_ALLOWED_ROLE:-true}"
+      SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      SSO_CLIENT_ID: "${SIMVA_PUMVA_CLIENT_ID:-pumva}"
+      SSO_CLIENT_SECRET: "${SIMVA_PUMVA_CLIENT_SECRET:-secret}"
+      SSO_SSL_REQUIRED: "external"
+      SSO_PUBLIC_CLIENT: "false"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/pumva/tls
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-pumva.sh:/home/node/entrypoint.d/docker-startup.sh
+    hostname: ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.pumva-front.loadbalancer.server.port=5173"
+      - "traefik.http.routers.pumva-front.rule=Host(`${SIMVA_PUMVA_HOST_SUBDOMAIN:-pumva}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+  
+  pumva:
+    << : *default-opts
+    command: ['sh', '/home/node/entrypoint.d/docker-startup.sh']
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    user: "${SIMVA_NODE_GUID:-1000}:${SIMVA_NODE_UUID:-1000}"
+    environment:
+      #DEBUG
+      DEBUG: "${SIMVA_DEBUG:-true}"
+      #LOG
+      LOG_LEVEL: "info"
+      LOG_FOLDER: "/home/node/logs"
+      #APP FOLDER
+      APP_FOLDER: "/home/node/app"
+      #NODE
+      NODE_ENV: "${SIMVA_ENVIRONMENT:-development}"
+      NODE_EXTRA_CA_CERTS: "/var/lib/pumva/tls/ca/rootCA.pem"
+      #SQLite DB
+      SQLLITE_DB_FILE: "${SIMVA_PUMVA_SQLITE_DB_FILE:-pumva_data.db}"
+      SQLLITE_DB_PATH: "/data/db"
+      SQL_FILE_PATH: "pumva_initialize/sqlite"
+      #KEYCLOAK USERS
+      ADMIN_USERNAME: "${SIMVA_ADMINISTRATOR_USER:-admin}"
+      ADMIN_PASSWORD: "${SIMVA_ADMINISTRATOR_PASSWORD:-admin}"
+      TEACHER_USERNAME: "${SIMVA_TEACHER_USER:-teacher}"
+      TEACHER_PASSWORD: "${SIMVA_TEACHER_PASSWORD:-teacher}"
+      #SSO KEYCLOAK
+      SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
+      SSO_PORT: "443"
+      SSO_ACCOUNT_PATH: "/account"
+      SSO_USER_CAN_SELECT_ROLE: "${SIMVA_SSO_USER_CAN_SELECT_ROLE:-true}"
+      SSO_ADMINISTRATOR_CONTACT: "${SIMVA_SSO_ADMINISTRATOR_CONTACT:-contact@administrator.com}"
+      SSO_STUDENT_ALLOWED_ROLE: "${SIMVA_STUDENT_ALLOWED_ROLE:-true}"
+      SSO_TEACHING_ASSISTANT_ALLOWED_ROLE: "${SIMVA_TEACHING_ASSISTANT_ALLOWED_ROLE:-true}"
+      SSO_TEACHER_ALLOWED_ROLE: "${SIMVA_TEACHER_ALLOWED_ROLE:-true}"
+      SSO_RESEARCHER_ALLOWED_ROLE: "${SIMVA_RESEARCHER_ALLOWED_ROLE:-true}"
+      SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      SSO_CLIENT_ID: "${SIMVA_PUMVA_CLIENT_ID:-pumva}"
+      SSO_CLIENT_SECRET: "${SIMVA_PUMVA_CLIENT_SECRET:-secret}"
+      SSO_SSL_REQUIRED: "external"
+      SSO_PUBLIC_CLIENT: "false"
+      #SIMVA API
+      PUMVA_HOST: "${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      PUMVA_PORT: "3000"
+      PUMVA_PROTOCOL: "https"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${SIMVA_TLS_HOME?TLS home folder required}:/var/lib/pumva/tls
+      - pumva_logs:/home/node/logs:rw
+      - pumva_sqlite_data:/data/db:rw
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/docker-startup-pumva.sh:/home/node/entrypoint.d/docker-startup.sh
+    hostname: ${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.pumva.loadbalancer.server.port=3000"
+      - "traefik.http.routers.pumva.rule=Host(`${SIMVA_PUMVA_API_HOST_SUBDOMAIN:-pumva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+
+volumes:
+  pumva_logs:
+    external: true
+  pumva_sqlite_data:
+    external: true

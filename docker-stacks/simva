@@ -117,6 +117,11 @@ function main() {
             stop ${DEFAULT_WAIT_TIME} ${@%/}
             exit 0
         ;;
+        "migrate_db")
+            check_docker_launched
+            migrate_db ${DEFAULT_WAIT_TIME} ${@%/}
+            exit 0
+        ;;
         "backup")
             check_docker_launched
             backup ${DEFAULT_WAIT_TIME} ${@%/}
@@ -288,6 +293,10 @@ function execute_before_hooks() {
             folder="${folder}/before-migrate.d"
             run_scripts_from_folder ${folder}
         ;;
+        "migrate_db")
+            folder="${folder}/before-migrate-db.d"
+            run_scripts_from_folder ${folder}
+        ;;
         "changeConfig")
             folder="${folder}/before-changeConfig.d"
             run_scripts_from_folder ${folder}
@@ -347,6 +356,10 @@ function execute_before_hooks() {
             ;;
             "migrate")
                 folder="${folder}/before-migrate.d"
+                run_scripts_from_folder ${folder}
+            ;;
+            "migrate_db")
+                folder="${folder}/before-migrate-db.d"
                 run_scripts_from_folder ${folder}
             ;;
             "changeConfig")
@@ -427,6 +440,10 @@ function execute_after_hooks() {
                 folder="${folder}/after-migrate.d"
                 run_scripts_from_folder ${folder}
             ;;
+            "migrate_db")
+                folder="${folder}/after-migrate-db.d"
+                run_scripts_from_folder ${folder}
+            ;;
             "changeConfig")
                 folder="${folder}/after-changeConfig.d"
                 run_scripts_from_folder ${folder}
@@ -480,6 +497,10 @@ function execute_after_hooks() {
         ;;
         "migrate")
             folder="${folder}/after-migrate.d"
+            run_scripts_from_folder ${folder}
+        ;;
+        "migrate_db")
+            folder="${folder}/after-migrate-db.d"
             run_scripts_from_folder ${folder}
         ;;
         "changeConfig")
@@ -669,6 +690,9 @@ function install() {
         local stack_name="${stack##*-}"
         local stack_name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$stack_name")  # Convert to uppercase
         local var_name="SIMVA_${stack_name_uppercase}_VERSION"
+        if [[ ! -d "${SIMVA_DATA_HOME}/${stack_name}" ]]; then
+            mkdir -p "${SIMVA_DATA_HOME}/${stack_name}"
+        fi
         echo $external_domain > "${SIMVA_DATA_HOME}/${stack_name}/.externaldomain"
         if [[ -v $var_name ]]; then
             echo "Variable $var_name is set"
@@ -697,6 +721,7 @@ function uninstall() {
         stacks=$@
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+    purgeDanglingContainers ${stacks}
     for stack in ${reverse_stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
@@ -734,6 +759,44 @@ compare_versions() {
         echo 2
         exit
     fi
+}
+
+# Migrate DB stack
+function migrate_db() {
+    echo "Migrate DB : $@"
+    if [[ $# -lt 1 ]]; then
+        echo >&2 "missing wait_time"
+        exit 1
+    fi
+    local wait_time=${1}
+    shift
+
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    echo "Migrate DB stated"
+    local phase="migrate_db"
+    setExecutable ${phase} ${stacks}
+
+    for stack in ${stacks}; do
+        export STACK_HOME="${SIMVA_HOME}/${stack}"
+        export CURRENT_STACK="${stack}"
+        export STACK_NAME="${stack##*-}"
+        export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
+        echo "Migrate DB ${stack} started"
+        execute_before_hooks ${phase} ${stack}
+        local stack_name="${stack##*-}"
+        if [[ -f "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
+            backup "${wait_time}" "${stack}"
+        fi
+        STACK_HOME="${SIMVA_HOME}/${stack}"
+        start 30 "false" ${stack}
+        stop "${wait_time}" ${stack}
+        execute_after_hooks ${phase} ${stack}
+        echo "Migrate DB ${stack} done!"
+    done
+    echo "Migrate DB done!"
 }
 
 # upgrade stack
@@ -1004,6 +1067,27 @@ function restore() {
     done 
 }
 
+function purgeDanglingContainers() {
+    local stacks=${SIMVA_STACKS}
+    if [[ $# -gt 0 ]]; then
+        stacks=$@
+    fi
+    for stack in ${stacks}; do
+        local stopped_containers
+        stopped_containers="$(docker ps -aq \
+            --filter "name=${stack}-" \
+            --filter status=created \
+            --filter status=exited \
+            --filter status=dead)"
+
+        if [[ -n "${stopped_containers}" ]]; then
+            echo "🧹 Removing stopped containers for stack '${stack}'..."
+            docker rm ${stopped_containers} >/dev/null
+            echo "✅ Stopped containers removed for stack '${stack}'."
+        fi
+    done
+}
+
 # purge data
 function purge() {
     echo "Purge : $@"
@@ -1020,6 +1104,7 @@ function purge() {
         stacks=$@
     fi
     local reverse_stacks=$(for s in ${stacks[@]}; do echo $s; done | sort -r)
+    purgeDanglingContainers ${stacks}
     for stack in ${reverse_stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
@@ -1140,9 +1225,10 @@ function start() {
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
         export STACK_NAME="${stack##*-}"
+        local stack_name="${stack##*-}"
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
+        previous_max_retries=$SIMVA_MAX_RETRIES;
         if [[ ! -e "${SIMVA_DATA_HOME}/${stack_name}/.initialized" ]]; then
-            previous_max_retries=$SIMVA_MAX_RETRIES;
             previous_simva_wait_time=$SIMVA_WAIT_TIME;
             export SIMVA_MAX_RETRIES=$(($previous_max_retries*2));
             export SIMVA_WAIT_TIME=$(($previous_simva_wait_time*2));
@@ -1275,6 +1361,12 @@ function setExecutable() {
                 folder="${HooksFolder}/after-migrate.d"
                 setExecutable_scripts_from_folder ${folder}
             ;;
+            "migrate_db")
+                folder="${HooksFolder}/before-migrate-db.d"
+                setExecutable_scripts_from_folder ${folder}
+                folder="${HooksFolder}/after-migrate-db.d"
+                setExecutable_scripts_from_folder ${folder}
+            ;;
             "purge")
                 folder="${HooksFolder}/before-purge.d"
                 setExecutable_scripts_from_folder ${folder}
@@ -1343,6 +1435,12 @@ function setExecutable() {
             folder="${HooksFolder}/before-migrate.d"
             setExecutable_scripts_from_folder ${folder}
             folder="${HooksFolder}/after-migrate.d"
+            setExecutable_scripts_from_folder ${folder}
+        ;;
+        "migrate_db")
+            folder="${HooksFolder}/before-migrate-db.d"
+            setExecutable_scripts_from_folder ${folder}
+            folder="${HooksFolder}/after-migrate-db.d"
             setExecutable_scripts_from_folder ${folder}
         ;;
         "purge")

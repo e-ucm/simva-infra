@@ -8,6 +8,8 @@ ${SIMVA_BIN_HOME}/purge-folder-contents.sh \
     "${SIMVA_DATA_HOME}/simva/simva-trace-allocator"
 
 ${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
+    "${SIMVA_DATA_HOME}/simva/sqlite_init" \
+    "${SIMVA_DATA_HOME}/simva/migration_sqlite_in_progress" \
     "${SIMVA_DATA_HOME}/simva/.initialized" \
     "${SIMVA_DATA_HOME}/simva/.externaldomain" \
     "${SIMVA_DATA_HOME}/simva/.version" \
@@ -21,3 +23,4 @@ ${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "simva_api_logs"
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "simva_storage_data"
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "simva_mongodb_data"
+"${SIMVA_BIN_HOME}/volumectl.sh" delete "simva_sqlite_data"

@@ -32,7 +32,7 @@ return array(
             'password' => '{{ .db.password }}',
             'charset' => 'utf8mb4',
             'attributes' => array(),
-            'tablePrefix' => '',
+            'tablePrefix' => '{{ .db.prefix }}',
         ),
 
         // Uncomment the following lines if you need table-based sessions.

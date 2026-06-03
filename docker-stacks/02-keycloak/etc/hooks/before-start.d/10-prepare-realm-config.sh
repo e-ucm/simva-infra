@@ -4,9 +4,6 @@ set -euo pipefail
 
 source ${SIMVA_BIN_HOME}/get-or-generate.sh
 
-# Oneline certificate
-limesurvey_cert=$(sed '1d; $d;:a;N;$!ba;s/\n//g' "${SIMVA_LIMESURVEY_CERT_FILE}")
-
 function configure_realm_production() {
     generate_realm_data "${STACK_CONF}/realm-data.prod.yml"
     configure_realm_file "prod"
@@ -48,6 +45,9 @@ function generate_realm_data() {
     tmon_client_id=$(get_or_generate_username "tmon" "${STACK_CONF}/simva-env.sh")
     tmon_client_secret=$(get_or_generate_password "tmon" "${STACK_CONF}/simva-env.sh")
 
+    pumva_client_id=$(get_or_generate_username "pumva" "${STACK_CONF}/simva-env.sh")
+    pumva_client_secret=$(get_or_generate_password "pumva" "${STACK_CONF}/simva-env.sh")
+
 cat << EOF > ${conf_file}
 smtpServer:
   host: "${SIMVA_MAIL_HOST_SUBDOMAIN}.${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}"
@@ -70,7 +70,6 @@ clients:
     sspBaseUrl: "https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}${SIMVA_LIMESURVEY_SIMPLESAMLPHP_PATH}/module.php/saml/sp"
     clientId: "${limesurvey_client_id}"
     secret: "${limesurvey_client_secret}"
-    certificate: "${limesurvey_cert//-----END CERTIFICATE-----/}"
   simva:
     externalDomain: "${SIMVA_EXTERNAL_DOMAIN}"
     baseUrl: "https://${SIMVA_EXTERNAL_DOMAIN}"
@@ -95,6 +94,10 @@ clients:
     clientId: "${tmon_client_id}"
     secret: "${tmon_client_secret}"
     baseUrl: "https://${SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
+  pumva:
+    clientId: "${pumva_client_id}"
+    secret: "${pumva_client_secret}"
+    baseUrl: "https://${SIMVA_PUMVA_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
 users:
 EOF
 

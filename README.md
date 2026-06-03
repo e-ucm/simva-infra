@@ -32,13 +32,22 @@ This repository allows you to launch a complete ***SIMVA*** environment.
 * **Windows** with the latest version of <a href="https://vagrantup.com" target="_blank">Vagrant</a> (✅ tested with Vagrant Version: Vagrant 2.4.9) and the latest version of <a href="https://www.virtualbox.org/" target="_blank">VirtualBox</a> (✅ tested with VBoxManage Version: 7.2.2r170484): Follow the steps from 1 to 5.
 * **Mac** with the latest version of <a href="https://vagrantup.com" target="_blank">Vagrant</a> (✅ tested with Vagrant Version: Vagrant 2.4.9) and the latest version of <a href="https://www.virtualbox.org/" target="_blank">VirtualBox</a> (✅ tested with VBoxManage Version: 7.2.2r170484): Follow the steps from 1 to 5.
 
+### Requirements (Local Development Hardware)
+
+* **Minimum**: 4 CPU cores and 8 GB RAM available on host.
+* **Recommended**: 8 CPU cores and 16 GB RAM available on host for smoother startup and container performance.
+* **Disk**: At least 40 GB free space for VM and container images.
+* **VM assignment (minimum)**: assign **2 CPU cores** and **6 GB RAM** to the VM.
+* **VM assignment (recommended)**: assign **4 CPU cores** and **8 GB RAM** to the VM.
+
 ### Steps:
 1. Clone this repository
 1. Change the git branch to choosen branch.
 1. Open a terminal in the cloned directory and change directory to vagrant directory using command `cd ./vagrant`.
 1. Run `./2-run-vagrant-image.ps1` in Windows or `./2-run-vagrant-image.sh` in Mac or Linux machine.
 > Note: The first time you run this command it will take a long time because Vagrant needs to download, aprovision and install the base required software.
-> Note: You can configure the RAM and CPU of the VM corresponding of your own computer with the parameters : `--Memory <int> --CPU <int>` in Windows (by default : 8196=8Go and 8) or `--memory <int> --CPU <int>` in Mac or Linux machine (by default : 4096=4Go and 8).
+> Note: You can configure the VM RAM and CPU according to your computer with parameters: `-Memory <int>` and `-CPU <int>` in Windows (PowerShell), or `--memory <int>` and `--cpu <int>` in Mac/Linux.
+> Note: In Windows PowerShell, `-Memory` is in **GB** (for example: `-Memory 4 -CPU 4`).
 5. Inside VM, run `cd ./simva-infra/docker-stacks/ && sudo su` and run `./simva start` to start all containers.
 > Note: The first time you run this command it will take a long time because all components need to initialize.
 

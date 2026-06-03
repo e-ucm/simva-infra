@@ -1,0 +1,41 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+services:
+  pumva-front:
+    build: ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}
+    restart: unless-stopped
+    volumes:
+      - ${SIMVA_PUMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva-front}/:/home/node/app
+      - /home/node/app/node_modules
+    ports:
+      - "127.0.0.1:9234:9229"
+  pumva:
+    build: ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}
+    restart: unless-stopped
+    volumes:
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/src:/home/node/app/src
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/tests:/home/node/app/tests
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/public:/home/node/app/public
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/package.json:/home/node/app/package.json
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/package-lock.json:/home/node/app/package-lock.json
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/jest.config.cjs:/home/node/app/jest.config.cjs
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/tsconfig.jest.json:/home/node/app/tsconfig.jest.json
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/tsconfig.json:/home/node/app/tsconfig.json
+      - ${SIMVA_PUMVA_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/pumva}/coverage:/home/node/app/coverage
+      - /home/node/app/node_modules
+    ports:
+      - "127.0.0.1:9235:9229"
+
+volumes:
+  next-cache:
+  turbo-cache:

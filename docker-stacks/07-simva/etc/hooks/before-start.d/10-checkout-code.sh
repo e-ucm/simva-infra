@@ -5,6 +5,10 @@ set -euo pipefail
 RUNCHECKOUTCODE=false
 RUNBUILDCODE=false
 CHECKLOCALDEPLOYMENT=false
+if [[ -f "$SIMVA_DATA_HOME/simva/migration_sqlite_in_progress" ]]; then
+    echo "Migration of the data in progress. Pass the execution."
+    exit 0
+fi
 if [[ ! -e "${SIMVA_DATA_HOME}/simva/.initialized" ]]; then
     echo "SIMVA it is not initialized, initializing checkout code."
     RUNCHECKOUTCODE=true
@@ -21,6 +25,37 @@ if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then
 fi
 
 source ${SIMVA_BIN_HOME}/check-checksum.sh;
+
+# Function to checkout code from git repository
+checkout_repository() {
+    local repo_url=$1
+    local git_ref=$2
+    local target_dir=$3
+    
+    mkdir -p ${target_dir}
+    local tmp_dir=$(mktemp -d)
+    git clone --depth 1 --branch ${git_ref} ${repo_url} ${tmp_dir} > /dev/null 2>&1
+    rsync -avh --delete --itemize-changes ${tmp_dir}/ ${target_dir}/ > /dev/null 2>&1
+    rm -rf ${tmp_dir}
+    echo "${target_dir}"
+}
+
+# Function to check checksum and set rebuild flag
+check_and_rebuild() {
+    local source_dir=$1
+    local checksum_file=$2
+    local files_to_check=$3
+    
+    set +e
+    _check_checksum ${source_dir} "${checksum_file}" "${files_to_check}"
+    local ret=$?
+    set -e
+    echo $ret
+    if [[ $ret != 0 ]]; then
+        return 0  # needs rebuild
+    fi
+    return 1  # no rebuild needed
+}
 
 if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     SIMVA_API_GIT_REPO_URL=https://github.com/e-ucm/simva.git

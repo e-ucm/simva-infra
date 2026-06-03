@@ -1,0 +1,23 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+  # driver: "gelf"
+  # options:
+  #   gelf-address: "udp://127.0.0.1:5000"
+
+services:
+  simva-api:
+    volumes:
+      - simva_sqlite_data:/data/db
+    environment:
+      #MYSQL DB
+      SQLLITE_DB_FILE: "${SIMVA_API_SQLITE_DB:-simva}_data.db"
+      SQLLITE_DB_PATH: "/data/db"
+volumes:
+  simva_sqlite_data:
+    external: true

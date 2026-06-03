@@ -20,7 +20,7 @@
 			{
 				"type": "node",
 				"request": "attach",
-				"name": "Attach to remote Back",
+				"name": "Attach to remote Back Main Process",
 				"address": "127.0.0.1", // <- remote address here
 				"port": 9229,
 				"localRoot": "/home/vagrant/simva",
@@ -29,9 +29,27 @@
 			{
 				"type": "node",
 				"request": "attach",
-				"name": "Attach to remote Front",
+				"name": "Attach to remote Back Kafka Process",
+				"address": "127.0.0.1", // <- remote address here
+				"port": 9232,
+				"localRoot": "/home/vagrant/simva",
+				"remoteRoot": "/app"
+			},
+			{
+				"type": "node",
+				"request": "attach",
+				"name": "Attach to remote Front Main Process",
 				"address": "127.0.0.1", // <- remote address here
 				"port": 9230,
+				"localRoot": "/home/vagrant/simva-front",
+				"remoteRoot": "/app"
+			},
+			{
+				"type": "node",
+				"request": "attach",
+				"name": "Attach to remote Front Node Cron Process",
+				"address": "127.0.0.1", // <- remote address here
+				"port": 9233,
 				"localRoot": "/home/vagrant/simva-front",
 				"remoteRoot": "/app"
 			},

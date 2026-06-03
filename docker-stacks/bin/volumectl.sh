@@ -12,6 +12,7 @@ usage() {
   echo "  $0 copylv <local_dir> <volume> <local_file> <volume_file> <volume_dest> [extract]"
   echo "  $0 copyvv <volume> <new_volume>"
   echo "  $0 exec <volume> <volume_local_path> <command to execute>"
+  echo "  $0 execcheck <volume> <volume_local_path> <command to execute>"
   echo "  $0 delete <volume>"
   exit 1
 }
@@ -167,7 +168,7 @@ copy_data_from_volume_to_local() {
 
     if [[ "$compress" == "true" ]]; then
         # Copy and compress
-        if docker run --rm -v "$volume":/src:ro -v "$(realpath "$local_dir")":/dest alpine sh -c "tar czf /dest/$local_name.tar.gz -C /src $(basename "$container_path")"; then
+        if docker run --rm -v "$volume":/src:ro -v "$(realpath "$local_dir")":/dest alpine sh -c "tar czf /dest/$local_name.tar.gz -C $(dirname "/src/$container_path") $(basename "/src/$container_path")"; then
             echo "✅ Data copied and compressed to '$dest_path.tar.gz'"
         else
             echo "❌ Failed to copy and compress data"
@@ -246,6 +247,23 @@ copy_volume() {
   echo "✅ Data copy complete."
 }
 
+# --- Execute a command in a volume, preserving the real exit code (no output capture) ---
+exec_check_volume() {
+  local volume=$1
+  local volume_local_path=$2
+  shift 2
+  local command="$@"
+
+  if ! docker volume inspect "$volume" >/dev/null 2>&1; then
+    echo "❌  Volume '$volume' not exist. Skipping." >&2
+    exit 0
+  fi
+
+  docker run --rm \
+    -v "$volume":"$volume_local_path" \
+    alpine sh -c "$command"
+}
+
 # --- Execute a command in a volume and return its value ---
 exec_command_volume() {
   local volume=$1
@@ -289,6 +307,19 @@ delete_volume() {
   local volume=$1
 
   if docker volume inspect "$volume" >/dev/null 2>&1; then
+    local stopped_containers=""
+    stopped_containers="$(docker ps -aq \
+      --filter volume="$volume" \
+      --filter status=created \
+      --filter status=exited \
+      --filter status=dead)"
+
+    if [[ -n "$stopped_containers" ]]; then
+      echo "🧹 Removing stopped containers attached to volume '$volume'..."
+      docker rm $stopped_containers >/dev/null
+      echo "✅ Stopped containers removed."
+    fi
+
     echo "📦 Deleting volume '$volume'..."
     docker volume rm "$volume" >/dev/null
     echo "✅ Deletion complete."
@@ -312,5 +343,6 @@ case "$cmd" in
   copyvl)  [ $# -lt 4 ] && usage; copy_data_from_volume_to_local "$@" ;;
   copylv)  [ $# -lt 4 ] && usage; copy_data_from_local_to_volume "$@" ;;
   exec)  [ $# -lt 3 ] && usage; exec_command_volume "$@" ;;
+  execcheck)  [ $# -lt 3 ] && usage; exec_check_volume "$@" ;;
   *) usage ;;
 esac
