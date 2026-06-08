@@ -805,6 +805,8 @@ function migrate_db() {
         execute_after_hooks ${phase} ${stack}
         echo "Migrate DB ${stack} done!"
     done
+    echo "Restarting migrated stack(s): ${stacks}"
+    start "${wait_time}" "false" ${stacks}
     echo "Migrate DB done!"
 }
 
