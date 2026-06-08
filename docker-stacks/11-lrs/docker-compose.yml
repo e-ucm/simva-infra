@@ -42,6 +42,10 @@ services:
       - |
         mkdir -p /lrsql/config
         cat > /lrsql/config/authority.json.template <<EOF
+        {
+          "account": {
+            "homePage": "{{authority-url}}",
+            "name": "${SIMVA_LRSMANAGER_USER:-lrs-manager}"
           },
           "objectType": "Agent"
         }
