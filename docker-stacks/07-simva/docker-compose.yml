@@ -236,7 +236,7 @@ services:
       
   simva-trace-allocator:
     << : *default-opts
-    command: ['bash', '/home/node/entrypoint.d/docker-startup.sh']
+    command: ['sh', '/home/node/entrypoint.d/docker-startup.sh']
     stdin_open: true
     tty: true
     environment:

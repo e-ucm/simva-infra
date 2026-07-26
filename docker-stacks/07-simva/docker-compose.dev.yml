@@ -42,12 +42,14 @@ services:
       - "127.0.0.1:9230:9229"
       - "127.0.0.1:9233:9230"
   simva-trace-allocator:
-    build: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/simva-trace-allocator}
+    build: 
+      context: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/simva-trace-allocator}
+      target: dev
     restart: unless-stopped
     environment:
       LOG_LEVEL: "debug"
     volumes:
-      - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/simva-trace-allocator}:/home/node/app/
-      - /home/node/app/node_modules  # Exclude node_modules
+      - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/simva-trace-allocator}:/app/
+      - /app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9231:9229"
