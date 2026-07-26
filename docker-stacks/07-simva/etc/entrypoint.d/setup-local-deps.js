@@ -10,9 +10,9 @@ const os = require('os');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const JSTRACKER_LOCAL_PATH = process.env.JSTRACKER_LOCAL_PATH || '/home/node/js-tracker';
+const JSTRACKER_LOCAL_PATH = process.env.JSTRACKER_LOCAL_PATH || '/js-tracker';
 const JSTRACKER_LOCAL_DEPLOYMENT = process.env.JSTRACKER_LOCAL_DEPLOYMENT === 'true';
-const APP_DIR = process.env.SIMVA_APP_DIR || '/home/node/app';
+const APP_DIR = process.env.SIMVA_APP_DIR || '/app';
 
 console.log('[Setup] Starting local dependency setup...');
 console.log(`[Setup] JSTRACKER_LOCAL_DEPLOYMENT: ${process.env.JSTRACKER_LOCAL_DEPLOYMENT}`);

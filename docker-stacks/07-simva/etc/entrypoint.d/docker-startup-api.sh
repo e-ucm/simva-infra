@@ -2,7 +2,7 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-cd /home/node/app
+cd /app
 
 #start api
 echo "${NODE_ENV}"
