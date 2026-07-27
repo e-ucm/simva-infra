@@ -31,13 +31,16 @@ services:
       - "127.0.0.1:9229:9229"
       - "127.0.0.1:9232:9230"
   simva-front:
-    build: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/simva-front}
+    build: 
+      context: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/simva-front}
+      target: dev
     restart: unless-stopped
     environment:
       LOG_LEVEL: "debug"
     volumes:
-      - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/simva-front}:/home/node/app/
-      - /home/node/app/node_modules  # Exclude node_modules
+      - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/simva-front}:/app/
+      - /app/node_modules  # Exclude node_modules
+      - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/simva-front}/ecosystem.config.dev.js:/app/ecosystem.config.js
     ports:
       - "127.0.0.1:9230:9229"
       - "127.0.0.1:9233:9230"
