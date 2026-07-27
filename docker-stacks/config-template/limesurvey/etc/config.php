@@ -71,7 +71,7 @@ return array(
                 'sHeaderSignatureName' => '{{ .plugins.webhooks.header_name }}',
                 'sHeaderSignaturePrefix' => '{{ .plugins.webhooks.header_prefix }}',
                 'sId'=> '',
-                'events' => '{"surveyStatus":{"afterSurveyComplete":true,"beforeSurveyPage":true}}'
+                'events' => '{"surveyStatus":{"afterSurveyComplete":true,"beforeSurveyPage":true}, "surveyAdmin":{"afterSurveySave": true, "afterSurveyActivate": true, "afterSurveyDeactivate": true, "afterSurveyDelete": true}}',
             ],
             'hidden' => ['sAuthToken'],
             'sBug' => '{{ .plugins.webhooks.debug }}'
