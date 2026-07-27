@@ -19,7 +19,7 @@ services:
     environment:
       LOG_LEVEL: "debug"
       JSTRACKER_LOCAL_DEPLOYMENT: "${SIMVA_JSTRACKER_LIBRARY_LOCAL_DEPLOYMENT}"
-      JSTRACKER_LOCAL_PATH: "/home/node/js-tracker"
+      JSTRACKER_LOCAL_PATH: "/js-tracker"
       JSTRACKER_ENTRYPOINT_SCRIPT: "/home/node/entrypoint.d/setup-local-deps.js"
     volumes:
       - ${SIMVA_API_GIT_REPO:-/home/vagrant/simva}:/app/
