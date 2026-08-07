@@ -7,7 +7,7 @@ if [[ -e "$SIMVA_DATA_HOME/minio/.migration-in-progress-fs-to-xl" ]]; then
                     --network traefik_services \
                     -v ${SIMVA_CONFIG_HOME}/minio/policies:/policies:ro \
                     -v ${SIMVA_TLS_HOME}/ca:/root/.mc/certs/CAs/ \
-                    --entrypoint /bin/sh \ 
+                    --entrypoint /bin/sh \
                     ${SIMVA_MINIO_MC_IMAGE}:${SIMVA_MINIO_MC_VERSION} \
                     -c "mc config host add simva-minio "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}" ${SIMVA_MINIO_ACCESS_KEY} ${SIMVA_MINIO_SECRET_KEY} &&
                         mc ready simva-minio &&
@@ -49,8 +49,7 @@ else
                 -c "mc config host add simva-minio ${minio_url} ${SIMVA_MINIO_ACCESS_KEY} ${SIMVA_MINIO_SECRET_KEY} ${extra_config} &&
                     mc ready simva-minio &&
                     $code &&
-                    mc --debug mb --ignore-existing simva-minio/${SIMVA_TRACES_BUCKET_NAME}
-                    &&
+                    mc --debug mb --ignore-existing simva-minio/${SIMVA_TRACES_BUCKET_NAME} &&
                     mc --debug mb --ignore-existing simva-minio/${SIMVA_BACKUP_BUCKET_NAME}"
         touch "${SIMVA_DATA_HOME}/minio/.minio-initialized";
     fi
