@@ -16,29 +16,31 @@ networks:
     external: true
 
 services:
-  portainer:
+  dockhand:
     << : *default-opts
-    image: ${SIMVA_PORTAINER_IMAGE:-portainer/portainer-ce}:${SIMVA_PORTAINER_VERSION:-latest}
-    volumes:
-      - portainer-logs:/data
-      - ${SIMVA_CONFIG_HOME:-/home/vagrant/docker-stacks/config}/logs/portainer-config/portainer_password:/tmp/portainer_password:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+    cpus: "0.5"
+    mem_limit: 512m
+    mem_reservation: 256m
+    pids_limit: 256
+    image: ${SIMVA_DOCKHAND_IMAGE:-fnsys/dockhand}:${SIMVA_DOCKHAND_VERSION:-latest}
     restart: unless-stopped
-    command: --admin-password-file "/tmp/portainer_password"
-    hostname: ${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dockhand_data:/app/data
+    hostname: ${SIMVA_DOCKHAND_HOST_SUBDOMAIN:-dockhand}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     networks:
       default:
         aliases:
-          - ${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_DOCKHAND_HOST_SUBDOMAIN:-dockhand}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
       traefik_services:
         aliases:
-          - ${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+          - ${SIMVA_DOCKHAND_HOST_SUBDOMAIN:-dockhand}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-      - "traefik.http.routers.portainer.rule=Host(`${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
-      - "traefik.http.routers.portainer.middlewares=dashboardAuth@file"
+      - "traefik.http.services.dockhand.loadbalancer.server.port=3000"
+      - "traefik.http.routers.dockhand.rule=Host(`${SIMVA_DOCKHAND_HOST_SUBDOMAIN:-dockhand}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.routers.dockhand.middlewares=dashboardAuth@file"
 
 volumes:
-  portainer-logs:
+  dockhand_data:
     external: true

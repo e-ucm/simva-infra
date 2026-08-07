@@ -5,6 +5,7 @@ set -euo pipefail
 # Define folders and corresponding volumes
 declare -A folders_volumes=(
   ["${SIMVA_DATA_HOME}/logs/portainer"]="portainer-logs"
+  ["${SIMVA_DATA_HOME}/logs/dockhand"]="dockhand_data"
 )
 
 for folder in "${!folders_volumes[@]}"; do
