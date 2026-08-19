@@ -36,7 +36,7 @@ export SIMVA_SHLINK_ADMIN_HOST_SUBDOMAIN="shlink-admin"
 #Jupyter Notebook
 export SIMVA_JUPYTER_HOST_SUBDOMAIN="jupyter"
 #LOGS
-export SIMVA_PORTAINER_HOST_SUBDOMAIN="portainer"
+export SIMVA_DOCKHAND_HOST_SUBDOMAIN="dockhand"
 
 #######################
 # SIMVA Git reference #
