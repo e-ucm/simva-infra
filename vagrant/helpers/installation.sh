@@ -56,6 +56,22 @@ else
   echo "unzip already available."
 fi
 
+# --- zip ---
+if ! command -v zip >/dev/null 2>&1; then
+  echo "Installing zip..."
+  sudo apt-get install -y zip
+else
+  echo "zip already available."
+fi
+
+# --- composer ---
+if ! command -v composer >/dev/null 2>&1; then
+  echo "Installing composer..."
+  sudo apt-get install -y composer
+else
+  echo "composer already available."
+fi
+
 # --- Docker ---
 if ! command -v docker >/dev/null 2>&1; then
   echo "Installing Docker CE..."
@@ -142,6 +158,8 @@ echo "sha256sum : $(sha256sum --version || true)"
 echo "dos2unix : $(dos2unix --version || true)"
 
 echo "node : $(node -v || true)"
+
+echo "composer : $(composer -V || true)"
 
 echo "unzip : $(unzip -v || true)"
 
