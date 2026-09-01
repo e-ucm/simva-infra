@@ -333,20 +333,20 @@ export SIMVA_LRSMANAGER_PASSWORD="password"
 # Template Student Username and password FOR KEYCLOAK
 export SIMVA_STUDENT_ALLOWED_ROLE="true"
 export SIMVA_STUDENT_USER="student"
-#export SIMVA_STUDENT_PASSWORD="password"
+#export SIMVA_STUDENT_PASSWORD="student"
 
 # Template teaching-assistant Username and password FOR KEYCLOAK
 export SIMVA_TEACHING_ASSISTANT_ALLOWED_ROLE="true"
 export SIMVA_TEACHING_ASSISTANT_USER="teaching-assistant" 
-#export SIMVA_TEACHING_ASSISTANT_PASSWORD="password" 
+#export SIMVA_TEACHING_ASSISTANT_PASSWORD="teaching-assistant" 
 
 # Template teacher Username and password FOR KEYCLOAK
 export SIMVA_TEACHER_ALLOWED_ROLE="true"
 export SIMVA_TEACHER_USER="teacher"
-#export SIMVA_TEACHER_PASSWORD="password"
+#export SIMVA_TEACHER_PASSWORD="teacher"
 
 # Template researcher Username and password FOR KEYCLOAK
 export SIMVA_RESEARCHER_ALLOWED_ROLE="true"
 export SIMVA_RESEARCHER_USER="researcher"
-#export SIMVA_RESEARCHER_PASSWORD="password"
+#export SIMVA_RESEARCHER_PASSWORD="researcher"
 ########################################################
