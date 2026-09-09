@@ -9,7 +9,7 @@ set -e
 echo $ret
 
 if [[ $ret == 0 ]]; then 
-  cd "/home/node/app"
+  cd "/app"
 
   #start trace allocator
   echo "${NODE_ENV}"

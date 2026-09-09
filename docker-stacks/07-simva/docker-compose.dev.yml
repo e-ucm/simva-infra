@@ -12,43 +12,47 @@ x-default-opts:
 
 services:
   simva-api:
-    build: ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}
+    build: 
+      context: ${SIMVA_API_GIT_REPO:-/home/vagrant/simva}
+      target: dev
     restart: unless-stopped
     environment:
       LOG_LEVEL: "debug"
+      JSTRACKER_LOCAL_DEPLOYMENT: "${SIMVA_JSTRACKER_LIBRARY_LOCAL_DEPLOYMENT}"
+      JSTRACKER_LOCAL_PATH: "/js-tracker"
+      JSTRACKER_ENTRYPOINT_SCRIPT: "/home/node/entrypoint.d/setup-local-deps.js"
     volumes:
-      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/src:/home/node/app/src
-      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/tests:/home/node/app/tests
-      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/public:/home/node/app/public
-      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/package.json:/home/node/app/package.json
-      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/package-lock.json:/home/node/app/package-lock.json
-      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/jest.config.cjs:/home/node/app/jest.config.cjs
-      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/tsconfig.jest.json:/home/node/app/tsconfig.jest.json
-      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/tsconfig.json:/home/node/app/tsconfig.json
-      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}/coverage:/home/node/app/coverage
-      - ${SIMVA_API_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-api}:/home/node/app/
-      - /home/node/app/node_modules  # Exclude node_modules
+      - ${SIMVA_API_GIT_REPO:-/home/vagrant/simva}:/app/
+      - ${SIMVA_JSTRACKER_LIBRARY_LOCAL_PATH:-/home/vagrant/js-tracker}:/js-tracker
+      - /js-tracker/node_modules  # Exclude node_modules
+      - /app/node_modules  # Exclude node_modules
+      - ${STACK_HOME?STACK home folder required}/etc/entrypoint.d/setup-local-deps.js:/home/node/entrypoint.d/setup-local-deps.js
     ports:
       - "127.0.0.1:9229:9229"
       - "127.0.0.1:9232:9230"
   simva-front:
-    build: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}
+    build: 
+      context: ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/simva-front}
+      target: dev
     restart: unless-stopped
     environment:
       LOG_LEVEL: "debug"
     volumes:
-      - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-front}:/home/node/app/
-      - /home/node/app/node_modules  # Exclude node_modules
+      - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/simva-front}:/app/
+      - /app/node_modules  # Exclude node_modules
+      - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/simva-front}/ecosystem.config.dev.js:/app/ecosystem.config.js
     ports:
       - "127.0.0.1:9230:9229"
       - "127.0.0.1:9233:9230"
   simva-trace-allocator:
-    build: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}
+    build: 
+      context: ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/simva-trace-allocator}
+      target: dev
     restart: unless-stopped
     environment:
       LOG_LEVEL: "debug"
     volumes:
-      - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/docker-stacks/data/simva/simva-trace-allocator}:/home/node/app/
-      - /home/node/app/node_modules  # Exclude node_modules
+      - ${SIMVA_TRACE_ALLOCATOR_GIT_REPO:-/home/vagrant/simva-trace-allocator}:/app/
+      - /app/node_modules  # Exclude node_modules
     ports:
       - "127.0.0.1:9231:9229"

@@ -81,6 +81,8 @@ export SIMVA_PUMVA_API_HOST_SUBDOMAIN="pumva-api"
 export SIMVA_PUMVA_HOST_SUBDOMAIN="pumva"
 #LOGS
 export SIMVA_DOZZLE_HOST_SUBDOMAIN="logs"
+#LRS
+export SIMVA_LRS_HOST_SUBDOMAIN="lrs"
 
 #####################
 # Socket Proxy info #
@@ -152,6 +154,7 @@ export SIMVA_MINIO_PRESIGNED_URL_FILE_EXPIRATION_TIME="1h"
 ##############
 export SIMVA_KAFKA_NETWORK="kafka_services"
 export SIMVA_TRACES_BUCKET_NAME="traces"
+export SIMVA_BACKUP_BUCKET_NAME="backup"
 export SIMVA_SINK_TOPICS_DIR="kafka-topics"
 export SIMVA_TRACES_TOPIC="traces"
 export SIMVA_SINK_OUTPUTS_DIR="outputs"
@@ -192,6 +195,15 @@ export SIMVA_TRACE_ALLOCATOR_KAFKA_CLIENT_ID="simva_trace_allocator"
 export SIMVA_TRACE_ALLOCATOR_KAFKA_GROUP_ID="simva_trace_allocator"
 
 export SIMVA_TIMEZONE="Europe/Madrid"
+
+#########################################
+# LRS/DB ENVIRONMENT VARIABLES (from docker-compose.yml)
+#########################################
+# Postgres DB
+export SIMVA_LRS_DB_NAME="lrs"
+
+# LRS Service
+export SIMVA_LRS_SUPPORTED_VERSIONS="1.0.3,2.0.0"
 
 ####################################################################
 ######## Authentification username and password (TO MODIFY) ########
@@ -255,6 +267,18 @@ export SIMVA_SHLINK_API_KEY="password"
 export SIMVA_DOZZLE_USERNAME="simva"
 export SIMVA_DOZZLE_PASSWORD="password"
 
+# Postgres DB
+export SIMVA_LRS_DB_USER="lrs"
+export SIMVA_LRS_DB_PASSWORD="lrs"
+
+# LRS Service
+export SIMVA_LRS_API_KEY_DEFAULT="my_api_key"
+export SIMVA_LRS_API_SECRET_DEFAULT="my_api_secret"
+
+# LRS Service Admin user
+export SIMVA_LRS_ADMIN_USER_DEFAULT="admin"
+export SIMVA_LRS_ADMIN_PASS_DEFAULT="admin_password"
+
 ####################################################################
 # ######################### KEYCLOAK USERS #########################
 # ACCESS_KEY AND SECRET_KEY VARIABLES FOR KEYCLOAK CLIENTS CREATION
@@ -309,20 +333,20 @@ export SIMVA_LRSMANAGER_PASSWORD="password"
 # Template Student Username and password FOR KEYCLOAK
 export SIMVA_STUDENT_ALLOWED_ROLE="true"
 export SIMVA_STUDENT_USER="student"
-#export SIMVA_STUDENT_PASSWORD="password"
+#export SIMVA_STUDENT_PASSWORD="student"
 
 # Template teaching-assistant Username and password FOR KEYCLOAK
 export SIMVA_TEACHING_ASSISTANT_ALLOWED_ROLE="true"
 export SIMVA_TEACHING_ASSISTANT_USER="teaching-assistant" 
-#export SIMVA_TEACHING_ASSISTANT_PASSWORD="password" 
+#export SIMVA_TEACHING_ASSISTANT_PASSWORD="teaching-assistant" 
 
 # Template teacher Username and password FOR KEYCLOAK
 export SIMVA_TEACHER_ALLOWED_ROLE="true"
 export SIMVA_TEACHER_USER="teacher"
-#export SIMVA_TEACHER_PASSWORD="password"
+#export SIMVA_TEACHER_PASSWORD="teacher"
 
 # Template researcher Username and password FOR KEYCLOAK
 export SIMVA_RESEARCHER_ALLOWED_ROLE="true"
 export SIMVA_RESEARCHER_USER="researcher"
-#export SIMVA_RESEARCHER_PASSWORD="password"
+#export SIMVA_RESEARCHER_PASSWORD="researcher"
 ########################################################
