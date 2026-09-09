@@ -20,6 +20,7 @@ services:
       --cors"
     volumes:
       - simva_sqlite_data:/db
+    restart: unless-stopped
     networks:
       default:
         aliases:
