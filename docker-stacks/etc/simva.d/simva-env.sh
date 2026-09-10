@@ -174,6 +174,7 @@ export SIMVA_API_LTI_MONGO_DB="/lti_simva"
 ##############
 export SIMVA_SSO_USER_CAN_SELECT_ROLE="true"
 export SIMVA_SSO_ADMINISTRATOR_CONTACT="contact@administrator.com"
+export SIMVA_SSO_AUTH_METHOD="token_oauth2" # token_oauth2, device_oauth2, simva_device_oauth2
 export SIMVA_LTI_ENABLED="false"
 export SIMVA_I18N_DEBUG="false"
 export SIMVA_LOCALE="en,es"
