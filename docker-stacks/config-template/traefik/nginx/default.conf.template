@@ -161,7 +161,8 @@ server {
     listen       443 ssl;
     listen  [::]:443 ssl;
 
-    server_name ${SIMVA_SERVER_LIST_NAME};
+    # Use file-based include for all server_name lines
+    include /etc/nginx/templates/nginx_upstream_hosts.txt;
 
     ssl_certificate /etc/traefik/ssl/${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME};
     ssl_certificate_key /etc/traefik/ssl/${SIMVA_TRAEFIK_KEY_FILENAME};

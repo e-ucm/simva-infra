@@ -2,7 +2,7 @@
 ################
 # SIMVA STACKS #
 ################
-export SIMVA_STACKS="00-network 01-traefik 09-logs 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 07-simva 08-tmon 10-pumva"
+export SIMVA_STACKS="00-network 01-traefik 09-logs 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 11-lrs 07-simva 08-tmon 10-pumva"
 
 #############################
 # SIMVA installation folder #
@@ -78,10 +78,10 @@ export SIMVA_LIMESURVEY_FILE_MODE="644" #rw-r--r--
 export SIMVA_LIMESURVEY_DB_TABLE_PREFIX=" "
 
 #MINIO IMAGE
-export SIMVA_MINIO_IMAGE="minio/minio"
-export SIMVA_MINIO_VERSION="RELEASE.2025-02-28T09-55-16Z"
-export SIMVA_MINIO_MC_IMAGE="minio/mc"
-export SIMVA_MINIO_MC_VERSION="RELEASE.2025-02-04T04-57-50Z"
+export SIMVA_MINIO_IMAGE="quay.io/minio/minio" #"quay.io/minio/aistor/minio"
+export SIMVA_MINIO_VERSION="RELEASE.2025-02-28T09-55-16Z" #RELEASE.2026-09-07T08-39-31Z
+export SIMVA_MINIO_MC_IMAGE="quay.io/minio/mc" #"quay.io/minio/aistor/mc"
+export SIMVA_MINIO_MC_VERSION="RELEASE.2025-02-04T04-57-50Z" #"RELEASE.2026-09-06T02-44-40Z"
 #MINIO SETTINGS
 export SIMVA_MINIO_GUID="1000" #1000
 export SIMVA_MINIO_UUID="1000" #1000
@@ -177,6 +177,10 @@ export SIMVA_LOGS_TOP_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_LOGS_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_LOGS_FILE_MODE="644" #rw-r--r--
 
+#LRS IMAGE
+export SIMVA_LRS_IMAGE="yetanalytics/lrsql"
+export SIMVA_LRS_VERSION="v0.9.5"
+
 ##########################
 # Extensions and Plugins #
 ##########################
@@ -192,9 +196,9 @@ export SIMVA_CONFLUENCE_CONNECT_S3_REPO="confluentinc/kafka-connect-s3"
 export SIMVA_CONFLUENCE_CONNECT_S3_VERSION="11.0.1"
 
 #Git reference tag version release branch for Limesurvey Plugins
-export SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION="1.5.0"
-export SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION="1.1.0"
-export SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION="1.0.0"
+export SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION="1.6.0"
+export SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION="1.2.0"
+export SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION="1.0.4"
 
 #################################
 # OS and Architecture detection #

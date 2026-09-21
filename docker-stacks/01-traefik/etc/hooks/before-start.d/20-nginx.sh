@@ -10,7 +10,7 @@ if [[ "${SIMVA_DEV_LOAD_BALANCER}" == "false" ]]; then
 fi
 OUTPUT_FILE="${SIMVA_DATA_HOME}/traefik/nginx_upstream_hosts.txt"
 mkdir -p "$(dirname "$OUTPUT_FILE")"
-echo "${SIMVA_EXTERNAL_DOMAIN};" > "$OUTPUT_FILE"
+echo "" > "$OUTPUT_FILE"
 for var in $(compgen -v | grep '^SIMVA_.*_HOST_SUBDOMAIN$'); do
   if [[ "$var" == *"NGINX"* ]] || [[ "$var" == *"MINIO_HOST"* ]] || [[ "$var" == *"SHLINK"* && $SIMVA_SHLINK_USE_SIMVA_EXTERNAL_DOMAIN == false ]]; then
     continue
@@ -21,4 +21,5 @@ for var in $(compgen -v | grep '^SIMVA_.*_HOST_SUBDOMAIN$'); do
     fi
   fi
 done
-export SIMVA_SERVER_LIST_NAME=$(cat "$OUTPUT_FILE");
+echo "Generated Nginx upstream hosts configuration:"
+cat "$OUTPUT_FILE"

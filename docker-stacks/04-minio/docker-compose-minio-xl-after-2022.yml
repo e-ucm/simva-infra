@@ -15,7 +15,7 @@ networks:
 services:
   minio:
     << : *default-opts
-    image: ${SIMVA_MINIO_IMAGE:-quay.io/minio/minio}:${SIMVA_MINIO_VERSION:-RELEASE.2024-06-04T19-20-08Z}
+    image: ${SIMVA_MINIO_IMAGE:-quay.io/minio/aistor/minio}:${SIMVA_MINIO_VERSION:-RELEASE.2024-06-04T19-20-08Z}
     entrypoint: >
       /bin/sh -c '
         if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then

@@ -71,7 +71,7 @@ return array(
                 'sHeaderSignatureName' => '{{ .plugins.webhooks.header_name }}',
                 'sHeaderSignaturePrefix' => '{{ .plugins.webhooks.header_prefix }}',
                 'sId'=> '',
-                'events' => '{"surveyStatus":{"afterSurveyComplete":true,"beforeSurveyPage":true}}'
+                'events' => '{"surveyStatus":{"afterSurveyComplete":true,"beforeSurveyPage":true}, "surveyAdmin":{"afterSurveySave": true, "afterSurveyActivate": true, "afterSurveyDeactivate": true, "afterSurveyDelete": true}}',
             ],
             'hidden' => ['sAuthToken'],
             'sBug' => '{{ .plugins.webhooks.debug }}'
@@ -122,7 +122,16 @@ return array(
 			    'display_name_key' => 'preferred_username',
                 'display_separator_display_name' => ' ',
                 'autocreate_users' => 'true',
-                'autocreate_permissions' => '{ "users": { "create": false, "read": false, "update": false, "delete": false }, "usergroups": { "create": false, "read": false,"update": false, "delete": false }, "labelsets": { "create": false, "read": false, "update": false, "delete": false, "import": false, "export": false }, "templates": { "create": false, "read": false, "update": false, "delete": false, "import": false, "export": false }, "settings": { "read": false, "update": false, "import": false }, "surveys": { "create": true, "read": true, "update": true, "delete": true, "export": true }, "participantpanel": { "create": false, "read": false, "update": false, "delete": false, "import": false, "export": false }, "auth_db": { "read": false } }'
+                'auto_create_participant_panel' => [],
+                'auto_create_labelsets' => [],
+                'auto_create_settings_plugins' => [],
+                'auto_create_surveys_groups' => [],
+                'auto_create_surveys' => ['create_p', 'update_p', 'delete_p', 'import_p', 'export_p'],
+                'auto_create_templates' => ['create_p', 'update_p', 'delete_p', 'import_p', 'export_p'],
+                'auto_create_user_groups' => [],
+                'roles_removetext' => '',
+                'autocreate_roles' => [],
+
 			],
 			'hidden' => ['client_id','client_secret'],
             'debug' => '{{ .plugins.oauth2.debug }}',

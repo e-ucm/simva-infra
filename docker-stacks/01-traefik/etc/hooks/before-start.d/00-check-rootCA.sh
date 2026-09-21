@@ -33,7 +33,7 @@ if [[ -f "${SIMVA_ROOT_CA_FILE}" ]] && [[ "$rootCA_updated" == "false" ]]; then
             "$SIMVA_HOME/simva" backup "$CURRENT_STACK";
             "${HELPERS_STACK_HOME}/01-install-rootCA.sh"
             rootCA_updated=true;
-        else 
+        else
             echo "The root CA certificate is expired. Please update it before starting the stack."
             exit 1
         fi

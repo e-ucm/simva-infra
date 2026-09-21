@@ -5,10 +5,6 @@ set -euo pipefail
 RUNCHECKOUTCODE=false
 RUNBUILDCODE=false
 CHECKLOCALDEPLOYMENT=false
-if [[ -f "$SIMVA_DATA_HOME/simva/migration_sqlite_in_progress" ]]; then
-    echo "Migration of the data in progress. Pass the execution."
-    exit 0
-fi
 if [[ ! -e "${SIMVA_DATA_HOME}/simva/.initialized" ]]; then
     echo "SIMVA it is not initialized, initializing checkout code."
     RUNCHECKOUTCODE=true

@@ -18,7 +18,7 @@ networks:
 services:
   minio-client:
     << : *default-opts
-    image: ${SIMVA_MINIO_MC_IMAGE:-minio/mc}:${SIMVA_MINIO_MC_VERSION:-RELEASE.2024-06-01T15-03-35Z}
+    image: ${SIMVA_MINIO_MC_IMAGE:-quay.io/minio/mc}:${SIMVA_MINIO_MC_VERSION:-RELEASE.2024-06-01T15-03-35Z}
     entrypoint: >
       /bin/sh -c '
       if [ ! -e "/etc/ssl/certs/internal-CA.pem" ]; then

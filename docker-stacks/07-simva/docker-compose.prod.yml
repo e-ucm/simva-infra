@@ -21,6 +21,8 @@ services:
     restart: unless-stopped
     environment:
       LOG_LEVEL: "info"
+    volumes:
+      - ${SIMVA_FRONT_GIT_REPO:-/home/vagrant/simva-front}/ecosystem.config.prod.js:/app/ecosystem.config.js
   simva-trace-allocator:
     image: ${SIMVA_SIMVA_TRACE_ALLOCATOR_IMAGE:-eucm/simva-trace-allocator}:${SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION:-v1.0.0}
     restart: unless-stopped

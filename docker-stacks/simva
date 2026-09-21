@@ -97,6 +97,12 @@ function main() {
             install "1" "true" ${@%/}
             exit 0
         ;;
+        "updatecerts")  
+            check_docker_launched
+            setExecutable_scripts_from_folder ${SIMVA_BIN_HOME}
+            "${SIMVA_BIN_HOME}/update-certs.sh"
+            exit 0
+        ;;
         "uninstall")
             check_docker_launched
             uninstall "1" ${@%/}
@@ -608,6 +614,8 @@ See ${SIMVA_PROJECT_URL} for details.
 OPERATION one of the following:
     install:
         Install SIMVA locally (download docker images, build required tools, etc.)
+    updatecerts:
+        Update if SIMVA_TLS_GENERATE_SELF_SIGNED = false the root CA certificate and its fullchain in case it is expired from ${SIMVA_HOME}/../${SIMVA_EXTERNAL_DOMAIN}.pem;-key.pem;-fullchain.pem if exist and from ${SIMVA_HOME}/../${SIMVA_SHLINK_EXTERNAL_DOMAIN}.pem;-key.pem;-fullchain.pem if exist.
     uninstall:
         Stop and remove containers, without removing docker external volumes and data.
     purge:
@@ -764,6 +772,7 @@ compare_versions() {
 # Migrate DB stack
 function migrate_db() {
     echo "Migrate DB : $@"
+    shift
     if [[ $# -lt 1 ]]; then
         echo >&2 "missing wait_time"
         exit 1
@@ -796,6 +805,8 @@ function migrate_db() {
         execute_after_hooks ${phase} ${stack}
         echo "Migrate DB ${stack} done!"
     done
+    echo "Restarting migrated stack(s): ${stacks}"
+    start "${wait_time}" "false" ${stacks}
     echo "Migrate DB done!"
 }
 

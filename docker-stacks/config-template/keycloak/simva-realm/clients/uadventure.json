@@ -31,7 +31,7 @@
     "saml.force.post.binding": "false",
     "saml.multivalued.roles": "false",
     "post.logout.redirect.uris": "+",
-    "oauth2.device.authorization.grant.enabled": "false",
+    "oauth2.device.authorization.grant.enabled": "true",
     "backchannel.logout.revoke.offline.tokens": "false",
     "saml.server.signature.keyinfo.ext": "false",
     "use.refresh.tokens": "true",
