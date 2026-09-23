@@ -10,7 +10,11 @@ BACKUP_VOLUME="minio_data"
 # Check if the container is running
 source "${SIMVA_BIN_HOME}/check-docker-running.sh"
 export RUN_IN_CONTAINER=true
-export RUN_IN_CONTAINER_NAME="minio"
+if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
+    export RUN_IN_CONTAINER_NAME="rustfs"
+else 
+    export RUN_IN_CONTAINER_NAME="minio"
+fi
 _stop_docker_container_if_running
 
 echo "💾 Creating new backup..."

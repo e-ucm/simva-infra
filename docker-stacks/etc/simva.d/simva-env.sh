@@ -63,6 +63,8 @@ export SIMVA_LIMESURVEY_HOST_SUBDOMAIN="limesurvey"
 #Minio host
 export SIMVA_MINIO_HOST_SUBDOMAIN="minio"
 export SIMVA_MINIO_API_HOST_SUBDOMAIN="minio-api"
+export SIMVA_RUSTFS_HOST_SUBDOMAIN="rustfs"
+export SIMVA_RUSTFS_API_HOST_SUBDOMAIN="rustfs-api"
 #Analytics A2 host
 export SIMVA_ANALYTICS_HOST_SUBDOMAIN="analytics"
 #SIMVA MONGO DB 
@@ -244,6 +246,10 @@ export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="password"
 
 #Limesurvey Webhook Api Token
 export SIMVA_LIMESURVEY_WEBHOOK_API_TOKEN="secret"
+
+#RustFS default administrator
+export SIMVA_RUSTFS_ACCESS_KEY="admin-rustfs"
+export SIMVA_RUSTFS_SECRET_KEY="password-rustfs"
 
 #Minio default administrator
 export SIMVA_MINIO_ACCESS_KEY="minio"

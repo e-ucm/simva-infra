@@ -2,6 +2,11 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
+if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
+  echo "⚠️  RustFS is enabled, skipping Minio data migration."
+  exit 0
+fi
+
 # Define folders and corresponding volumes
 declare -A folders_volumes=(
   ["${SIMVA_DATA_HOME}/minio"]="minio_data"

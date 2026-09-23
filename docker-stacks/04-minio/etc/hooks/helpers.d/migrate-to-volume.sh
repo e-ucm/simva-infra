@@ -16,17 +16,19 @@ if [[ -d "${SIMVA_DATA_HOME}/minio" ]]; then
   ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_DATA_HOME}/minio"
 fi
 
-"${SIMVA_BIN_HOME}/volumectl.sh" exec "minio_data" "/minio" "
+if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
+    "${SIMVA_BIN_HOME}/volumectl.sh" exec "minio_data" "/rustfs" "
     # Set ownership recursively
-    chown -R ${SIMVA_MINIO_GUID}:${SIMVA_MINIO_UUID} /minio;
+    chown -R ${SIMVA_RUSTFS_GUID}:${SIMVA_RUSTFS_UUID} /rustfs;
     
     # Top-level volume directory
-    chmod ${SIMVA_MINIO_TOP_DIR_MODE} /minio;
+    chmod ${SIMVA_RUSTFS_TOP_DIR_MODE} /rustfs;
 
     # Directories
-    find /minio -type d -print0 | xargs -0 chmod ${SIMVA_MINIO_DIR_MODE};
+    find /rustfs -type d -print0 | xargs -0 chmod ${SIMVA_RUSTFS_DIR_MODE};
 
     # Files
-    find /minio -type f -print0 | xargs -0 chmod ${SIMVA_MINIO_FILE_MODE};
-    ls -lia /minio;
-  "
+    find /rustfs -type f -print0 | xargs -0 chmod ${SIMVA_RUSTFS_FILE_MODE};
+    ls -lia /rustfs;
+"
+fi

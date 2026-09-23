@@ -1,0 +1,69 @@
+version: '3.7'
+
+x-default-opts: 
+  &default-opts
+  logging:
+    options:
+      max-size: "${SIMVA_LOGGING_MAX_FILE_SIZE}"
+      max-file: "${SIMVA_LOGGING_MAX_FILES}"
+
+networks:
+  traefik_services:
+    name: "${SIMVA_SERVICE_NETWORK:-traefik_services}"
+    external: true
+
+services:
+  rustfs:
+    << : *default-opts
+    image: ${SIMVA_RUSTFS_IMAGE:-rustfs/rustfs}:${SIMVA_RUSTFS_VERSION:-1.0.0}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - rustfs_data:/data/rustfs
+      - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/opt/tls
+      - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
+      - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh:ro
+    environment:
+      RUSTFS_VOLUMES: /data/rustfs
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+      RUSTFS_CONSOLE_ENABLE: true
+      RUSTFS_CONSOLE_CORS_ALLOWED_ORIGINS: "*"
+      RUSTFS_ACCESS_KEY: "${SIMVA_RUSTFS_ACCESS_KEY:-minio}"
+      RUSTFS_SECRET_KEY: "${SIMVA_RUSTFS_SECRET_KEY:-secret}"
+      RUSTFS_OBS_LOGGER_LEVEL: info
+      RUSTFS_BROWSER_REDIRECT_URL: "https://${SIMVA_RUSTFS_HOST_SUBDOMAIN:-rustfs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      RUSTFS_SERVER_URL: "https://${SIMVA_RUSTFS_API_HOST_SUBDOMAIN:-rustfs-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      #RUSTFS_TLS_PATH: /opt/tls
+      RUSTFS_OBS_ENDPOINT: http://otel-collector:4318
+      OTEL_RESOURCE_ATTRIBUTES: ${OTEL_RESOURCE_ATTRIBUTES:-rustfs.cluster.id=rustfs-dev}
+      WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
+      SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
+      SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -sS http://localhost:9000/minio/health/live || exit 1"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    hostname: ${SIMVA_RUSTFS_HOST_SUBDOMAIN:-rustfs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    networks:
+      default:
+        aliases:
+          - ${SIMVA_RUSTFS_HOST_SUBDOMAIN:-rustfs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+      traefik_services:
+        aliases:
+          - ${SIMVA_RUSTFS_HOST_SUBDOMAIN:-rustfs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.rustfs-ui-service.loadbalancer.server.port=9001"
+      - "traefik.http.routers.rustfs-ui.service=rustfs-ui-service"
+      - "traefik.http.routers.rustfs-ui.rule=Host(`${SIMVA_RUSTFS_HOST_SUBDOMAIN:-rustfs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+      - "traefik.http.services.rustfs-api-service.loadbalancer.server.port=9000"
+      - "traefik.http.routers.rustfs-api.service=rustfs-api-service"
+      - "traefik.http.routers.rustfs-api.rule=Host(`${SIMVA_RUSTFS_API_HOST_SUBDOMAIN:-rustfs-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
+
+volumes:
+  rustfs_data:
+    external: true
+  minio_data:
+    external: true

@@ -224,7 +224,7 @@ migrate_to_volume() {
 # --- Copy volume into a new volume ---
 copy_volume() {
   local volume=$1
-  local new_volume = $2
+  local new_volume=$2
 
   if ! docker volume inspect "$volume" >/dev/null 2>&1; then
     echo "❌  Volume '$volume' to copy not exist. Skipping copy."
