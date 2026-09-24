@@ -18,7 +18,7 @@ services:
     image: ${SIMVA_RUSTFS_IMAGE:-rustfs/rustfs}:${SIMVA_RUSTFS_VERSION:-1.0.0}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - rustfs_data:/data/rustfs
+      - minio_data:/data/rustfs
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/opt/tls
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh:ro
@@ -63,7 +63,5 @@ services:
       - "traefik.http.routers.rustfs-api.rule=Host(`${SIMVA_RUSTFS_API_HOST_SUBDOMAIN:-rustfs-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
 volumes:
-  rustfs_data:
-    external: true
   minio_data:
     external: true

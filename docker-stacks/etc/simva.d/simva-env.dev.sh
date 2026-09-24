@@ -7,7 +7,7 @@ export SIMVA_DEBUG="true"
 ###########################
 # SIMVA LOCAL DEVELOPMENT #
 ###########################
-export SIMVA_DEVELOPMENT_LOCAL="false"
+export SIMVA_DEVELOPMENT_LOCAL="true"
 
 ###########################
 # SIMVA Load Balancer IPs #
@@ -52,16 +52,16 @@ export SIMVA_LIMESURVEY_DOCKER_GIT_REF="6.16.16-apache"
 export SIMVA_TMON_GIT_REF="v1.0.0-alpha"
 export SIMVA_TMON_ANACONDA_GIT_REF="v0.0.1"
 
-export SIMVA_KEYCLOAK_EXTENSION_LOCAL_DEPLOYMENT=false
-export SIMVA_KAFKA_EXTENSION_LOCAL_DEPLOYMENT=false
-export SIMVA_LIMESURVEY_PLUGIN_LOCAL_DEPLOYMENT=false
-export SIMVA_JSTRACKER_LIBRARY_LOCAL_DEPLOYMENT=false
+export SIMVA_KEYCLOAK_EXTENSION_LOCAL_DEPLOYMENT=true
+export SIMVA_KAFKA_EXTENSION_LOCAL_DEPLOYMENT=true
+export SIMVA_LIMESURVEY_PLUGIN_LOCAL_DEPLOYMENT=true
+export SIMVA_JSTRACKER_LIBRARY_LOCAL_DEPLOYMENT=true
 
 ################################################
 # Database migration check for SIMVA and PUMVA #
 ################################################
-export SIMVA_SIMVA_DATABASE_CHECK="false"
-export SIMVA_PUMVA_DATABASE_CHECK="false"
+export SIMVA_SIMVA_DATABASE_CHECK="true"
+export SIMVA_PUMVA_DATABASE_CHECK="true"
 
 #####################
 # Socket Proxy info #
