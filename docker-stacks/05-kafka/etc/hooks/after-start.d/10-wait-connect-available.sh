@@ -8,7 +8,15 @@ else
   ${SIMVA_BIN_HOME}/wait-available.sh "Keycloak SIMVA REALM" "https://${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/auth/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration" "true" "$SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE";
 fi
 
-${SIMVA_BIN_HOME}/wait-available.sh "Minio" "https://${SIMVA_MINIO_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/minio/health/live" "true" "$SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE";
+if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
+  url="https://${SIMVA_RUSTFS_HOST_SUBDOMAIN:-rustfs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/health/live"
+  name="RustFS"
+else 
+  url="https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/minio/health/live"
+  name="Minio"
+fi
+
+${SIMVA_BIN_HOME}/wait-available.sh "$name" "$url" "true" "$SIMVA_TRAEFIK_FULLCHAIN_CERT_FILE";
 
 export RUN_IN_CONTAINER=true
 export RUN_IN_CONTAINER_NAME="connect"

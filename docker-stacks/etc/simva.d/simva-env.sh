@@ -207,6 +207,7 @@ export SIMVA_LRS_DB_NAME="lrs"
 
 # LRS Service
 export SIMVA_LRS_SUPPORTED_VERSIONS="1.0.3,2.0.0"
+export SIMVA_TMON_LRS_LAG_SECONDS=60
 
 ####################################################################
 ######## Authentification username and password (TO MODIFY) ########

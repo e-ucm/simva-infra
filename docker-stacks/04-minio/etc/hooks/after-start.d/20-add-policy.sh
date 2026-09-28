@@ -11,6 +11,7 @@ if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
     addhostcommand="alias set"
     userlistcommand="admin user ls"
     policylistcommand="admin policy ls"
+    bucketlistcommand="bucket list"
     camount=""
     caenv=""
 else 
@@ -24,6 +25,7 @@ else
     addhostcommand="config host add"
     userlistcommand="admin user list"
     policylistcommand="admin policy list"
+    bucketlistcommand="ls"
     camount="-v ${SIMVA_TLS_HOME}/ca:/root/.mc/certs/CAs/"
     caenv=""
 fi
@@ -51,23 +53,29 @@ else
     format=$("${SIMVA_BIN_HOME}/volumectl.sh" exec "minio_data" "/vol" cat "/vol/.minio.sys/format.json")
     format=$(echo $format | jq '.format')
     echo $format
-    if [[ $format == '"fs"' ]]; then
+if [[ $format == '"fs"' ]]; then
         #FS BEFORE UPGRADE
         extra_config=""
         policycreate="${containercommand} --debug admin policy add simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json"
         policyattach="${containercommand} --debug admin policy set simva-minio/ simvaSink user=${SIMVA_KAFKA_CONNECT_SINK_USER}"
+        bucketcreate="${containercommand} mb --ignore-existing simva-minio/"
     else 
         #XL AFTER UPGRADE
         extra_config=""
         [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]] || extra_config="--api s3v4"
         policycreate="${containercommand} --debug admin policy create simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json"
         policyattach="${containercommand} --debug admin policy attach simva-minio/ simvaSink --user ${SIMVA_KAFKA_CONNECT_SINK_USER}"
+        if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
+            bucketcreate="${containercommand} mb --ignore-existing simva-minio/"
+        else
+            bucketcreate="${containercommand} mb --ignore-existing simva-minio/"
+        fi
     fi
     code="$(cat <<EOF
 ${containercommand} ${addhostcommand} simva-minio ${url} ${accesskey} ${secretkey} ${extra_config} &&
 ${containercommand} ready simva-minio &&
 user_list="\$(${containercommand} ${userlistcommand} simva-minio/)" &&
-bucket_list="\$(${containercommand} ls simva-minio/)" &&
+bucket_list="\$(${containercommand} ${bucketlistcommand} simva-minio/)" &&
 policy_list="\$(${containercommand} ${policylistcommand} simva-minio/)" &&
 case "\$user_list" in
     *"${SIMVA_KAFKA_CONNECT_SINK_USER}"*) : ;;
@@ -80,11 +88,11 @@ esac &&
 ${policyattach} &&
 case "\$bucket_list" in
     *"${SIMVA_TRACES_BUCKET_NAME}"*) echo "Bucket ${SIMVA_TRACES_BUCKET_NAME} already exists." ;;
-    *) echo "Creating bucket ${SIMVA_TRACES_BUCKET_NAME}."; ${containercommand} --debug mb --ignore-existing simva-minio/${SIMVA_TRACES_BUCKET_NAME} ;;
+    *) echo "Creating bucket ${SIMVA_TRACES_BUCKET_NAME}."; ${bucketcreate}${SIMVA_TRACES_BUCKET_NAME} ;;
 esac &&
 case "\$bucket_list" in
     *"${SIMVA_BACKUP_BUCKET_NAME}"*) echo "Bucket ${SIMVA_BACKUP_BUCKET_NAME} already exists." ;;
-    *) echo "Creating bucket ${SIMVA_BACKUP_BUCKET_NAME}."; ${containercommand} --debug mb --ignore-existing simva-minio/${SIMVA_BACKUP_BUCKET_NAME} ;;
+    *) echo "Creating bucket ${SIMVA_BACKUP_BUCKET_NAME}."; ${bucketcreate}${SIMVA_BACKUP_BUCKET_NAME} ;;
 esac
 EOF
 )"
@@ -92,5 +100,5 @@ EOF
     [[ -n "${camount}" ]] && docker_args+=(${camount})
     [[ -n "${caenv}" ]] && docker_args+=(${caenv})
     docker_args+=(--entrypoint /bin/sh "${dockerimage}:${dockerversion}" -c "$code")
-    docker run "${docker_args[@]}"
+    docker run --rm "${docker_args[@]}"
 fi

@@ -7,6 +7,16 @@ export RUN_IN_CONTAINER_NAME="connect"
 
 connector_name=$(jq '.name' "${SIMVA_CONFIG_TEMPLATE_HOME}/kafka/connect/simva-sink.json" -r)
 
+if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
+  minioUrl="https://${SIMVA_RUSTFS_API_HOST_SUBDOMAIN:-rustfs-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
+  minioUser="${SIMVA_RUSTFS_ACCESS_KEY}"
+  minioSecret="${SIMVA_RUSTFS_SECRET_KEY}"
+else
+  minioUrl="https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
+  minioUser="${SIMVA_KAFKA_CONNECT_SINK_USER}"
+  minioSecret="${SIMVA_KAFKA_CONNECT_SINK_SECRET}"
+fi
+
 set +e
 "${SIMVA_BIN_HOME}/run-command.sh" curl -f -sS \
   --header 'Content-Type: application/json' \
@@ -33,9 +43,9 @@ scheduleIntervalMin="${SIMVA_TRACES_ROTATE_SCHEDULE_INTERVAL_IN_MIN}"
 scheduleIntervalMs=$((scheduleIntervalMin * 60 * 1000))
 
 cat ${SIMVA_CONFIG_TEMPLATE_HOME}/kafka/connect/simva-sink.json | jq \
-  --arg minioUrl "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/" \
-  --arg minioUser "${SIMVA_KAFKA_CONNECT_SINK_USER}" \
-  --arg minioSecret "${SIMVA_KAFKA_CONNECT_SINK_SECRET}" \
+  --arg minioUrl "$minioUrl" \
+  --arg minioUser "$minioUser" \
+  --arg minioSecret "$minioSecret" \
   --arg bucketName "${SIMVA_TRACES_BUCKET_NAME}" \
   --arg topicsDir "${SIMVA_SINK_TOPICS_DIR}" \
   --arg topics "${SIMVA_TRACES_TOPIC}" \
