@@ -93,6 +93,7 @@ services:
           - "${SIMVA_SHLINK_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN:-tmon}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_DOZZLE_HOST_SUBDOMAIN:-logs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_LRS_HOST_SUBDOMAIN:-lrs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       traefik_admin:
         aliases:
           - "socket-proxy.${SIMVA_INTERNAL_DOMAIN:-internal.test}"
