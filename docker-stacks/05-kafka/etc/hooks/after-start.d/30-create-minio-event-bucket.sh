@@ -45,66 +45,93 @@ fi
 
 export RUN_IN_CONTAINER_NAME="minio-client"
 if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
+# RustFS exposes the kafka target as a single built-in instance named after the
+# scope, so its ARN carries no instance id and no region.
+kafkaTargetArn="arn:minio:sqs::notify_kafka"
+# The stock queue_dir (/opt/rustfs/events) does not exist in the container, and
+# the target silently fails to initialise when it cannot be created.
+kafkaQueueDir="${SIMVA_RUSTFS_NOTIFY_QUEUE_DIR:-/data/rustfs/events}"
 code="$(cat <<EOF
-${containercommand} ${addhostcommand} simva-minio ${url} ${accesskey} ${secretkey} &&
-${containercommand} ready simva-minio &&
-adminInfo=\$(${containercommand} bucket event list --json simva-minio/${SIMVA_TRACES_BUCKET_NAME} 2>/dev/null || echo '{"notifications":[]}') &&
-hasNotifications=false
-if echo "\$adminInfo" | jq -e '.notifications | length > 0' >/dev/null 2>&1; then
-    hasNotifications=true
+# This snippet runs under /bin/sh (busybox in rustfs/rc), so it must stay POSIX:
+# no [[ ... ]], and never more than one test per command.
+retry() {
+    tries=0
+    while [ \$tries -lt 5 ]; do
+        if "\$@"; then
+            return 0
+        fi
+        tries=\$((tries + 1))
+        sleep 3
+    done
+    echo "Command failed after \$tries attempts: \$*"
+    return 1
+}
+
+# rc ready answers against the old listener while the service is still shutting
+# down, so poll for a while instead of trusting a single check.
+wait_for_${name}() {
+    tries=0
+    while [ \$tries -lt 20 ]; do
+        if ${containercommand} ready simva-minio >/dev/null 2>&1; then
+            return 0
+        fi
+        tries=\$((tries + 1))
+        sleep 2
+    done
+    echo "Timed out waiting for ${name} to accept connections"
+    return 1
+}
+
+# "rc ready <alias>" needs the alias to exist first, and the alias needs the
+# server to be up, so register it with retries and only then poll for readiness.
+retry ${containercommand} ${addhostcommand} simva-minio ${url} ${accesskey} ${secretkey} || exit 1
+wait_for_${name} || exit 1
+
+# RustFS only accepts the bare scope name here. The named "notify_kafka:<id>"
+# form that MinIO accepts is rejected with "Configuration error".
+# The queue dir has to be checked too: leaving it at the /opt/rustfs/events
+# default makes the target fail to initialise and silently drop every event.
+notifyConfig=\$(${containercommand} admin config get simva-minio notify_kafka 2>/dev/null)
+if ! echo "\$notifyConfig" | grep -q 'brokers="kafka1.${SIMVA_INTERNAL_DOMAIN}:19092"' ||
+   ! echo "\$notifyConfig" | grep -q 'queue_dir="${kafkaQueueDir}"'; then
+    echo "Configuring the kafka notification target on ${name}..."
+    echo "\$notifyConfig"
+    ${containercommand} admin config set simva-minio notify_kafka \\
+        enable=on \\
+        brokers=kafka1.${SIMVA_INTERNAL_DOMAIN}:19092 \\
+        topic=${SIMVA_MINIO_EVENTS_TOPIC} \\
+        queue_dir=${kafkaQueueDir} || exit 1
+    ${containercommand} admin service restart simva-minio/ >/dev/null
+    wait_for_${name} || exit 1
 fi
-if [[ "\$hasNotifications" == "true" ]]; then
-    echo "Kafka event already exists in ${name}. Checking for conflicts..."
-    echo \$adminInfo
-    # rustfs bucket event list returns object with notifications array
-    fileUploadArn=\$(echo \$adminInfo | jq -r '.notifications[] | select(.arn | test("minio-file-upload")) | .arn' 2>/dev/null || echo "")
-    echo \$fileUploadArn
-    if [[ -n \$fileUploadArn && \$fileUploadArn != "null" ]]; then
-        echo "Found. Removing existing notification config..."
-        ${containercommand} bucket event remove simva-minio/${SIMVA_TRACES_BUCKET_NAME} \$fileUploadArn
-        export RUN_IN_FLAG_UI=true
-        ${containercommand} --debug admin service restart simva-minio/
-        export RUN_IN_FLAG_UI=false
-        ${containercommand} ready simva-minio
-    else 
-        echo "Creating event listener"
-        ${containercommand} --debug admin config set simva-minio notify_kafka:minio-file-upload brokers=kafka1.${SIMVA_INTERNAL_DOMAIN}:19092 topic=${SIMVA_MINIO_EVENTS_TOPIC}
-        echo "Event listener created"
-        export RUN_IN_FLAG_UI=true
-        ${containercommand} --debug admin service restart simva-minio/
-        export RUN_IN_FLAG_UI=false
-        ${containercommand} ready simva-minio
-    fi
-    # Get the ARN from the kafka notification we just created
-    info=\$(${containercommand} bucket event list --json simva-minio/${SIMVA_TRACES_BUCKET_NAME} 2>/dev/null || echo '{"notifications":[]}')
-    arn=\$(echo \$info | jq -r '.notifications[] | select(.arn | test("minio-file-upload")) | .arn' 2>/dev/null || echo "")
-    echo \$arn
-    if [[ -n \$arn && \$arn != "null" ]]; then
-        # rustfs bucket event add doesn't support prefix/suffix, they must be configured differently
-        ${containercommand} --debug bucket event add simva-minio/${SIMVA_TRACES_BUCKET_NAME} \$arn --event put
-    else
-        echo "No ARN found for minio-file-upload notification"
-        exit 1
-    fi
-else
-    echo "No existing notifications found. Creating event listener"
-    ${containercommand} --debug admin config set simva-minio notify_kafka:minio-file-upload brokers=kafka1.${SIMVA_INTERNAL_DOMAIN}:19092 topic=${SIMVA_MINIO_EVENTS_TOPIC}
-    echo "Event listener created"
-    export RUN_IN_FLAG_UI=true
-    ${containercommand} --debug admin service restart simva-minio/
-    export RUN_IN_FLAG_UI=false
-    ${containercommand} ready simva-minio
-    # Get the ARN from the kafka notification we just created
-    info=\$(${containercommand} bucket event list --json simva-minio/${SIMVA_TRACES_BUCKET_NAME} 2>/dev/null || echo '{"notifications":[]}')
-    arn=\$(echo \$info | jq -r '.notifications[] | select(.arn | test("minio-file-upload")) | .arn' 2>/dev/null || echo "")
-    echo \$arn
-    if [[ -n \$arn && \$arn != "null" ]]; then
-        ${containercommand} --debug bucket event add simva-minio/${SIMVA_TRACES_BUCKET_NAME} \$arn --event put
-    else
-        echo "No ARN found for minio-file-upload notification"
-        exit 1
-    fi
+
+# rc cannot update a rule in place and PutBucketNotificationConfiguration
+# replaces the whole rule set, so drop any stale kafka rule before re-adding it.
+# Skipping this left the bucket with no rule at all on the previous run.
+listRules() {
+    ${containercommand} bucket event list --json simva-minio/${SIMVA_TRACES_BUCKET_NAME} 2>/dev/null
+}
+retry listRules > /tmp/simva-event-rules.json || exit 1
+staleArn=\$(jq -r '.notifications[]? | select(.arn | test("kafka")) | .arn' < /tmp/simva-event-rules.json 2>/dev/null)
+if [ -n "\$staleArn" ]; then
+    echo "Removing existing notification rule: \$staleArn"
+    retry ${containercommand} bucket event remove simva-minio/${SIMVA_TRACES_BUCKET_NAME} "\$staleArn" >/dev/null || exit 1
 fi
+
+# rc bucket event add has no --prefix/--suffix, so the rule matches every
+# object in the bucket.
+echo "Adding object-created notification for ${kafkaTargetArn}"
+retry ${containercommand} bucket event add simva-minio/${SIMVA_TRACES_BUCKET_NAME} ${kafkaTargetArn} --event put || exit 1
+
+# rc reports success even when the server rejects the rule, so verify it stuck.
+retry listRules > /tmp/simva-event-rules.json || exit 1
+arn=\$(jq -r '.notifications[]? | select(.arn | test("kafka")) | .arn' < /tmp/simva-event-rules.json 2>/dev/null)
+if [ -z "\$arn" ]; then
+    echo "No kafka notification rule is registered on ${name}/${SIMVA_TRACES_BUCKET_NAME}"
+    cat /tmp/simva-event-rules.json
+    exit 1
+fi
+echo "Kafka event notification ready on \$arn"
 EOF
 )"
 else
@@ -112,7 +139,7 @@ code="$(cat <<EOF
 ${containercommand} ${addhostcommand} simva-minio ${url} ${accesskey} ${secretkey} &&
 ${containercommand} ready simva-minio &&
 adminInfo=\$(${containercommand} admin info --json simva-minio/${SIMVA_TRACES_BUCKET_NAME}) &&
-if [[ -n "\$adminInfo" ]]; then
+if [ -n "\$adminInfo" ]; then
     echo "Kafka event already exists in ${name}. Checking for conflicts..."
     info=\$(echo \$adminInfo | jq ".info")
     echo \$info
@@ -121,7 +148,7 @@ if [[ -n "\$adminInfo" ]]; then
     echo \$arnTable
     fileUploadArn=\$(echo "\$arn" | jq '.[] | select(test("minio-file-upload"))')
     echo \$fileUploadArn
-    if [[ -n \$fileUploadArn ]]; then
+    if [ -n "\$fileUploadArn" ]; then
         echo "Found. Removing existing notification config..."
         ${containercommand} event rm --force simva-minio/${SIMVA_TRACES_BUCKET_NAME}
         export RUN_IN_FLAG_UI=true

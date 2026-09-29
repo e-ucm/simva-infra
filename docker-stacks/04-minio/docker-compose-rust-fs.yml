@@ -36,6 +36,14 @@ services:
       #RUSTFS_TLS_PATH: /opt/tls
       RUSTFS_OBS_ENDPOINT: http://otel-collector:4318
       OTEL_RESOURCE_ATTRIBUTES: ${OTEL_RESOURCE_ATTRIBUTES:-rustfs.cluster.id=rustfs-dev}
+      # Bucket event notifications are disabled unless the notify module is
+      # explicitly enabled. The queue dir must be writable by the runtime user
+      # (uid 10001); the default /opt/rustfs/events does not exist.
+      RUSTFS_NOTIFY_ENABLE: "true"
+      RUSTFS_NOTIFY_KAFKA_ENABLE: "on"
+      RUSTFS_NOTIFY_KAFKA_BROKERS: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092"
+      RUSTFS_NOTIFY_KAFKA_TOPIC: "${SIMVA_MINIO_EVENTS_TOPIC:-minio-events}"
+      RUSTFS_NOTIFY_KAFKA_QUEUE_DIR: "${SIMVA_RUSTFS_NOTIFY_QUEUE_DIR:-/data/rustfs/events}"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
       SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
       SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
