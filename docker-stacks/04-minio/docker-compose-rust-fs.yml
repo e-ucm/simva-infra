@@ -28,6 +28,15 @@ services:
       RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
       RUSTFS_CONSOLE_ENABLE: true
       RUSTFS_CONSOLE_CORS_ALLOWED_ORIGINS: "*"
+      # S3 API CORS. Unset means RustFS answers with no CORS headers at all,
+      # which breaks the presigned trace uploads performed by the browser.
+      # Browser origins allowed to call the RustFS S3 API directly.
+      # The SIMVA front end uploads study traces straight to RustFS using the presigned
+      # URLs handed out by the SIMVA API, so the S3 listener must accept that origin.
+      # RustFS emits NO CORS headers when this is empty, so it cannot be left unset.
+      # Comma separated list. Use * only for public resources: wildcard does not allow
+      # credentialed browser requests.
+      RUSTFS_CORS_ALLOWED_ORIGINS: "https://${SIMVA_EXTERNAL_DOMAIN}"
       RUSTFS_ACCESS_KEY: "${SIMVA_RUSTFS_ACCESS_KEY:-minio}"
       RUSTFS_SECRET_KEY: "${SIMVA_RUSTFS_SECRET_KEY:-secret}"
       RUSTFS_OBS_LOGGER_LEVEL: info
