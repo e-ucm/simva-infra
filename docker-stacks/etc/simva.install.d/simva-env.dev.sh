@@ -41,7 +41,7 @@ export SIMVA_MONGOKU_UI_VERSION="latest"
 
 # Anaconda Jupyter image
 export SIMVA_ANACONDA_IMAGE="continuumio/anaconda3"
-export SIMVA_ANACONDA_VERSION="2024.02-1"
+export SIMVA_ANACONDA_VERSION="2024.10-1"
 # Anaconda Jupyter SETTINGS
 export SIMVA_JUPYTER_GUID="anaconda" #anaconda
 export SIMVA_JUPYTER_UUID="anaconda" #anaconda
