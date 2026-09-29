@@ -334,6 +334,11 @@ export SIMVA_ADMINISTRATOR_PASSWORD="administrator"
 export SIMVA_LRSMANAGER_USER="mylrsmanager"
 export SIMVA_LRSMANAGER_PASSWORD="password"
 
+# GARBAGE COLLECTOR (trace allocator) Username and password FOR KEYCLOAK
+# Read only role: it can only query data from the SIMVA API, it cannot modify anything
+export SIMVA_GARBAGECOLLECTOR_USER="garbagecollector"
+export SIMVA_GARBAGECOLLECTOR_PASSWORD="password"
+
 ########################################################
 # Uncomment password if you want to set up for those template users
 # else it is generated automatically by script
