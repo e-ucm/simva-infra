@@ -1,0 +1,19 @@
+{
+    "id" : "9896be6a-fbdc-4dc7-b382-e6c0a31ac999",
+    "createdTimestamp" : 1592586858577,
+    "username" :  "{{ .users.garbagecollector.username }}",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "GarbageCollector",
+    "lastName" : "GarbageCollector",
+    "email" :  "{{ .users.garbagecollector.username }}@{{ .clients.simva.externalDomain }}",
+    "attributes" : {
+    },
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "garbagecollector" ],
+    "clientRoles" : {},
+    "notBefore" : 0,
+    "groups" : [ ]
+}

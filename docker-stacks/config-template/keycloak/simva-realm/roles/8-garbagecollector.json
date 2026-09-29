@@ -1,0 +1,9 @@
+{
+    "id": "e5c11049-180b-4a3e-8bae-70dff5f383b5",
+    "name": "garbagecollector",
+    "description": "Read only role for the trace allocator / garbage collector service account",
+    "composite": false,
+    "clientRole": false,
+    "containerId": "{{ .clients.simva.realmId }}",
+    "attributes": {}
+}

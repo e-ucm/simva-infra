@@ -101,7 +101,7 @@ clients:
 users:
 EOF
 
-    users="student teaching_assistant teacher researcher administrator lrsmanager"
+    users="student teaching_assistant teacher researcher administrator lrsmanager garbagecollector"
     for user in $users; do
         user=$(echo ${user} | sed -e 's/[^0-9A-Za-z_]/_/g' )
         user_username=$(get_or_generate_username "${user}" "${STACK_CONF}/simva-env.sh" "USER")
