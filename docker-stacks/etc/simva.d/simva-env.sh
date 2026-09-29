@@ -319,6 +319,12 @@ export SIMVA_TMON_CLIENT_SECRET="secret"
 export SIMVA_PUMVA_CLIENT_ID="pumva"
 export SIMVA_PUMVA_CLIENT_SECRET="secret"
 
+# TRACE ALLOCATOR (garbage collector) ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
+# Confidential client used by the trace allocator to request a Keycloak access token
+# through the OAuth2 resource owner password credentials grant
+export SIMVA_TRACE_ALLOCATOR_CLIENT_ID="simva-trace-allocator"
+export SIMVA_TRACE_ALLOCATOR_CLIENT_SECRET="secret"
+
 # Keycloak Client ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_KEYCLOAK_CLIENT_CLIENT_ID="keycloak-client"
 export SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET="secret"
