@@ -86,6 +86,8 @@ services:
           - "${SIMVA_LIMESURVEY_HOST_SUBDOMAIN:-limesurvey}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_RUSTFS_HOST_SUBDOMAIN:-rustfs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+          - "${SIMVA_RUSTFS_API_HOST_SUBDOMAIN:-rustfs-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_EXTERNAL_DOMAIN:-external.test}"
           - "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"  
           - "${SIMVA_SHLINK_EXTERNAL_DOMAIN:-external.test}"
