@@ -25,7 +25,7 @@ services:
 
   anaconda:
     << : *default-opts
-    image: ${SIMVA_ANACONDA_IMAGE:-continuumio/anaconda3}:${SIMVA_ANACONDA_VERSION:-2024.02-1}
+    image: ${SIMVA_ANACONDA_IMAGE:-continuumio/anaconda3}:${SIMVA_ANACONDA_VERSION:-2024.10-1}
     entrypoint: >
       /bin/bash -c '
         set -euo pipefail;
