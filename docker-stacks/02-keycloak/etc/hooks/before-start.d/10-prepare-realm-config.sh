@@ -48,6 +48,9 @@ function generate_realm_data() {
     pumva_client_id=$(get_or_generate_username "pumva" "${STACK_CONF}/simva-env.sh")
     pumva_client_secret=$(get_or_generate_password "pumva" "${STACK_CONF}/simva-env.sh")
 
+    trace_allocator_client_id=$(get_or_generate_username "trace_allocator" "${STACK_CONF}/simva-env.sh")
+    trace_allocator_client_secret=$(get_or_generate_password "trace_allocator" "${STACK_CONF}/simva-env.sh")
+
 cat << EOF > ${conf_file}
 smtpServer:
   host: "${SIMVA_MAIL_HOST_SUBDOMAIN}.${SIMVA_SSO_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}"
@@ -98,6 +101,9 @@ clients:
     clientId: "${pumva_client_id}"
     secret: "${pumva_client_secret}"
     baseUrl: "https://${SIMVA_PUMVA_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}"
+  trace_allocator:
+    clientId: "${trace_allocator_client_id}"
+    secret: "${trace_allocator_client_secret}"
 users:
 EOF
 

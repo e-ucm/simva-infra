@@ -289,8 +289,17 @@ services:
       SIMVA_HOST: "${SIMVA_SIMVA_API_HOST_SUBDOMAIN:-simva-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
       SIMVA_PORT: "${SIMVA_SIMVA_API_EXTERNAL_PORT:-443}"
-      SIMVA_USER: "${SIMVA_ADMINISTRATOR_USER:-admin}"
-      SIMVA_PASSWORD: "${SIMVA_ADMINISTRATOR_PASSWORD:-password}"
+      #KEYCLOAK (OAuth2 token endpoint used to authenticate against the SIMVA API)
+      #Keycloak refuses plain HTTP, so it is always reached through the load balancer
+      SIMVA_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
+      SIMVA_SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
+      SIMVA_SSO_PORT: "443"
+      SIMVA_SSO_REALM: "${SIMVA_SSO_REALM:-simva}"
+      SIMVA_CLIENT_ID: "${SIMVA_TRACE_ALLOCATOR_CLIENT_ID:-simva-trace-allocator}"
+      SIMVA_CLIENT_SECRET: "${SIMVA_TRACE_ALLOCATOR_CLIENT_SECRET:-secret}"
+      #OAuth2 resource owner: the read only garbagecollector user
+      SIMVA_USER: "${SIMVA_GARBAGECOLLECTOR_USER:-garbagecollector}"
+      SIMVA_PASSWORD: "${SIMVA_GARBAGECOLLECTOR_PASSWORD:-password}"
       SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
       SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
       SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME: "${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME:-traefik-fullchain.pem}"
