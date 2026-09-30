@@ -45,12 +45,17 @@ fi
 
 export RUN_IN_CONTAINER_NAME="minio-client"
 if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
-# RustFS exposes the kafka target as a single built-in instance named after the
-# scope, so its ARN carries no instance id and no region.
-kafkaTargetArn="arn:minio:sqs::notify_kafka"
-# The stock queue_dir (/opt/rustfs/events) does not exist in the container, and
-# the target silently fails to initialise when it cannot be created.
-kafkaQueueDir="${SIMVA_RUSTFS_NOTIFY_QUEUE_DIR:-/data/rustfs/events}"
+# The kafka target is declared by the RUSTFS_NOTIFY_KAFKA_*_SIMVA env vars in
+# 04-minio/docker-compose-rust-fs.yml, so it needs no admin config set here:
+# RustFS only accepts the bare scope name for that command, and that writes to
+# the "_" default entry, which never materialises a target.
+# ARN shape is arn:<partition>:sqs:<region>:<instance>:<target>; RustFS rejects
+# anything not prefixed arn:rustfs:sqs: or not carrying all six tokens, and the
+# instance/target pair must match the env vars or validation fails with
+# "ARN not found". The instance is the lowercased env suffix and the target is
+# the target family.
+rustfsRegion="${SIMVA_RUSTFS_REGION:-us-east-1}"
+kafkaTargetArn="arn:rustfs:sqs:${rustfsRegion}:simva:kafka"
 code="$(cat <<EOF
 # This snippet runs under /bin/sh (busybox in rustfs/rc), so it must stay POSIX:
 # no [[ ... ]], and never more than one test per command.
@@ -87,24 +92,6 @@ wait_for_${name}() {
 retry ${containercommand} ${addhostcommand} simva-minio ${url} ${accesskey} ${secretkey} || exit 1
 wait_for_${name} || exit 1
 
-# RustFS only accepts the bare scope name here. The named "notify_kafka:<id>"
-# form that MinIO accepts is rejected with "Configuration error".
-# The queue dir has to be checked too: leaving it at the /opt/rustfs/events
-# default makes the target fail to initialise and silently drop every event.
-notifyConfig=\$(${containercommand} admin config get simva-minio notify_kafka 2>/dev/null)
-if ! echo "\$notifyConfig" | grep -q 'brokers="kafka1.${SIMVA_INTERNAL_DOMAIN}:19092"' ||
-   ! echo "\$notifyConfig" | grep -q 'queue_dir="${kafkaQueueDir}"'; then
-    echo "Configuring the kafka notification target on ${name}..."
-    echo "\$notifyConfig"
-    ${containercommand} admin config set simva-minio notify_kafka \\
-        enable=on \\
-        brokers=kafka1.${SIMVA_INTERNAL_DOMAIN}:19092 \\
-        topic=${SIMVA_MINIO_EVENTS_TOPIC} \\
-        queue_dir=${kafkaQueueDir} || exit 1
-    ${containercommand} admin service restart simva-minio/ >/dev/null
-    wait_for_${name} || exit 1
-fi
-
 # rc cannot update a rule in place and PutBucketNotificationConfiguration
 # replaces the whole rule set, so drop any stale kafka rule before re-adding it.
 # Skipping this left the bucket with no rule at all on the previous run.
@@ -112,7 +99,7 @@ listRules() {
     ${containercommand} bucket event list --json simva-minio/${SIMVA_TRACES_BUCKET_NAME} 2>/dev/null
 }
 retry listRules > /tmp/simva-event-rules.json || exit 1
-staleArn=\$(jq -r '.notifications[]? | select(.arn | test("kafka")) | .arn' < /tmp/simva-event-rules.json 2>/dev/null)
+staleArn=\$(jq -r --arg arn "${kafkaTargetArn}" '.notifications[]? | select(.arn != \$arn and (.arn | test("kafka"))) | .arn' < /tmp/simva-event-rules.json 2>/dev/null)
 if [ -n "\$staleArn" ]; then
     echo "Removing existing notification rule: \$staleArn"
     retry ${containercommand} bucket event remove simva-minio/${SIMVA_TRACES_BUCKET_NAME} "\$staleArn" >/dev/null || exit 1
@@ -125,7 +112,7 @@ retry ${containercommand} bucket event add simva-minio/${SIMVA_TRACES_BUCKET_NAM
 
 # rc reports success even when the server rejects the rule, so verify it stuck.
 retry listRules > /tmp/simva-event-rules.json || exit 1
-arn=\$(jq -r '.notifications[]? | select(.arn | test("kafka")) | .arn' < /tmp/simva-event-rules.json 2>/dev/null)
+arn=\$(jq -r --arg arn "${kafkaTargetArn}" '.notifications[]? | select(.arn == \$arn) | .arn' < /tmp/simva-event-rules.json 2>/dev/null)
 if [ -z "\$arn" ]; then
     echo "No kafka notification rule is registered on ${name}/${SIMVA_TRACES_BUCKET_NAME}"
     cat /tmp/simva-event-rules.json

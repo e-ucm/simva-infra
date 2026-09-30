@@ -45,14 +45,27 @@ services:
       #RUSTFS_TLS_PATH: /opt/tls
       RUSTFS_OBS_ENDPOINT: http://otel-collector:4318
       OTEL_RESOURCE_ATTRIBUTES: ${OTEL_RESOURCE_ATTRIBUTES:-rustfs.cluster.id=rustfs-dev}
+      # Region reported to S3 clients. The notify bucket rules are validated
+      # against arn:rustfs:sqs:<region>:<instance>:<target>, so this value and
+      # the region used in the notification rule ARN (see the 05-kafka
+      # after-start hook) must stay in sync.
+      RUSTFS_REGION: "${SIMVA_RUSTFS_REGION:-us-east-1}"
       # Bucket event notifications are disabled unless the notify module is
-      # explicitly enabled. The queue dir must be writable by the runtime user
-      # (uid 10001); the default /opt/rustfs/events does not exist.
+      # explicitly enabled.
       RUSTFS_NOTIFY_ENABLE: "true"
-      RUSTFS_NOTIFY_KAFKA_ENABLE: "on"
-      RUSTFS_NOTIFY_KAFKA_BROKERS: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092"
-      RUSTFS_NOTIFY_KAFKA_TOPIC: "${SIMVA_MINIO_EVENTS_TOPIC:-minio-events}"
-      RUSTFS_NOTIFY_KAFKA_QUEUE_DIR: "${SIMVA_RUSTFS_NOTIFY_QUEUE_DIR:-/data/rustfs/events}"
+      # Kafka event queue destination. Every key of a target MUST carry the same
+      # _<INSTANCE> suffix: a suffix-less key is parsed as the "_" default entry,
+      # which only supplies defaults to named instances and never creates a
+      # target on its own. The target name is the lowercased suffix, so _SIMVA
+      # registers the instance "simva" with ARN
+      # arn:rustfs:sqs:${RUSTFS_REGION}:simva:kafka.
+      # The queue dir must be writable by the runtime user (uid 10001); the
+      # default /opt/rustfs/events does not exist in the image.
+      RUSTFS_NOTIFY_KAFKA_ENABLE_SIMVA: "on"
+      RUSTFS_NOTIFY_KAFKA_BROKERS_SIMVA: "kafka1.${SIMVA_INTERNAL_DOMAIN:-internal.test}:19092"
+      RUSTFS_NOTIFY_KAFKA_TOPIC_SIMVA: "${SIMVA_MINIO_EVENTS_TOPIC:-minio-events}"
+      RUSTFS_NOTIFY_KAFKA_QUEUE_DIR_SIMVA: "${SIMVA_RUSTFS_NOTIFY_QUEUE_DIR:-/data/rustfs/events}"
+      RUSTFS_NOTIFY_KAFKA_QUEUE_LIMIT_SIMVA: "${SIMVA_RUSTFS_NOTIFY_QUEUE_LIMIT:-100000}"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
       SIMVA_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}
       SIMVA_MAX_RETRIES: ${SIMVA_MAX_RETRIES:-20}
