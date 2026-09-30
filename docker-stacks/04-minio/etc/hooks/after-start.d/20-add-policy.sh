@@ -85,15 +85,7 @@ case "\$policy_list" in
     *"simvaSink"*) echo "Policy simvaSink already exists." ;;
     *) echo "Creating policy simvaSink."; ${policycreate} ;;
 esac &&
-${policyattach} &&
-case "\$bucket_list" in
-    *"${SIMVA_TRACES_BUCKET_NAME}"*) echo "Bucket ${SIMVA_TRACES_BUCKET_NAME} already exists." ;;
-    *) echo "Creating bucket ${SIMVA_TRACES_BUCKET_NAME}."; ${bucketcreate}${SIMVA_TRACES_BUCKET_NAME} ;;
-esac &&
-case "\$bucket_list" in
-    *"${SIMVA_BACKUP_BUCKET_NAME}"*) echo "Bucket ${SIMVA_BACKUP_BUCKET_NAME} already exists." ;;
-    *) echo "Creating bucket ${SIMVA_BACKUP_BUCKET_NAME}."; ${bucketcreate}${SIMVA_BACKUP_BUCKET_NAME} ;;
-esac
+${policyattach}
 EOF
 )"
     docker_args=(--rm --network traefik_services -v ${SIMVA_CONFIG_HOME}/minio/policies:/policies:ro)
