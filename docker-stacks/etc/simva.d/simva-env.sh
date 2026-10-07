@@ -303,6 +303,9 @@ export SIMVA_SIMVA_CLIENT_SECRET="secret"
 export SIMVA_LTI_PLATFORM_CLIENT_ID="lti_platform"
 export SIMVA_LTI_PLATFORM_CLIENT_SECRET="secret"
 
+export SIMVA_TRACE_ALLOCATOR_CLIENT_ID="simva_trace_allocator"
+export SIMVA_TRACE_ALLOCATOR_CLIENT_SECRET="secret"
+
 ########################################################
 # Uncomment client secret if you want to set up for those client
 # else it is generated automatically by script
