@@ -325,6 +325,15 @@ export SIMVA_LIMESURVEY_KEY_FILE="${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_KEY_FILEN
 export SIMVA_LIMESURVEY_CERT_FILE="${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_CERT_FILENAME}"
 export SIMVA_LIMESURVEY_CERT_CRS_FILE="${SIMVA_TLS_HOME}/${SIMVA_LIMESURVEY_CERT_CRS_FILENAME}"
 
+# Region reported to S3 clients. It is also the region segment of the notify
+# target ARNs (arn:rustfs:sqs:<region>:simva:kafka), so changing it here
+# requires no other edit: the 05-kafka hook builds the rule ARN from this value.
+export SIMVA_RUSTFS_REGION="us-east-1"
+# Persistent queue for events not yet delivered to Kafka. It lives on the
+# minio_data volume because the image default (/opt/rustfs/events) does not
+# exist and the target fails to initialise when the dir cannot be created.
+export SIMVA_RUSTFS_NOTIFY_QUEUE_DIR="/data/rustfs/events"
+
 ##########################################
 # Checking time for container availabled #
 ##########################################

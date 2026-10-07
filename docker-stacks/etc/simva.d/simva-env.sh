@@ -252,6 +252,10 @@ export SIMVA_LIMESURVEY_WEBHOOK_API_TOKEN="secret"
 export SIMVA_RUSTFS_ACCESS_KEY="admin-rustfs"
 export SIMVA_RUSTFS_SECRET_KEY="password-rustfs"
 
+#RustFS event notifications
+# Max events held in that queue before the oldest are dropped.
+export SIMVA_RUSTFS_NOTIFY_QUEUE_LIMIT="100000"
+
 #Minio default administrator
 export SIMVA_MINIO_ACCESS_KEY="minio"
 export SIMVA_MINIO_SECRET_KEY="password"
