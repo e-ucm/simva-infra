@@ -61,6 +61,13 @@ jobs:
         timeout-minutes: 180
         run: sudo env "PATH=$PATH" ./simva install 00-network 01-traefik 09-logs 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 07-simva 08-tmon 11-lrs
 
+      - name: Create base Docker networks and volumes
+        shell: bash
+        working-directory: docker-stacks
+        run: |
+          sudo env "PATH=$PATH" ./simva start 00-network
+          bash "$GITHUB_WORKSPACE/scripts/ci/create-external-resources.sh"
+
       - name: Start SIMVA
         shell: bash
         working-directory: docker-stacks
