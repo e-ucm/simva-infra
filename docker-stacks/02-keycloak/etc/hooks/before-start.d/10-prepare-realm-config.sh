@@ -39,9 +39,6 @@ function generate_realm_data() {
     keycloak_client_client_id=$(get_or_generate_username "keycloak_client" "${STACK_CONF}/simva-env.sh")
     keycloak_client_client_secret=$(get_or_generate_password "keycloak_client" "${STACK_CONF}/simva-env.sh")
 
-    jupyter_client_id=$(get_or_generate_username "jupyter" "${STACK_CONF}/simva-env.sh")
-    jupyter_client_secret=$(get_or_generate_password "jupyter" "${STACK_CONF}/simva-env.sh")
-
     tmon_client_id=$(get_or_generate_username "tmon" "${STACK_CONF}/simva-env.sh")
     tmon_client_secret=$(get_or_generate_password "tmon" "${STACK_CONF}/simva-env.sh")
 
@@ -89,10 +86,6 @@ clients:
   keycloak_client:
     clientId: "${keycloak_client_client_id}"
     secret: "${keycloak_client_client_secret}"
-  jupyter:
-    clientId: "${jupyter_client_id}"
-    secret: "${jupyter_client_secret}"
-    baseUrl: "https://${SIMVA_JUPYTER_HOST_SUBDOMAIN}.${SIMVA_EXTERNAL_DOMAIN}/tree"
   tmon:
     clientId: "${tmon_client_id}"
     secret: "${tmon_client_secret}"
