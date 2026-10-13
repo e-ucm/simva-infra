@@ -1,0 +1,100 @@
+name: simva-smoke
+
+on:
+  push:
+    branches: [rustfs, main]
+  pull_request:
+    branches: [rustfs, main]
+  workflow_dispatch:
+
+concurrency:
+  group: simva-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: SIMVA ${{ matrix.environment }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [development, production]
+    timeout-minutes: 360
+    env:
+      SIMVA_ENV: ${{ matrix.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            jq curl git unzip dos2unix apache2-utils default-jre-headless libnss3-tools
+          curl -fsSL -o /tmp/mkcert \
+            https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64
+          sudo install -m 0755 /tmp/mkcert /usr/local/bin/mkcert
+          mkcert -version
+
+      - name: Configure SIMVA environment
+        shell: bash
+        working-directory: docker-stacks
+        run: |
+          sed -i 's|^export SIMVA_ENVIRONMENT="development"|export SIMVA_ENVIRONMENT="'"$SIMVA_ENV"'"|' etc/simva.d/simva-env.sh
+          sed -i 's|^export SIMVA_TLS_GENERATE_SELF_SIGNED="false"|export SIMVA_TLS_GENERATE_SELF_SIGNED="true"|' etc/simva.d/simva-env.sh
+          if [[ "$SIMVA_ENV" == "development" ]]; then
+            sed -i 's|^export SIMVA_DEVELOPMENT_LOCAL="true"|export SIMVA_DEVELOPMENT_LOCAL="false"|' etc/simva.d/simva-env.dev.sh
+          fi
+          grep -nE 'SIMVA_ENVIRONMENT|SIMVA_TLS_GENERATE_SELF_SIGNED|SIMVA_DEVELOPMENT_LOCAL' etc/simva.d/simva-env*.sh
+
+      - name: Populate /etc/hosts for external.test subdomains
+        shell: bash
+        working-directory: docker-stacks
+        run: |
+          sudo bash "$GITHUB_WORKSPACE/scripts/ci/setup-hosts.sh"
+          grep 'external.test' /etc/hosts
+
+      - name: Install SIMVA
+        shell: bash
+        working-directory: docker-stacks
+        timeout-minutes: 180
+        run: sudo env "PATH=$PATH" ./simva install
+
+      - name: Start SIMVA
+        shell: bash
+        working-directory: docker-stacks
+        timeout-minutes: 240
+        run: sudo env "PATH=$PATH" ./simva start
+
+      - name: Verify SIMVA services
+        shell: bash
+        working-directory: docker-stacks
+        timeout-minutes: 30
+        run: bash "$GITHUB_WORKSPACE/scripts/ci/simva-verify.sh" "$SIMVA_ENV"
+
+      - name: Collect diagnostics
+        if: failure()
+        shell: bash
+        working-directory: docker-stacks
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/diag-$SIMVA_ENV"
+          {
+            echo "### docker ps -a"
+            docker ps -a
+          } > "$GITHUB_WORKSPACE/diag-$SIMVA_ENV/containers.txt" || true
+          {
+            echo "### docker compose ls"
+            docker compose ls
+          } > "$GITHUB_WORKSPACE/diag-$SIMVA_ENV/compose.txt" || true
+          for stack in 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 07-simva 08-tmon 09-logs 10-pumva 11-lrs; do
+            sudo env "PATH=$PATH" ./simva log "$stack" > "$GITHUB_WORKSPACE/diag-$SIMVA_ENV/$stack.log" 2>&1 || true
+          done
+
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simva-smoke-${{ matrix.environment }}-diag
+          path: diag-${{ matrix.environment }}/
+          if-no-files-found: ignore
