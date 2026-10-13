@@ -9,4 +9,4 @@ echo "${config_contents}" \
     | sed  "s/<<SIMVA_DOZZLE_PASSWORD>>/${SIMVA_DOZZLE_PASSWORD_HASHED}/g" \
     > "${SIMVA_CONFIG_HOME}/logs/dozzle-config/users.yml"
 
-echo -n "${SIMVA_PORTAINER_ADMIN_PASSWORD}" > "${SIMVA_CONFIG_HOME}/logs/portainer-config/portainer_password"
+#echo -n "${SIMVA_PORTAINER_ADMIN_PASSWORD}" > "${SIMVA_CONFIG_HOME}/logs/portainer-config/portainer_password"
