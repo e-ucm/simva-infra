@@ -29,4 +29,4 @@ for vol in \
 done
 
 docker network inspect traefik_services traefik_admin kafka_services --format 'network {{.Name}} ({{.Driver}})'
-docker volume ls --format 'volume {{.Name}}' | grep -E '^(kc_maria|ls_|minio|kafka|shlink|simva|dockhand)' | sort
+docker volume ls --format 'volume {{.Name}}' | grep -E '^volume (kc_maria|ls_|minio|kafka|shlink|simva|dockhand)' | sort
