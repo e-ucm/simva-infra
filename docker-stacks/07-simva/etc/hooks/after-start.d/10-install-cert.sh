@@ -10,8 +10,14 @@ fi
 export RUN_IN_CONTAINER=true
 export RUN_IN_AS_SPECIFIC_USER="root"
 
+running_services=$(docker compose ps --services --filter status=running 2>/dev/null || true)
+
 container_list=("simva-front" "simva-trace-allocator" "simva-api");
 for container_name in "${container_list[@]}"; do
+    if ! grep -qx "$container_name" <<<"$running_services"; then
+        echo "Service '$container_name' is not running. Skipping certificate installation."
+        continue
+    fi
     export RUN_IN_CONTAINER_NAME="$container_name"
     # Get the internal CA certificate content from inside the container
     set +e
