@@ -170,8 +170,8 @@ export SIMVA_MONGO_DB_DIR_MODE="700" #rwx------
 export SIMVA_MONGO_DB_FILE_MODE="600" #rw-------
 
 #TMON IMAGE
-export SIMVA_TMON_IMAGE="eucm/t-mon"
-export SIMVA_TMON_VERSION="0.0.1"
+export SIMVA_TMON_IMAGE="ghcr.io/e-ucm/t-mon"
+export SIMVA_TMON_VERSION="0.1.0"
 #TMON SETTINGS
 export SIMVA_TMON_GUID="root" #root
 export SIMVA_TMON_UUID="root" #root
