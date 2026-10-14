@@ -165,5 +165,5 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     fi
 fi
 if [[ ${RUNBUILDCODE} = true ]] ; then
-    exec ${SIMVA_HOME}/simva build ./07-simva
+    exec ${SIMVA_HOME}/simva build ${CURRENT_STACK}
 fi

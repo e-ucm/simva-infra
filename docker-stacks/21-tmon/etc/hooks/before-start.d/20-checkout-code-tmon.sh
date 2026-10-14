@@ -63,5 +63,5 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     chmod -R ${SIMVA_TMON_DIR_MODE} ${SIMVA_TMON_GIT_REPO}
 fi
 if [[ ${RUNBUILDCODE} == true ]] ; then
-    exec ${SIMVA_HOME}/simva build ./08-tmon
+    exec ${SIMVA_HOME}/simva build ${CURRENT_STACK}
 fi
