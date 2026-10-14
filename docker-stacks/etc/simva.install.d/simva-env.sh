@@ -359,3 +359,22 @@ export SIMVA_MAX_RETRIES="20"
 # SIMVA INFO #
 ##############
 export SIMVA_SCRIPT_WAIT_TIME="10"
+
+####################################
+# SIMVA Git repository folders    #
+####################################
+# Where the sources are checked out. Hooks and compose files need these in every environment, not
+# only in development, so they live here and the development env only overrides the base folder when
+# deploying local code (SIMVA_DEVELOPMENT_LOCAL).
+base_for_simva_repos="${SIMVA_DATA_HOME}/simva"
+export SIMVA_API_GIT_REPO="${base_for_simva_repos}/simva-api"
+export SIMVA_FRONT_GIT_REPO="${base_for_simva_repos}/simva-front"
+export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-allocator"
+export SIMVA_PUMVA_GIT_REPO="${base_for_simva_repos}/pumva"
+export SIMVA_PUMVA_FRONT_GIT_REPO="${base_for_simva_repos}/pumva-front"
+
+base_for_limesurvey_repos="${SIMVA_DATA_HOME}/limesurvey"
+export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/docker-limesurvey"
+
+base_for_tmon_repos="${SIMVA_DATA_HOME}/tmon"
+export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"

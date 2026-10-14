@@ -56,30 +56,22 @@ export SIMVA_PORTAINER_VERSION="latest"
 ########################
 # SIMVA Git repository #
 ########################
+# The folders are declared in simva-env.sh so they are available in every environment, only the
+# base is overridden here when deploying local code instead of the checked out sources.
 base_for_simva_repos="${SIMVA_DATA_HOME}/simva"
-[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_simva_repos="${SIMVA_HOME}/../.."
+base_for_limesurvey_repos="${SIMVA_DATA_HOME}/limesurvey"
+base_for_tmon_repos="${SIMVA_DATA_HOME}/tmon"
 if [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]]; then
+    base_for_simva_repos="${SIMVA_HOME}/../.."
+    base_for_limesurvey_repos="${SIMVA_HOME}/../.."
+    base_for_tmon_repos="${SIMVA_HOME}/../.."
     export SIMVA_API_GIT_REPO="${base_for_simva_repos}/simva"
-else 
-    export SIMVA_API_GIT_REPO="${base_for_simva_repos}/simva-api"
 fi
 export SIMVA_FRONT_GIT_REPO="${base_for_simva_repos}/simva-front"
 export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-allocator"
 export SIMVA_PUMVA_GIT_REPO="${base_for_simva_repos}/pumva"
 export SIMVA_PUMVA_FRONT_GIT_REPO="${base_for_simva_repos}/pumva-front"
-
-##########################################
-# Source folder used to build LimeSurvey #
-##########################################
-# Only consumed by the development stack (03-limesurvey/docker-compose.dev.yml),
-# but it is defined here so it is always available and never left unbound.
-# The development overlay (simva-env.dev.sh) overrides it when deploying local code.
-base_for_limesurvey_repos="${SIMVA_DATA_HOME}/limesurvey"
-[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_limesurvey_repos="${SIMVA_HOME}/../.."
 export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/docker-limesurvey"
-
-base_for_tmon_repos="${SIMVA_DATA_HOME}/tmon"
-[[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_tmon_repos="${SIMVA_HOME}/../.."
 export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"
 export SIMVA_KEYCLOAK_EXTENSIONS_LOCAL_PATH="${SIMVA_HOME}/../../keycloak-extensions"
 export SIMVA_KAFKA_EXTENSIONS_LOCAL_PATH="${SIMVA_HOME}/../../kafka-extensions"
