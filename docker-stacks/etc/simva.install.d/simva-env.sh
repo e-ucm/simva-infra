@@ -2,7 +2,7 @@
 ################
 # SIMVA STACKS #
 ################
-export SIMVA_STACKS="00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 08-lrs 20-simva 21-tmon"
+export SIMVA_STACKS="00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs 20-simva 21-tmon"
 
 #############################
 # SIMVA installation folder #
