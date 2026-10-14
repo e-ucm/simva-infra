@@ -5,12 +5,8 @@ set -euo pipefail
 RUNCHECKOUTCODE=false
 RUNBUILDCODE=false
 CHECKLOCALDEPLOYMENT=false
-if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
-    echo "SIMVA it is not initialized, initializing checkout code."
-    RUNCHECKOUTCODE=true
-fi
 if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then
-    if [[ $SIMVA_DEVELOPMENT_LOCAL = "true" ]]; then
+    if [[ ${SIMVA_DEVELOPMENT_LOCAL:-false} = "true" ]]; then
         echo "SIMVA is in local development environment, no checkout as code is local."
         RUNCHECKOUTCODE=false
         CHECKLOCALDEPLOYMENT=true
@@ -18,6 +14,9 @@ if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then
         echo "SIMVA is in development environment, launch checkout code."
         RUNCHECKOUTCODE=true
     fi
+else
+    echo "SIMVA is not in development environment, the docker-limesurvey build context is not needed."
+    exit 0
 fi
 
 source ${SIMVA_BIN_HOME}/check-checksum.sh;

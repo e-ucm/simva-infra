@@ -68,9 +68,16 @@ export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-alloc
 export SIMVA_PUMVA_GIT_REPO="${base_for_simva_repos}/pumva"
 export SIMVA_PUMVA_FRONT_GIT_REPO="${base_for_simva_repos}/pumva-front"
 
+##########################################
+# Source folder used to build LimeSurvey #
+##########################################
+# Only consumed by the development stack (03-limesurvey/docker-compose.dev.yml),
+# but it is defined here so it is always available and never left unbound.
+# The development overlay (simva-env.dev.sh) overrides it when deploying local code.
 base_for_limesurvey_repos="${SIMVA_DATA_HOME}/limesurvey"
 [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_limesurvey_repos="${SIMVA_HOME}/../.."
 export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/docker-limesurvey"
+
 base_for_tmon_repos="${SIMVA_DATA_HOME}/tmon"
 [[ $SIMVA_DEVELOPMENT_LOCAL == "true" ]] && base_for_tmon_repos="${SIMVA_HOME}/../.."
 export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"
