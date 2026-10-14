@@ -72,7 +72,7 @@ jobs:
         shell: bash
         working-directory: docker-stacks
         timeout-minutes: 240
-        run: sudo env "PATH=$PATH" ./simva start 00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-minio 06-kafka 07-shlink 11-lrs 20-simva 21-tmon
+        run: sudo env "PATH=$PATH" ./simva start 00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs 20-simva 21-tmon
 
       - name: Verify SIMVA services
         shell: bash
@@ -94,7 +94,7 @@ jobs:
             echo "### docker compose ls"
             docker compose ls
           } > "$GITHUB_WORKSPACE/diag-$SIMVA_ENV/compose.txt" || true
-          for stack in 01-traefik 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 07-simva 08-tmon 09-logs 10-pumva 11-lrs; do
+          for stack in 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs 20-simva 21-tmon ; do
             sudo env "PATH=$PATH" ./simva log "$stack" > "$GITHUB_WORKSPACE/diag-$SIMVA_ENV/$stack.log" 2>&1 || true
           done
 
