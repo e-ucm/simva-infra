@@ -65,6 +65,12 @@ services:
       - KEYCLOAK_TOKEN_URL=https://${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/realms/${SIMVA_SSO_REALM:-simva}/protocol/openid-connect/token
       - KEYCLOAK_CLIENT_CLIENT_ID=${SIMVA_KEYCLOAK_CLIENT_CLIENT_ID:-keycloak-client}
       - KEYCLOAK_CLIENT_CLIENT_SECRET=${SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET:-secret}
+      # Keycloak reads its JVM options from JAVA_OPTS_KC_HEAP. Without it kc.sh falls back to
+      # -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=70, sized on the host memory when the
+      # container has no limit, and the JVM fails to commit the heap with ENOMEM.
+      - JAVA_OPTS_KC_HEAP=-Xms${SIMVA_KEYCLOAK_MIN_HEAP:-512m} -Xmx${SIMVA_KEYCLOAK_MAX_HEAP:-1g}
+    # Heap + metaspace/direct buffers/threads headroom, so the JVM never claims the whole host
+    mem_limit: ${SIMVA_KEYCLOAK_MEMORY_LIMIT:-2g}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_DATA_HOME:-/home/vagrant/docker-stacks/data}/keycloak/deployments:/opt/keycloak/providers

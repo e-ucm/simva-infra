@@ -32,7 +32,7 @@ services:
           aliases:
             - db-lrs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     volumes:
-      - pgdata:/var/lib/postgresql
+      - lrs_pgdata:/var/lib/postgresql
   lrs:
     << : *default-opts
     image: ${SIMVA_LRS_IMAGE:-yetanalytics/lrsql}:${SIMVA_LRS_VERSION:-v0.9.5}
@@ -84,4 +84,5 @@ services:
       traefik.http.routers.lrs.rule: "Host(`${SIMVA_LRS_HOST_SUBDOMAIN:-lrs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}`)"
 
 volumes:
-  pgdata:
+  lrs_pgdata:
+    external: true

@@ -2,7 +2,7 @@
 ################
 # SIMVA STACKS #
 ################
-export SIMVA_STACKS="00-network 01-traefik 09-logs 02-keycloak 03-limesurvey 04-minio 05-kafka 06-shlink 11-lrs 07-simva 08-tmon"
+export SIMVA_STACKS="00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 08-lrs 20-simva 21-tmon"
 
 #############################
 # SIMVA installation folder #
@@ -48,6 +48,12 @@ export SIMVA_KEYCLOAK_UUID="root" #root
 export SIMVA_KEYCLOAK_TOP_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_KEYCLOAK_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_KEYCLOAK_FILE_MODE="644" #rw-r--r--
+# JVM heap. Without these the JVM sizes its heap on the host memory (Keycloak defaults to
+# -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=70) and fails to start with ENOMEM on a busy host.
+export SIMVA_KEYCLOAK_MIN_HEAP="512m"
+export SIMVA_KEYCLOAK_MAX_HEAP="1g"
+# Container memory limit: heap + metaspace/direct buffers/threads headroom.
+export SIMVA_KEYCLOAK_MEMORY_LIMIT="2g"
 
 #SQL DB IMAGE
 export SIMVA_MARIADB_IMAGE="mariadb"
@@ -192,6 +198,12 @@ export SIMVA_LOGS_FILE_MODE="644" #rw-r--r--
 #LRS IMAGE
 export SIMVA_LRS_IMAGE="yetanalytics/lrsql"
 export SIMVA_LRS_VERSION="v0.9.5"
+#LRS SETTINGS
+export SIMVA_LRS_PG_GUID="999" #postgres
+export SIMVA_LRS_PG_UUID="999" #postgres
+export SIMVA_LRS_PG_TOP_DIR_MODE="700" #rwx------
+export SIMVA_LRS_PG_DIR_MODE="700" #rwx------
+export SIMVA_LRS_PG_FILE_MODE="600" #rw-------
 
 ##########################
 # Extensions and Plugins #

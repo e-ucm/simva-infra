@@ -43,6 +43,12 @@ services:
       - KEYCLOAK_PASSWORD=${SIMVA_KEYCLOAK_ADMIN_PASSWORD:-password}
       - PROXY_ADDRESS_FORWARDING=true
       - WAIT_TIMEOUT=${SIMVA_WAIT_TIMEOUT:-120}
+      # Keycloak reads its JVM options from JAVA_OPTS_KC_HEAP. Without it kc.sh falls back to
+      # -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=70, sized on the host memory when the
+      # container has no limit, and the JVM fails to commit the heap with ENOMEM.
+      - JAVA_OPTS_KC_HEAP=-Xms${SIMVA_KEYCLOAK_MIN_HEAP:-512m} -Xmx${SIMVA_KEYCLOAK_MAX_HEAP:-1g}
+    # Heap + metaspace/direct buffers/threads headroom, so the JVM never claims the whole host
+    mem_limit: ${SIMVA_KEYCLOAK_MEMORY_LIMIT:-2g}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
