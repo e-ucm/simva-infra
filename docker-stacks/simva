@@ -564,6 +564,10 @@ function docker_compose_stacks() {
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export STACK_CONF="${SIMVA_CONFIG_HOME}/${stack##*-}"
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
+        if [[ ! -d "${STACK_HOME}" ]]; then
+            echo 1>&2 "❌ Stack '${stack}' not found in ${SIMVA_HOME}"
+            exit 1
+        fi
         local old_path=$PATH
         export PATH=$PATH:${STACK_HOME}/bin
         pushd ${STACK_HOME} >/dev/null 2>&1
