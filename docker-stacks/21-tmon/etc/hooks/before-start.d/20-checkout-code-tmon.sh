@@ -63,5 +63,11 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     chmod -R ${SIMVA_TMON_DIR_MODE} ${SIMVA_TMON_GIT_REPO}
 fi
 if [[ ${RUNBUILDCODE} == true ]] ; then
-    exec ${SIMVA_HOME}/simva build ${CURRENT_STACK}
+    # Only the development compose files declare a build context, the other environments run the
+    # published images, so checking the code out must not trigger a build there.
+    if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then
+        exec ${SIMVA_HOME}/simva build ${CURRENT_STACK}
+    else
+        echo "TMON is in ${SIMVA_ENVIRONMENT} environment, no image built, the published images are used."
+    fi
 fi
