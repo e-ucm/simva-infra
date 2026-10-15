@@ -44,14 +44,24 @@ if [[ -e "$SIMVA_DATA_HOME/minio/.migration-in-progress-fs-to-xl" ]]; then
                         mc config host add simva-minio-mig "http://${SIMVA_MINIO_HOST_SUBDOMAIN}-mig.${SIMVA_INTERNAL_DOMAIN}:9000" ${accesskey} ${secretkey} &&
                         mc ready simva-minio-mig &&
                         mc mirror simva-minio-mig/${SIMVA_TRACES_BUCKET_NAME} simva-minio/${SIMVA_TRACES_BUCKET_NAME}"
-        format=$(${SIMVA_BIN_HOME}/volumectl.sh exec "minio_data" "/vol" cat "/vol/.minio.sys/format.json")
-        format=$(echo $format | jq '.format')
+        format=$(${SIMVA_BIN_HOME}/volumectl.sh exec "minio_data" "/vol" cat "/vol/.minio.sys/format.json" 2>/dev/null || true)
+        # Empty/unreadable format.json: fall back to the modern (XL) branch instead
+        # of letting jq abort the hook under `set -e`.
+        format=$(printf '%s' "$format" | jq '.format' 2>/dev/null || true)
         echo $format
         touch "${SIMVA_DATA_HOME}/minio/.minio-migrated";
     fi
 else
-    format=$("${SIMVA_BIN_HOME}/volumectl.sh" exec "minio_data" "/vol" cat "/vol/.minio.sys/format.json")
-    format=$(echo $format | jq '.format')
+    if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
+        # RustFS keeps its metadata under .rustfs.sys and has no MinIO
+        # .minio.sys/format.json, so skip the probe and use the RustFS branch below.
+        format='"xl"'
+    else
+        format=$("${SIMVA_BIN_HOME}/volumectl.sh" exec "minio_data" "/vol" cat "/vol/.minio.sys/format.json" 2>/dev/null || true)
+        # Empty/unreadable format.json: fall back to the modern (XL) branch instead
+        # of letting jq abort the hook under `set -e`.
+        format=$(printf '%s' "$format" | jq '.format' 2>/dev/null || true)
+    fi
     echo $format
 if [[ $format == '"fs"' ]]; then
         #FS BEFORE UPGRADE
