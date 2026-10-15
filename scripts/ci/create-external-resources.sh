@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-docker network inspect kafka_services >/dev/null 2>&1 || docker network create kafka_services >/dev/null
-
 for vol in \
     kc_maria_db_data \
     kc_maria_db_backup_data \
@@ -28,7 +26,7 @@ for vol in \
     docker volume inspect "$vol" >/dev/null 2>&1 || docker volume create "$vol" >/dev/null
 done
 
-docker network inspect traefik_services traefik_admin kafka_services --format 'network {{.Name}} ({{.Driver}})'
+docker network inspect traefik_services traefik_admin --format 'network {{.Name}} ({{.Driver}})'
 docker volume ls --format '{{.Name}}' \
     | grep -E '^(kc_maria|ls_|minio|kafka|shlink|simva|dockhand)' \
     | sort \

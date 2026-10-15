@@ -635,8 +635,9 @@ OPERATION one of the following:
         restore the data and database into the container external volume from a backup folder
     restart:
         Gracefully stop all containers and start them again.
-    log <stack> [<other docker compose logs params>]:
-        Show <stack> logs.
+    log <stack> [-f|--follow] [-n|--tail <lines>]:
+        Show <stack> logs. Defaults: last 100 lines, no follow. Use -f/--follow
+        to stream logs; use -n/--tail <lines> (or --tail=<lines>) to set how many lines to show.
     build <stack> <docker compose build params>:
         Allow to run docker compose build in a stack.
     help:
@@ -1495,18 +1496,46 @@ function setExecutable() {
 # log stack
 function log() {
     local wait_time=0
-    if [[ ! $# -eq 1 ]]; then
+    if [[ $# -lt 1 ]]; then
         echo >&2 "missing stack. Select Only one stack to have logs.";
         exit 1;
     fi
     local stack=${1}
     shift
-    
+
+    # -f | --follow : keep the stream open (optional, default: no follow)
+    # -n | --tail <lines> : number of lines to show (default: 100)
+    local follow=""
+    local tail_lines=100
+    while [[ $# -gt 0 ]]; do
+        case "${1}" in
+            -f|--follow)
+                follow="-f"
+                shift
+            ;;
+            -n|--tail|--tail-lines)
+                if [[ $# -lt 2 ]]; then
+                    echo >&2 "missing value for ${1}. Usage: log <stack> ${1} <lines>";
+                    exit 1;
+                fi
+                tail_lines="${2}"
+                shift 2
+            ;;
+            --tail=*)
+                tail_lines="${1#--tail=}"
+                shift
+            ;;
+            *)
+                break
+            ;;
+        esac
+    done
+
     export STACK_HOME="${SIMVA_HOME}/${stack}"
     export CURRENT_STACK="${stack}"
     export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
     export STACK_NAME="${stack##*-}"
-    docker_compose_stacks "${stack}" "${wait_time}" logs -f --tail 100 $@
+    docker_compose_stacks "${stack}" "${wait_time}" logs ${follow} --tail ${tail_lines} $@
 }
 
 # build stack
