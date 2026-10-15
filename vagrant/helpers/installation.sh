@@ -83,9 +83,6 @@ if ! command -v docker >/dev/null 2>&1; then
 else
   echo "Docker already installed."
 fi
-echo "Downgrade to version 5:28.5.2-1 that is working."
-sudo apt-get install -y --allow-downgrades --allow-change-held-packages docker-ce=5:28.5.2-1~ubuntu.22.04~jammy docker-ce-cli=5:28.5.2-1~ubuntu.22.04~jammy containerd.io docker-buildx-plugin docker-compose-plugin
-sudo apt-mark hold docker-ce docker-ce-cli
 
 # --- nodejs ---
 if ! command -v node >/dev/null 2>&1; then

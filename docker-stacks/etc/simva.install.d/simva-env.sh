@@ -31,13 +31,18 @@ export SIMVA_CONTAINER_TOOLS_HOME="${SIMVA_CONFIG_HOME}/container-tools"
 # Images versions
 #TRAEFIK IMAGE
 export SIMVA_TRAEFIK_IMAGE="traefik"
-export SIMVA_TRAEFIK_VERSION="2.11.3"
+export SIMVA_TRAEFIK_VERSION="2.11.58"
 #TRAEFIK SETTINGS
 export SIMVA_TRAEFIK_GUID="root" #root
 export SIMVA_TRAEFIK_UUID="root" #root
 export SIMVA_TRAEFIK_TOP_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_TRAEFIK_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_TRAEFIK_FILE_MODE="644" #rw-r--r--
+
+#DOCKER SOCKET PROXY IMAGE
+# Only this container mounts /var/run/docker.sock; Traefik talks to it read-only.
+export SIMVA_SOCKET_PROXY_IMAGE="tecnativa/docker-socket-proxy"
+export SIMVA_SOCKET_PROXY_VERSION="v0.5.0"
 
 #KEYCLOAK SSO IMAGE
 export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"

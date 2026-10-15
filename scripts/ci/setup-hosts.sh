@@ -25,7 +25,6 @@ entries=$({
   done
   echo "127.0.0.1 ${SIMVA_EXTERNAL_DOMAIN}"
   echo "127.0.0.1 ${SIMVA_SHLINK_EXTERNAL_DOMAIN}"
-  echo "127.0.0.1 ${SIMVA_PORTAINER_HOST_SUBDOMAIN:-portainer}.${SIMVA_EXTERNAL_DOMAIN}"
 } | sort -u)
 
 {

@@ -50,7 +50,7 @@ edge would expose the Docker API to anything that reached the proxy at all.
 - `4f2bb9f` (2020-10-02) — "moving simva to the base domain"
 - `a3cf038` (2020-10-14) — "Access through https+traefik"
 - `e863576` (2020-10-14) — "Access other services through https + traefik"
-- `01-traefik/docker-compose.yml` today — socket-proxy + `traefik:2.11.3`
+- `01-traefik/docker-compose.yml` today — socket-proxy + `traefik:2.11.58`
 
 ## Related
 

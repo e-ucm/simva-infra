@@ -23,7 +23,7 @@ interface `simva0` (`SIMVA_NETWORK_INTERFACE`) with subnet `172.30.0.0/24`
 
 ### `01-traefik` — the only public door
 
-`tecnativa/docker-socket-proxy` + `traefik:2.11.3`. The socket proxy is the *only* container
+`tecnativa/docker-socket-proxy:v0.5.0` + `traefik:2.11.58`. The socket proxy is the *only* container
 that mounts `/var/run/docker.sock`; Traefik reads its own labels through it. Serves the
 wildcard certificate (`config/tls/traefik*.pem`) and, in development, a `whoami` service, a
 CSP reporter and the HTTP→HTTPS redirect decision (`SIMVA_LOAD_BALANCER`). Hostnames:

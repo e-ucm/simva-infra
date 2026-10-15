@@ -68,7 +68,8 @@ The upgrades machinery compares these against `data/<stack>/.version` and the pe
 
 | Variable | Example | Stack |
 | --- | --- | --- |
-| `SIMVA_TRAEFIK_VERSION` | `2.11.3` | 01 |
+| `SIMVA_TRAEFIK_VERSION` | `2.11.58` | 01 |
+| `SIMVA_SOCKET_PROXY_VERSION` | `v0.5.0` | 01 |
 | `SIMVA_KEYCLOAK_VERSION` | `26.1.3` | 02 |
 | `SIMVA_LIMESURVEY_VERSION` | `6.16.16-apache` | 03 |
 | `SIMVA_MINIO_VERSION` | `RELEASE.2024-06-04T19-20-08Z` | 04 |
