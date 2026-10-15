@@ -105,3 +105,9 @@ jobs:
           name: simva-smoke-${{ matrix.environment }}-diag
           path: diag-${{ matrix.environment }}/
           if-no-files-found: ignore
+
+      - name: Stop SIMVA
+        if: always()
+        shell: bash
+        working-directory: docker-stacks
+        run: sudo env "PATH=$PATH" ./simva uninstall
