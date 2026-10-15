@@ -68,7 +68,7 @@ retry() {
         tries=\$((tries + 1))
         sleep 3
     done
-    echo "Command failed after \$tries attempts: \$*"
+    echo "Command failed after \$tries attempts: \$*" >&2
     return 1
 }
 
@@ -83,7 +83,7 @@ wait_for_${name}() {
         tries=\$((tries + 1))
         sleep 2
     done
-    echo "Timed out waiting for ${name} to accept connections"
+    echo "Timed out waiting for ${name} to accept connections" >&2
     return 1
 }
 
@@ -91,6 +91,11 @@ wait_for_${name}() {
 # server to be up, so register it with retries and only then poll for readiness.
 retry ${containercommand} ${addhostcommand} simva-minio ${url} ${accesskey} ${secretkey} || exit 1
 wait_for_${name} || exit 1
+
+# The notification commands below need the bucket to exist, but rustfs only
+# creates it when the traces bucket env is set on that stack, so ensure it here
+# too or a fresh install dies with "bucket does not exist".
+retry ${containercommand} mb --ignore-existing simva-minio/${SIMVA_TRACES_BUCKET_NAME} >/dev/null || exit 1
 
 # rc cannot update a rule in place and PutBucketNotificationConfiguration
 # replaces the whole rule set, so drop any stale kafka rule before re-adding it.
@@ -125,6 +130,7 @@ else
 code="$(cat <<EOF
 ${containercommand} ${addhostcommand} simva-minio ${url} ${accesskey} ${secretkey} &&
 ${containercommand} ready simva-minio &&
+${containercommand} mb --ignore-existing simva-minio/${SIMVA_TRACES_BUCKET_NAME} &&
 adminInfo=\$(${containercommand} admin info --json simva-minio/${SIMVA_TRACES_BUCKET_NAME}) &&
 if [ -n "\$adminInfo" ]; then
     echo "Kafka event already exists in ${name}. Checking for conflicts..."
