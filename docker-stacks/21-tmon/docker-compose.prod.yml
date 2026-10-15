@@ -18,3 +18,9 @@ networks:
 services:
   tmon-app:
     image: ${SIMVA_TMON_IMAGE:-eucm/tmon}:${SIMVA_TMON_VERSION:-1.0.0}
+    volumes:
+      # The published image does not bundle client_secrets.json (only the
+      # example). The before-start hook 30-client-secrets.sh renders it from
+      # config-template/tmon/client_secrets.json into ${SIMVA_TMON_GIT_REPO};
+      # mount it read-only so the app can load /app/client_secrets.json.
+      - ${SIMVA_TMON_GIT_REPO}/client_secrets.json:/app/client_secrets.json:ro
