@@ -68,22 +68,19 @@ if [[ $format == '"fs"' ]]; then
         extra_config=""
         policycreate="${containercommand} --debug admin policy add simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json"
         policyattach="${containercommand} --debug admin policy set simva-minio/ simvaSink user=${SIMVA_KAFKA_CONNECT_SINK_USER}"
-        bucketcreate="${containercommand} mb --ignore-existing simva-minio/"
+        bucketcreate="${containercommand} mb --ignore-existing simva-minio/${SIMVA_TRACES_BUCKET_NAME}"
     else 
         #XL AFTER UPGRADE
         extra_config=""
         [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]] || extra_config="--api s3v4"
         policycreate="${containercommand} --debug admin policy create simva-minio/ simvaSink /policies/kafka-connect-simva-sink.json"
         policyattach="${containercommand} --debug admin policy attach simva-minio/ simvaSink --user ${SIMVA_KAFKA_CONNECT_SINK_USER}"
-        if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
-            bucketcreate="${containercommand} mb --ignore-existing simva-minio/"
-        else
-            bucketcreate="${containercommand} mb --ignore-existing simva-minio/"
-        fi
+        bucketcreate="${containercommand} mb --ignore-existing simva-minio/${SIMVA_TRACES_BUCKET_NAME}"
     fi
     code="$(cat <<EOF
 ${containercommand} ${addhostcommand} simva-minio ${url} ${accesskey} ${secretkey} ${extra_config} &&
 ${containercommand} ready simva-minio &&
+${bucketcreate} &&
 user_list="\$(${containercommand} ${userlistcommand} simva-minio/)" &&
 bucket_list="\$(${containercommand} ${bucketlistcommand} simva-minio/)" &&
 policy_list="\$(${containercommand} ${policylistcommand} simva-minio/)" &&
