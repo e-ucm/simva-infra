@@ -3,6 +3,16 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 set +e
+/bin/wait-available.sh "Keycloak SIMVA REALM" "${SIMVA_SSO_PROTOCOL}://${SIMVA_SSO_HOST}:${SIMVA_SSO_PORT}/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration" "true" "${NODE_EXTRA_CA_CERTS}";
+ret=$?
+set -e
+echo $ret
+
+if [[ $ret != 0 ]]; then 
+  exit 1
+fi
+
+set +e
 /bin/wait-available.sh 'SIMVA API' "${SIMVA_PROTOCOL}://${SIMVA_HOST}:${SIMVA_PORT}/health" true ${NODE_EXTRA_CA_CERTS};
 ret=$?
 set -e
