@@ -17,6 +17,7 @@ URL_TRAEFIK="https://${SIMVA_TRAEFIK_HOST_SUBDOMAIN}${EXT}"
 URL_LIMESURVEY="https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}${EXT}"
 URL_SIMVA_API="https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN}${EXT}"
 URL_FRONT="https://${SIMVA_EXTERNAL_DOMAIN}"
+URL_SIMVA_TRACE_ALLOCATOR="https://simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN}"
 URL_SHLINK="https://${SIMVA_SHLINK_EXTERNAL_DOMAIN}"
 URL_TMON="https://${SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN}${EXT}"
 URL_LRS="https://${SIMVA_LRS_HOST_SUBDOMAIN}${EXT}"
@@ -152,6 +153,7 @@ fi
 
 expect_grep "Shlink health" '"pass"' "$URL_SHLINK/rest/health"
 expect_code "SIMVA API health" 200 "$URL_SIMVA_API/health"
+expect_code "SIMVA Trace Allocator health" 200 "$URL_SIMVA_TRACE_ALLOCATOR/health"
 expect_grep "SIMVA front login page" 'simva' "$URL_FRONT/users/login"
 expect_code "TMon dashboard" 200 "$URL_TMON/" -L
 expect_code "LRS admin UI" 200 "$URL_LRS/admin/ui" -L
