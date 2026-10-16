@@ -17,7 +17,6 @@ URL_TRAEFIK="https://${SIMVA_TRAEFIK_HOST_SUBDOMAIN}${EXT}"
 URL_LIMESURVEY="https://${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}${EXT}"
 URL_SIMVA_API="https://${SIMVA_SIMVA_API_HOST_SUBDOMAIN}${EXT}"
 URL_FRONT="https://${SIMVA_EXTERNAL_DOMAIN}"
-URL_SIMVA_TRACE_ALLOCATOR="https://simva-trace-allocator.${SIMVA_INTERNAL_DOMAIN}"
 URL_SHLINK="https://${SIMVA_SHLINK_EXTERNAL_DOMAIN}"
 URL_TMON="https://${SIMVA_TMON_DASHBOARD_HOST_SUBDOMAIN}${EXT}"
 URL_LRS="https://${SIMVA_LRS_HOST_SUBDOMAIN}${EXT}"
@@ -33,13 +32,13 @@ fail() { fail_count=$((fail_count+1)); failures+=("$1"); echo "FAIL: $1"; }
 curl_code() {
   local url
   url="${@: -1}"
-  curl -sk --max-time 30 -o /dev/null -w '%{http_code}' "${@:1:$#-1}" "$url"
+  curl -sk --max-time 30 -o /dev/null -w '%{http_code}' "${@:1:$#-1}" "$url" || true
 }
 
 curl_body() {
   local url
   url="${@: -1}"
-  curl -sk --max-time 30 "${@:1:$#-1}" "$url"
+  curl -sk --max-time 30 "${@:1:$#-1}" "$url" || true
 }
 
 expect_code() {
@@ -49,6 +48,23 @@ expect_code() {
   code=""
   for i in $(seq 1 12); do
     code=$(curl_code "$@" "$url")
+    if [[ "$code" == "$want"* ]]; then
+      pass "$label (HTTP ${code})"
+      return 0
+    fi
+    echo "  retry $label: got HTTP ${code}, waiting 15s"
+    sleep 15
+  done
+  fail "$label (expected HTTP ${want}, got ${code})"
+}
+
+expect_code_cmd() {
+  local label="$1" want="$2"
+  shift 2
+  local code i
+  code=""
+  for i in $(seq 1 12); do
+    code=$("$@" 2>/dev/null || true)
     if [[ "$code" == "$want"* ]]; then
       pass "$label (HTTP ${code})"
       return 0
@@ -153,7 +169,21 @@ fi
 
 expect_grep "Shlink health" '"pass"' "$URL_SHLINK/rest/health"
 expect_code "SIMVA API health" 200 "$URL_SIMVA_API/health"
-expect_code "SIMVA Trace Allocator health" 200 "$URL_SIMVA_TRACE_ALLOCATOR/health"
+trace_alloc_ctr=$(docker ps -a --no-trunc --format '{{.Names}}\t{{.Image}}' | awk -F'\t' '/simva-trace-allocator/{print $1}' | head -n1)
+if [[ -z "${trace_alloc_ctr}" ]]; then
+  fail "simva-trace-allocator container not found"
+else
+  trace_alloc_health() {
+    docker exec "${trace_alloc_ctr}" node -e '
+      const port = process.env.HEALTH_PORT || 3050;
+      fetch("http://127.0.0.1:" + port + "/health")
+        .then((r) => process.stdout.write(String(r.status)))
+        .catch(() => process.stdout.write("000"))
+        .finally(() => process.exit(0));
+    '
+  }
+  expect_code_cmd "SIMVA Trace Allocator health" 200 trace_alloc_health
+fi
 expect_grep "SIMVA front login page" 'simva' "$URL_FRONT/users/login"
 expect_code "TMon dashboard" 200 "$URL_TMON/" -L
 expect_code "LRS admin UI" 200 "$URL_LRS/admin/ui" -L
