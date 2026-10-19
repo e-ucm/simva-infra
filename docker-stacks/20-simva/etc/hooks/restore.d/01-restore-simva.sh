@@ -20,8 +20,18 @@ _stop_docker_container_if_running
 
 "${SIMVA_HOME}/simva" stop $CURRENT_STACK
 BACKUP_VOLUME="simva_mongodb_data"
-echo "🕐 Restoring from backup: $BACKUP_DIR/$BACKUP_VOLUME"
-"${SIMVA_BIN_HOME}/volumectl.sh" restore $BACKUP_VOLUME "$BACKUP_DIR/$BACKUP_VOLUME" #TODO VIA OTHER METHOD
+if [[ -d "$BACKUP_DIR/$BACKUP_VOLUME" ]]; then
+    echo "🕐 Restoring from backup: $BACKUP_DIR/$BACKUP_VOLUME"
+    "${SIMVA_BIN_HOME}/volumectl.sh" restore $BACKUP_VOLUME "$BACKUP_DIR/$BACKUP_VOLUME"
+fi
+if [[ -d "$BACKUP_DIR/sqlite" ]]; then
+    echo "🕐 Restoring from backup: $BACKUP_DIR/sqlite"
+    # Remove existing sqlite db file if it exists to avoid mkdir conflict during extraction
+    if docker volume inspect "simva_sqlite_data" >/dev/null 2>&1; then
+        docker run --rm -v "simva_sqlite_data":/dest alpine sh -c "rm -rf /dest/${SIMVA_API_SQLITE_DB:-simva}_data.db" 2>/dev/null || true
+    fi
+    "${SIMVA_BIN_HOME}/volumectl.sh" copylv $BACKUP_DIR/sqlite "simva_sqlite_data" "${SIMVA_API_SQLITE_DB:-simva}_data.db" "${SIMVA_API_SQLITE_DB:-simva}_data.db" true
+fi
 BACKUP_TRACE_ALLOCATOR_VOLUME="simva_trace_allocator_data"
 echo "🕐 Restoring from backup: $BACKUP_DIR/$BACKUP_TRACE_ALLOCATOR_VOLUME"
 "${SIMVA_BIN_HOME}/volumectl.sh" restore $BACKUP_TRACE_ALLOCATOR_VOLUME "$BACKUP_DIR/$BACKUP_TRACE_ALLOCATOR_VOLUME"

@@ -91,7 +91,13 @@ copy_data_from_local_to_volume() {
     local local_file="$3"
     local container_dest="$4"
     local extract="${5:-false}"  # optional: true|false (default false)
-
+    if [[ $extract == "true" ]]; then
+      if [[ "$local_file" != *.tar.gz && "$local_file" != *.tgz ]]; then
+        local_file="${local_file}.tar.gz"
+      else
+        echo "⚠️  Extract option specified but file is not a .tar.gz or .tgz — proceeding with copy instead"
+      fi
+    fi
     # Validate inputs
     if [[ -z "$local_dir" || -z "$volume" || -z "$local_file" || -z "$container_dest" ]]; then
         echo "❌ Usage: copy_data_from_local_to_volume <local_dir> <volume> <local_file> <container_dest> [extract]"
