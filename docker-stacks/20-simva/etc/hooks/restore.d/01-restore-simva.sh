@@ -6,6 +6,16 @@ set -euo pipefail
 
 BACKUP_DIR="${SIMVA_BACKUP_HOME}/simva"
 
+# Flatten function: finds and extracts .db file from nested backup path
+flatten_db() {
+    local backup_tar="$1"
+    local target_dir="$2"
+    mkdir -p "$target_dir"
+    tar -xzf "$backup_tar" -C "$target_dir" 2>/dev/null || true
+    # Find the .db file, handling nested simva-data.db directories
+    find "$target_dir" -name "*.db" -type f | head -1
+}
+
 # Check if the container is running
 source "${SIMVA_BIN_HOME}/check-docker-running.sh"
 export RUN_IN_CONTAINER=true
@@ -26,23 +36,17 @@ if [[ -d "$BACKUP_DIR/$BACKUP_VOLUME" && -f "$BACKUP_DIR/$BACKUP_VOLUME/*.tar.gz
 fi
 if [[ -d "$BACKUP_DIR/sqlite" ]]; then
     echo "🕐 Restoring from backup: $BACKUP_DIR/sqlite"
-    # Remove existing sqlite db file if it exists to avoid mkdir conflict during extraction
-    if docker volume inspect "simva_sqlite_data" >/dev/null 2>&1; then
-        docker run --rm -v "simva_sqlite_data":/dest alpine sh -c "rm -rf /dest/${SIMVA_API_SQLITE_DB:-simva}_data.db" 2>/dev/null || true
-    fi
-    "${SIMVA_BIN_HOME}/volumectl.sh" copylv $BACKUP_DIR/sqlite "simva_sqlite_data" "${SIMVA_API_SQLITE_DB:-simva}_data.db" "${SIMVA_API_SQLITE_DB:-simva}_data.db" true
-    # Ensure the SQLite database file is at the volume root, not inside a subdirectory
-    if docker volume inspect "simva_sqlite_data" >/dev/null 2>&1; then
-        docker run --rm -v "simva_sqlite_data":/src alpine sh -c "
-          if [ -d /src/${SIMVA_API_SQLITE_DB:-simva}_data.db ]; then
-            echo 'Moving SQLite db from subdirectory to volume root...'
-            mv /src/${SIMVA_API_SQLITE_DB:-simva}_data.db/* /src/${SIMVA_API_SQLITE_DB:-simva}_data.db 2>/dev/null || true
-            # If the db file has a different name inside the subdir, handle it
-            if [ -f /src/${SIMVA_API_SQLITE_DB:-simva}_data.db/simva_data.db ]; then
-              mv /src/${SIMVA_API_SQLITE_DB:-simva}_data.db/simva_data.db /src/${SIMVA_API_SQLITE_DB:-simva}_data.db 2>/dev/null || true
+    FLATTEN_DIR="/tmp/simva_flatten"
+    DB_BACKUP="$BACKUP_DIR/sqlite/simva_data.db.tar.gz"
+    if [[ -f "$DB_BACKUP" ]]; then
+        DB_FILE=$(flatten_db "$DB_BACKUP" "$FLATTEN_DIR")
+        if [[ -n "$DB_FILE" && -f "$DB_FILE" ]]; then
+            echo "📋 Extracted database: $DB_FILE"
+            if docker volume inspect "simva_sqlite_data" >/dev/null 2>&1; then
+                docker run --rm -v "simva_sqlite_data":/dest alpine sh -c "rm -rf /dest/${SIMVA_API_SQLITE_DB:-simva}_data.db" 2>/dev/null || true
             fi
-          fi
-        " 2>/dev/null || true
+            "${SIMVA_BIN_HOME}/volumectl.sh" copylv "$(dirname "$DB_FILE")" "simva_sqlite_data" "$(basename "$DB_FILE")" "${SIMVA_API_SQLITE_DB:-simva}_data.db"
+        fi
     fi
 fi
 BACKUP_TRACE_ALLOCATOR_VOLUME="simva_trace_allocator_data"
