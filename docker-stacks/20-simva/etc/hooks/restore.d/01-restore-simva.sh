@@ -20,7 +20,7 @@ _stop_docker_container_if_running
 
 "${SIMVA_HOME}/simva" stop $CURRENT_STACK
 BACKUP_VOLUME="simva_mongodb_data"
-if [[ -d "$BACKUP_DIR/$BACKUP_VOLUME" ]]; then
+if [[ -d "$BACKUP_DIR/$BACKUP_VOLUME" && -f "$BACKUP_DIR/$BACKUP_VOLUME/*.tar.gz" ]]; then  
     echo "🕐 Restoring from backup: $BACKUP_DIR/$BACKUP_VOLUME"
     "${SIMVA_BIN_HOME}/volumectl.sh" restore $BACKUP_VOLUME "$BACKUP_DIR/$BACKUP_VOLUME"
 fi
@@ -31,6 +31,19 @@ if [[ -d "$BACKUP_DIR/sqlite" ]]; then
         docker run --rm -v "simva_sqlite_data":/dest alpine sh -c "rm -rf /dest/${SIMVA_API_SQLITE_DB:-simva}_data.db" 2>/dev/null || true
     fi
     "${SIMVA_BIN_HOME}/volumectl.sh" copylv $BACKUP_DIR/sqlite "simva_sqlite_data" "${SIMVA_API_SQLITE_DB:-simva}_data.db" "${SIMVA_API_SQLITE_DB:-simva}_data.db" true
+    # Ensure the SQLite database file is at the volume root, not inside a subdirectory
+    if docker volume inspect "simva_sqlite_data" >/dev/null 2>&1; then
+        docker run --rm -v "simva_sqlite_data":/src alpine sh -c "
+          if [ -d /src/${SIMVA_API_SQLITE_DB:-simva}_data.db ]; then
+            echo 'Moving SQLite db from subdirectory to volume root...'
+            mv /src/${SIMVA_API_SQLITE_DB:-simva}_data.db/* /src/${SIMVA_API_SQLITE_DB:-simva}_data.db 2>/dev/null || true
+            # If the db file has a different name inside the subdir, handle it
+            if [ -f /src/${SIMVA_API_SQLITE_DB:-simva}_data.db/simva_data.db ]; then
+              mv /src/${SIMVA_API_SQLITE_DB:-simva}_data.db/simva_data.db /src/${SIMVA_API_SQLITE_DB:-simva}_data.db 2>/dev/null || true
+            fi
+          fi
+        " 2>/dev/null || true
+    fi
 fi
 BACKUP_TRACE_ALLOCATOR_VOLUME="simva_trace_allocator_data"
 echo "🕐 Restoring from backup: $BACKUP_DIR/$BACKUP_TRACE_ALLOCATOR_VOLUME"
