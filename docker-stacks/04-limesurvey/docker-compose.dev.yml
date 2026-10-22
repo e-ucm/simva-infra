@@ -18,4 +18,7 @@ networks:
 services:
   limesurvey:
     << : *default-opts
-    build: ${SIMVA_LIMESURVEY_DOCKER_GIT_REPO:-/home/vagrant/docker-stacks/data/limesurvey/docker-limesurvey}
+    build:
+      context: ${SIMVA_LIMESURVEY_DOCKER_GIT_REPO:-/home/vagrant/docker-stacks/data/limesurvey/docker-limesurvey}
+      args:
+        DOCKER_LIMESURVEY_VERSION: ${SIMVA_LIMESURVEY_VERSION:-7.5.1-261021-apache}

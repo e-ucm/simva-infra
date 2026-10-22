@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
-export DOCKER_LIMESURVEY_VERSION="${SIMVA_LIMESURVEY_VERSION:-7.5.1-261021-apache}"
+
 export COMPOSE_FILE="docker-compose.yml"
 if [[ ${SIMVA_LIMESURVEY_VERSION:0:1} > 5 ]]; then
     export COMPOSE_FILE="$COMPOSE_FILE:docker-compose-limesurvey-version-sup-5.yml"
