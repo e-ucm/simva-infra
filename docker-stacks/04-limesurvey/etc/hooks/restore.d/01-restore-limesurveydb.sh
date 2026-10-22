@@ -29,7 +29,7 @@ _stop_docker_container_if_running
 
 export RUN_IN_CONTAINER_NAME="mariadb-backup"
 _stop_docker_container_if_running
-"${SIMVA_BIN_HOME}/volumectl.sh" copylv $BACKUP_DIR "ls_maria_db_backup_data" $BACKUP_FILE_COMPRESSED "restore" true
+"${SIMVA_BIN_HOME}/volumectl.sh" copylv $BACKUP_DIR/db/ "ls_maria_db_backup_data" $BACKUP_FILE_COMPRESSED "restore" true
 "${SIMVA_BIN_HOME}/volumectl.sh" exec "ls_maria_db_backup_data" "/dump" "ls -lia /dump/restore"
 
 export RUN_IN_CONTAINER_NAME="mariadb"
