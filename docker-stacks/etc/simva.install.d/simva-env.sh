@@ -46,7 +46,7 @@ export SIMVA_SOCKET_PROXY_VERSION="v0.5.0"
 
 #KEYCLOAK SSO IMAGE
 export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"
-export SIMVA_KEYCLOAK_VERSION="26.1.3"
+export SIMVA_KEYCLOAK_VERSION="26.4.7"
 #KEYCLOAK SETTINGS
 export SIMVA_KEYCLOAK_GUID="root" #root
 export SIMVA_KEYCLOAK_UUID="root" #root
@@ -62,7 +62,7 @@ export SIMVA_KEYCLOAK_MEMORY_LIMIT="2g"
 
 #SQL DB IMAGE
 export SIMVA_MARIADB_IMAGE="mariadb"
-export SIMVA_MARIADB_VERSION="10.4.13"
+export SIMVA_MARIADB_VERSION="13.0.2"
 #MARIADB SETTINGS
 export SIMVA_MARIA_DB_GUID="999" #mysql
 export SIMVA_MARIA_DB_UUID="ping" #mysql
@@ -115,7 +115,7 @@ export SIMVA_RUSTFS_FILE_MODE="644"
 #KAFKA IMAGE
 export SIMVA_KAFKA_IMAGE="confluentinc/cp-kafka"
 export SIMVA_KAFKA_CONNECT_IMAGE="confluentinc/cp-kafka-connect-base"
-export SIMVA_KAFKA_VERSION="7.8.0"
+export SIMVA_KAFKA_VERSION="7.9.10"
 #KAFKA SETTINGS
 export SIMVA_KAFKA_GUID="1000" #appuser
 export SIMVA_KAFKA_UUID="1000" #appuser 
@@ -125,7 +125,7 @@ export SIMVA_KAFKA_FILE_MODE="644" #rw-r--r--
 
 #SHLINK IMAGE
 export SIMVA_SHLINK_IMAGE="ghcr.io/shlinkio/shlink"
-export SIMVA_SHLINK_VERSION="stable"
+export SIMVA_SHLINK_VERSION="5.1.8"
 #SHLINK SETTINGS
 export SIMVA_SHLINK_GUID="1001" #1001
 export SIMVA_SHLINK_UUID="1001" #1001
@@ -193,6 +193,7 @@ export SIMVA_TMON_FILE_MODE="644" #rw-r--r--
 #LOGS IMAGE
 export SIMVA_LOGS_IMAGE="amir20/dozzle"
 export SIMVA_LOGS_VERSION="8.10.3"
+
 #LOGS SETTINGS
 export SIMVA_LOGS_GUID="root" #root
 export SIMVA_LOGS_UUID="root" #root
@@ -202,7 +203,7 @@ export SIMVA_LOGS_FILE_MODE="644" #rw-r--r--
 
 #LRS IMAGE
 export SIMVA_LRS_IMAGE="yetanalytics/lrsql"
-export SIMVA_LRS_VERSION="v0.9.5"
+export SIMVA_LRS_VERSION="v0.9.9"
 #LRS SETTINGS
 export SIMVA_LRS_PG_GUID="999" #postgres
 export SIMVA_LRS_PG_UUID="999" #postgres

@@ -752,25 +752,26 @@ function uninstall() {
 #   1 if version1 > version2
 #   2 if version1 < version2
 compare_versions() {
-    local version1=$1
-    local version2=$2
-    versions=($version1 $version2)
-    # Sort versions
-    sorted_versions=($(printf "%s\n" "${versions[@]}" | sort -V))
-    # Get the highest version
-    highest_version=${sorted_versions[-1]}
-    if [ $version1 = $version2 ]; then
-        # Versions are equal
+    local version1="$1"
+    local version2="$2"
+    if [[ "$version1" == "$version2" ]]; then
         echo 0
-        exit
-    elif [ $highest_version = $version1 ]; then
-        # Versions 1 is the highest
-        echo 1
-        exit
-    elif [ $highest_version = $version2 ]; then
-        # Versions 2 is the highest
+        return
+    fi
+    if [[ -z "$version1" ]]; then
         echo 2
-        exit
+        return
+    fi
+    if [[ -z "$version2" ]]; then
+        echo 1
+        return
+    fi
+    local highest_version
+    highest_version=$(printf "%s\n%s\n" "$version1" "$version2" | sort -V | tail -n 1)
+    if [[ "$highest_version" == "$version1" ]]; then
+        echo 1
+    else
+        echo 2
     fi
 }
 
@@ -859,61 +860,64 @@ function upgrade() {
                 previous_version=$(getValueFromBackupFile $var_name)
             fi 
             echo "previous_version: $previous_version"
-            line=0
-            variables=()
-            while IFS= read -r version; do
-                if [[ $line -eq 0 ]]; then
-                    line=$((line + 1))
-                    IFS='|' read -r -a names <<< "$version"
-                    firstvarname=$(tr '[:lower:]' '[:upper:]' <<< "${names[0]}")
-                    if [[ "${firstvarname}" == "$stack_name_uppercase" ]]; then
-                        for name in "${names[@]}"; do
-                            local name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$name")
-                            local variable="SIMVA_${name_uppercase}_VERSION"
-                            if [[ $name == "$stack_name_uppercase"* ]]; then
-                                if declare -p "$variable" &>/dev/null; then
-                                    variables+=("$variable")
-                                else
-                                    echo "Error: Global variable $variable does not exist"
-                                    exit 1
-                                fi
-                            else
-                                echo "Error: The variable name in $version_file has to start with $stack_name"
-                                exit 1
-                            fi
-                        done
-                    else
-                        echo "Error: The first variable name in $version_file has to be $stack_name corresponding to variable SIMVA_${stack_name_uppercase}_VERSION"
-                        exit 1
-                    fi
-                else
-                    IFS='|' read -r -a values <<< "$version"
-                    line=0
-                    for varname in "${variables[@]}"; do
-                        vers="${values[$line]}"
-                        if [[ $line -eq 0 ]]; then
-                            version="$vers"
-                            echo "version: $version"
-                            comparison_prev_result=$(compare_versions "$version" "$previous_version")
-                            echo "compare_versions $version $previous_version: $comparison_prev_result"
-                            comparison_new_result=$(compare_versions "$version" "$new_version")
-                            echo "compare_versions $version $new_version: $comparison_new_result"
-                        fi
-                        echo "Processing version of $varname: $vers"
-                        declare -g "$varname=$vers"
-                        line=$((line + 1))
-                    done
-                    if [[ ! $comparison_prev_result -eq 2 ]] && [[ ! $comparison_new_result -eq 1 ]]; then
-                        install "${wait_time}" "false" "${stack}"
-                        start 30 "false" "${stack}"
-                        stop "${wait_time}" "${stack}"
-                        echo "Processing version: $version done"
-                        echo "$version" > "${STACK_HOME}/.version"
-                    else
-                        echo "No need to migrate to this version $version"
-                    fi
+            mkdir -p "${SIMVA_DATA_HOME}/${stack_name}"
+            local -a variables=()
+            local -a file_lines=()
+            # Read whole file first: handles missing trailing newline and avoids
+            # docker compose consuming stdin of the loop
+            mapfile -t file_lines < <(tr -d '\r' < "$version_file")
+            local header="${file_lines[0]}"
+            local -a names=()
+            IFS='|' read -r -a names <<< "$header"
+            local firstvarname=$(tr '[:lower:]' '[:upper:]' <<< "${names[0]}")
+            if [[ "${firstvarname}" != "$stack_name_uppercase" ]]; then
+                echo "Error: The first variable name in $version_file has to be $stack_name corresponding to variable SIMVA_${stack_name_uppercase}_VERSION"
+                exit 1
+            fi
+            local name name_uppercase variable
+            for name in "${names[@]}"; do
+                name_uppercase=$(tr '[:lower:]' '[:upper:]' <<< "$name")
+                variable="SIMVA_${name_uppercase}_VERSION"
+                if [[ "$name_uppercase" != "$stack_name_uppercase"* ]]; then
+                    echo "Error: The variable name in $version_file has to start with $stack_name"
+                    exit 1
                 fi
-            done < "$version_file"
+                if ! declare -p "$variable" &>/dev/null; then
+                    echo "Error: Global variable $variable does not exist"
+                    exit 1
+                fi
+                variables+=("$variable")
+            done
+            # Data rows sorted by first column version (ascending)
+            local -a rows=()
+            mapfile -t rows < <(printf '%s\n' "${file_lines[@]:1}" | sed '/^[[:space:]]*$/d' | sort -t'|' -k1,1 -V)
+            local row
+            for row in "${rows[@]}"; do
+                local -a values=()
+                IFS='|' read -r -a values <<< "$row"
+                local version="${values[0]}"
+                local cmp_prev cmp_new
+                cmp_prev=$(compare_versions "$version" "$previous_version")
+                cmp_new=$(compare_versions "$version" "$new_version")
+                echo "version: $version (vs previous $previous_version: $cmp_prev, vs new $new_version: $cmp_new)"
+                # apply only if previous < version <= new
+                if [[ "$cmp_prev" -eq 1 ]] && [[ "$cmp_new" -ne 1 ]]; then
+                    local idx=0
+                    for varname in "${variables[@]}"; do
+                        echo "Processing version of $varname: ${values[$idx]}"
+                        declare -g "$varname=${values[$idx]}"
+                        idx=$((idx + 1))
+                    done
+                    install "${wait_time}" "false" "${stack}" < /dev/null
+                    start 30 "false" "${stack}" < /dev/null
+                    stop "${wait_time}" "${stack}" < /dev/null
+                    echo "Processing version: $version done"
+                    echo "$version" > "${SIMVA_DATA_HOME}/${stack_name}/.version"
+                    previous_version="$version"
+                else
+                    echo "No need to migrate to this version $version"
+                fi
+            done
         fi
         echo "Source original simva-env file"
         sourceEnvFile

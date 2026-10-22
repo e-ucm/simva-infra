@@ -5,11 +5,11 @@
 ###################
 # Nginx versions
 export SIMVA_NGINX_IMAGE="nginx"
-export SIMVA_NGINX_VERSION="1.19.2"
+export SIMVA_NGINX_VERSION="1.19.2" #"1.31.8"
 
 # Whoami image
 export SIMVA_WHOAMI_IMAGE="containous/whoami"
-export SIMVA_WHOAMI_VERSION="latest"
+export SIMVA_WHOAMI_VERSION="v1.5.0"
 
 # Node image for CSP Reporter 
 export SIMVA_NODE_IMAGE="node"
@@ -17,11 +17,11 @@ export SIMVA_NODE_VERSION="12.18.2"
 
 # Mail Dev image
 export SIMVA_MAILDEV_IMAGE="maildev/maildev"
-export SIMVA_MAILDEV_VERSION="1.1.0"
+export SIMVA_MAILDEV_VERSION="3.0.0"
 
 # PHPMyAdmin image
 export SIMVA_PHPMYADMIN_IMAGE="phpmyadmin/phpmyadmin"
-export SIMVA_PHPMYADMIN_VERSION="5.0.2"
+export SIMVA_PHPMYADMIN_VERSION="5.2.3"
 
 # Kafka images
 export SIMVA_KAFKA_SCHEMA_REGISTRY_IMAGE="confluentinc/cp-schema-registry"
@@ -29,29 +29,19 @@ export SIMVA_KAFKA_REST_IMAGE="confluentinc/cp-kafka-rest"
 
 # Kafka UI image
 export SIMVA_KAKFA_UI_IMAGE="provectuslabs/kafka-ui"
-export SIMVA_KAKFA_UI_VERSION="latest"
+export SIMVA_KAKFA_UI_VERSION="v0.7.2"
 
 #SHLINK ADMIN IMAGE
 export SIMVA_SHLINK_ADMIN_IMAGE="ghcr.io/shlinkio/shlink-web-client"
-export SIMVA_SHLINK_ADMIN_VERSION="latest"
+export SIMVA_SHLINK_ADMIN_VERSION="4.8.1"
 
 # Mongoku image
 export SIMVA_MONGOKU_UI_IMAGE="huggingface/mongoku"
-export SIMVA_MONGOKU_UI_VERSION="latest"
-
-# Anaconda Jupyter image
-export SIMVA_ANACONDA_IMAGE="continuumio/anaconda3"
-export SIMVA_ANACONDA_VERSION="2024.10-1"
-# Anaconda Jupyter SETTINGS
-export SIMVA_JUPYTER_GUID="anaconda" #anaconda
-export SIMVA_JUPYTER_UUID="anaconda" #anaconda
-export SIMVA_JUPYTER_TOP_DIR_MODE="700" #rwx------
-export SIMVA_JUPYTER_DIR_MODE="700" #rwx------
-export SIMVA_JUPYTER_FILE_MODE="600" #rw-------
+export SIMVA_MONGOKU_UI_VERSION="2.11.3"
 
 # Portainer image
 export SIMVA_PORTAINER_IMAGE="portainer/portainer-ce"
-export SIMVA_PORTAINER_VERSION="latest"
+export SIMVA_PORTAINER_VERSION="2.45.3"
 
 ########################
 # SIMVA Git repository #
