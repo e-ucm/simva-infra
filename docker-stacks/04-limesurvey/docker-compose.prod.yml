@@ -18,4 +18,4 @@ networks:
 services:
   limesurvey:
     << : *default-opts
-    image: ${SIMVA_LIMESURVEY_IMAGE:-e-ucm/limesurvey}:${SIMVA_LIMESURVEY_VERSION:-6-apache}
+    image: ${SIMVA_LIMESURVEY_IMAGE:-ghcr.io/e-ucm/limesurvey}:${SIMVA_LIMESURVEY_VERSION:-7-apache}

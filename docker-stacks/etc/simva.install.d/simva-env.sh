@@ -77,8 +77,8 @@ export SIMVA_MARIA_DB_BACKUP_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_MARIA_DB_BACKUP_FILE_MODE="644" #rw-r--r--
 
 #LIMESURVEY IMAGE
-export SIMVA_LIMESURVEY_IMAGE="martialblog/limesurvey"
-export SIMVA_LIMESURVEY_VERSION="6-apache"
+export SIMVA_LIMESURVEY_IMAGE="ghcr.io/e-ucm/limesurvey"
+export SIMVA_LIMESURVEY_VERSION="7.5.1-261021-apache"
 #LIMESURVEY SETTINGS
 export SIMVA_LIMESURVEY_GUID="33" #wwww-data
 export SIMVA_LIMESURVEY_UUID="33" #wwww-data
@@ -225,9 +225,9 @@ export SIMVA_CONFLUENCE_CONNECT_S3_REPO="confluentinc/kafka-connect-s3"
 export SIMVA_CONFLUENCE_CONNECT_S3_VERSION="11.0.1"
 
 #Git reference tag version release branch for Limesurvey Plugins
-export SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION="1.6.0"
-export SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION="1.2.0"
-export SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION="1.0.4"
+export SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION="1.6.1"
+export SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION="1.2.1"
+export SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION="1.0.5"
 
 #################################
 # OS and Architecture detection #
