@@ -1053,34 +1053,156 @@ function restore() {
     local wait_time=${1}
     shift
 
-    local stacks=${SIMVA_STACKS}
-    if [[ $# -gt 0 ]]; then
-        stacks=$@
+    local restore_config=true
+    local restore_data=true
+
+    # Get list of stacks to restore
+    local stacks="${@:1}"
+    if [[ -z "$stacks" ]]; then
+        stacks=${SIMVA_STACKS}
     fi
-    local phase="restore"
+
+    # For each stack, get available timestamps and prompt user
     for stack in ${stacks}; do
         export STACK_HOME="${SIMVA_HOME}/${stack}"
         export CURRENT_STACK="${stack}"
         export HELPERS_STACK_HOME="${STACK_HOME}/etc/hooks/helpers.d"
         export STACK_NAME="${stack##*-}"
-        if [[ -f "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp" ]]; then 
+
+        local backup_dir="${SIMVA_BACKUP_HOME}/${STACK_NAME}"
+        local timestamps=()
+        if [[ -d "$backup_dir/old" ]]; then
+            for t in "$backup_dir"/old/*/; do
+                if [[ -d "$t" ]]; then
+                    timestamps+=("$(basename "$t")")
+                fi
+            done
+        fi
+        # Also add the current timestamp file if it exists
+        if [[ -f "$backup_dir/.timestamp" ]]; then
+            local current_ts=$(cat "$backup_dir/.timestamp")
+            local found=0
+            for t in "${timestamps[@]}"; do
+                [[ "$t" == "$current_ts" ]] && found=1 && break
+            done
+            [[ $found -eq 0 ]] && timestamps+=("$current_ts")
+        fi
+        # Sort timestamps (newest first) - compare version strings
+        local sorted_timestamps=()
+        for t in "${timestamps[@]}"; do
+            sorted_timestamps+=("$t")
+        done
+        # Sort by date (newest first) using simple comparison
+        local change=1
+        while [[ $change -eq 1 ]]; do
+            change=0
+            for i in $(seq 0 $(( ${#sorted_timestamps[@]} - 2 ))); do
+                # Simple string comparison works for YYYY-MM-DD format
+                if [[ "${sorted_timestamps[$i]}" < "${sorted_timestamps[$((i+1))]}" ]]; then
+                    local tmp="${sorted_timestamps[$i]}"
+                    sorted_timestamps[$i]="${sorted_timestamps[$((i+1))]}"
+                    sorted_timestamps[$((i+1))]="$tmp"
+                    change=1
+                fi
+            done
+        done
+        # Build available timestamps string
+        local available_timestamps=""
+        for t in "${sorted_timestamps[@]}"; do
+            available_timestamps="$available_timestamps"$'\n'"$t"
+        done
+        available_timestamps=${available_timestamps#$'\n'}
+        local num_timestamps=$(echo "$available_timestamps" | wc -l)
+
+        # Display available options and prompt user
+        echo "=== Stack: ${STACK_NAME} ==="
+        echo "Restore from:"
+        echo " [1] Latest backup (from .timestamp file)"
+        if [[ $num_timestamps -gt 0 ]]; then
+            local i=2
+            while IFS= read -r ts; do
+                echo " [$i] Older backup: $ts"
+                i=$((i + 1))
+            done <<< "$available_timestamps"
+        fi
+        echo ""
+        echo " [0] Cancel"
+        echo ""
+        read -p "Select restoration source [0-$(($num_timestamps + 1))]: " src_choice
+        
+        timestamp=""
+        restore_source="latest"
+        if [[ "$src_choice" == "0" ]]; then
+            # User cancelled
+            echo "Restore cancelled."
+            return 0
+        elif [[ -n "$src_choice" && "$src_choice" != "1" ]]; then
+            # Validate choice is a number within range
+            if [[ "$src_choice" =~ ^[0-9]+$ ]] && [[ $src_choice -ge 2 && $src_choice -lt $((num_timestamps + 2)) ]]; then
+                # Get the selected timestamp (offset by 1 since 1 is latest)
+                local idx=1
+                for t in "${sorted_timestamps[@]}"; do
+                    idx=$((idx + 1))
+                    if [[ $idx -eq $src_choice ]]; then
+                        timestamp="$t"
+                        restore_source="old"
+                        break
+                    fi
+                done
+            fi
+        fi
+
+        # Determine backup directory based on timestamp
+        if [[ -n "$timestamp" && -d "${stack_backup_dir}/old/${timestamp}" ]]; then
+            BACKUP_DIR="${stack_backup_dir}/old/${timestamp}"
+        else
+            BACKUP_DIR="${stack_backup_dir}"
+        fi
+        # Export timestamp and backup directory for hooks to use
+        export SIMVA_RESTORE_TIMESTAMP="$timestamp"
+        export BACKUP_DIR
+
+        local phase="restore"
+        local stack_backup_dir="${SIMVA_BACKUP_HOME}/${STACK_NAME}"
+        if [[ -n "$timestamp" && -d "${stack_backup_dir}/old/${timestamp}" ]]; then
+            if [[ "$restore_config" == "true" ]]; then
+                BACKUP_CONFIG_DIR="${stack_backup_dir}/old/${timestamp}/config"
+            else
+                BACKUP_CONFIG_DIR="${stack_backup_dir}/config"
+            fi
+            if [[ "$restore_data" == "true" ]]; then
+                BACKUP_DATA_DIR="${stack_backup_dir}/old/${timestamp}/datafiles"
+            else
+                BACKUP_DATA_DIR="${stack_backup_dir}/datafiles"
+            fi
+        else
+            if [[ "$restore_config" == "true" ]]; then
+                BACKUP_CONFIG_DIR="${stack_backup_dir}/config"
+            else
+                BACKUP_CONFIG_DIR=""
+            fi
+            if [[ "$restore_data" == "true" ]]; then
+                BACKUP_DATA_DIR="${stack_backup_dir}/datafiles"
+            else
+                BACKUP_DATA_DIR=""
+            fi
+        fi
+        if [[ -d "${stack_backup_dir}" ]]; then
             setExecutable ${phase} ${stack}
             execute_before_hooks ${phase} ${stack}
             execute_after_hooks ${phase} ${stack}
             source "${SIMVA_BIN_HOME}/backup-restore.sh"
             sourceEnvFile
-            BACKUP_CONFIG_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/config"
-            if [[ -d "${BACKUP_CONFIG_DIR}" ]]; then 
+            if [[ -n "$BACKUP_CONFIG_DIR" && -d "${BACKUP_CONFIG_DIR}" ]]; then
                 restore_data $BACKUP_CONFIG_DIR "${SIMVA_CONFIG_HOME}/${STACK_NAME}" true
                 echo "✅ Backup $BACKUP_CONFIG_DIR restored!"
             fi
-            BACKUP_DATA_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/datafiles"
-            if [[ -d "${BACKUP_DATA_DIR}" ]]; then 
+            if [[ -n "$BACKUP_DATA_DIR" && -d "${BACKUP_DATA_DIR}" ]]; then
                 restore_data $BACKUP_DATA_DIR "${SIMVA_DATA_HOME}/${STACK_NAME}" true true
                 echo "✅ Backup $BACKUP_DATA_DIR restored!"
             fi
         fi
-    done 
+    done
 }
 
 function purgeDanglingContainers() {

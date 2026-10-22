@@ -2,9 +2,10 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
-"${HELPERS_STACK_HOME}/migrate-to-volume.sh"
+# BACKUP_DIR is set by the main restore function based on SIMVA_RESTORE_TIMESTAMP
+# Use it directly instead of determining it here
 
-BACKUP_DIR="${SIMVA_BACKUP_HOME}/simva"
+"${HELPERS_STACK_HOME}/migrate-to-volume.sh"
 
 # Flatten function: finds and extracts .db file from nested backup path
 flatten_db() {

@@ -4,12 +4,14 @@ set -euo pipefail
 
 "${HELPERS_STACK_HOME}/migrate-to-volume.sh"
 
-BACKUP_DIR="${SIMVA_BACKUP_HOME}/keycloak/db"
+# BACKUP_DIR is set by the main restore function based on SIMVA_RESTORE_TIMESTAMP
+# Use it directly instead of determining it here
+
 BACKUP_FILE="keycloak.sql"
 BACKUP_FILE_COMPRESSED="$BACKUP_FILE.tar.gz"
 
 # If a previous backup exists
-previousBackupPath="$BACKUP_DIR/$BACKUP_FILE_COMPRESSED"
+previousBackupPath="$BACKUP_DIR/db/$BACKUP_FILE_COMPRESSED"
 if [[ ! -f "$previousBackupPath" ]]; then
     echo "❌ No backup file found in $BACKUP_DIR"
     exit 1

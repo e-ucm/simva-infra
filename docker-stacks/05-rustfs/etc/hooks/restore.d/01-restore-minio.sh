@@ -2,9 +2,11 @@
 set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
+# BACKUP_DIR is set by the main restore function based on SIMVA_RESTORE_TIMESTAMP
+# Use it directly instead of determining it here
+
 "${HELPERS_STACK_HOME}/migrate-to-volume.sh"
 
-BACKUP_DIR="${SIMVA_BACKUP_HOME}/minio"
 BACKUP_VOLUME="minio_data"
 
 # Check if the container is running
