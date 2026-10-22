@@ -1153,50 +1153,28 @@ function restore() {
         fi
 
         # Determine backup directory based on timestamp
-        if [[ -n "$timestamp" && -d "${stack_backup_dir}/old/${timestamp}" ]]; then
-            BACKUP_DIR="${stack_backup_dir}/old/${timestamp}"
+        if [[ -n "$timestamp" && -d "${SIMVA_BACKUP_HOME}/${STACK_NAME}/old/${timestamp}" ]]; then
+            BACKUP_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/old/${timestamp}"
         else
-            BACKUP_DIR="${stack_backup_dir}"
+            BACKUP_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}"
         fi
         # Export timestamp and backup directory for hooks to use
         export SIMVA_RESTORE_TIMESTAMP="$timestamp"
         export BACKUP_DIR
 
         local phase="restore"
-        local stack_backup_dir="${SIMVA_BACKUP_HOME}/${STACK_NAME}"
-        if [[ -n "$timestamp" && -d "${stack_backup_dir}/old/${timestamp}" ]]; then
-            if [[ "$restore_config" == "true" ]]; then
-                BACKUP_CONFIG_DIR="${stack_backup_dir}/old/${timestamp}/config"
-            else
-                BACKUP_CONFIG_DIR="${stack_backup_dir}/config"
-            fi
-            if [[ "$restore_data" == "true" ]]; then
-                BACKUP_DATA_DIR="${stack_backup_dir}/old/${timestamp}/datafiles"
-            else
-                BACKUP_DATA_DIR="${stack_backup_dir}/datafiles"
-            fi
-        else
-            if [[ "$restore_config" == "true" ]]; then
-                BACKUP_CONFIG_DIR="${stack_backup_dir}/config"
-            else
-                BACKUP_CONFIG_DIR=""
-            fi
-            if [[ "$restore_data" == "true" ]]; then
-                BACKUP_DATA_DIR="${stack_backup_dir}/datafiles"
-            else
-                BACKUP_DATA_DIR=""
-            fi
-        fi
-        if [[ -d "${stack_backup_dir}" ]]; then
+        if [[ -d "${BACKUP_DIR}" ]]; then
             setExecutable ${phase} ${stack}
             execute_before_hooks ${phase} ${stack}
             execute_after_hooks ${phase} ${stack}
             source "${SIMVA_BIN_HOME}/backup-restore.sh"
             sourceEnvFile
+            BACKUP_CONFIG_DIR="${BACKUP_DIR}/config"
             if [[ -n "$BACKUP_CONFIG_DIR" && -d "${BACKUP_CONFIG_DIR}" ]]; then
                 restore_data $BACKUP_CONFIG_DIR "${SIMVA_CONFIG_HOME}/${STACK_NAME}" true
                 echo "✅ Backup $BACKUP_CONFIG_DIR restored!"
             fi
+            BACKUP_DATA_DIR="${BACKUP_DIR}/datafiles"
             if [[ -n "$BACKUP_DATA_DIR" && -d "${BACKUP_DATA_DIR}" ]]; then
                 restore_data $BACKUP_DATA_DIR "${SIMVA_DATA_HOME}/${STACK_NAME}" true true
                 echo "✅ Backup $BACKUP_DATA_DIR restored!"
