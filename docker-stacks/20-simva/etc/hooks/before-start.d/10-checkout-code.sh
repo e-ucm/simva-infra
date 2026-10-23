@@ -21,6 +21,7 @@ if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then
 fi
 
 source ${SIMVA_BIN_HOME}/check-checksum.sh;
+source "${SIMVA_BIN_HOME}/extension-helper.sh"
 
 # Function to checkout code from git repository
 checkout_repository() {
@@ -55,13 +56,13 @@ check_and_rebuild() {
 
 if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     SIMVA_API_GIT_REPO_URL=https://github.com/e-ucm/simva.git
-    SIMVA_API_GIT_REF=${SIMVA_API_GIT_REF:-master}
+    SIMVA_API_GIT_REF="$(resolve_git_ref simva "${SIMVA_API_GIT_REF:-v${SIMVA_SIMVA_VERSION}}")"
 
     SIMVA_FRONT_GIT_REPO_URL=https://github.com/e-ucm/simva-front.git
-    SIMVA_FRONT_GIT_REF=${SIMVA_FRONT_GIT_REF:-master}
+    SIMVA_FRONT_GIT_REF="$(resolve_git_ref simva-front "${SIMVA_FRONT_GIT_REF:-v${SIMVA_SIMVA_FRONT_VERSION}}")"
 
     SIMVA_TRACE_ALLOCATOR_GIT_REPO_URL=https://github.com/e-ucm/simva-trace-allocator.git
-    SIMVA_TRACE_ALLOCATOR_GIT_REF=${SIMVA_TRACE_ALLOCATOR_GIT_REF:-master}
+    SIMVA_TRACE_ALLOCATOR_GIT_REF="$(resolve_git_ref simva-trace-allocator "${SIMVA_TRACE_ALLOCATOR_GIT_REF:-v${SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION}}")"
     ###########################################################
     ######################### BACKEND #########################
     ###########################################################
@@ -125,7 +126,6 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
 fi
 if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     # Local sources are expected next to simva-infra: fetch the missing ones (existing folders are kept).
-    source "${SIMVA_BIN_HOME}/extension-helper.sh"
     checkout_local_repo "${SIMVA_API_GIT_REPO}"             "simva"                  "v${SIMVA_SIMVA_VERSION}"
     checkout_local_repo "${SIMVA_FRONT_GIT_REPO}"           "simva-front"            "v${SIMVA_SIMVA_FRONT_VERSION}"
     checkout_local_repo "${SIMVA_TRACE_ALLOCATOR_GIT_REPO}" "simva-trace-allocator"  "v${SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION}"
