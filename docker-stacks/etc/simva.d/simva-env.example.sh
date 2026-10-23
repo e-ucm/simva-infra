@@ -214,43 +214,43 @@ export SIMVA_TMON_LRS_LAG_SECONDS=60
 ####################################################################
 # Traefik dashboard is protected using basic authentication
 export SIMVA_TRAEFIK_DASHBOARD_USER="admin"
-export SIMVA_TRAEFIK_DASHBOARD_PASSWORD="password"
+export SIMVA_TRAEFIK_DASHBOARD_PASSWORD="CHANGEME1234"
 
 # TRUSTSTORE PASSWORD
-export SIMVA_TRUSTSTORE_PASSWORD='changeit'
+export SIMVA_TRUSTSTORE_PASSWORD='CHANGEME1234'
 
 # Keycloak mariadb MySQL database root and keycloak user
-export SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD="root"
+export SIMVA_KEYCLOAK_MYSQL_ROOT_PASSWORD="CHANGEME1234"
 export SIMVA_KEYCLOAK_MYSQL_USER="keycloak"
-export SIMVA_KEYCLOAK_MYSQL_PASSWORD="password"
+export SIMVA_KEYCLOAK_MYSQL_PASSWORD="CHANGEME1234"
 
 # Keycloak master realm default user
 export SIMVA_KEYCLOAK_ADMIN_USER="admin"
-export SIMVA_KEYCLOAK_ADMIN_PASSWORD="password"
+export SIMVA_KEYCLOAK_ADMIN_PASSWORD="CHANGEME1234"
 
 # Mail Authentification
 export SIMVA_MAIL_AUTH="false"
 export SIMVA_MAIL_USER="user"
-export SIMVA_MAIL_PASSWORD="password"
+export SIMVA_MAIL_PASSWORD="CHANGEME1234"
 
 #Limesurvey default administrator
 export SIMVA_LIMESURVEY_ADMIN_USER="admin"
-export SIMVA_LIMESURVEY_ADMIN_PASSWORD="password2"
+export SIMVA_LIMESURVEY_ADMIN_PASSWORD="CHANGEME1234"
 
 #Limesurvey MySQL default root user and limesurvey user
-export SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD="root"
+export SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD="CHANGEME1234"
 export SIMVA_LIMESURVEY_MYSQL_USER="limesurvey"
-export SIMVA_LIMESURVEY_MYSQL_PASSWORD="password"
+export SIMVA_LIMESURVEY_MYSQL_PASSWORD="CHANGEME1234"
 
 #Limesurvey default administrator
-export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="password"
+export SIMVA_LIMESURVEY_SIMPLESAMLPHP_ADMIN_PASSWORD="CHANGEME1234"
 
 #Limesurvey Webhook Api Token
-export SIMVA_LIMESURVEY_WEBHOOK_API_TOKEN="secret"
+export SIMVA_LIMESURVEY_WEBHOOK_API_TOKEN="CHANGEME1234"
 
 #RustFS default administrator
 export SIMVA_RUSTFS_ACCESS_KEY="admin-rustfs"
-export SIMVA_RUSTFS_SECRET_KEY="password-rustfs"
+export SIMVA_RUSTFS_SECRET_KEY="CHANGEME1234"
 
 #RustFS event notifications
 # Max events held in that queue before the oldest are dropped.
@@ -258,38 +258,38 @@ export SIMVA_RUSTFS_NOTIFY_QUEUE_LIMIT="100000"
 
 #Minio default administrator
 export SIMVA_MINIO_ACCESS_KEY="minio"
-export SIMVA_MINIO_SECRET_KEY="password"
+export SIMVA_MINIO_SECRET_KEY="CHANGEME1234"
 
 #Kafka connect to sink default user
 export SIMVA_KAFKA_CONNECT_SINK_USER="simva-sink"
-export SIMVA_KAFKA_CONNECT_SINK_SECRET="password"
+export SIMVA_KAFKA_CONNECT_SINK_SECRET="CHANGEME1234"
 
 # SIMVA API default user
 export SIMVA_API_ADMIN_USERNAME="admin"
-export SIMVA_API_ADMIN_PASSWORD="password"
+export SIMVA_API_ADMIN_PASSWORD="CHANGEME1234"
 
 #SIMVA LTI plateform DB
 export SIMVA_LTI_PLATFORM_DB_USER="root"
-export SIMVA_LTI_PLATFORM_DB_PASSWORD="password"
+export SIMVA_LTI_PLATFORM_DB_PASSWORD="CHANGEME1234"
 
 #Shlink 
-export SIMVA_SHLINK_API_KEY="password"
+export SIMVA_SHLINK_API_KEY="CHANGEME1234"
 
 # DOZZLE
 export SIMVA_DOZZLE_USERNAME="simva"
-export SIMVA_DOZZLE_PASSWORD="password"
+export SIMVA_DOZZLE_PASSWORD="CHANGEME1234"
 
 # Postgres DB
 export SIMVA_LRS_DB_USER="lrs"
-export SIMVA_LRS_DB_PASSWORD="lrs"
+export SIMVA_LRS_DB_PASSWORD="CHANGEME1234"
 
 # LRS Service
 export SIMVA_LRS_API_KEY_DEFAULT="my_api_key"
-export SIMVA_LRS_API_SECRET_DEFAULT="my_api_secret"
+export SIMVA_LRS_API_SECRET_DEFAULT="CHANGEME1234"
 
 # LRS Service Admin user
 export SIMVA_LRS_ADMIN_USER_DEFAULT="admin"
-export SIMVA_LRS_ADMIN_PASS_DEFAULT="admin_password"
+export SIMVA_LRS_ADMIN_PASS_DEFAULT="CHANGEME1234"
 
 ####################################################################
 # ######################### KEYCLOAK USERS #########################
@@ -297,14 +297,11 @@ export SIMVA_LRS_ADMIN_PASS_DEFAULT="admin_password"
 ####################################################################
 # SIMVA ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_SIMVA_CLIENT_ID="simva"
-export SIMVA_SIMVA_CLIENT_SECRET="secret"
+export SIMVA_SIMVA_CLIENT_SECRET="CHANGEME1234"
 
 # LTI PLATFORM ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_LTI_PLATFORM_CLIENT_ID="lti_platform"
-export SIMVA_LTI_PLATFORM_CLIENT_SECRET="secret"
-
-export SIMVA_TRACE_ALLOCATOR_CLIENT_ID="simva_trace_allocator"
-export SIMVA_TRACE_ALLOCATOR_CLIENT_SECRET="secret"
+export SIMVA_LTI_PLATFORM_CLIENT_SECRET="CHANGEME1234"
 
 ########################################################
 # Uncomment client secret if you want to set up for those client
@@ -312,45 +309,45 @@ export SIMVA_TRACE_ALLOCATOR_CLIENT_SECRET="secret"
 ########################################################
 # LIMESURVEY ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_LIMESURVEY_CLIENT_ID="limesurvey"
-export SIMVA_LIMESURVEY_CLIENT_SECRET="secret"
+export SIMVA_LIMESURVEY_CLIENT_SECRET="CHANGEME1234"
 
 # MINIO ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_MINIO_CLIENT_ID="minio"
-#export SIMVA_MINIO_CLIENT_SECRET="secret"
+#export SIMVA_MINIO_CLIENT_SECRET="CHANGEME1234"
 
 # TMon Dashboard ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_TMON_CLIENT_ID="tmon"
-export SIMVA_TMON_CLIENT_SECRET="secret"
+export SIMVA_TMON_CLIENT_SECRET="CHANGEME1234"
 
 # PUMVA ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_PUMVA_CLIENT_ID="pumva"
-export SIMVA_PUMVA_CLIENT_SECRET="secret"
+export SIMVA_PUMVA_CLIENT_SECRET="CHANGEME1234"
 
 # TRACE ALLOCATOR (garbage collector) ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 # Confidential client used by the trace allocator to request a Keycloak access token
 # through the OAuth2 resource owner password credentials grant
 export SIMVA_TRACE_ALLOCATOR_CLIENT_ID="simva-trace-allocator"
-export SIMVA_TRACE_ALLOCATOR_CLIENT_SECRET="secret"
+export SIMVA_TRACE_ALLOCATOR_CLIENT_SECRET="CHANGEME1234"
 
 # Keycloak Client ACCESS_KEY AND SECRET_KEY FOR KEYCLOAK
 export SIMVA_KEYCLOAK_CLIENT_CLIENT_ID="keycloak-client"
-export SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET="secret"
+export SIMVA_KEYCLOAK_CLIENT_CLIENT_SECRET="CHANGEME1234"
 
 ####################################################################
 # USERNAME AND PASSWORD VARIABLES FOR KEYCLOAK USER CREATION 
 ####################################################################
 # Administrator Username and password FOR KEYCLOAK
 export SIMVA_ADMINISTRATOR_USER="administrator"
-export SIMVA_ADMINISTRATOR_PASSWORD="administrator"
+export SIMVA_ADMINISTRATOR_PASSWORD="CHANGEME1234"
 
 # LRS MANAGER Username and password FOR KEYCLOAK
 export SIMVA_LRSMANAGER_USER="mylrsmanager"
-export SIMVA_LRSMANAGER_PASSWORD="password"
+export SIMVA_LRSMANAGER_PASSWORD="CHANGEME1234"
 
 # GARBAGE COLLECTOR (trace allocator) Username and password FOR KEYCLOAK
 # Read only role: it can only query data from the SIMVA API, it cannot modify anything
 export SIMVA_GARBAGECOLLECTOR_USER="garbagecollector"
-export SIMVA_GARBAGECOLLECTOR_PASSWORD="password"
+export SIMVA_GARBAGECOLLECTOR_PASSWORD="CHANGEME1234"
 
 ########################################################
 # Uncomment password if you want to set up for those template users

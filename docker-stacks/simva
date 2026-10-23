@@ -42,23 +42,32 @@ function sourceBackupEnvFile() {
 }
 
 function sourceEnvFile() {
-    dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
-    dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh"
+    local sync="${SIMVA_PROJECT_DIR}/bin/sync-env-template.sh"
+    local d="${SIMVA_PROJECT_DIR}/etc/simva.d"
+    # untracked local files are created/updated from the tracked *.example.sh templates
+    "${sync}" sync "${d}/simva-env.example.sh" "${d}/simva-env.sh"
+    [[ -e "${d}/simva-env.sh" ]] && dos2unix "${d}/simva-env.sh"
     dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.sh"
     dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.dev.sh"
-    if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" ]]; then
-        source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh"
-    fi
+    source "${d}/simva-env.sh"
     if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.sh" ]]; then
         source "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.sh"
     fi
-    if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then 
-        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh" ]]; then
-            source "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh"
-        fi
+    local to_check=("${d}/simva-env.sh")
+    if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
+        "${sync}" sync "${d}/simva-env.dev.example.sh" "${d}/simva-env.dev.sh"
+        dos2unix "${d}/simva-env.dev.sh"
+        source "${d}/simva-env.dev.sh"
         if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.dev.sh" ]]; then
             source "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.dev.sh"
         fi
+        to_check+=("${d}/simva-env.dev.sh")
+    fi
+    # default secrets are only tolerated for a local development setup
+    if [[ "${SIMVA_ENVIRONMENT}" == "development" && "${SIMVA_DEVELOPMENT_LOCAL:-false}" == "true" ]]; then
+        echo "Local development: default secrets allowed."
+    else
+        "${sync}" check "${to_check[@]}" || exit 1
     fi
 }
 

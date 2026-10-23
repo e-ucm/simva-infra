@@ -82,9 +82,9 @@ export SIMVA_CLINIC_TIMEOUT_TIME="20m"
 ######## Authentification username and password (TO MODIFY) ########
 ####################################################################
 #Jupyter Password
-export SIMVA_JUPYTER_PASSWORD="password"
+export SIMVA_JUPYTER_PASSWORD="CHANGEME1234"
 
 # Portainer admin password
-export SIMVA_PORTAINER_ADMIN_PASSWORD="password1234"
+export SIMVA_PORTAINER_ADMIN_PASSWORD="CHANGEME1234"
 
 
