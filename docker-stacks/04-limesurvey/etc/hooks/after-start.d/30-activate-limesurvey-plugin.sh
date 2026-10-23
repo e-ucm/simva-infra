@@ -28,12 +28,12 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
             ext_name=$key
             ext_version=${plugins[$key]}
             echo "Inserting plugin $ext_name into the plugins table..."
-            plugin=$("${SIMVA_BIN_HOME}/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
+            plugin=$("${SIMVA_BIN_HOME}/run-command.sh" bash -c 'if command -v mariadb >/dev/null 2>&1; then exec mariadb "$@"; else exec mysql "$@"; fi' _ -u $DB_USER -p"$DB_PASSWORD" -e "
                 USE $DB_NAME;
                 SELECT id FROM \`$PLUGIN_TABLE_NAME\` WHERE name='$ext_name' AND active=1 and version='$ext_version';");
             echo $plugin;
             if [[ ! $plugin == *"id"* ]]; then 
-                "${SIMVA_BIN_HOME}/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
+                "${SIMVA_BIN_HOME}/run-command.sh" bash -c 'if command -v mariadb >/dev/null 2>&1; then exec mariadb "$@"; else exec mysql "$@"; fi' _ -u $DB_USER -p"$DB_PASSWORD" -e "
                 USE $DB_NAME;
                 INSERT INTO \`$PLUGIN_TABLE_NAME\` (name, plugin_type, active, priority, version)
                 VALUES ('$ext_name', 'user', 1, 0, '$ext_version');
@@ -44,12 +44,12 @@ if [[ ! -e "${SIMVA_DATA_HOME}/limesurvey/.initialized" ]]; then
             fi
         done
         #Desactivate AuthSAML
-        plugin=$("${SIMVA_BIN_HOME}/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
+        plugin=$("${SIMVA_BIN_HOME}/run-command.sh" bash -c 'if command -v mariadb >/dev/null 2>&1; then exec mariadb "$@"; else exec mysql "$@"; fi' _ -u $DB_USER -p"$DB_PASSWORD" -e "
                 USE $DB_NAME;
                 SELECT id FROM \`$PLUGIN_TABLE_NAME\` WHERE name='AuthSAML' AND active=1;");
         echo $plugin;
         if [[ $plugin == *"id"* ]]; then 
-            "${SIMVA_BIN_HOME}/run-command.sh" mysql -u $DB_USER -p"$DB_PASSWORD" -e "
+            "${SIMVA_BIN_HOME}/run-command.sh" bash -c 'if command -v mariadb >/dev/null 2>&1; then exec mariadb "$@"; else exec mysql "$@"; fi' _ -u $DB_USER -p"$DB_PASSWORD" -e "
                 USE $DB_NAME;
                 UPDATE \`$PLUGIN_TABLE_NAME\`
                 SET active = 0
