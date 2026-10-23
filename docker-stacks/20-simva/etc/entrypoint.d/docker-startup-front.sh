@@ -15,7 +15,7 @@ if [[ $ret == 0 ]]; then
   echo "${NODE_ENV}"
   if [[ "${NODE_ENV}" == "development" ]]; then
     # Setup local dependencies if needed (js-tracker)
-    node ${JSTRACKER_ENTRYPOINT_SCRIPT:-/home/node/entrypoint.d/setup-local-deps.js}
+    node ${XASUJS_ENTRYPOINT_SCRIPT:-/home/node/entrypoint.d/setup-local-deps.js}
     if [[ "${ENABLE_DEBUG_PROFILING:-false}" == "true" ]]; then
         if [[ ! -e ${PROFILING_FOLDER} ]]; then 
           mkdir -p ${PROFILING_FOLDER}

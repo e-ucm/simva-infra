@@ -380,7 +380,7 @@ export SIMVA_PUMVA_GIT_REPO="${base_for_simva_repos}/pumva"
 export SIMVA_PUMVA_FRONT_GIT_REPO="${base_for_simva_repos}/pumva-front"
 
 base_for_limesurvey_repos="${SIMVA_DATA_HOME}/limesurvey"
-export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/docker-limesurvey"
+export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/limesurvey"
 
 base_for_tmon_repos="${SIMVA_DATA_HOME}/tmon"
 export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"

@@ -10,29 +10,29 @@ const os = require('os');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const JSTRACKER_LOCAL_PATH = process.env.JSTRACKER_LOCAL_PATH || '/js-tracker';
-const JSTRACKER_LOCAL_DEPLOYMENT = process.env.JSTRACKER_LOCAL_DEPLOYMENT === 'true';
+const XASUJS_LOCAL_PATH = process.env.XASUJS_LOCAL_PATH || '/js-tracker';
+const XASUJS_LOCAL_DEPLOYMENT = process.env.XASUJS_LOCAL_DEPLOYMENT === 'true';
 const APP_DIR = process.env.SIMVA_APP_DIR || '/app';
 
 console.log('[Setup] Starting local dependency setup...');
-console.log(`[Setup] JSTRACKER_LOCAL_DEPLOYMENT: ${process.env.JSTRACKER_LOCAL_DEPLOYMENT}`);
-console.log(`[Setup] JSTRACKER_LOCAL_PATH: ${process.env.JSTRACKER_LOCAL_PATH}`);
+console.log(`[Setup] XASUJS_LOCAL_DEPLOYMENT: ${process.env.XASUJS_LOCAL_DEPLOYMENT}`);
+console.log(`[Setup] XASUJS_LOCAL_PATH: ${process.env.XASUJS_LOCAL_PATH}`);
 
-if (JSTRACKER_LOCAL_DEPLOYMENT) {
-    const jsTrackerPath = path.resolve(__dirname, JSTRACKER_LOCAL_PATH);
+if (XASUJS_LOCAL_DEPLOYMENT) {
+    const xasuJsPath = path.resolve(__dirname, XASUJS_LOCAL_PATH);
     const appDir = APP_DIR;
     
-    console.log(`[Setup] Resolving local js-tracker path: ${jsTrackerPath}`);
+    console.log(`[Setup] Resolving local js-tracker path: ${xasuJsPath}`);
     
-    if (fs.existsSync(jsTrackerPath)) {
-        console.log(`[Setup] ✓ Local js-tracker found at: ${jsTrackerPath}`);
+    if (fs.existsSync(xasuJsPath)) {
+        console.log(`[Setup] ✓ Local js-tracker found at: ${xasuJsPath}`);
         const tempBuildDir = fs.mkdtempSync(path.join(os.tmpdir(), 'js-tracker-build-'));
 
         console.log(`[Setup] Copying local js-tracker to writable temp dir: ${tempBuildDir}`);
         
         try {
             // Build in a temp copy to avoid permission issues on host-mounted folders.
-            fs.cpSync(jsTrackerPath, tempBuildDir, {
+            fs.cpSync(xasuJsPath, tempBuildDir, {
                 recursive: true,
                 force: true,
                 filter: (src) => !src.includes(`${path.sep}node_modules${path.sep}`) && path.basename(src) !== 'node_modules'
@@ -75,7 +75,7 @@ if (JSTRACKER_LOCAL_DEPLOYMENT) {
             }
         }
     } else {
-        console.warn(`[Setup] ⚠ JSTRACKER_LOCAL_DEPLOYMENT enabled but path not found: ${jsTrackerPath}`);
+        console.warn(`[Setup] ⚠ XASUJS_LOCAL_DEPLOYMENT enabled but path not found: ${xasuJsPath}`);
         console.warn('[Setup] Proceeding with npm registry version');
     }
 } else {

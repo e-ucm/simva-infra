@@ -172,15 +172,36 @@ export SIMVA_PROJECT_DIR="/home/vagrant/simva-infra"
 source /home/vagrant/simva-infra/docker-stacks/etc/simva.d/simva-env.sh
 source /home/vagrant/simva-infra/docker-stacks/etc/simva.install.d/simva-env.sh
 source /home/vagrant/simva-infra/docker-stacks/etc/simva.d/simva-env.dev.sh
-if [ ! -d /home/vagrant/simva ]; then
-  mkdir -p /home/vagrant/simva
-  git clone --depth 1 --branch ${SIMVA_API_GIT_REF} https://github.com/e-ucm/simva.git /home/vagrant/simva
-  chown -R vagrant:vagrant /home/vagrant/simva
+if [ ! -d /home/vagrant/AuthOAuth2 ]; then
+  mkdir -p /home/vagrant/AuthOAuth2
+  git clone --depth 1 --branch v${SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION} https://github.com/e-ucm/AuthOAuth2.git /home/vagrant/AuthOAuth2
+  chown -R vagrant:vagrant /home/vagrant/AuthOAuth2
 fi
-if [ ! -d /home/vagrant/simva-front ]; then
-  mkdir -p /home/vagrant/simva-front
-  git clone --depth 1 --branch ${SIMVA_FRONT_GIT_REF} https://github.com/e-ucm/simva-front.git /home/vagrant/simva-front
-  chown -R vagrant:vagrant /home/vagrant/simva-front
+if [ ! -d /home/vagrant/kafka-extensions ]; then
+  mkdir -p /home/vagrant/kafka-extensions
+  git clone --depth 1 --branch v${SIMVA_KAFKA_EXTENSIONS_VERSION}  https://github.com/e-ucm/kafka-extensions.git /home/vagrant/kafka-extensions
+  chown -R vagrant:vagrant /home/vagrant/kafka-extensions
+fi
+if [ ! -d /home/vagrant/keycloak-extensions ]; then
+  mkdir -p /home/vagrant/keycloak-extensions
+  git clone --depth 1 --branch v${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}  https://github.com/e-ucm/keycloak-extensions.git /home/vagrant/keycloak-extensions
+  chown -R vagrant:vagrant /home/vagrant/keycloak-extensions
+fi
+
+if [ ! -d /home/vagrant/limesurvey ]; then
+  mkdir -p /home/vagrant/limesurvey
+  git clone --depth 1 --branch ${SIMVA_LIMESURVEY_DOCKER_GIT_REF} https://github.com/e-ucm/limesurvey.git /home/vagrant/limesurvey
+  chown -R vagrant:vagrant /home/vagrant/limesurvey
+fi
+if [ ! -d /home/vagrant/LimesurveyWebhook ]; then
+  mkdir -p /home/vagrant/LimesurveyWebhook
+  git clone --depth 1 --branch v${SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION} https://github.com/e-ucm/LimesurveyWebhook.git /home/vagrant/LimesurveyWebhook
+  chown -R vagrant:vagrant /home/vagrant/LimesurveyWebhook
+fi
+if [ ! -d /home/vagrant/LimesurveyXAPITracker ]; then
+  mkdir -p /home/vagrant/LimesurveyXAPITracker
+  git clone --depth 1 --branch v${SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION} https://github.com/e-ucm/LimesurveyXAPITracker.git /home/vagrant/LimesurveyXAPITracker
+  chown -R vagrant:vagrant /home/vagrant/LimesurveyXAPITracker
 fi
 if [ ! -d /home/vagrant/pumva ]; then
   mkdir -p /home/vagrant/pumva
@@ -192,6 +213,16 @@ if [ ! -d /home/vagrant/pumva-front ]; then
   git clone --depth 1 --branch ${SIMVA_PUMVA_FRONT_GIT_REF} https://github.com/e-ucm/pumva-front.git /home/vagrant/pumva-front
   chown -R vagrant:vagrant /home/vagrant/pumva-front
 fi
+if [ ! -d /home/vagrant/simva ]; then
+  mkdir -p /home/vagrant/simva
+  git clone --depth 1 --branch ${SIMVA_API_GIT_REF} https://github.com/e-ucm/simva.git /home/vagrant/simva
+  chown -R vagrant:vagrant /home/vagrant/simva
+fi
+if [ ! -d /home/vagrant/simva-front ]; then
+  mkdir -p /home/vagrant/simva-front
+  git clone --depth 1 --branch ${SIMVA_FRONT_GIT_REF} https://github.com/e-ucm/simva-front.git /home/vagrant/simva-front
+  chown -R vagrant:vagrant /home/vagrant/simva-front
+fi
 if [ ! -d /home/vagrant/simva-trace-allocator ]; then
   mkdir -p /home/vagrant/simva-trace-allocator
   git clone --depth 1 --branch ${SIMVA_TRACE_ALLOCATOR_GIT_REF} https://github.com/e-ucm/simva-trace-allocator.git /home/vagrant/simva-trace-allocator
@@ -202,41 +233,12 @@ if [ ! -d /home/vagrant/t-mon ]; then
   git clone --depth 1 --branch "master" https://github.com/e-ucm/t-mon.git /home/vagrant/t-mon
   chown -R vagrant:vagrant /home/vagrant/t-mon
 fi
-if [ ! -d /home/vagrant/docker-limesurvey ]; then
-  mkdir -p /home/vagrant/docker-limesurvey
-  git clone --depth 1 --branch ${SIMVA_LIMESURVEY_DOCKER_GIT_REF} https://github.com/e-ucm/docker-limesurvey.git /home/vagrant/docker-limesurvey
-  chown -R vagrant:vagrant /home/vagrant/docker-limesurvey
+if [ ! -d /home/vagrant/xasu-js ]; then
+  mkdir -p /home/vagrant/xasu-js
+  git clone --depth 1 --branch "master"  https://github.com/e-ucm/xasu-js.git /home/vagrant/xasu-js
+  chown -R vagrant:vagrant /home/vagrant/xasu-js
 fi
-if [ ! -d /home/vagrant/LimesurveyXAPITracker ]; then
-  mkdir -p /home/vagrant/LimesurveyXAPITracker
-  git clone --depth 1 --branch v${SIMVA_LIMESURVEY_XAPITRACKER_PLUGIN_VERSION} https://github.com/e-ucm/LimesurveyXAPITracker.git /home/vagrant/LimesurveyXAPITracker
-  chown -R vagrant:vagrant /home/vagrant/LimesurveyXAPITracker
-fi
-if [ ! -d /home/vagrant/LimesurveyWebhook ]; then
-  mkdir -p /home/vagrant/LimesurveyWebhook
-  git clone --depth 1 --branch v${SIMVA_LIMESURVEY_WEBHOOK_PLUGIN_VERSION} https://github.com/e-ucm/LimesurveyWebhook.git /home/vagrant/LimesurveyWebhook
-  chown -R vagrant:vagrant /home/vagrant/LimesurveyWebhook
-fi
-if [ ! -d /home/vagrant/AuthOAuth2 ]; then
-  mkdir -p /home/vagrant/AuthOAuth2
-  git clone --depth 1 --branch v${SIMVA_LIMESURVEY_AUTHOAUTH2_PLUGIN_VERSION} https://github.com/e-ucm/AuthOAuth2.git /home/vagrant/AuthOAuth2
-  chown -R vagrant:vagrant /home/vagrant/AuthOAuth2
-fi
-if [ ! -d /home/vagrant/js-tracker ]; then
-  mkdir -p /home/vagrant/js-tracker
-  git clone --depth 1 --branch "master"  https://github.com/e-ucm/js-tracker.git /home/vagrant/js-tracker
-  chown -R vagrant:vagrant /home/vagrant/js-tracker
-fi
-if [ ! -d /home/vagrant/keycloak-extensions ]; then
-  mkdir -p /home/vagrant/keycloak-extensions
-  git clone --depth 1 --branch v${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}  https://github.com/e-ucm/keycloak-extensions.git /home/vagrant/keycloak-extensions
-  chown -R vagrant:vagrant /home/vagrant/keycloak-extensions
-fi
-if [ ! -d /home/vagrant/kafka-extensions ]; then
-  mkdir -p /home/vagrant/kafka-extensions
-  git clone --depth 1 --branch v${SIMVA_KAFKA_EXTENSIONS_VERSION}  https://github.com/e-ucm/kafka-extensions.git /home/vagrant/kafka-extensions
-  chown -R vagrant:vagrant /home/vagrant/kafka-extensions
-fi
+
 ls /home/vagrant/
 
 #Make the simva script executation

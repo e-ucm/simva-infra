@@ -61,12 +61,12 @@ export SIMVA_FRONT_GIT_REPO="${base_for_simva_repos}/simva-front"
 export SIMVA_TRACE_ALLOCATOR_GIT_REPO="${base_for_simva_repos}/simva-trace-allocator"
 export SIMVA_PUMVA_GIT_REPO="${base_for_simva_repos}/pumva"
 export SIMVA_PUMVA_FRONT_GIT_REPO="${base_for_simva_repos}/pumva-front"
-export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/docker-limesurvey"
+export SIMVA_LIMESURVEY_DOCKER_GIT_REPO="${base_for_limesurvey_repos}/limesurvey"
 export SIMVA_TMON_GIT_REPO="${base_for_tmon_repos}/t-mon"
 export SIMVA_KEYCLOAK_EXTENSIONS_LOCAL_PATH="${SIMVA_HOME}/../../keycloak-extensions"
 export SIMVA_KAFKA_EXTENSIONS_LOCAL_PATH="${SIMVA_HOME}/../../kafka-extensions"
 export SIMVA_LIMESURVEY_PLUGINS_LOCAL_PATH="${SIMVA_HOME}/../.."
-export SIMVA_JSTRACKER_LIBRARY_LOCAL_PATH="${SIMVA_HOME}/../../js-tracker"
+export SIMVA_XASUJS_LIBRARY_LOCAL_PATH="${SIMVA_HOME}/../../xasu-js"
 
 ###########################
 # SIMVA Load Balancer IPs #
