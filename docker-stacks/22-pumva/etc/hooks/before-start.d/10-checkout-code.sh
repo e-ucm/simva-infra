@@ -25,13 +25,14 @@ if [[ "${SIMVA_ENVIRONMENT}" = "development" ]]; then
 fi
 
 source ${SIMVA_BIN_HOME}/check-checksum.sh;
+source "${SIMVA_BIN_HOME}/extension-helper.sh"
 
 if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     SIMVA_PUMVA_GIT_REPO_URL=https://github.com/e-ucm/pumva.git
-    SIMVA_PUMVA_GIT_REF=${SIMVA_PUMVA_GIT_REF:-master}
+    SIMVA_PUMVA_GIT_REF="$(resolve_git_ref pumva "${SIMVA_PUMVA_GIT_REF:-latest}")"
 
     SIMVA_PUMVA_FRONT_GIT_REPO_URL=https://github.com/e-ucm/pumva-front.git
-    SIMVA_PUMVA_FRONT_GIT_REF=${SIMVA_PUMVA_FRONT_GIT_REF:-master}
+    SIMVA_PUMVA_FRONT_GIT_REF="$(resolve_git_ref pumva-front "${SIMVA_PUMVA_FRONT_GIT_REF:-latest}")"
 
     ###################################################################
     ############################# PUMVA ###############################
@@ -42,7 +43,7 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
 
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
-    git clone --depth 1 --branch ${SIMVA_PUMVA_GIT_REF} ${SIMVA_PUMVA_GIT_REPO_URL} ${tmp_dir} > /dev/null  2>&1;
+    git clone --depth 1 --branch ${SIMVA_PUMVA_GIT_REF} ${SIMVA_PUMVA_GIT_REPO_URL} ${tmp_dir} > /dev/null;
     set +e
     _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/pumva/pumva-api-sha256sums" "Dockerfile package.json package-lock.json"
     ret=$?
@@ -64,7 +65,7 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
 
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
-    git clone --depth 1 --branch ${SIMVA_PUMVA_FRONT_GIT_REF} ${SIMVA_PUMVA_FRONT_GIT_REPO_URL} ${tmp_dir} > /dev/null  2>&1;
+    git clone --depth 1 --branch ${SIMVA_PUMVA_FRONT_GIT_REF} ${SIMVA_PUMVA_FRONT_GIT_REPO_URL} ${tmp_dir} > /dev/null;
     set +e
     _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/pumva/pumva-front-sha256sums" "Dockerfile package.json package-lock.json"
     ret=$?
@@ -79,6 +80,9 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
 fi
 
 if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
+    # Local sources are expected next to simva-infra: fetch the missing ones (existing folders are kept).
+    checkout_local_repo "${SIMVA_PUMVA_GIT_REPO}"       "pumva"       "${SIMVA_PUMVA_GIT_REF:-latest}"
+    checkout_local_repo "${SIMVA_PUMVA_FRONT_GIT_REPO}" "pumva-front" "${SIMVA_PUMVA_FRONT_GIT_REF:-latest}"
     ###################################################################
     ############################# PUMVA ############################### 
     ###################################################################

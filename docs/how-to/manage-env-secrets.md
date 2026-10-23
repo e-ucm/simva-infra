@@ -67,7 +67,7 @@ touched, so your own work is kept.
 | `SIMVA_LIMESURVEY_PLUGIN_LOCAL_DEPLOYMENT` | `04-limesurvey/.../15-checkout-limesurvey-plugins-code.sh` | the three plugins @ `v$SIMVA_LIMESURVEY_*_PLUGIN_VERSION` |
 | `SIMVA_DEVELOPMENT_LOCAL` (stack code) | `20-simva/.../10-checkout-code.sh` | `simva`, `simva-front`, `simva-trace-allocator` @ `v$SIMVA_SIMVA_VERSION`, `v$SIMVA_SIMVA_FRONT_VERSION`, `v$SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION` |
 | `SIMVA_DEVELOPMENT_LOCAL` (stack code) | `21-tmon/.../20-checkout-code-tmon.sh` | `t-mon@v$SIMVA_TMON_VERSION` |
-| `SIMVA_DEVELOPMENT_LOCAL` (stack code) | `04-limesurvey/.../00-get-limesurvey-docker-git.sh` | `docker-limesurvey@$SIMVA_LIMESURVEY_DOCKER_GIT_REF` (default `$SIMVA_LIMESURVEY_VERSION`) |
+| `SIMVA_DEVELOPMENT_LOCAL` (stack code) | `04-limesurvey/.../00-get-limesurvey-docker-git.sh` | `docker-limesurvey@$SIMVA_LIMESURVEY_VERSION` |
 | `SIMVA_XASUJS_LIBRARY_LOCAL_DEPLOYMENT` | `20-simva/.../05-checkout-xasujs-code.sh` | `xasu-js@$SIMVA_XASUJS_GIT_REF` |
 
 They share `checkout_local_repo` from `bin/extension-helper.sh`.

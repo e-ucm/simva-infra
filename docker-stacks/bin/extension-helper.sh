@@ -139,6 +139,25 @@ ensure_dir() {
 #   $1 - TARGET_DIR: Folder the sources must be in
 #   $2 - REPO: Repository name under https://github.com/e-ucm/
 #   $3 - GIT_REF: Tag or branch to check out
+# print GIT_REF if it exists as a tag/branch in e-ucm/REPO, otherwise the latest v<semver> tag
+resolve_git_ref() {
+    local REPO="$1" GIT_REF="$2"
+    local url="https://github.com/e-ucm/${REPO}.git"
+    if git ls-remote --exit-code --tags --heads "${url}" "${GIT_REF}" >/dev/null 2>&1; then
+        echo "${GIT_REF}"
+        return 0
+    fi
+    local latest
+    latest="$(git ls-remote --tags --refs "${url}" 'v[0-9]*' | sed 's#.*refs/tags/##' \
+        | grep -E '^v[0-9]+(\.[0-9]+)*$' | sort -V | tail -1)"
+    if [[ -z "${latest}" ]]; then
+        echo "${GIT_REF}"
+        return 0
+    fi
+    echo "Ref ${GIT_REF} not found in e-ucm/${REPO}, using latest release ${latest}." >&2
+    echo "${latest}"
+}
+
 checkout_local_repo() {
     local TARGET_DIR="$1"
     local REPO="$2"
@@ -148,6 +167,7 @@ checkout_local_repo() {
         echo "Local sources for ${REPO} already present in ${TARGET_DIR}, no checkout."
         return 0
     fi
+    GIT_REF="$(resolve_git_ref "${REPO}" "${GIT_REF}")"
     echo "Checking out e-ucm/${REPO}@${GIT_REF} into ${TARGET_DIR}"
     mkdir -p "$(dirname "${TARGET_DIR}")"
     git clone --depth 1 --branch "${GIT_REF}" "https://github.com/e-ucm/${REPO}.git" "${TARGET_DIR}"

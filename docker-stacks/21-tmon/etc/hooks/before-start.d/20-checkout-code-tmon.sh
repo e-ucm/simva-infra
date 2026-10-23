@@ -22,8 +22,8 @@ fi
 
 if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     SIMVA_TMON_GIT_REPO_URL=https://github.com/e-ucm/t-mon.git
-    # the checked out ref follows the installed version (tag vX.Y.Z), SIMVA_TMON_GIT_REF overrides it
-    SIMVA_TMON_GIT_REF=${SIMVA_TMON_GIT_REF:-v${SIMVA_TMON_VERSION}}
+    # the checked out ref follows the installed version (tag vX.Y.Z)
+    SIMVA_TMON_REF="v${SIMVA_TMON_VERSION}"
 
     ###########################################################
     ########################### TMON ##########################
@@ -33,7 +33,7 @@ if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
-    git clone --depth 1 --branch ${SIMVA_TMON_GIT_REF} ${SIMVA_TMON_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
+    git clone --depth 1 --branch ${SIMVA_TMON_REF} ${SIMVA_TMON_GIT_REPO_URL} ${tmp_dir} > /dev/null;
     source ${SIMVA_HOME}/bin/check-checksum.sh
     set +e
     _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/tmon/tmon-sha256sums" "requirements.txt"

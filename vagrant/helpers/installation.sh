@@ -190,7 +190,7 @@ fi
 
 if [ ! -d /home/vagrant/limesurvey ]; then
   mkdir -p /home/vagrant/limesurvey
-  git clone --depth 1 --branch ${SIMVA_LIMESURVEY_DOCKER_GIT_REF} https://github.com/e-ucm/limesurvey.git /home/vagrant/limesurvey
+  git clone --depth 1 --branch ${SIMVA_LIMESURVEY_VERSION} https://github.com/e-ucm/limesurvey.git /home/vagrant/limesurvey
   chown -R vagrant:vagrant /home/vagrant/limesurvey
 fi
 if [ ! -d /home/vagrant/LimesurveyWebhook ]; then
@@ -215,17 +215,17 @@ if [ ! -d /home/vagrant/pumva-front ]; then
 fi
 if [ ! -d /home/vagrant/simva ]; then
   mkdir -p /home/vagrant/simva
-  git clone --depth 1 --branch ${SIMVA_API_GIT_REF} https://github.com/e-ucm/simva.git /home/vagrant/simva
+  git clone --depth 1 --branch v${SIMVA_SIMVA_VERSION} https://github.com/e-ucm/simva.git /home/vagrant/simva
   chown -R vagrant:vagrant /home/vagrant/simva
 fi
 if [ ! -d /home/vagrant/simva-front ]; then
   mkdir -p /home/vagrant/simva-front
-  git clone --depth 1 --branch ${SIMVA_FRONT_GIT_REF} https://github.com/e-ucm/simva-front.git /home/vagrant/simva-front
+  git clone --depth 1 --branch v${SIMVA_SIMVA_FRONT_VERSION} https://github.com/e-ucm/simva-front.git /home/vagrant/simva-front
   chown -R vagrant:vagrant /home/vagrant/simva-front
 fi
 if [ ! -d /home/vagrant/simva-trace-allocator ]; then
   mkdir -p /home/vagrant/simva-trace-allocator
-  git clone --depth 1 --branch ${SIMVA_TRACE_ALLOCATOR_GIT_REF} https://github.com/e-ucm/simva-trace-allocator.git /home/vagrant/simva-trace-allocator
+  git clone --depth 1 --branch v${SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION} https://github.com/e-ucm/simva-trace-allocator.git /home/vagrant/simva-trace-allocator
   chown -R vagrant:vagrant /home/vagrant/simva-trace-allocator
 fi
 if [ ! -d /home/vagrant/t-mon ]; then

@@ -16,7 +16,7 @@ if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
     
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
-    git clone --depth 1 --branch ${CSP_REPORTER_GIT_REF} ${CSP_REPORTER_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
+    git clone --depth 1 --branch ${CSP_REPORTER_GIT_REF} ${CSP_REPORTER_GIT_REPO_URL} ${tmp_dir} > /dev/null;
 
     # Calculate checksums of package.json
     pushd ${tmp_dir} > /dev/null 2>&1

@@ -31,7 +31,7 @@ checkout_repository() {
     
     mkdir -p ${target_dir}
     local tmp_dir=$(mktemp -d)
-    git clone --depth 1 --branch ${git_ref} ${repo_url} ${tmp_dir} > /dev/null 2>&1
+    git clone --depth 1 --branch ${git_ref} ${repo_url} ${tmp_dir} > /dev/null
     rsync -avh --delete --itemize-changes ${tmp_dir}/ ${target_dir}/ > /dev/null 2>&1
     rm -rf ${tmp_dir}
     echo "${target_dir}"
@@ -56,13 +56,13 @@ check_and_rebuild() {
 
 if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     SIMVA_API_GIT_REPO_URL=https://github.com/e-ucm/simva.git
-    SIMVA_API_GIT_REF="$(resolve_git_ref simva "${SIMVA_API_GIT_REF:-v${SIMVA_SIMVA_VERSION}}")"
+    SIMVA_API_REF="$(resolve_git_ref simva "v${SIMVA_SIMVA_VERSION}")"
 
     SIMVA_FRONT_GIT_REPO_URL=https://github.com/e-ucm/simva-front.git
-    SIMVA_FRONT_GIT_REF="$(resolve_git_ref simva-front "${SIMVA_FRONT_GIT_REF:-v${SIMVA_SIMVA_FRONT_VERSION}}")"
+    SIMVA_FRONT_REF="$(resolve_git_ref simva-front "v${SIMVA_SIMVA_FRONT_VERSION}")"
 
     SIMVA_TRACE_ALLOCATOR_GIT_REPO_URL=https://github.com/e-ucm/simva-trace-allocator.git
-    SIMVA_TRACE_ALLOCATOR_GIT_REF="$(resolve_git_ref simva-trace-allocator "${SIMVA_TRACE_ALLOCATOR_GIT_REF:-v${SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION}}")"
+    SIMVA_TRACE_ALLOCATOR_REF="$(resolve_git_ref simva-trace-allocator "v${SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION}")"
     ###########################################################
     ######################### BACKEND #########################
     ###########################################################
@@ -72,7 +72,7 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
 
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
-    git clone --depth 1 --branch ${SIMVA_API_GIT_REF} ${SIMVA_API_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
+    git clone --depth 1 --branch ${SIMVA_API_REF} ${SIMVA_API_GIT_REPO_URL} ${tmp_dir} > /dev/null;
     
     set +e
     _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/simva/simva-api-sha256sums" "Dockerfile package.json package-lock.json"
@@ -93,7 +93,7 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
-    git clone --depth 1 --branch ${SIMVA_FRONT_GIT_REF} ${SIMVA_FRONT_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
+    git clone --depth 1 --branch ${SIMVA_FRONT_REF} ${SIMVA_FRONT_GIT_REPO_URL} ${tmp_dir} > /dev/null;
     set +e
     _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/simva/simva-front-sha256sums" "Dockerfile package.json package-lock.json"
     ret=$?
@@ -112,7 +112,7 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
-    git clone --depth 1 --branch ${SIMVA_TRACE_ALLOCATOR_GIT_REF} ${SIMVA_TRACE_ALLOCATOR_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
+    git clone --depth 1 --branch ${SIMVA_TRACE_ALLOCATOR_REF} ${SIMVA_TRACE_ALLOCATOR_GIT_REPO_URL} ${tmp_dir} > /dev/null;
     set +e
     _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/simva/simva-trace-allocator-sha256sums" "Dockerfile package.json package-lock.json"
     ret=$?

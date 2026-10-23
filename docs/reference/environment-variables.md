@@ -106,7 +106,7 @@ the "AUTHENTIFICATION USERNAME AND PASSWORD (TO MODIFY)" heading. Notable ones:
 | Variable | Meaning |
 | --- | --- |
 | `SIMVA_DEV_LOAD_BALANCER` | like `SIMVA_LOAD_BALANCER` but development-scoped |
-| `SIMVA_<STACK>_GIT_REF` | the git refs checked out into `data/<stack>/` for `simva`, `simva-front`, `tmon`, `pumva`, `limesurvey` |
+| `SIMVA_PUMVA_GIT_REF`, `SIMVA_PUMVA_FRONT_GIT_REF`, `CSP_REPORTER_GIT_REF` | git refs of `pumva`, `pumva-front` and the CSP reporter; the other stacks check out the tag of their `SIMVA_*_VERSION` |
 | `SIMVA_XASUJS_GIT_REF` | git ref of `xasu-js` (`v2.3.0`); used by CI to check out the local library |
 | dev subdomains | `whoami`, `kafka-ui`, `zoonavigator`, `phpmyadmin`, `simva-mongo-ui`, `simva-sqlite-ui`, `shlink-admin`, `jupyter`, `logs`, `portainer`, `dockhand` |
 

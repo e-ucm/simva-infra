@@ -46,7 +46,7 @@ The new UIs are published on subdomains of the external domain, so repeat the ho
 ## Step 3 — (optional) Local repositories instead of checked-out copies
 
 In development, the `simva`, `simva-front`, `tmon`, `pumva` and `limesurvey` images are
-checked out and built from their own git references (`SIMVA_*_GIT_REF`, set in
+checked out and built from their own git references (the `SIMVA_*_VERSION` tags, plus `SIMVA_PUMVA_GIT_REF`, set in
 `etc/simva.d/simva-env.dev.sh`). If your sibling repositories live next to this one, you can
 run against them instead:
 
