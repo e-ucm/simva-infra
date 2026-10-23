@@ -67,6 +67,17 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
         RUNBUILDCODE=true
     fi
 fi
+# The Dockerfile does COPY patches /patches, and patches/ is generated (gitignored) from the
+# base image: generate it before any build, whenever missing or built for another version.
+if [[ -f "${SIMVA_LIMESURVEY_DOCKER_GIT_REPO}/scripts/generate_remotecontrol_patch.sh" ]]; then
+    PATCHES_DIR="${SIMVA_LIMESURVEY_DOCKER_GIT_REPO}/patches"
+    if [[ ! -s "${PATCHES_DIR}/.version" || "$(cat "${PATCHES_DIR}/.version")" != "${SIMVA_LIMESURVEY_VERSION}" || ! -e "${PATCHES_DIR}/add_functions.patch" ]]; then
+        echo "Generating docker-limesurvey patches for ${SIMVA_LIMESURVEY_VERSION}"
+        DOCKER_LIMESURVEY_VERSION="${SIMVA_LIMESURVEY_VERSION}" bash "${SIMVA_LIMESURVEY_DOCKER_GIT_REPO}/scripts/generate_remotecontrol_patch.sh"
+        echo "${SIMVA_LIMESURVEY_VERSION}" > "${PATCHES_DIR}/.version"
+        RUNBUILDCODE=true
+    fi
+fi
 if [[ ${RUNBUILDCODE} = true ]] ; then
     exec ${SIMVA_HOME}/simva build ${CURRENT_STACK}
 fi
