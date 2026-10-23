@@ -31,7 +31,7 @@ if [[ "${SIMVA_KAFKA_EXTENSION_LOCAL_DEPLOYMENT}" == "true" ]]; then
     for ext in $SIMVA_EXTENSIONS; do
         ext_short_name="${ext##*.}"
         build_local_extension "${SIMVA_KAFKA_EXTENSIONS_LOCAL_PATH}" "${ext_short_name}" "${ext}" \
-            "${SIMVA_KAFKA_EXTENSIONS_VERSION}" "${DEPLOYMENT_DIR}" "-k" "${SIMVA_KAFKA_VERSION}"
+            "${SIMVA_KAFKA_EXTENSIONS_VERSION}" "${DEPLOYMENT_DIR}" "--kafka" "${SIMVA_KAFKA_VERSION}"
     done
 else
     GIT_RELEASE_URL="https://github.com/e-ucm/kafka-extensions/releases/download/v${SIMVA_KAFKA_EXTENSIONS_VERSION}"

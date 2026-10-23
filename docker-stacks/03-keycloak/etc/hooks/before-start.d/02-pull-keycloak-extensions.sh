@@ -37,7 +37,7 @@ if [[ "${SIMVA_KEYCLOAK_EXTENSION_LOCAL_DEPLOYMENT}" == "true" ]]; then
     for ext in $SIMVA_EXTENSIONS; do
         ext_short_name="${ext##*.}"
         build_local_extension "${SIMVA_KEYCLOAK_EXTENSIONS_LOCAL_PATH}" "${ext_short_name}" "${ext}" \
-            "${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}" "${DEPLOYMENT_DIR}" "k:${KEYCLOAK_VERSION}"
+            "${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}" "${DEPLOYMENT_DIR}" --keycloak "${SIMVA_KEYCLOAK_VERSION}"
     done
 else
     GIT_RELEASE_URL="https://github.com/e-ucm/keycloak-extensions/releases/download/v${SIMVA_KEYCLOAK_EXTENSIONS_VERSION}"

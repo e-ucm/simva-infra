@@ -215,11 +215,11 @@ export SIMVA_LRS_PG_FILE_MODE="600" #rw-------
 # Extensions and Plugins #
 ##########################
 #Git reference tag version release branch for Keycloak Extensions
-export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.3.0"
+export SIMVA_KEYCLOAK_EXTENSIONS_VERSION="1.3.1"
 export SIMVA_KEYCLOAK_EVENT_EXTENSION_VERSION="0.26"
 
 #Git reference tag version release branch for Kafka Extensions
-export SIMVA_KAFKA_EXTENSIONS_VERSION="1.0.0"
+export SIMVA_KAFKA_EXTENSIONS_VERSION="1.0.1"
 
 #KAFKA CONNECT S3 PLUGIN
 export SIMVA_CONFLUENCE_CONNECT_S3_REPO="confluentinc/kafka-connect-s3"

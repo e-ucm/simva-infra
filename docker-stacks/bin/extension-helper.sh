@@ -12,7 +12,8 @@ set -euo pipefail
 #   $3 - EXT_FULL_NAME: Full extension name (e.g., es.e-ucm.simva.keycloak.fullname-attribute-mapper)
 #   $4 - EXT_VERSION: Extension version
 #   $5 - DEPLOYMENT_DIR: Directory to copy the built JAR to
-#   $6 - BUILD_ARGS: Arguments to pass to the build script (e.g., "k:26" for keycloak or "-k 7.8.0" for kafka)
+#   $6 - BUILD_ARGS: Arguments to pass to the build script (e.g., "--keycloak 26.4.7"), placed before the extension path
+#   The extension version ($4) is passed to the build script as --build (-Drevision)
 build_local_extension() {
     local LOCAL_PATH="$1"
     local EXT_SHORT_NAME="$2"
@@ -28,7 +29,7 @@ build_local_extension() {
     # Build the extension using the build script
     echo "Building extension ${EXT_SHORT_NAME}..."
     pushd "${LOCAL_PATH}" > /dev/null
-    ./scripts/build.sh "./${EXT_SHORT_NAME}/" "${BUILD_ARGS[@]}"
+    ./scripts/build.sh --build "${EXT_VERSION}" "${BUILD_ARGS[@]}" "./${EXT_SHORT_NAME}/"
     popd > /dev/null
     
     if [[ -f "${local_jar_path}" ]]; then
