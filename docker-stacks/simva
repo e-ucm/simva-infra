@@ -1051,6 +1051,15 @@ function backup() {
         execute_after_hooks ${phase} ${stack}
         source "${SIMVA_BIN_HOME}/backup-restore.sh"
         sourceEnvFile
+        # the .version of the previous backup follows it into old/<timestamp>/
+        local prev_version_file="${SIMVA_BACKUP_HOME}/${STACK_NAME}/.version"
+        local prev_ts; prev_ts="$(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp")"
+        if [[ -f "${prev_version_file}" && "${prev_ts}" != "NO_TIMESTAMP" ]]; then
+            mkdir -p "${SIMVA_BACKUP_HOME}/${STACK_NAME}/old/${prev_ts}"
+            mv -f "${prev_version_file}" "${SIMVA_BACKUP_HOME}/${STACK_NAME}/old/${prev_ts}/.version"
+        else
+            rm -f "${prev_version_file}"
+        fi
         if [[ -d "${SIMVA_CONFIG_HOME}/${STACK_NAME}" ]]; then 
             BACKUP_CONFIG_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/config"
             backup_data "${SIMVA_CONFIG_HOME}/${STACK_NAME}" $BACKUP_CONFIG_DIR $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp") true
@@ -1060,6 +1069,9 @@ function backup() {
             BACKUP_DATA_DIR="${SIMVA_BACKUP_HOME}/${STACK_NAME}/datafiles"
             backup_data "${SIMVA_DATA_HOME}/${STACK_NAME}" $BACKUP_DATA_DIR $(cat "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp") true true
             echo "✅ Backup completed: $BACKUP_DATA_DIR"
+        fi
+        if [[ -f "${SIMVA_DATA_HOME}/${STACK_NAME}/.version" ]]; then
+            cp "${SIMVA_DATA_HOME}/${STACK_NAME}/.version" "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.version"
         fi
         echo "$(date +"%Y-%m-%d_%H-%M-%S.%3N_%Z")" > "${SIMVA_BACKUP_HOME}/${STACK_NAME}/.timestamp"
     done
@@ -1142,6 +1154,30 @@ function restoreEnvFiles() {
     done
 }
 
+# print the stack version stored with a backup dir (<dir>/.version); for backups made before
+# it was saved, extract .version from datafiles/<stack>.tar.gz in a tmp dir and keep a copy.
+function getBackupVersion() {
+    local dir="$1" stack_name="$2"
+    if [[ -s "${dir}/.version" ]]; then
+        cat "${dir}/.version"
+        return 0
+    fi
+    local tarball="${dir}/datafiles/${stack_name}.tar.gz"
+    if [[ -f "${tarball}" ]]; then
+        local tmp; tmp="$(mktemp -d)"
+        tar -xzf "${tarball}" -C "${tmp}" .version 2>/dev/null \
+            || tar -xzf "${tarball}" -C "${tmp}" ./.version 2>/dev/null || true
+        if [[ -s "${tmp}/.version" ]]; then
+            cp "${tmp}/.version" "${dir}/.version"
+            rm -rf "${tmp}"
+            cat "${dir}/.version"
+            return 0
+        fi
+        rm -rf "${tmp}"
+    fi
+    echo "unknown"
+}
+
 function restore() {
     echo "Restore Data : $@"
     if [[ $# -lt 1 ]]; then
@@ -1222,11 +1258,13 @@ function restore() {
         # Display available options and prompt user
         echo "=== Stack: ${STACK_NAME} ==="
         echo "Restore from:"
-        echo " [1] Latest backup (from .timestamp file)"
+        local latest_ts="unknown"
+        [[ -f "$backup_dir/.timestamp" ]] && latest_ts="$(cat "$backup_dir/.timestamp")"
+        echo " [1] Latest backup: ${latest_ts} - version $(getBackupVersion "$backup_dir" "${STACK_NAME}" | tr -d '\n')"
         if [[ $num_timestamps -gt 0 ]]; then
             local i=2
             while IFS= read -r ts; do
-                echo " [$i] Older backup: $ts"
+                echo " [$i] Older backup: $ts - version $(getBackupVersion "$backup_dir/old/$ts" "${STACK_NAME}" | tr -d '\n')"
                 i=$((i + 1))
             done <<< "$available_timestamps"
         fi

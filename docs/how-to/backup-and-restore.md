@@ -66,3 +66,11 @@ Because `.version` and `.externaldomain` come back with the restore, `start` doe
 
 - [reference/hooks.md](../reference/hooks.md) — which hook folder runs for backup and restore
 - [explanation/decisions/0008-backups-run-before-destructive-ops.md](../explanation/decisions/0008-backups-run-before-destructive-ops.md)
+
+## Stack version next to each backup
+
+`./simva backup <stack>` copies the stack's `data/<stack>/.version` to `backup/<stack>/.version`;
+the previous one moves to `backup/<stack>/old/<timestamp>/.version`. `./simva restore <stack>`
+shows it in the menu next to each timestamp. For backups made before this existed, the version
+is extracted from `datafiles/<stack>.tar.gz` the first time it is shown and saved in the
+backup folder (`unknown` if the archive has none).
