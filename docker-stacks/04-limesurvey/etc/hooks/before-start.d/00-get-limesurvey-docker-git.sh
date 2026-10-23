@@ -24,12 +24,12 @@ source ${SIMVA_BIN_HOME}/check-checksum.sh;
 if [[ ${CHECKLOCALDEPLOYMENT} = true ]] ; then
     # Local sources are expected next to simva-infra: fetch them if missing (an existing folder is kept).
     source "${SIMVA_BIN_HOME}/extension-helper.sh"
-    checkout_local_repo "${SIMVA_LIMESURVEY_DOCKER_GIT_REPO}" "docker-limesurvey" "${SIMVA_LIMESURVEY_DOCKER_GIT_REF:-master}"
+    checkout_local_repo "${SIMVA_LIMESURVEY_DOCKER_GIT_REPO}" "docker-limesurvey" "${SIMVA_LIMESURVEY_DOCKER_GIT_REF:-${SIMVA_LIMESURVEY_VERSION}}"
 fi
 
 if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     DOCKER_LIMESURVEY_GIT_REPO_URL=https://github.com/e-ucm/docker-limesurvey.git
-    DOCKER_LIMESURVEY_GIT_REF=${SIMVA_LIMESURVEY_DOCKER_GIT_REF:-master}
+    DOCKER_LIMESURVEY_GIT_REF=${SIMVA_LIMESURVEY_DOCKER_GIT_REF:-${SIMVA_LIMESURVEY_VERSION}}
 
     ###########################################################
     #################### DOCKER LIMESURVEY ####################
@@ -40,7 +40,8 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
 
     # Checkout code in temp dir
     tmp_dir=$(mktemp -d)
-    git clone --depth 1 --branch ${DOCKER_LIMESURVEY_GIT_REF} ${DOCKER_LIMESURVEY_GIT_REPO_URL} ${tmp_dir} > /dev/null 2>&1;
+    echo "Checking out e-ucm/docker-limesurvey@${SIMVA_LIMESURVEY_VERSION}"
+    git clone --depth 1 --branch "${SIMVA_LIMESURVEY_VERSION}" "${DOCKER_LIMESURVEY_GIT_REPO_URL}" "${tmp_dir}" > /dev/null
     
     set +e
     _check_checksum $tmp_dir "${SIMVA_DATA_HOME}/limesurvey/limesurvey-docker-sha256sums" "Dockerfile"
