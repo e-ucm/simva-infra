@@ -21,4 +21,4 @@ while IFS= read -r f; do
         git add -- "$root/$f"
         echo "pre-commit: reset to CHANGEME1234 in $f: $changed" >&2
     fi
-done < <(git diff --cached --name-only --diff-filter=AM | grep -E '(^|/)etc/simva\.d/simva-env[^/]*\.example\.sh$')
+done < <(git diff --cached --name-only --diff-filter=AM | grep -E '(^|/)etc/simva\.install\.d/simva-env[^/]*\.example\.sh$')

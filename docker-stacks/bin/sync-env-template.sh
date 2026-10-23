@@ -22,8 +22,9 @@ sync_file() {
         var="${line#export }"; var="${var%%=*}"
         if ! grep -qE "^[[:space:]]*(export[[:space:]]+)?${var}=" "$local_file"; then
             if [[ -z "$backup" ]]; then
-                mkdir -p "$(dirname "$local_file")/backup"
-                backup="$(dirname "$local_file")/backup/$(basename "$local_file" .sh)-pre-sync-$(date +%Y%m%d-%H%M%S).sh"
+                local ts; ts="$(date +%Y%m%d-%H%M%S)"
+                mkdir -p "$(dirname "$local_file")/../../backup/old/${ts}/simva-env"
+                backup="$(cd "$(dirname "$local_file")/../../backup/old/${ts}/simva-env" && pwd)/$(basename "$local_file")"
                 cp "$local_file" "$backup"
                 [[ -n "$(tail -c1 "$local_file")" ]] && echo >> "$local_file"
                 printf '\n# Added from %s on %s\n' "$(basename "$example")" "$(date +%F)" >> "$local_file"

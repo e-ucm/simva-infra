@@ -44,8 +44,8 @@ jobs:
         working-directory: docker-stacks
         run: |
           # real env files are untracked: create them from the templates
-          for t in etc/simva.d/simva-env.example.sh etc/simva.d/simva-env.dev.example.sh; do
-            cp "$t" "${t/.example/}"
+          for t in etc/simva.install.d/simva-env.example.sh etc/simva.install.d/simva-env.dev.example.sh; do
+            cp "$t" "etc/simva.d/$(basename "${t/.example/}")"
           done
           # replace every default CHANGEME1234 with a random alphanumeric password
           for f in etc/simva.d/simva-env.sh etc/simva.d/simva-env.dev.sh; do

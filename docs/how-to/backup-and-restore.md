@@ -47,7 +47,7 @@ Tips:
 - The env fragments you edited by hand are snapshotted too: a stack whose
   `.externaldomain` marker is missing triggers an `install` inside `backup`, and that
   install copies `etc/simva.d/simva-env*.sh` (and the install fragment) into
-  `etc/simva.d/backup/` with a timestamp. Back that tree up together with `backup/`.
+  `backup/simva-env/` (only when their sha256sum changed; the previous version moves to `backup/old/<timestamp>/simva-env/`).
 - Restoring a backup whose `.timestamp` is missing is refused per stack (`restore` needs it
   to know the archive exists).
 

@@ -73,7 +73,7 @@ etc) untouched.
 
 | Read during boot | Committed? | Written by | Backup covers it |
 | --- | :-: | --- | :-: |
-| `etc/simva.install.d/simva-env*.sh`, `etc/simva.d/simva-env*.example.sh` | yes | you |
+| `etc/simva.install.d/simva-env*.sh`, `etc/simva.install.d/simva-env*.example.sh` | yes | you |
 | `etc/simva.d/simva-env.sh`, `simva-env.dev.sh` | no (secrets) | you / synced from the templates |
 | other `etc/*/simva-env*.sh` | yes | you | (separately — back it up yourself) |
 | `config-template/` | yes | you | — |

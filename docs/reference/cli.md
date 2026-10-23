@@ -35,7 +35,7 @@ Usage: simva [OPERATION | --help]
 
 `simva install` with `wait_time=1` and `first=true`:
 
-1. snapshots the env fragments into `etc/simva.install.d/backup/` and `etc/simva.d/backup/`
+1. snapshots the env fragments into `backup/simva-env/` (only if changed; older versions go to `backup/old/<timestamp>/simva-env/`)
    (timestamped copies — a backup of the configuration itself),
 2. for each stack in order: `before-install.d` hooks (Keycloak downloads its extension CLI,
    Traefik creates the wildcard certificate and truststore, Limesurvey checks out code, …),
@@ -104,7 +104,7 @@ For each stack, in order:
 
 Two implicits: a stack whose `data/<stack>/.externaldomain` is missing is treated as
 uninstalled and receives a full `install` first (which also snapshots the env fragments into
-`etc/simva.install.d/backup/` and `etc/simva.d/backup/` — so the configuration **itself** is
+`backup/simva-env/` — so the configuration **itself** is
 backed up, not only the data).
 
 ### `restore [stack…]`

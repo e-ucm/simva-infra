@@ -25,27 +25,45 @@ function setExecutable_scripts_from_folder() {
 
 # check backup version file
 function sourceBackupEnvFile() {
-    if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" ]]; then
-        source "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh"
+    local d="${SIMVA_PROJECT_DIR}/backup/simva-env"
+    local f
+    for f in simva-env.sh simva-env.install.sh; do
+        [[ -e "${d}/${f}" ]] && source "${d}/${f}"
+    done
+    if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
+        for f in simva-env.dev.sh simva-env.install.dev.sh; do
+            [[ -e "${d}/${f}" ]] && source "${d}/${f}"
+        done
     fi
-    if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.sh" ]]; then
-        source "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.sh"
-    fi
-     if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then 
-        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh" ]]; then
-            source "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh"
+    return 0
+}
+
+# backup <source> into backup/simva-env/<name> only when its sha256sum changed;
+# the previous version goes to backup/old/<timestamp>/simva-env/<name>
+function backupEnvFile() {
+    local src="$1" name="$2" ts="$3"
+    local dir="${SIMVA_PROJECT_DIR}/backup/simva-env"
+    local dest="${dir}/${name}"
+    [[ -e "${src}" ]] || return 0
+    mkdir -p "${dir}"
+    if [[ -e "${dest}" ]]; then
+        if [[ "$(sha256sum < "${src}")" == "$(sha256sum < "${dest}")" ]]; then
+            return 0
         fi
-        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.dev.sh" ]]; then
-            source "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.dev.sh"
-        fi
+        local old="${SIMVA_PROJECT_DIR}/backup/old/${ts}/simva-env"
+        mkdir -p "${old}"
+        mv "${dest}" "${old}/${name}"
+        echo "Previous ${name} moved to ${old}/"
     fi
+    cp "${src}" "${dest}"
+    echo "Backed up ${name} to ${dir}/ (${ts})"
 }
 
 function sourceEnvFile() {
     local sync="${SIMVA_PROJECT_DIR}/bin/sync-env-template.sh"
     local d="${SIMVA_PROJECT_DIR}/etc/simva.d"
     # untracked local files are created/updated from the tracked *.example.sh templates
-    "${sync}" sync "${d}/simva-env.example.sh" "${d}/simva-env.sh"
+    "${sync}" sync "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.example.sh" "${d}/simva-env.sh"
     [[ -e "${d}/simva-env.sh" ]] && dos2unix "${d}/simva-env.sh"
     dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.sh"
     dos2unix "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.dev.sh"
@@ -55,7 +73,7 @@ function sourceEnvFile() {
     fi
     local to_check=("${d}/simva-env.sh")
     if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
-        "${sync}" sync "${d}/simva-env.dev.example.sh" "${d}/simva-env.dev.sh"
+        "${sync}" sync "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.dev.example.sh" "${d}/simva-env.dev.sh"
         dos2unix "${d}/simva-env.dev.sh"
         source "${d}/simva-env.dev.sh"
         if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.dev.sh" ]]; then
@@ -642,6 +660,8 @@ OPERATION one of the following:
         backup the data and database from the container external volume into a backup folder
     restore:
         restore the data and database into the container external volume from a backup folder
+        without any stack, only restores the simva-env files to a selected date;
+        with a stack name, restores that stack's data (one stack per command)
     restart:
         Gracefully stop all containers and start them again.
     log <stack> [-f|--follow] [-n|--tail <lines>]:
@@ -677,24 +697,12 @@ function install() {
 
     if [[ $backup == "true" ]]; then 
         current_datetime=$(date +"%Y%m%d-%H%M%S")
-        mkdir -p "${SIMVA_PROJECT_DIR}/etc/simva.d/backup" "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup"
-        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.sh" ]]; then    
-            cp "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.sh" "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env-$current_datetime.sh"
-        fi 
-        cp "${SIMVA_PROJECT_DIR}/etc/simva.install.d/simva-env.sh" "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.sh"
-        if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" ]]; then    
-            cp "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env-$current_datetime.sh"
-        fi 
-        cp "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.sh"
-        if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then 
-            if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh" ]]; then    
-                cp "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env-dev-$current_datetime.sh"
-            fi 
-            cp "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh"
-            if [[ -e "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.dev.sh" ]]; then    
-                cp "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env.dev.sh" "${SIMVA_PROJECT_DIR}/etc/simva.install.d/backup/simva-env-dev-$current_datetime.sh"
-            fi 
-            cp "${SIMVA_PROJECT_DIR}/etc/simva.d/simva-env.dev.sh" "${SIMVA_PROJECT_DIR}/etc/simva.d/backup/simva-env.dev.sh"
+        local P="${SIMVA_PROJECT_DIR}/etc"
+        backupEnvFile "${P}/simva.d/simva-env.sh" "simva-env.sh" "${current_datetime}"
+        backupEnvFile "${P}/simva.install.d/simva-env.sh" "simva-env.install.sh" "${current_datetime}"
+        if [[ "${SIMVA_ENVIRONMENT}" == "development" ]]; then
+            backupEnvFile "${P}/simva.d/simva-env.dev.sh" "simva-env.dev.sh" "${current_datetime}"
+            backupEnvFile "${P}/simva.install.d/simva-env.dev.sh" "simva-env.install.dev.sh" "${current_datetime}"
         fi
     fi
 
@@ -1058,6 +1066,82 @@ function backup() {
 }
 
 # migrate to a new External Domain for each stack
+# restore the env files (backup/simva-env) to the state they had at a selected date.
+# backup/old/<ts>/simva-env/<file> holds the version that was replaced at <ts>, so the state
+# "before <ts>" of a file is its oldest old entry with ts' >= <ts>, or the current backup if none.
+function restoreEnvFiles() {
+    local base="${SIMVA_PROJECT_DIR}/backup"
+    local cur="${base}/simva-env"
+    local etc="${SIMVA_PROJECT_DIR}/etc"
+    local names=(simva-env.sh simva-env.install.sh)
+    [[ "${SIMVA_ENVIRONMENT}" == "development" ]] && names+=(simva-env.dev.sh simva-env.install.dev.sh)
+    local timestamps=() d t
+    for d in "${base}"/old/*/simva-env; do
+        [[ -d "${d}" ]] || continue
+        t="$(basename "$(dirname "${d}")")"
+        [[ "${t}" =~ ^[0-9]{8}-[0-9]{6}$ ]] && timestamps+=("${t}")
+    done
+    if [[ ! -d "${cur}" && ${#timestamps[@]} -eq 0 ]]; then
+        echo "No simva-env backup found in ${base}"
+        return 0
+    fi
+    # newest first
+    mapfile -t timestamps < <(printf '%s\n' "${timestamps[@]}" | sort -r)
+    echo "=== simva-env ==="
+    echo "Restore simva-env files to:"
+    echo " [1] Latest backup (${cur})"
+    local i=2
+    for t in "${timestamps[@]}"; do
+        [[ -n "${t}" ]] || continue
+        echo " [${i}] State before ${t}"
+        i=$((i + 1))
+    done
+    echo ""
+    echo " [0] Skip"
+    local choice
+    read -p "Select simva-env restoration point [0-$((i - 1))]: " choice
+    if [[ ! "${choice}" =~ ^[0-9]+$ || "${choice}" == "0" || "${choice}" -ge "${i}" ]]; then
+        echo "simva-env restore skipped."
+        return 0
+    fi
+    local selected=""
+    [[ "${choice}" -ge 2 ]] && selected="${timestamps[$((choice - 2))]}"
+
+    local ts_now; ts_now=$(date +"%Y%m%d-%H%M%S")
+    local name src dest oldest
+    for name in "${names[@]}"; do
+        src="${cur}/${name}"
+        if [[ -n "${selected}" ]]; then
+            # oldest old entry at or after the selected timestamp
+            oldest=""
+            for t in $(printf '%s\n' "${timestamps[@]}" | sort); do
+                if [[ ! "${t}" < "${selected}" && -e "${base}/old/${t}/simva-env/${name}" ]]; then
+                    oldest="${base}/old/${t}/simva-env/${name}"
+                    break
+                fi
+            done
+            [[ -n "${oldest}" ]] && src="${oldest}"
+        fi
+        case "${name}" in
+            simva-env.sh) dest="${etc}/simva.d/simva-env.sh";;
+            simva-env.dev.sh) dest="${etc}/simva.d/simva-env.dev.sh";;
+            simva-env.install.sh) dest="${etc}/simva.install.d/simva-env.sh";;
+            simva-env.install.dev.sh) dest="${etc}/simva.install.d/simva-env.dev.sh";;
+        esac
+        [[ -e "${src}" ]] || { echo "No backup for ${name}, skipped"; continue; }
+        if [[ -e "${dest}" ]] && cmp -s "${src}" "${dest}"; then
+            echo "${name} already up to date"
+            continue
+        fi
+        # keep what is being overwritten (src may be moved by the backup, so copy it aside first)
+        local tmp; tmp="$(mktemp)"
+        cp "${src}" "${tmp}"
+        backupEnvFile "${dest}" "${name}" "${ts_now}"
+        cp "${tmp}" "${dest}"; rm -f "${tmp}"
+        echo "✅ ${name} restored from ${src}"
+    done
+}
+
 function restore() {
     echo "Restore Data : $@"
     if [[ $# -lt 1 ]]; then
@@ -1070,11 +1154,18 @@ function restore() {
     local restore_config=true
     local restore_data=true
 
-    # Get list of stacks to restore
-    local stacks="${@:1}"
-    if [[ -z "$stacks" ]]; then
-        stacks=${SIMVA_STACKS}
+    # no parameter: only restore the simva-env files (stacks must be given explicitly)
+    if [[ $# -eq 0 ]]; then
+        restoreEnvFiles
+        return 0
     fi
+
+    # only one stack can be restored per command
+    if [[ $# -gt 1 ]]; then
+        echo >&2 "restore accepts only one stack at a time (got: $*)"
+        exit 1
+    fi
+    local stacks="${1}"
 
     # For each stack, get available timestamps and prompt user
     for stack in ${stacks}; do

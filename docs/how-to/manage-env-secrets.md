@@ -15,7 +15,7 @@ are tracked. Secrets in the templates use the placeholder `CHANGEME1234`.
 
 ## Keeping files in sync
 
-On every `./simva` run (a timestamped backup goes to `etc/simva.d/backup/` first):
+On every `./simva` run (changed env files are backed up to `backup/simva-env/` first):
 
 - Variables in the template but missing from your real file are **appended** to it.
   Your existing values are never overwritten.
