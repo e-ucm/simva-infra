@@ -18,10 +18,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        environment: [development, production]
+        environment: [development, production, development-local]
     timeout-minutes: 360
     env:
-      SIMVA_ENV: ${{ matrix.environment }}
+      SIMVA_ENV: ${{ matrix.environment == 'development-local' && 'development' || matrix.environment }}
+      # development-local: SIMVA_DEVELOPMENT_LOCAL=true and the default CHANGEME1234 secrets are kept
+      SIMVA_LOCAL_DEFAULTS: ${{ matrix.environment == 'development-local' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,9 +43,25 @@ jobs:
         shell: bash
         working-directory: docker-stacks
         run: |
+          # real env files are untracked: create them from the templates
+          for t in etc/simva.d/simva-env.example.sh etc/simva.d/simva-env.dev.example.sh; do
+            cp "$t" "${t/.example/}"
+          done
+          # replace every default CHANGEME1234 with a random alphanumeric password
+          for f in etc/simva.d/simva-env.sh etc/simva.d/simva-env.dev.sh; do
+            [[ "$SIMVA_LOCAL_DEFAULTS" == "true" ]] && break
+            while grep -q CHANGEME1234 "$f"; do
+              pw=$(openssl rand -hex 16)
+              sed -i "0,/CHANGEME1234/s//$pw/" "$f"
+            done
+          done
           sed -i 's|^export SIMVA_ENVIRONMENT="development"|export SIMVA_ENVIRONMENT="'"$SIMVA_ENV"'"|' etc/simva.d/simva-env.sh
           sed -i 's|^export SIMVA_TLS_GENERATE_SELF_SIGNED="false"|export SIMVA_TLS_GENERATE_SELF_SIGNED="true"|' etc/simva.d/simva-env.sh
-          if [[ "$SIMVA_ENV" == "development" ]]; then
+          if [[ "$SIMVA_LOCAL_DEFAULTS" == "true" ]]; then
+            # local dev must work with the default secrets
+            grep -q '^export SIMVA_DEVELOPMENT_LOCAL="true"' etc/simva.d/simva-env.dev.sh
+            grep -q CHANGEME1234 etc/simva.d/simva-env.sh
+          elif [[ "$SIMVA_ENV" == "development" ]]; then
             sed -i 's|^export SIMVA_DEVELOPMENT_LOCAL="true"|export SIMVA_DEVELOPMENT_LOCAL="false"|' etc/simva.d/simva-env.dev.sh
           fi
           grep -nE 'SIMVA_ENVIRONMENT|SIMVA_TLS_GENERATE_SELF_SIGNED|SIMVA_DEVELOPMENT_LOCAL' etc/simva.d/simva-env*.sh

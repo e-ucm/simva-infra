@@ -41,10 +41,15 @@ sudo su                       # the simva script requires root
 ./simva help                  # lists the operations
 ```
 
-Open `etc/simva.d/simva-env.sh` and read a few of the variables: `SIMVA_ENVIRONMENT`,
+The first `./simva` run creates `etc/simva.d/simva-env.sh` from `simva-env.example.sh` (the
+real file is untracked). Open it and read a few of the variables: `SIMVA_ENVIRONMENT`,
 `SIMVA_EXTERNAL_DOMAIN`, `SIMVA_INTERNAL_DOMAIN`, and the `SIMVA_*_PASSWORD` block at the
 bottom. Those are *your* instance's answers to "which domain", "which services" and
 "which passwords".
+
+Outside local development (`SIMVA_DEVELOPMENT_LOCAL="true"`), every `CHANGEME1234` password
+must also be replaced before `./simva` will start; see
+[manage-env-secrets](../how-to/manage-env-secrets.md).
 
 One of them you must change before the first run. SIMVA's TLS default is
 `SIMVA_TLS_GENERATE_SELF_SIGNED="false"`, which means "I will provide a real wildcard

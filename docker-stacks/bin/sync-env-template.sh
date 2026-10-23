@@ -5,6 +5,9 @@
 set -euo pipefail
 
 PLACEHOLDER="CHANGEME1234"
+# variable-name words that mark a secret (whole underscore-separated words, e.g. *_PASSWORD, *_API_KEY,
+# but not KEYCLOAK). A trailing "# nosecret" comment on the line opts a variable out.
+SECRET_NAME_RE='(^|_)(PASS[A-Z]*|SECRET|TOKEN|KEY)(_|$)'
 
 sync_file() {
     local example="$1" local_file="$2"
@@ -48,7 +51,7 @@ promote_file() {
                 printf '\n# Added from local %s on %s\n' "$(basename "$local_file")" "$(date +%F)" >> "$example"
                 header=1
             fi
-            if [[ "$var" =~ (PASS|SECRET|TOKEN|_KEY) ]]; then
+            if [[ "$var" =~ $SECRET_NAME_RE && "$line" != *"# nosecret"* ]]; then
                 echo "export ${var}=\"${PLACEHOLDER}\"" >> "$example"
             else
                 echo "$line" >> "$example"
@@ -61,6 +64,27 @@ promote_file() {
     fi
 }
 
+# Rewrites, in the given template, the value of every secret-named variable to the placeholder.
+# Prints the changed variable names; exit 0 always.
+sanitize_file() {
+    local f="$1" line var changed=()
+    [[ -f "$f" ]] || return 0
+    local tmp; tmp="$(mktemp)"
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        if [[ "$line" =~ ^export[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)= ]]; then
+            var="${BASH_REMATCH[1]}"
+            if [[ "$var" =~ $SECRET_NAME_RE && "$line" != *"# nosecret"* \
+                  && "$line" != "export ${var}=\"${PLACEHOLDER}\"" && "$line" != "export ${var}='${PLACEHOLDER}'" ]]; then
+                line="export ${var}=\"${PLACEHOLDER}\""
+                changed+=("$var")
+            fi
+        fi
+        printf '%s\n' "$line" >> "$tmp"
+    done < "$f"
+    if ((${#changed[@]})); then cat "$tmp" > "$f"; echo "${changed[*]}"; fi
+    rm -f "$tmp"
+}
+
 check_file() {
     local f="$1"
     [[ -f "$f" ]] || return 0
@@ -70,6 +94,7 @@ check_file() {
 
 case "${1:-}" in
     sync) promote_file "$2" "$3"; sync_file "$2" "$3" ;;
+    sanitize) shift; for f in "$@"; do sanitize_file "$f"; done ;;
     check)
         shift
         out=""

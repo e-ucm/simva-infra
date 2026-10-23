@@ -23,7 +23,8 @@ sourced, not substituted:
 - `etc/simva.install.d/simva-env.sh` — shape of the project (`SIMVA_STACKS`, the
   `SIMVA_*_HOME` directories, wait-times);
 - `etc/simva.d/simva-env.sh` — instance identity and values (domain, network, versions,
-  credentials);
+  credentials); untracked, generated from `simva-env.example.sh` (see
+  [manage-env-secrets](../../how-to/manage-env-secrets.md));
 - `etc/simva.d/simva-env.dev.sh` — development-only values, added 2025-01-08 and corrected
   2025-12-02 so it is loaded **only in development**;
 - `<stack>/etc/simva.d/simva-env.sh` — per-stack `COMPOSE_FILE` selection.

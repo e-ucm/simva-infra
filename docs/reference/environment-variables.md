@@ -79,6 +79,12 @@ The upgrades machinery compares these against `data/<stack>/.version` and the pe
 
 ## Credentials and clients
 
+The real `simva-env.sh`/`simva-env.dev.sh` are untracked and created from
+`simva-env.example.sh`/`simva-env.dev.example.sh`, where every secret is `CHANGEME1234`.
+That default is accepted only when `SIMVA_ENVIRONMENT="development"` and
+`SIMVA_DEVELOPMENT_LOCAL="true"`; otherwise `./simva` refuses to start until they are changed
+(see [manage-env-secrets](../how-to/manage-env-secrets.md)).
+
 All plain-text credential variables live at the bottom of `etc/simva.d/simva-env.sh` under
 the "AUTHENTIFICATION USERNAME AND PASSWORD (TO MODIFY)" heading. Notable ones:
 
@@ -91,7 +97,7 @@ the "AUTHENTIFICATION USERNAME AND PASSWORD (TO MODIFY)" heading. Notable ones:
   `SIMVA_MINIO_CLIENT_ID`, `SIMVA_TMON_CLIENT_ID/SECRET`, `SIMVA_PUMVA_CLIENT_ID/SECRET`,
   `SIMVA_TRACE_ALLOCATOR_CLIENT_ID/SECRET`, `SIMVA_LTI_PLATFORM_CLIENT_ID/SECRET`,
   `SIMVA_KEYCLOAK_CLIENT_CLIENT_ID/SECRET`.
-- Storage: `SIMVA_MINIO_ACCESS_KEY`/`SECRET_KEY`, `SIMVA_RUSTFS_ACCESS_KEY`/`SECRET_KEY`.
+- Storage: `SIMVA_MINIO_ACCESS_VALUE`/`SECRET_KEY`, `SIMVA_RUSTFS_ACCESS_VALUE`/`SECRET_KEY`.
 - Pipeline: `SIMVA_KAFKA_CONNECT_SINK_USER`/`SECRET`, `SIMVA_SHLINK_API_KEY`,
   `SIMVA_LRS_ADMIN_*`, `SIMVA_LRS_API_KEY_*/SECRET_*`, `SIMVA_DOZZLE_USERNAME`/`PASSWORD`.
 

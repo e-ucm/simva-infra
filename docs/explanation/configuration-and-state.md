@@ -14,10 +14,12 @@ defaults live in committed fragments:
 - `etc/simva.install.d/simva-env.sh` — *shape*: `SIMVA_STACKS`, the `SIMVA_*_HOME`
   directories, wait-time constants, the building blocks every other fragment derives from.
 - `etc/simva.d/simva-env.sh` — *instance identity and values*: domain, network, versions,
-  credentials. Editing this file is the canonical way to reconfigure (and the file the
+  credentials. **Not committed** (it holds secrets): it is generated from the tracked
+  `simva-env.example.sh` template, see [manage-env-secrets](../how-to/manage-env-secrets.md). Editing this file is the canonical way to reconfigure (and the file the
   upgrading/migrating machinery re-reads to detect drift).
 - `etc/simva.d/simva-env.dev.sh` — *development-only* values, deliberately kept out of the
-  production path (git refs, dev subdomains, `SIMVA_DEVELOPMENT_LOCAL`).
+  production path (git refs, dev subdomains, `SIMVA_DEVELOPMENT_LOCAL`). Also untracked,
+  generated from `simva-env.dev.example.sh`.
 - `<stack>/etc/simva.d/simva-env.sh` — *selection*: the `COMPOSE_FILE` merge for that stack.
 - `config/<stack>/simva-env.sh` — a *generated* override file: hooks render it so that later
   phases of the same boot read what they themselves produced.
@@ -71,7 +73,9 @@ etc) untouched.
 
 | Read during boot | Committed? | Written by | Backup covers it |
 | --- | :-: | --- | :-: |
-| `etc/*/simva-env*.sh` | yes | you | (separately — back it up yourself) |
+| `etc/simva.install.d/simva-env*.sh`, `etc/simva.d/simva-env*.example.sh` | yes | you |
+| `etc/simva.d/simva-env.sh`, `simva-env.dev.sh` | no (secrets) | you / synced from the templates |
+| other `etc/*/simva-env*.sh` | yes | you | (separately — back it up yourself) |
 | `config-template/` | yes | you | — |
 | `config/*/` (generated) | no | hooks, via gomplate | yes (`config/` copy) |
 | `data/*/` markers | no | the machinery / hooks | yes (inside `datafiles`) |

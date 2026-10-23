@@ -41,7 +41,7 @@ services:
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh:ro
     environment:
-      MINIO_ROOT_USER: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
+      MINIO_ROOT_USER: "${SIMVA_MINIO_ACCESS_VALUE:-minio}"
       MINIO_BROWSER_REDIRECT_URL: "http://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-mig.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9001"
       MINIO_SERVER_URL: "http://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}-mig.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9000"
       MINIO_ROOT_PASSWORD: "${SIMVA_MINIO_SECRET_KEY:-secret}"
@@ -89,7 +89,7 @@ services:
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
       - ${SIMVA_BIN_HOME:-/home/vagrant/simva-infra/docker-stacks/bin}/wait-available.sh:/bin/wait-available.sh:ro
     environment:
-      MINIO_ROOT_USER: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
+      MINIO_ROOT_USER: "${SIMVA_MINIO_ACCESS_VALUE:-minio}"
       MINIO_BROWSER_REDIRECT_URL: "https://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       MINIO_SERVER_URL: "https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       MINIO_ROOT_PASSWORD: "${SIMVA_MINIO_SECRET_KEY:-secret}"

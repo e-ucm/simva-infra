@@ -9,7 +9,7 @@ connector_name=$(jq '.name' "${SIMVA_CONFIG_TEMPLATE_HOME}/kafka/connect/simva-s
 
 if [[ "${SIMVA_RUSTFS_ENABLE:-false}" == "true" ]]; then
   minioUrl="https://${SIMVA_RUSTFS_API_HOST_SUBDOMAIN:-rustfs-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
-  minioUser="${SIMVA_RUSTFS_ACCESS_KEY}"
+  minioUser="${SIMVA_RUSTFS_ACCESS_VALUE}"
   minioSecret="${SIMVA_RUSTFS_SECRET_KEY}"
 else
   minioUrl="https://${SIMVA_MINIO_API_HOST_SUBDOMAIN:-minio-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"

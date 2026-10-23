@@ -43,7 +43,7 @@ services:
 # (https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html#install-certificates-from-third-party-cas)
       - ${SIMVA_TLS_HOME?TLS home folder required}/ca:/root/.minio/certs/CAs
     environment:
-      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_VALUE:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
       WAIT_TIMEOUT: ${SIMVA_WAIT_TIMEOUT:-240}
       MC_WAIT_TIME: ${SIMVA_WAIT_TIME:-10}

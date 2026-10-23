@@ -128,7 +128,7 @@ if docker ps --no-trunc --format '{{.Image}}' | grep -qi 'rustfs'; then
   rustfs_login=$(curl -sk --max-time 30 -X POST \
     "$rustfs_ui/api/v1/login" \
     -H 'Content-Type: application/json' \
-    -d "{\"accessKey\":\"${SIMVA_RUSTFS_ACCESS_KEY}\",\"secretKey\":\"${SIMVA_RUSTFS_SECRET_KEY}\"}" 2>/dev/null || true)
+    -d "{\"accessKey\":\"${SIMVA_RUSTFS_ACCESS_VALUE}\",\"secretKey\":\"${SIMVA_RUSTFS_SECRET_KEY}\"}" 2>/dev/null || true)
   if [[ -n $(jq -r '.sessionId // .token // empty' <<<"$rustfs_login" 2>/dev/null || true) ]]; then
     pass "RustFS console login with configured credentials"
   fi
@@ -137,7 +137,7 @@ else
   minio_login=$(curl -sk --max-time 30 -X POST \
     "https://${SIMVA_MINIO_HOST_SUBDOMAIN}${EXT}/api/v1/login" \
     -H 'Content-Type: application/json' \
-    -d "{\"accessKey\":\"${SIMVA_MINIO_ACCESS_KEY}\",\"secretKey\":\"${SIMVA_MINIO_SECRET_KEY}\"}")
+    -d "{\"accessKey\":\"${SIMVA_MINIO_ACCESS_VALUE}\",\"secretKey\":\"${SIMVA_MINIO_SECRET_KEY}\"}")
   if [[ -n $(jq -r '.sessionId // .token // empty' <<<"$minio_login" 2>/dev/null || true) ]]; then
     pass "MinIO console login with configured credentials"
   else

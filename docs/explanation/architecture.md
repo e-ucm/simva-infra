@@ -13,7 +13,7 @@ simva-infra/
 │   ├── bin/                           ← helpers hooks call (wait, backup-restore, volumectl)
 │   ├── etc/
 │   │   ├── simva.install.d/simva-env.sh   ← SIMVA_STACKS order, *_HOME dirs, wait-times
-│   │   └── simva.d/{simva-env.sh, simva-env.dev.sh} ← instance config
+│   │   └── simva.d/{simva-env.sh, simva-env.dev.sh} ← instance config (untracked, from *.example.sh)
 │   ├── config-template/               ← gomplate templates (committed)
 │   ├── config/                        ← generated config; gitignored except placeholders
 │   ├── data/                          ← runtime state + markers; gitignored

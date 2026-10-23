@@ -58,7 +58,7 @@ services:
       MINIO_SSL: "true"
       MINIO_PORT: "443"
       MINIO_INTERNAL_URL: "http://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9000"
-      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_VALUE:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
       RUSTFS_ENABLED: "${SIMVA_RUSTFS_ENABLE:-false}"
       RUSTFS_URL: "https://${SIMVA_RUSTFS_HOST_SUBDOMAIN:-rustfs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
@@ -66,7 +66,7 @@ services:
       RUSTFS_SSL: "true"
       RUSTFS_PORT: "443"
       RUSTFS_INTERNAL_URL: "http://${SIMVA_RUSTFS_HOST_SUBDOMAIN:-rustfs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9000"
-      RUSTFS_ACCESS_KEY: "${SIMVA_RUSTFS_ACCESS_KEY:-admin-rustfs}"
+      RUSTFS_ACCESS_KEY: "${SIMVA_RUSTFS_ACCESS_VALUE:-admin-rustfs}"
       RUSTFS_SECRET_KEY: "${SIMVA_RUSTFS_SECRET_KEY:-password-rustfs}"
       MINIO_BUCKET: "${SIMVA_TRACES_BUCKET_NAME:-traces}"
       MINIO_TOPICS_DIR: "${SIMVA_SINK_TOPICS_DIR:-kafka-topics}"
@@ -126,7 +126,7 @@ services:
       SHLINK_PROTOCOL: ${SIMVA_SHLINK_EXTERNAL_PROTOCOL:-https}
       SHLINK_SERVER_API_KEY: ${SIMVA_SHLINK_API_KEY:-password}
       LRS_ENDPOINT: "https://${SIMVA_LRS_HOST_SUBDOMAIN:-lrs}.${SIMVA_EXTERNAL_DOMAIN:-external.test}/"
-      LRS_API_KEY_DEFAULT: "${SIMVA_LRS_API_KEY_DEFAULT:-my_api_key}"
+      LRS_API_KEY_DEFAULT: "${SIMVA_LRS_API_USERNAME_DEFAULT:-my_api_key}"
       LRS_API_SECRET_DEFAULT: "${SIMVA_LRS_API_SECRET_DEFAULT:-my_api_secret}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -275,14 +275,14 @@ services:
       MINIO_SSL: "true"
       MINIO_PORT: "443"
       MINIO_INTERNAL_URL: "http://${SIMVA_MINIO_HOST_SUBDOMAIN:-minio}.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9000"
-      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_KEY:-minio}"
+      MINIO_ACCESS_KEY: "${SIMVA_MINIO_ACCESS_VALUE:-minio}"
       MINIO_SECRET_KEY: "${SIMVA_MINIO_SECRET_KEY:-secret}"
       RUSTFS_ENABLED: "${SIMVA_RUSTFS_ENABLE:-false}"
       RUSTFS_API_URL: "https://${SIMVA_RUSTFS_API_HOST_SUBDOMAIN:-rustfs-api}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       RUSTFS_SSL: "true"
       RUSTFS_PORT: "443"
       RUSTFS_INTERNAL_URL: "http://${SIMVA_RUSTFS_HOST_SUBDOMAIN:-rustfs}.${SIMVA_INTERNAL_DOMAIN:-internal.test}:9000"
-      RUSTFS_ACCESS_KEY: "${SIMVA_RUSTFS_ACCESS_KEY:-admin-rustfs}"
+      RUSTFS_ACCESS_KEY: "${SIMVA_RUSTFS_ACCESS_VALUE:-admin-rustfs}"
       RUSTFS_SECRET_KEY: "${SIMVA_RUSTFS_SECRET_KEY:-password-rustfs}"
       MINIO_BUCKET: "${SIMVA_TRACES_BUCKET_NAME:-traces}"
       MINIO_TOPICS_DIR: "${SIMVA_SINK_TOPICS_DIR:-kafka-topics}"

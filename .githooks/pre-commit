@@ -1,9 +1,24 @@
 #!/usr/bin/env bash
-# Blocks committing the real (secret-holding) simva-env files; only *.example.sh templates are allowed.
+# 1. Blocks committing the real (secret-holding) simva-env files; only *.example.sh templates are allowed.
+# 2. Forces every secret-named variable (PASS*, SECRET, TOKEN, KEY words) in the staged templates to CHANGEME1234.
+root="$(git rev-parse --show-toplevel)"
 bad=$(git diff --cached --name-only --diff-filter=AM | grep -E '(^|/)etc/simva\.d/simva-env[^/]*\.sh$' | grep -vE '\.example\.sh$')
 if [[ -n "$bad" ]]; then
     echo "ERROR: refusing to commit files that may contain secrets:" >&2
     echo "$bad" | sed 's/^/  /' >&2
-    echo "Edit the *.example.sh templates instead (use placeholders like CHANGEME1234)." >&2
+    echo "Edit the *.example.sh templates instead." >&2
     exit 1
 fi
+while IFS= read -r f; do
+    [[ -n "$f" ]] || continue
+    # refuse to rewrite a file that also has unstaged edits (would stage them by accident)
+    if ! git diff --quiet -- "$root/$f"; then
+        echo "ERROR: $f has unstaged changes; stage or stash them so secrets can be sanitized safely." >&2
+        exit 1
+    fi
+    changed=$("$root/docker-stacks/bin/sync-env-template.sh" sanitize "$root/$f")
+    if [[ -n "$changed" ]]; then
+        git add -- "$root/$f"
+        echo "pre-commit: reset to CHANGEME1234 in $f: $changed" >&2
+    fi
+done < <(git diff --cached --name-only --diff-filter=AM | grep -E '(^|/)etc/simva\.d/simva-env[^/]*\.example\.sh$')

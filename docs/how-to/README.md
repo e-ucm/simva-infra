@@ -18,6 +18,7 @@ sudo su
 | I want to… | Guide |
 | --- | --- |
 | Point every service at a new public domain | [change-the-external-domain.md](./change-the-external-domain.md) |
+| Manage the untracked env files and secrets | [manage-env-secrets.md](./manage-env-secrets.md) |
 | Refresh or replace the TLS material for a domain | [update-tls-certificates.md](./update-tls-certificates.md) |
 
 ## Data safety
