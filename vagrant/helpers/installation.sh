@@ -87,11 +87,13 @@ fi
 # --- nodejs ---
 if ! command -v node >/dev/null 2>&1; then
   echo "Installing nodeJS..."
-  # 2. Add NodeSource repo for Node.js 20.x (LTS)
-  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-
-  # 3. Install Node.js (includes npm)
-  sudo apt install -y nodejs
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+  nvm install 26
+  nvm use 26
+  npm update -g npm
 else
   echo "NodeJS and npm already installed."
 fi
@@ -156,11 +158,11 @@ echo "dos2unix : $(dos2unix --version || true)"
 
 echo "node : $(node -v || true)"
 
+echo "npm : $(npm -v|| true)"
+
 echo "composer : $(composer -V || true)"
 
 echo "unzip : $(unzip -v || true)"
-
-echo "npm : $(npm -v|| true)"
 
 ls /home/vagrant/
 dos2unix /home/vagrant/simva-infra/docker-stacks/etc/simva.install.d/simva-env.sh
