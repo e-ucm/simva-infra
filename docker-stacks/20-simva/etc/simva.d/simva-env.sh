@@ -5,7 +5,9 @@ set -euo pipefail
 # Remove any '-apache' compose files from the stack
 export SIMVA_LIMESURVEY_VERSION_NUMBER="${SIMVA_LIMESURVEY_VERSION//-.*/}"
 export SIMVA_LIMESURVEY_VERSION_NUMBER=${SIMVA_LIMESURVEY_VERSION_NUMBER%-*}
-export SIMVA_LIMESURVEY_USE_NEW_VERSION=$([[ ${SIMVA_LIMESURVEY_VERSION_NUMBER} -gt 5 ]] && echo "true" || echo "false")
+# major version only (e.g. 6.17.18-261021-apache -> 6): needed for the integer comparison
+SIMVA_LIMESURVEY_MAJOR_VERSION="${SIMVA_LIMESURVEY_VERSION%%[.-]*}"
+export SIMVA_LIMESURVEY_USE_NEW_VERSION=$([[ "${SIMVA_LIMESURVEY_MAJOR_VERSION}" =~ ^[0-9]+$ && ${SIMVA_LIMESURVEY_MAJOR_VERSION} -gt 5 ]] && echo "true" || echo "false")
 echo "Using LimeSurvey version ${SIMVA_LIMESURVEY_VERSION_NUMBER}, use new version: ${SIMVA_LIMESURVEY_USE_NEW_VERSION}"
 if [[ -f "$SIMVA_DATA_HOME/simva/migration_sqlite_in_progress" ]]; then
     export COMPOSE_FILE="docker-compose.migrate_mongo.yml:docker-compose.mongo.yml"
