@@ -66,6 +66,17 @@ jobs:
           fi
           grep -nE 'SIMVA_ENVIRONMENT|SIMVA_TLS_GENERATE_SELF_SIGNED|SIMVA_DEVELOPMENT_LOCAL' etc/simva.d/simva-env*.sh
 
+      - name: Enable local deployment
+        if: env.SIMVA_LOCAL_DEFAULTS == 'true'
+        shell: bash
+        working-directory: docker-stacks
+        run: |
+          # SIMVA_DEVELOPMENT_LOCAL=true expects the sources next to simva-infra (${SIMVA_HOME}/../..);
+          # the before-start checkout hooks of each stack clone the missing ones, using
+          # the SIMVA_*_VERSION tags (SIMVA_LIMESURVEY_DOCKER_GIT_REF and SIMVA_XASUJS_GIT_REF otherwise).
+          sed -i -E 's/^export (SIMVA_(KEYCLOAK_EXTENSION|KAFKA_EXTENSION|LIMESURVEY_PLUGIN|XASUJS_LIBRARY)_LOCAL_DEPLOYMENT)=.*/export \1=true/' etc/simva.d/simva-env.dev.sh
+          grep -n 'LOCAL_DEPLOYMENT' etc/simva.d/simva-env.dev.sh
+
       - name: Populate /etc/hosts for external.test subdomains
         shell: bash
         working-directory: docker-stacks

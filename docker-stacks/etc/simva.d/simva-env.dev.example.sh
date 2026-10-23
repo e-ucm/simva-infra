@@ -43,14 +43,9 @@ export SIMVA_DOCKHAND_HOST_SUBDOMAIN="dockhand"
 #######################
 #Git reference branch
 export CSP_REPORTER_GIT_REF="master"
-export SIMVA_API_GIT_REF="v2.0.0"
-export SIMVA_FRONT_GIT_REF="v2.0.0"
-export SIMVA_TRACE_ALLOCATOR_GIT_REF="v2.0.0"
 export SIMVA_PUMVA_GIT_REF="v0.0.1-alpha"
 export SIMVA_PUMVA_FRONT_GIT_REF="v0.0.1-alpha"
-export SIMVA_LIMESURVEY_DOCKER_GIT_REF="6.16.16-apache"
-export SIMVA_TMON_GIT_REF="v1.0.0"
-export SIMVA_TMON_ANACONDA_GIT_REF="v0.0.1"
+export SIMVA_XASUJS_GIT_REF="v2.3.0"
 
 export SIMVA_KEYCLOAK_EXTENSION_LOCAL_DEPLOYMENT=false
 export SIMVA_KAFKA_EXTENSION_LOCAL_DEPLOYMENT=false

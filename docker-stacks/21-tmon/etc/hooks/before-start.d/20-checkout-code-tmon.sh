@@ -22,7 +22,8 @@ fi
 
 if [[ ${RUNCHECKOUTCODE} == true ]] ; then
     SIMVA_TMON_GIT_REPO_URL=https://github.com/e-ucm/t-mon.git
-    SIMVA_TMON_GIT_REF=${SIMVA_TMON_GIT_REF:-master}
+    # the checked out ref follows the installed version (tag vX.Y.Z), SIMVA_TMON_GIT_REF overrides it
+    SIMVA_TMON_GIT_REF=${SIMVA_TMON_GIT_REF:-v${SIMVA_TMON_VERSION}}
 
     ###########################################################
     ########################### TMON ##########################
@@ -51,6 +52,9 @@ if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
     ########################### TMON ##########################
     ###########################################################
     echo "TMON"
+    # Local sources are expected next to simva-infra: fetch them if missing (an existing folder is kept).
+    source "${SIMVA_BIN_HOME}/extension-helper.sh"
+    checkout_local_repo "${SIMVA_TMON_GIT_REPO}" "t-mon" "v${SIMVA_TMON_VERSION}"
     source ${SIMVA_HOME}/bin/check-checksum.sh
     set +e
     _check_checksum ${SIMVA_TMON_GIT_REPO} "${SIMVA_DATA_HOME}/tmon/tmon-sha256sums" "requirements.txt"

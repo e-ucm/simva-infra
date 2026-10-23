@@ -124,6 +124,11 @@ if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     chmod -R ${SIMVA_NODE_DIR_MODE} ${SIMVA_DATA_HOME}/simva
 fi
 if [[ ${CHECKLOCALDEPLOYMENT} == true ]] ; then
+    # Local sources are expected next to simva-infra: fetch the missing ones (existing folders are kept).
+    source "${SIMVA_BIN_HOME}/extension-helper.sh"
+    checkout_local_repo "${SIMVA_API_GIT_REPO}"             "simva"                  "v${SIMVA_SIMVA_VERSION}"
+    checkout_local_repo "${SIMVA_FRONT_GIT_REPO}"           "simva-front"            "v${SIMVA_SIMVA_FRONT_VERSION}"
+    checkout_local_repo "${SIMVA_TRACE_ALLOCATOR_GIT_REPO}" "simva-trace-allocator"  "v${SIMVA_SIMVA_TRACE_ALLOCATOR_VERSION}"
     ###########################################################
     ######################### BACKEND #########################
     ###########################################################

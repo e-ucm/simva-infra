@@ -132,3 +132,23 @@ ensure_dir() {
         mkdir -p "${DIR}"
     fi
 }
+
+# Clone a repository into a local folder used by a *_LOCAL_DEPLOYMENT mode.
+# An existing non-empty folder is left untouched, so local work is never overwritten.
+# Arguments:
+#   $1 - TARGET_DIR: Folder the sources must be in
+#   $2 - REPO: Repository name under https://github.com/e-ucm/
+#   $3 - GIT_REF: Tag or branch to check out
+checkout_local_repo() {
+    local TARGET_DIR="$1"
+    local REPO="$2"
+    local GIT_REF="$3"
+
+    if [[ -d "${TARGET_DIR}" && -n "$(ls -A "${TARGET_DIR}" 2>/dev/null)" ]]; then
+        echo "Local sources for ${REPO} already present in ${TARGET_DIR}, no checkout."
+        return 0
+    fi
+    echo "Checking out e-ucm/${REPO}@${GIT_REF} into ${TARGET_DIR}"
+    mkdir -p "$(dirname "${TARGET_DIR}")"
+    git clone --depth 1 --branch "${GIT_REF}" "https://github.com/e-ucm/${REPO}.git" "${TARGET_DIR}"
+}

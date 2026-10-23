@@ -21,6 +21,12 @@ fi
 
 source ${SIMVA_BIN_HOME}/check-checksum.sh;
 
+if [[ ${CHECKLOCALDEPLOYMENT} = true ]] ; then
+    # Local sources are expected next to simva-infra: fetch them if missing (an existing folder is kept).
+    source "${SIMVA_BIN_HOME}/extension-helper.sh"
+    checkout_local_repo "${SIMVA_LIMESURVEY_DOCKER_GIT_REPO}" "docker-limesurvey" "${SIMVA_LIMESURVEY_DOCKER_GIT_REF:-master}"
+fi
+
 if [[ ${RUNCHECKOUTCODE} = true ]] ; then
     DOCKER_LIMESURVEY_GIT_REPO_URL=https://github.com/e-ucm/docker-limesurvey.git
     DOCKER_LIMESURVEY_GIT_REF=${SIMVA_LIMESURVEY_DOCKER_GIT_REF:-master}
