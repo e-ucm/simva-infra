@@ -26,7 +26,7 @@ jobs:
       SIMVA_LOCAL_DEFAULTS: ${{ matrix.environment == 'development-local' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install system dependencies
         shell: bash
@@ -118,7 +118,7 @@ jobs:
 
       - name: Upload diagnostics
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: simva-smoke-${{ matrix.environment }}-diag
           path: diag-${{ matrix.environment }}/
