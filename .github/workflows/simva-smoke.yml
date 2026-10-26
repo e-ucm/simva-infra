@@ -196,7 +196,7 @@ jobs:
               echo "No versions.txt for $stack, skipping"
               continue
             fi
-            dos2unix "$VFILE" || true
+            sed -i 's/\r$//' "$VFILE"
             HEADER=$(head -n1 "$VFILE")
             IFS='|' read -ra NAMES <<< "$HEADER"
             # get first name
@@ -207,7 +207,7 @@ jobs:
             VERSIONS=$(tail -n +2 "$VFILE" | sed '/^[[:space:]]*$/d' | sort -t'|' -k1,1 -V | awk -F'|' '{print $1}')
             # get second to last or previous version
             PREV_VER=$(echo "$VERSIONS" | tail -n 2 | head -n 1)
-            CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.d/simva-env.sh | cut -d'"' -f2)
+            CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.d/simva-env.sh | cut -d'"' -f2 || true)
             echo "Current: $CUR_VER, Previous in list: $PREV_VER"
             if [ -z "$PREV_VER" ] || [ "$PREV_VER" = "$CUR_VER" ]; then
               # fallback to first version if only one
@@ -248,7 +248,7 @@ jobs:
             fi
             FIRST_NAME=$(head -n1 "${SIMVA_HOME}/${stack}/etc/upgrade/versions.txt" | cut -d'|' -f1)
             VAR_NAME="SIMVA_$(echo ${FIRST_NAME} | tr '[:lower:]' '[:upper:]')_VERSION"
-            CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2)
+            CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2 || true)
             echo "Restoring $VAR_NAME to $CUR_VER"
             sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${CUR_VER}\"|" etc/simva.d/simva-env.sh
           done
