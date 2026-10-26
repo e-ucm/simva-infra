@@ -140,3 +140,133 @@ jobs:
         shell: bash
         working-directory: docker-stacks
         run: sudo env "PATH=$PATH" ./simva uninstall
+
+  upgrade-test:
+    name: SIMVA upgrade test ${{ matrix.stack }}
+    runs-on: ubuntu-latest
+    needs: smoke
+    if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        stack:
+          - 00-network
+          - 01-traefik
+          - 02-logs
+          - 03-keycloak
+          - 04-limesurvey
+          - 05-rustfs
+          - 06-kafka
+          - 07-shlink
+          - 11-lrs
+          - 20-simva
+          - 21-tmon
+    timeout-minutes: 360
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install system dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            jq curl git unzip dos2unix apache2-utils default-jre-headless libnss3-tools
+          curl -fsSL -o /tmp/mkcert \
+            https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64
+          sudo install -m 0755 /tmp/mkcert /usr/local/bin/mkcert
+          mkcert -version
+
+      - name: Configure SIMVA environment
+        shell: bash
+        working-directory: docker-stacks
+        run: |
+          for t in etc/simva.install.d/simva-env.example.sh etc/simva.install.d/simva-env.dev.example.sh; do
+            cp "$t" "etc/simva.d/$(basename "${t/.example/}")"
+          done
+          for f in etc/simva.d/simva-env.sh etc/simva.d/simva-env.dev.sh; do
+            while grep -q CHANGEME1234 "$f"; do
+              pw=$(openssl rand -hex 16)
+              sed -i "0,/CHANGEME1234/s//$pw/" "$f"
+            done
+          done
+          sed -i 's|^export SIMVA_ENVIRONMENT="development"|export SIMVA_ENVIRONMENT="development"|' etc/simva.d/simva-env.sh
+          sed -i 's|^export SIMVA_TLS_GENERATE_SELF_SIGNED="false"|export SIMVA_TLS_GENERATE_SELF_SIGNED="true"|' etc/simva.d/simva-env.sh
+
+      - name: Populate /etc/hosts
+        shell: bash
+        working-directory: docker-stacks
+        run: |
+          sudo bash "$GITHUB_WORKSPACE/scripts/ci/setup-hosts.sh"
+
+      - name: Setup previous version for upgrade test
+        shell: bash
+        working-directory: docker-stacks
+        run: |
+          STACK="${{ matrix.stack }}"
+          VFILE="${STACK}/etc/upgrade/versions.txt"
+          if [ ! -f "$VFILE" ]; then
+            echo "No versions.txt for $STACK, skipping"
+            exit 0
+          fi
+          dos2unix "$VFILE" || true
+          HEADER=$(head -n1 "$VFILE")
+          IFS='|' read -ra NAMES <<< "$HEADER"
+          # get first name
+          FIRST_NAME="${NAMES[0]}"
+          # convert to env var name
+          VAR_NAME="SIMVA_$(echo ${FIRST_NAME} | tr '[:lower:]' '[:upper:]')_VERSION"
+          # get all versions except header
+          VERSIONS=$(tail -n +2 "$VFILE" | sed '/^[[:space:]]*$/d' | sort -t'|' -k1,1 -V | awk -F'|' '{print $1}')
+          # get second to last or previous version
+          PREV_VER=$(echo "$VERSIONS" | tail -n 2 | head -n 1)
+          CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.d/simva-env.sh | cut -d'"' -f2)
+          echo "Current: $CUR_VER, Previous in list: $PREV_VER"
+          if [ -z "$PREV_VER" ] || [ "$PREV_VER" = "$CUR_VER" ]; then
+            # fallback to first version if only one
+            PREV_VER=$(echo "$VERSIONS" | head -n 1)
+          fi
+          echo "Setting $VAR_NAME to $PREV_VER"
+          # update in simva-env files
+          sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${PREV_VER}\"|" etc/simva.d/simva-env.sh
+          grep "^export ${VAR_NAME}=" etc/simva.d/simva-env.sh
+
+      - name: Create base Docker networks and volumes
+        shell: bash
+        working-directory: docker-stacks
+        run: |
+          sudo env "PATH=$PATH" ./simva start 00-network
+          bash "$GITHUB_WORKSPACE/scripts/ci/create-external-resources.sh"
+
+      - name: Install and start with previous version
+        shell: bash
+        working-directory: docker-stacks
+        timeout-minutes: 240
+        run: |
+          sudo env "PATH=$PATH" ./simva install 1 true ${{ matrix.stack }}
+          sudo env "PATH=$PATH" ./simva start 00-network ${{ matrix.stack }}
+
+      - name: Upgrade to current version
+        shell: bash
+        working-directory: docker-stacks
+        timeout-minutes: 240
+        run: |
+          STACK="${{ matrix.stack }}"
+          FIRST_NAME=$(head -n1 "${STACK}/etc/upgrade/versions.txt" | cut -d'|' -f1)
+          VAR_NAME="SIMVA_$(echo ${FIRST_NAME} | tr '[:lower:]' '[:upper:]')_VERSION"
+          CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2)
+          echo "Restoring $VAR_NAME to $CUR_VER"
+          sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${CUR_VER}\"|" etc/simva.d/simva-env.sh
+          sudo env "PATH=$PATH" ./simva start 00-network ${{ matrix.stack }} --auto-upgrade
+
+      - name: Verify after upgrade
+        shell: bash
+        working-directory: docker-stacks
+        timeout-minutes: 60
+        run: bash "$GITHUB_WORKSPACE/scripts/ci/simva-verify.sh" development
+
+      - name: Stop SIMVA
+        if: always()
+        shell: bash
+        working-directory: docker-stacks
+        run: sudo env "PATH=$PATH" ./simva uninstall ${{ matrix.stack }} || sudo env "PATH=$PATH" ./simva purge ${{ matrix.stack }} || true
