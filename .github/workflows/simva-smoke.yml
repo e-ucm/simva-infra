@@ -207,16 +207,20 @@ jobs:
             VERSIONS=$(tail -n +2 "$VFILE" | sed '/^[[:space:]]*$/d' | sort -t'|' -k1,1 -V | awk -F'|' '{print $1}')
             # get second to last or previous version
             PREV_VER=$(echo "$VERSIONS" | tail -n 2 | head -n 1)
-            CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.d/simva-env.sh | cut -d'"' -f2 || true)
+            CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2 || true)
             echo "Current: $CUR_VER, Previous in list: $PREV_VER"
             if [ -z "$PREV_VER" ] || [ "$PREV_VER" = "$CUR_VER" ]; then
               # fallback to first version if only one
               PREV_VER=$(echo "$VERSIONS" | head -n 1)
             fi
             echo "Setting $VAR_NAME to $PREV_VER"
-            # update in simva-env files
-            sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${PREV_VER}\"|" etc/simva.d/simva-env.sh
-            grep "^export ${VAR_NAME}=" etc/simva.d/simva-env.sh
+            # update in simva.install.d/simva-env.sh (replace if present, append otherwise)
+            if grep -q "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh; then
+              sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${PREV_VER}\"|" etc/simva.install.d/simva-env.sh
+            else
+              echo "export ${VAR_NAME}=\"${PREV_VER}\"" >> etc/simva.install.d/simva-env.sh
+            fi
+            grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh || true
           done
 
       - name: Create base Docker networks and volumes
@@ -250,7 +254,12 @@ jobs:
             VAR_NAME="SIMVA_$(echo ${FIRST_NAME} | tr '[:lower:]' '[:upper:]')_VERSION"
             CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2 || true)
             echo "Restoring $VAR_NAME to $CUR_VER"
-            sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${CUR_VER}\"|" etc/simva.d/simva-env.sh
+            # restore current version in simva.install.d/simva-env.sh (replace if present, append otherwise)
+            if grep -q "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh; then
+              sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${CUR_VER}\"|" etc/simva.install.d/simva-env.sh
+            else
+              echo "export ${VAR_NAME}=\"${CUR_VER}\"" >> etc/simva.install.d/simva-env.sh
+            fi
           done
           sudo env "PATH=$PATH" ./simva restart --auto-upgrade
 
