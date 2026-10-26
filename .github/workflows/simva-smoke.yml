@@ -188,11 +188,13 @@ jobs:
         shell: bash
         working-directory: docker-stacks
         run: |
+          export SIMVA_HOME="${PWD}"
+          export SIMVA_STACKS="00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs 20-simva 21-tmon"
           for stack in $SIMVA_STACKS; do
             VFILE="${SIMVA_HOME}/${stack}/etc/upgrade/versions.txt"
             if [ ! -f "$VFILE" ]; then
-              echo "No versions.txt for $STACK, skipping"
-              exit 0
+              echo "No versions.txt for $stack, skipping"
+              continue
             fi
             dos2unix "$VFILE" || true
             HEADER=$(head -n1 "$VFILE")
@@ -236,13 +238,20 @@ jobs:
         working-directory: docker-stacks
         timeout-minutes: 240
         run: |
+          export SIMVA_HOME="${PWD}"
+          export SIMVA_STACKS="00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs 20-simva 21-tmon"
           for stack in $SIMVA_STACKS; do
+            VFILE="${SIMVA_HOME}/${stack}/etc/upgrade/versions.txt"
+            if [ ! -f "$VFILE" ]; then
+              echo "No versions.txt for $stack, skipping"
+              continue
+            fi
             FIRST_NAME=$(head -n1 "${SIMVA_HOME}/${stack}/etc/upgrade/versions.txt" | cut -d'|' -f1)
             VAR_NAME="SIMVA_$(echo ${FIRST_NAME} | tr '[:lower:]' '[:upper:]')_VERSION"
             CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2)
             echo "Restoring $VAR_NAME to $CUR_VER"
             sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${CUR_VER}\"|" etc/simva.d/simva-env.sh
-          done 
+          done
           sudo env "PATH=$PATH" ./simva restart --auto-upgrade
 
       - name: Verify after upgrade

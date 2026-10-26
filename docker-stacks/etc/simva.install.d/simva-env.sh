@@ -44,6 +44,18 @@ export SIMVA_TRAEFIK_FILE_MODE="644" #rw-r--r--
 export SIMVA_SOCKET_PROXY_IMAGE="tecnativa/docker-socket-proxy"
 export SIMVA_SOCKET_PROXY_VERSION="v0.5.0"
 
+#LOGS IMAGE
+export SIMVA_LOGS_IMAGE="amir20/dozzle"
+export SIMVA_LOGS_VERSION="8.10.3"
+
+#LOGS SETTINGS
+export SIMVA_LOGS_GUID="root" #root
+export SIMVA_LOGS_UUID="root" #root
+export SIMVA_LOGS_TOP_DIR_MODE="755" #rwxr-xr-x
+export SIMVA_LOGS_DIR_MODE="755" #rwxr-xr-x
+export SIMVA_LOGS_FILE_MODE="644" #rw-r--r--
+
+
 #KEYCLOAK SSO IMAGE
 export SIMVA_KEYCLOAK_IMAGE="quay.io/keycloak/keycloak"
 export SIMVA_KEYCLOAK_VERSION="26.4.7"
@@ -133,6 +145,19 @@ export SIMVA_SHLINK_TOP_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_SHLINK_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_SHLINK_FILE_MODE="644" #rw-r--r--
 
+#LRS IMAGE
+export SIMVA_LRS_IMAGE="yetanalytics/lrsql"
+export SIMVA_LRS_VERSION="v0.9.9"
+export SIMVA_POSTGRES_IMAGE="postgres"
+export SIMVA_POSTGRES_VERSION="18"
+
+#LRS SETTINGS
+export SIMVA_LRS_PG_GUID="999" #postgres
+export SIMVA_LRS_PG_UUID="999" #postgres
+export SIMVA_LRS_PG_TOP_DIR_MODE="700" #rwx------
+export SIMVA_LRS_PG_DIR_MODE="700" #rwx------
+export SIMVA_LRS_PG_FILE_MODE="600" #rw-------
+
 #SIMVA IMAGE
 export SIMVA_NODE_GUID="1000" #node
 export SIMVA_NODE_UUID="1000" #node
@@ -189,30 +214,6 @@ export SIMVA_TMON_UUID="root" #root
 export SIMVA_TMON_TOP_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_TMON_DIR_MODE="755" #rwxr-xr-x
 export SIMVA_TMON_FILE_MODE="644" #rw-r--r--
-
-#LOGS IMAGE
-export SIMVA_LOGS_IMAGE="amir20/dozzle"
-export SIMVA_LOGS_VERSION="8.10.3"
-
-#LOGS SETTINGS
-export SIMVA_LOGS_GUID="root" #root
-export SIMVA_LOGS_UUID="root" #root
-export SIMVA_LOGS_TOP_DIR_MODE="755" #rwxr-xr-x
-export SIMVA_LOGS_DIR_MODE="755" #rwxr-xr-x
-export SIMVA_LOGS_FILE_MODE="644" #rw-r--r--
-
-#LRS IMAGE
-export SIMVA_LRS_IMAGE="yetanalytics/lrsql"
-export SIMVA_LRS_VERSION="v0.9.9"
-export SIMVA_POSTGRES_IMAGE="postgres"
-export SIMVA_POSTGRES_VERSION="18"
-
-#LRS SETTINGS
-export SIMVA_LRS_PG_GUID="999" #postgres
-export SIMVA_LRS_PG_UUID="999" #postgres
-export SIMVA_LRS_PG_TOP_DIR_MODE="700" #rwx------
-export SIMVA_LRS_PG_DIR_MODE="700" #rwx------
-export SIMVA_LRS_PG_FILE_MODE="600" #rw-------
 
 ##########################
 # Extensions and Plugins #
