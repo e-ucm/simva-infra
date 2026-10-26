@@ -167,8 +167,14 @@ function main() {
         ;;
         "restart")
             check_docker_launched
-            stop ${DEFAULT_WAIT_TIME} ${@%/}
-            start ${DEFAULT_WAIT_TIME} "true" ${@%/}
+            local restart_stop_args=()
+            local arg
+            for arg in "${@%/}"; do
+                [[ "$arg" == "--auto-upgrade" ]] && continue
+                restart_stop_args+=("$arg")
+            done
+            stop ${DEFAULT_WAIT_TIME} "${restart_stop_args[@]+"${restart_stop_args[@]}"}"
+            start ${DEFAULT_WAIT_TIME} "true" "${@%/}"
             exit 0
         ;;
         "log")
