@@ -190,6 +190,7 @@ jobs:
         run: |
           export SIMVA_HOME="${PWD}"
           export SIMVA_STACKS="00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs 20-simva 21-tmon"
+          cp etc/simva.install.d/simva-env.sh etc/simva.install.d/simva-env.sh.bak
           for stack in $SIMVA_STACKS; do
             VFILE="${SIMVA_HOME}/${stack}/etc/upgrade/versions.txt"
             if [ ! -f "$VFILE" ]; then
@@ -203,15 +204,23 @@ jobs:
             FIRST_NAME="${NAMES[0]}"
             # convert to env var name
             VAR_NAME="SIMVA_$(echo ${FIRST_NAME} | tr '[:lower:]' '[:upper:]')_VERSION"
-            # get all versions except header
+            # get all versions except header (sorted ascending)
             VERSIONS=$(tail -n +2 "$VFILE" | sed '/^[[:space:]]*$/d' | sort -t'|' -k1,1 -V | awk -F'|' '{print $1}')
-            # get second to last or previous version
-            PREV_VER=$(echo "$VERSIONS" | tail -n 2 | head -n 1)
+            # find the greatest version in versions.txt that is strictly below CUR_VER
+            PREV_VER=""
+            for v in $VERSIONS; do
+                lower=$(printf '%s\n%s\n' "$v" "$CUR_VER" | sort -V | head -n1)
+                if [[ "$lower" == "$v" && "$v" != "$CUR_VER" ]]; then
+                    PREV_VER="$v"
+                else
+                    break
+                fi
+            done
             CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2 || true)
             echo "Current: $CUR_VER, Previous in list: $PREV_VER"
-            if [ -z "$PREV_VER" ] || [ "$PREV_VER" = "$CUR_VER" ]; then
-              # fallback to first version if only one
-              PREV_VER=$(echo "$VERSIONS" | head -n 1)
+            if [ -z "$PREV_VER" ]; then
+              # no previous version available: keep the actual current version
+              PREV_VER="$CUR_VER"
             fi
             echo "Setting $VAR_NAME to $PREV_VER"
             # update in simva.install.d/simva-env.sh (replace if present, append otherwise)
@@ -243,24 +252,7 @@ jobs:
         timeout-minutes: 240
         run: |
           export SIMVA_HOME="${PWD}"
-          export SIMVA_STACKS="00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs 20-simva 21-tmon"
-          for stack in $SIMVA_STACKS; do
-            VFILE="${SIMVA_HOME}/${stack}/etc/upgrade/versions.txt"
-            if [ ! -f "$VFILE" ]; then
-              echo "No versions.txt for $stack, skipping"
-              continue
-            fi
-            FIRST_NAME=$(head -n1 "${SIMVA_HOME}/${stack}/etc/upgrade/versions.txt" | cut -d'|' -f1)
-            VAR_NAME="SIMVA_$(echo ${FIRST_NAME} | tr '[:lower:]' '[:upper:]')_VERSION"
-            CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2 || true)
-            echo "Restoring $VAR_NAME to $CUR_VER"
-            # restore current version in simva.install.d/simva-env.sh (replace if present, append otherwise)
-            if grep -q "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh; then
-              sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${CUR_VER}\"|" etc/simva.install.d/simva-env.sh
-            else
-              echo "export ${VAR_NAME}=\"${CUR_VER}\"" >> etc/simva.install.d/simva-env.sh
-            fi
-          done
+          cp etc/simva.install.d/simva-env.sh.bak etc/simva.install.d/simva-env.sh
           sudo env "PATH=$PATH" ./simva restart --auto-upgrade
 
       - name: Verify after upgrade
