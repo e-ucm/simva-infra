@@ -206,6 +206,8 @@ jobs:
             VAR_NAME="SIMVA_$(echo ${FIRST_NAME} | tr '[:lower:]' '[:upper:]')_VERSION"
             # get all versions except header (sorted ascending)
             VERSIONS=$(tail -n +2 "$VFILE" | sed '/^[[:space:]]*$/d' | sort -t'|' -k1,1 -V | awk -F'|' '{print $1}')
+            # current version for this stack (must be known before the loop below)
+            CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2 || true)
             # find the greatest version in versions.txt that is strictly below CUR_VER
             PREV_VER=""
             for v in $VERSIONS; do
@@ -216,7 +218,6 @@ jobs:
                     break
                 fi
             done
-            CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2 || true)
             echo "Current: $CUR_VER, Previous in list: $PREV_VER"
             if [ -z "$PREV_VER" ]; then
               # no previous version available: keep the actual current version
