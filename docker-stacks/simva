@@ -651,7 +651,7 @@ OPERATION one of the following:
         Stop and remove containers, without removing docker external volumes and data.
     purge:
         Stop and remove containers, remove data from each stack, also remove docker external volumes too.
-    start:
+    start [--auto-upgrade]:
         Launch all containers by stages, waiting for dependencies to become available.
     stop:
         Gracefully stop all containers, so that no data is lost; you can then inspect
@@ -1392,6 +1392,20 @@ function start() {
     local check_upgrade=${2}
     shift 2
 
+    local auto_upgrade="false"
+    local filtered_args=()
+    for arg in "$@"; do
+        case "$arg" in
+            --auto-upgrade)
+                auto_upgrade="true"
+                ;;
+            *)
+                filtered_args+=("$arg")
+                ;;
+        esac
+    done
+    set -- "${filtered_args[@]}"
+
     local stacks=${SIMVA_STACKS}
     if [[ $# -gt 0 ]]; then
         stacks=$@
@@ -1465,7 +1479,11 @@ function start() {
                     echo "A new version has been detected in simva-env.sh for stack $stack_name."
                     echo "A backup of your data is advised before upgrade."
                     echo "A backup of your data will be done automatically before upgrade."
-                    read -p "Are you sure you want to upgrade to this version ? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+                    if [[ "${auto_upgrade}" != "true" ]]; then
+                        read -p "Are you sure you want to upgrade to this version ? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+                    else
+                        echo "Auto-upgrade enabled, proceeding without confirmation."
+                    fi
                     backup $wait_time $stack
                     echo "Backup done."
                     echo "Upgrading $stack_name version..."

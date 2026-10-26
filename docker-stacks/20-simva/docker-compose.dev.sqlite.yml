@@ -12,7 +12,7 @@ x-default-opts:
 
 services:
   datasette:
-    image : datasetteproject/datasette:latest
+    image : ${SIMVA_SQLITE_UI_IMAGE:-datasetteproject/datasette}:${SIMVA_SQLITE_UI_VERSION:-latest}
     command: "datasette
       /db/simva_data.db
       --host 0.0.0.0

@@ -204,6 +204,9 @@ export SIMVA_LOGS_FILE_MODE="644" #rw-r--r--
 #LRS IMAGE
 export SIMVA_LRS_IMAGE="yetanalytics/lrsql"
 export SIMVA_LRS_VERSION="v0.9.9"
+export SIMVA_POSTGRES_IMAGE="postgres"
+export SIMVA_POSTGRES_VERSION="18"
+
 #LRS SETTINGS
 export SIMVA_LRS_PG_GUID="999" #postgres
 export SIMVA_LRS_PG_UUID="999" #postgres

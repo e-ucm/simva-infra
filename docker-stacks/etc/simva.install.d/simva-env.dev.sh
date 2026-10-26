@@ -38,10 +38,11 @@ export SIMVA_SHLINK_ADMIN_VERSION="4.8.1"
 # Mongoku image
 export SIMVA_MONGOKU_UI_IMAGE="huggingface/mongoku"
 export SIMVA_MONGOKU_UI_VERSION="2.11.3"
-
-# Portainer image
-export SIMVA_PORTAINER_IMAGE="portainer/portainer-ce"
-export SIMVA_PORTAINER_VERSION="2.45.3"
+export SIMVA_SQLITE_UI_IMAGE="datasetteproject/datasette"
+export SIMVA_SQLITE_UI_VERSION="latest"
+# Dockhand image
+export SIMVA_DOCKHAND_IMAGE="fnsys/dockhand"
+export SIMVA_DOCKHAND_VERSION="latest"
 
 ########################
 # SIMVA Git repository #

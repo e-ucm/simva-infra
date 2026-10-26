@@ -18,7 +18,7 @@ networks:
 services:
   db:
     << : *default-opts
-    image: postgres:18
+    image: ${SIMVA_POSTGRES_IMAGE:-postgres}:${SIMVA_POSTGRES_VERSION:-18}
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${SIMVA_LRS_DB_NAME:-lrs}
@@ -33,6 +33,8 @@ services:
             - db-lrs.${SIMVA_INTERNAL_DOMAIN:-internal.test}
     volumes:
       - lrs_pgdata:/var/lib/postgresql
+
+
   lrs:
     << : *default-opts
     image: ${SIMVA_LRS_IMAGE:-yetanalytics/lrsql}:${SIMVA_LRS_VERSION:-v0.9.5}
