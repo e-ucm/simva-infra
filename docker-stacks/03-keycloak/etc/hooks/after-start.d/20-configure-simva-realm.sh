@@ -98,5 +98,10 @@ EOF
         __add_or_update_client "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/clients" "/opt/keycloak/data/simva-realm-filled/clients"
     fi
 else
-    echo "Please upgrade to a newer keycloak version ( > 18.*.*) before importing users and realm."
+    echo "Please upgrade to a newer keycloak version ( > 18.*.*)."
+    realmFile="${SIMVA_CONFIG_HOME}/keycloak/simva-realm/${SIMVA_SSO_REALM}-realm-full.json" 
+    if [[ -e "$realmFile" ]]; then
+        echo "starting importing realm"
+        #"${SIMVA_BIN_HOME}/run-command.sh" /opt/jboss/keycloak/bin/kcadm.sh import --file /opt/keycloak/data/export/${SIMVA_SSO_REALM}-realm-full.json --override false --optimized
+    fi;
 fi;

@@ -11,6 +11,15 @@ DEPLOYMENT_DIR="${SIMVA_DATA_HOME}/keycloak/deployments"
 ensure_dir "${EXTENSIONS_DIR}"
 ensure_dir "${DEPLOYMENT_DIR}"
 
+if [[ -e "${SIMVA_CONFIG_HOME}/keycloak/.migration" ]]; then
+    "${SIMVA_BIN_HOME}/purge-folder-contents.sh" \
+        "${SIMVA_DATA_HOME}/keycloak/deployments" || true
+
+    # Remove all Keycloak extension checksum files to force redeploy
+    rm -f "${SIMVA_DATA_HOME}/keycloak/extensions/SHA256SUMS-KEYCLOAK-EXTENSIONS-"* 2>/dev/null || true
+    rm -f "${SIMVA_DATA_HOME}/keycloak/extensions/SHA256SUMS-KEYCLOAK-EVENTS-"* 2>/dev/null || true
+fi
+
 if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} -gt 25 ]]; then
     # (tested in Keycloak 26.1.3)
     SIMVA_EXTENSIONS="es.e-ucm.simva.keycloak.fullname-attribute-mapper es.e-ucm.simva.keycloak.policy-attribute-mapper es.e-ucm.simva.keycloak.simva-theme-v2 es.e-ucm.simva.keycloak.custom-token-auth-spi"

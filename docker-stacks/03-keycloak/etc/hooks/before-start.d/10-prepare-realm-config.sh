@@ -120,10 +120,15 @@ function configure_realm_file() {
     
     ${SIMVA_BIN_HOME}/purge-folder-contents.sh "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/"
 
-    gomplate -c ".=file://${STACK_CONF}/realm-data.${environment}.yml" \
-        -f "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/simva-realm-full.json" \
-        -o "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/simva-realm-full.json"
-
+    if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
+        gomplate -c ".=file://${STACK_CONF}/realm-data.${environment}.yml" \
+            -f "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/simva-realm-full.json" \
+            -o "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/simva-realm-full.json"
+    else 
+        gomplate -c ".=file://${STACK_CONF}/realm-data.${environment}.yml" \
+            -f "${SIMVA_CONFIG_TEMPLATE_HOME}/keycloak/simva-realm/simva-realm-full-10.json" \
+            -o "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/simva-realm-full.json"
+    fi
     folders=("clients" "roles" "users")
     for i in "${!folders[@]}"; do
         folder=${folders[$i]};
