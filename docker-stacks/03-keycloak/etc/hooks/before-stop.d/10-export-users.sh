@@ -4,6 +4,7 @@ set -euo pipefail
 
 export RUN_IN_CONTAINER=true
 export RUN_IN_CONTAINER_NAME="keycloak"
+export RUN_IN_AS_SPECIFIC_USER="root"
 
 if [[ -e "${SIMVA_DATA_HOME}/keycloak/.initialized" ]]; then 
     echo "SIMVA is initialized." 
