@@ -37,6 +37,6 @@ _start_docker_container_if_not_running
 export RUN_IN_CONTAINER_NAME="mariadb-backup"
 _start_docker_container
 "${SIMVA_BIN_HOME}/run-command.sh" bash -c "/container-tools/wait-for-it.sh -h mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN} -p 3306 -t ${SIMVA_WAIT_TIMEOUT}"
-"${SIMVA_BIN_HOME}/run-command.sh" bash -c "mysql -h'mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}' -uroot -p'${SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD}' < '/dump/restore/$BACKUP_FILE'"
+"${SIMVA_BIN_HOME}/run-command.sh" bash -c "(command -v mysql >/dev/null 2>&1 || command -v mariadb >/dev/null 2>&1 || (apt-get update -qq && apt-get install -y -qq default-mysql-client mariadb-client >/dev/null 2>&1 || apk add --no-cache mariadb-client >/dev/null 2>&1)); CLI_CMD=\$(command -v mysql 2>/dev/null || command -v mariadb 2>/dev/null); \$CLI_CMD -h'mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}' -uroot -p'${SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD}' < '/dump/restore/$BACKUP_FILE'"
 "${SIMVA_BIN_HOME}/run-command.sh" bash -c "rm -rf '/dump/restore'"
 echo "✅ Restore completed successfully."

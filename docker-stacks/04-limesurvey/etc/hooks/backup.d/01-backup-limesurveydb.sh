@@ -39,7 +39,7 @@ _start_docker_container_if_not_running
 export RUN_IN_CONTAINER_NAME="mariadb-backup"
 _start_docker_container_if_not_running
 "${SIMVA_BIN_HOME}/run-command.sh" bash -c "/container-tools/wait-for-it.sh -h mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN} -p 3306 -t ${SIMVA_WAIT_TIMEOUT}"
-"${SIMVA_BIN_HOME}/run-command.sh" bash -c "mysqldump --all-databases -h'mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}' -uroot -p'${SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD}' > '/dump/$BACKUP_FILE'"
+"${SIMVA_BIN_HOME}/run-command.sh" bash -c "(command -v mysqldump >/dev/null 2>&1 || command -v mariadb-dump >/dev/null 2>&1 || (apt-get update -qq && apt-get install -y -qq default-mysql-client mariadb-client >/dev/null 2>&1 || apk add --no-cache mariadb-client >/dev/null 2>&1)); DUMP_CMD=\$(command -v mysqldump 2>/dev/null || command -v mariadb-dump 2>/dev/null); \$DUMP_CMD --all-databases -h'mariadb.${SIMVA_LIMESURVEY_HOST_SUBDOMAIN}.${SIMVA_INTERNAL_DOMAIN}' -uroot -p'${SIMVA_LIMESURVEY_MYSQL_ROOT_PASSWORD}' > '/dump/$BACKUP_FILE'"
 "${SIMVA_BIN_HOME}/volumectl.sh" copyvl "ls_maria_db_backup_data" "$BACKUP_DIR/${MIGRATION_DIR_NAME}" $BACKUP_FILE $BACKUP_FILE true
 "${SIMVA_BIN_HOME}/run-command.sh" bash -c "rm -rf '/dump/$BACKUP_FILE'"
 echo "✅ Backup completed: $BACKUP_FILE"
