@@ -52,7 +52,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${SIMVA_CONTAINER_TOOLS_HOME:-/home/vagrant/docker-stacks/container-tools}:/container-tools
-      - ${SIMVA_DATA_HOME}/keycloak/kcadm/:/opt/jboss/keycloak/bin/client/
     restart: unless-stopped
     healthcheck:
       test: "curl -sS http://localhost:8080 || exit 1"
