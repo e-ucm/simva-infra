@@ -205,30 +205,23 @@ jobs:
             # convert to env var name
             VAR_NAME="SIMVA_$(echo ${FIRST_NAME} | tr '[:lower:]' '[:upper:]')_VERSION"
             # get all versions except header (sorted ascending)
-            VERSIONS=$(tail -n +2 "$VFILE" | sed '/^[[:space:]]*$/d' | sort -t'|' -k1,1 -V | awk -F'|' '{print $1}')
+            VERSION=$(tail -n +2 "$VFILE" |
+              sed '/^[[:space:]]*$/d' |
+              sort -t'|' -k1,1 -V |
+              awk -F'|' 'NR==1 {print $1}')
             # current version for this stack (must be known before the loop below)
             CUR_VER=$(grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh | cut -d'"' -f2 || true)
-            # find the greatest version in versions.txt that is strictly below CUR_VER
-            PREV_VER=""
-            for v in $VERSIONS; do
-                lower=$(printf '%s\n%s\n' "$v" "$CUR_VER" | sort -V | head -n1)
-                if [[ "$lower" == "$v" && "$v" != "$CUR_VER" ]]; then
-                    PREV_VER="$v"
-                else
-                    break
-                fi
-            done
-            echo "Current: $CUR_VER, Previous in list: $PREV_VER"
-            if [ -z "$PREV_VER" ]; then
+            echo "Current: $CUR_VER, First version: $VERSION"
+            if [ -z "$VERSION" ]; then
               # no previous version available: keep the actual current version
-              PREV_VER="$CUR_VER"
+              VERSION="$CUR_VER"
             fi
-            echo "Setting $VAR_NAME to $PREV_VER"
+            echo "Setting $VAR_NAME to $VERSION"
             # update in simva.install.d/simva-env.sh (replace if present, append otherwise)
             if grep -q "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh; then
-              sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${PREV_VER}\"|" etc/simva.install.d/simva-env.sh
+              sed -i "s|^export ${VAR_NAME}=\".*\"|export ${VAR_NAME}=\"${VERSION}\"|" etc/simva.install.d/simva-env.sh
             else
-              echo "export ${VAR_NAME}=\"${PREV_VER}\"" >> etc/simva.install.d/simva-env.sh
+              echo "export ${VAR_NAME}=\"${VERSION}\"" >> etc/simva.install.d/simva-env.sh
             fi
             grep "^export ${VAR_NAME}=" etc/simva.install.d/simva-env.sh || true
           done
