@@ -295,6 +295,7 @@ services:
       SIMVA_PORT: "${SIMVA_SIMVA_API_EXTERNAL_PORT:-443}"
       #KEYCLOAK (OAuth2 token endpoint used to authenticate against the SIMVA API)
       #Keycloak refuses plain HTTP, so it is always reached through the load balancer
+      SIMVA_KEYCLOAK_VERSION: "${SIMVA_KEYCLOAK_VERSION:-26.4.7}"
       SIMVA_SSO_HOST: "${SIMVA_SSO_HOST_SUBDOMAIN:-sso}.${SIMVA_EXTERNAL_DOMAIN:-external.test}"
       SIMVA_SSO_PROTOCOL: "${SIMVA_EXTERNAL_PROTOCOL:-https}"
       SIMVA_SSO_PORT: "443"

@@ -254,6 +254,32 @@ jobs:
         working-directory: docker-stacks
         timeout-minutes: 60
         run: bash "$GITHUB_WORKSPACE/scripts/ci/simva-verify.sh" development
+      
+      - name: Collect diagnostics
+        if: failure()
+        shell: bash
+        working-directory: docker-stacks
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/diag-$SIMVA_ENV"
+          {
+            echo "### docker ps -a"
+            docker ps -a
+          } > "$GITHUB_WORKSPACE/diag-$SIMVA_ENV/containers.txt" || true
+          {
+            echo "### docker compose ls"
+            docker compose ls
+          } > "$GITHUB_WORKSPACE/diag-$SIMVA_ENV/compose.txt" || true
+          for stack in 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs 20-simva 21-tmon ; do
+            sudo env "PATH=$PATH" ./simva log "$stack" > "$GITHUB_WORKSPACE/diag-$SIMVA_ENV/$stack.log" 2>&1 || true
+          done
+
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: simva-smoke-${{ matrix.environment }}-diag
+          path: diag-${{ matrix.environment }}/
+          if-no-files-found: ignore
 
       - name: Stop SIMVA
         if: always()

@@ -3,7 +3,19 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 set +e
-/bin/wait-available.sh "Keycloak SIMVA REALM" "${SIMVA_SSO_PROTOCOL}://${SIMVA_SSO_HOST}:${SIMVA_SSO_PORT}/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration" "true" "${NODE_EXTRA_CA_CERTS}";
+KEYCLOAK_REALM_PATH=""
+if [ -n "${SIMVA_KEYCLOAK_VERSION:-}" ]; then
+  KEYCLOAK_MAJOR=$(echo "${SIMVA_KEYCLOAK_VERSION}" | cut -d. -f1)
+  if [ "${KEYCLOAK_MAJOR}" -lt 26 ] 2>/dev/null; then
+    KEYCLOAK_REALM_PATH="/auth"
+  else
+    KEYCLOAK_REALM_PATH=""
+  fi
+else
+  # Fallback: try /auth first is not possible here; default to / for modern
+  KEYCLOAK_REALM_PATH=""
+fi
+/bin/wait-available.sh "Keycloak SIMVA REALM" "${SIMVA_SSO_PROTOCOL}://${SIMVA_SSO_HOST}:${SIMVA_SSO_PORT}${KEYCLOAK_REALM_PATH}/realms/${SIMVA_SSO_REALM}/.well-known/openid-configuration" "true" "${NODE_EXTRA_CA_CERTS}";
 ret=$?
 set -e
 echo $ret
