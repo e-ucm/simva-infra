@@ -21,3 +21,4 @@ ${SIMVA_BIN_HOME}/purge-file-if-exist.sh \
 
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "kc_maria_db_data"
 "${SIMVA_BIN_HOME}/volumectl.sh" delete "kc_maria_db_backup_data"
+"${SIMVA_BIN_HOME}/volumectl.sh" delete "kc_realm_export_data"

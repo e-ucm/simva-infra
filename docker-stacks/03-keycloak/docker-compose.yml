@@ -95,3 +95,5 @@ volumes:
     external: true
   kc_maria_db_backup_data:
     external: true
+  kc_realm_export_data:
+    external: true

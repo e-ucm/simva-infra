@@ -4,6 +4,7 @@ set -euo pipefail
 for vol in \
     kc_maria_db_data \
     kc_maria_db_backup_data \
+    kc_realm_export_data \
     ls_upload \
     ls_tmp \
     ls_etc \
@@ -28,6 +29,6 @@ done
 
 docker network inspect traefik_services traefik_admin --format 'network {{.Name}} ({{.Driver}})'
 docker volume ls --format '{{.Name}}' \
-    | grep -E '^(kc_maria|ls_|minio|kafka|shlink|simva|dockhand)' \
+    | grep -E '^(kc_maria|kc_realm|ls_|minio|kafka|shlink|simva|dockhand)' \
     | sort \
     | sed 's/^/volume /'

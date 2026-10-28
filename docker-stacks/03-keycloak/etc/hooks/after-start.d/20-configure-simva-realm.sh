@@ -16,7 +16,7 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
             echo "Migration in progress. Importing realm..."
             realmFile="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/${SIMVA_SSO_REALM}-realm.json" 
             if [[ -e "$realmFile" ]]; then
-                "${SIMVA_BIN_HOME}/run-command.sh" /opt/keycloak/bin/kc.sh import --file /opt/keycloak/data/export/${SIMVA_SSO_REALM}-realm.json --override true --optimized
+                "${SIMVA_BIN_HOME}/run-command.sh" /opt/keycloak/bin/kc.sh import --file /opt/keycloak/data/export-host/${SIMVA_SSO_REALM}-realm.json --override true --optimized
             fi;
             source "${HELPERS_STACK_HOME}/keycloak-functions.sh"
             __keycloak_login
@@ -34,7 +34,7 @@ if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 18 ]]; then
                     echo "$user_json" > "$tmp_user_folder/usr-${user_id}.json"
                     echo "User ${user_name} copied into file ${tmp_user_folder}/usr-${user_id}.json"
                 done < <(jq -c '.users[]' "$f")
-                __add_or_update_user "${tmp_user_folder}" "/opt/keycloak/data/export/tmp"
+                __add_or_update_user "${tmp_user_folder}" "/opt/keycloak/data/export-host/tmp"
                 tmp_user_folder="${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/tmp"
                 rm -rf "${tmp_user_folder}"
                 echo "File $f Imported !"
@@ -97,11 +97,15 @@ EOF
         __keycloak_login
         __add_or_update_client "${SIMVA_CONFIG_HOME}/keycloak/simva-realm/clients" "/opt/keycloak/data/simva-realm-filled/clients"
     fi
-else
-    echo "Please upgrade to a newer keycloak version ( > 18.*.*)."
-    realmFile="${SIMVA_CONFIG_HOME}/keycloak/simva-realm/${SIMVA_SSO_REALM}-realm-full.json" 
-    if [[ -e "$realmFile" ]]; then
-        echo "starting importing realm"
-        #"${SIMVA_BIN_HOME}/run-command.sh" /opt/jboss/keycloak/bin/kcadm.sh import --file /opt/keycloak/data/export/${SIMVA_SSO_REALM}-realm-full.json --override false --optimized
-    fi;
 fi;
+
+# Once no migration/export is in progress, the upgrade marker must be removed.
+# Otherwise every start/restart imports the realm again and re-adds the same role
+# mappings, which fails against an already migrated database.
+if [[ ${SIMVA_KEYCLOAK_VERSION%%.*} > 24 ]] \
+    && [[ ! -e "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/.migrationinprogress" ]] \
+    && [[ ! -e "${SIMVA_CONFIG_HOME}/keycloak/simva-realm-export/.exportinprogress" ]] \
+    && [[ -e "${SIMVA_CONFIG_HOME}/keycloak/.migration" ]]; then
+    echo "Keycloak migration completed. Removing migration marker."
+    ${SIMVA_BIN_HOME}/purge-file-if-exist.sh "${SIMVA_CONFIG_HOME}/keycloak/.migration"
+fi
