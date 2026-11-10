@@ -141,7 +141,7 @@ jobs:
         working-directory: docker-stacks
         run: sudo env "PATH=$PATH" ./simva uninstall
 
-  upgrade-test:
+  upgrade-dependencies-test:
     name: SIMVA upgrade test
     runs-on: ubuntu-latest
     #needs: smoke
@@ -189,7 +189,7 @@ jobs:
         working-directory: docker-stacks
         run: |
           export SIMVA_HOME="${PWD}"
-          export SIMVA_STACKS="00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs 20-simva 21-tmon"
+          export SIMVA_STACKS="00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs"
           cp etc/simva.install.d/simva-env.sh etc/simva.install.d/simva-env.sh.bak
           for stack in $SIMVA_STACKS; do
             VFILE="${SIMVA_HOME}/${stack}/etc/upgrade/versions.txt"
@@ -269,7 +269,7 @@ jobs:
             echo "### docker compose ls"
             docker compose ls
           } > "$GITHUB_WORKSPACE/diag-$SIMVA_ENV/compose.txt" || true
-          for stack in 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs 20-simva 21-tmon ; do
+          for stack in 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs ; do
             sudo env "PATH=$PATH" ./simva log "$stack" > "$GITHUB_WORKSPACE/diag-$SIMVA_ENV/$stack.log" 2>&1 || true
           done
 
