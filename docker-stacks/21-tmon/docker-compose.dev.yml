@@ -21,4 +21,4 @@ services:
     environment:
       - DASH_DEBUG=true
     volumes:
-      - ${SIMVA_TMON_GIT_REPO}:/app
+      - ${SIMVA_TMON_GIT_REPO}/src:/app/src

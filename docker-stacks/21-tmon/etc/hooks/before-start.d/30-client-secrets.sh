@@ -3,7 +3,7 @@ set -euo pipefail
 [[ "${DEBUG:-false}" == "true" ]] && set -x
 
 tmon_config_folder="${SIMVA_CONFIG_TEMPLATE_HOME}/tmon"
-tmon_folder="${SIMVA_TMON_GIT_REPO}"
+tmon_folder="${SIMVA_CONFIG_HOME}/tmon"
 base_name="client_secrets"
 base_extension=".json"
 cat "${tmon_config_folder}/${base_name}${base_extension}" \
@@ -14,7 +14,7 @@ cat "${tmon_config_folder}/${base_name}${base_extension}" \
     | sed  "s/<<SIMVA_TMON_CLIENT_ID>>/${SIMVA_TMON_CLIENT_ID}/g" \
     | sed  "s/<<SIMVA_TMON_CLIENT_SECRET>>/${SIMVA_TMON_CLIENT_SECRET}/g" \
     | sed  "s/<<SIMVA_SIMVA_API_HOST_SUBDOMAIN>>/${SIMVA_SIMVA_API_HOST_SUBDOMAIN}/g" \
-    | sed  "s/<<SSL_CERT_FILE>>/\/root\/.tmon\/certs\/ca\/${SIMVA_ROOT_CA_FILENAME}/g" \
+    | sed  "s/<<SSL_CERT_FILE>>/\/root\/.tmon\/certs\/${SIMVA_TRAEFIK_FULLCHAIN_CERT_FILENAME}/g" \
     | sed  "s/<<SIMVA_LRS_HOST_SUBDOMAIN>>/${SIMVA_LRS_HOST_SUBDOMAIN}/g" \
     | sed  "s/<<SIMVA_LRS_USERNAME>>/${SIMVA_LRS_API_USERNAME_DEFAULT}/g" \
     | sed  "s/<<SIMVA_LRS_PASSWORD>>/${SIMVA_LRS_API_SECRET_DEFAULT}/g" \
