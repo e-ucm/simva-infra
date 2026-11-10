@@ -238,7 +238,7 @@ jobs:
         working-directory: docker-stacks
         timeout-minutes: 240
         run: |
-          sudo env "PATH=$PATH" ./simva start
+          sudo env "PATH=$PATH" ./simva start 00-network 01-traefik 02-logs 03-keycloak 04-limesurvey 05-rustfs 06-kafka 07-shlink 11-lrs
 
       - name: Upgrade to current version
         shell: bash
@@ -248,7 +248,7 @@ jobs:
           export SIMVA_HOME="${PWD}"
           cp etc/simva.install.d/simva-env.sh.bak etc/simva.install.d/simva-env.sh
           sudo env "PATH=$PATH" ./simva restart --auto-upgrade
-
+    
       - name: Verify after upgrade
         shell: bash
         working-directory: docker-stacks
